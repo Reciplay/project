@@ -1,0 +1,31 @@
+
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 100 900;     
+  font-display: swap;
+  src: url('/fonts/pretendard/PretendardVariable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Protest Guerrilla';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  font-size: 48px;
+  src: url('/fonts/protest/ProtestGuerrilla-Regular.ttf') format('truetype');
+}
+
+:root {
+  --font-pretendard: 'Pretendard', sans-serif;
+  --font-protest:    'Protest Guerrilla', serif;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-pretendard);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
