@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "classnames": "^2.5.1",
+    "livekit": "^0.0.1",
+    "livekit-client": "^2.15.3",
     "next": "15.4.1",
     "next-auth": "^4.24.11",
     "react": "19.1.0",
