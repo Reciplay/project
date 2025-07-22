@@ -7,7 +7,7 @@ export default function NavBar() {
     <div className={styles.container}>
       <div className={styles.left}>
         <Image
-          src="/icons/hamburgerBtn.svg"
+          src="/icons/hamburger.svg"
           alt="hamberger"
           width={24}
           height={24}
