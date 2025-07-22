@@ -17,7 +17,7 @@ export default function Page() {
             <BaseInput placeholder="이메일" type="email" />
             <BaseInput placeholder="비밀번호" type="password" />
 
-            <BaseButton title="로그인" type="submit" />
+            <BaseButton title="로그인" type="submit" color="red" />
           </form>
 
           <div className={styles.links}>

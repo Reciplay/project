@@ -21,7 +21,7 @@ export default function NavBar() {
       <div className={styles.right}>
         <Image
           className={styles.profile}
-          src="/images/profile.png"
+          src="/images/profile.jpg"
           alt="profile"
           width={40}
           height={40}
