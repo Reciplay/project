@@ -1,0 +1,29 @@
+.card {
+    width: 980px;
+    height: 208px;
+    background: #FDFDFD;
+    display: flex;
+    box-shadow: 2px 11px 16.3px rgba(0, 0, 0, 0.14);
+    gap: 20px;
+    /* 텍스트와 이미지 사이 여백 */
+    align-items: center;
+    border-radius: 14px;
+    padding: 20px;
+}
+
+.imageWrapper {
+    position: relative;
+    width: 275px;
+    height: 170px;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.textWrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
