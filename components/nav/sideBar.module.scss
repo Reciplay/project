@@ -1,0 +1,30 @@
+.sidebar {
+  width: 220px;
+  padding: 24px 16px;
+  border-right: 1px solid #ddd;
+  height: 100%;
+  background-color: #fff;
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.label {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  cursor: pointer;
+  font-size: 14px;
+  color: #222;
+}
+
+.item:hover {
+  color: #e00;
+}

@@ -8,6 +8,10 @@ interface BaseInputProps {
 
 export default function BaseInput({ placeholder, type }: BaseInputProps) {
   return (
-    <input type={type} placeholder={placeholder} className={styles.input} />
+    <input
+      type={type}
+      placeholder={placeholder}
+      className={classNames(styles.input, styles[type])}
+    />
   );
 }
