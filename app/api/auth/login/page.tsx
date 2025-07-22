@@ -1,5 +1,8 @@
 import Image from "next/image";
 import styles from "./page.module.scss";
+import Link from "next/link";
+import BaseInput from "@/components/input/baseInput";
+import BaseButton from "@/components/button/baseButton";
 
 export default function Page() {
   return (
@@ -11,15 +14,10 @@ export default function Page() {
           <p className={styles.tagline}>자유롭게 배우는 우리</p>
 
           <form className={styles.form}>
-            <input type="email" placeholder="이메일" className={styles.input} />
-            <input
-              type="password"
-              placeholder="비밀번호"
-              className={styles.input}
-            />
-            <button type="submit" className={styles.button}>
-              로그인
-            </button>
+            <BaseInput placeholder="이메일" type="email" />
+            <BaseInput placeholder="비밀번호" type="password" />
+
+            <BaseButton title="로그인" type="submit" />
           </form>
 
           <div className={styles.links}>
@@ -27,7 +25,8 @@ export default function Page() {
             <span> | </span>
             <a href="#">비밀번호 찾기</a>
             <span> | </span>
-            <a href="#">회원가입</a>
+            <Link href="/api/auth/signup">회원가입</Link>
+            {/* <a href="#">회원가입</a> */}
           </div>
 
           <div className={styles.separator}>

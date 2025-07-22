@@ -14,7 +14,6 @@
 
   /* 원본 비율 유지(980 ÷ 717 ≒ 1.366) */
   aspect-ratio: 980 / 600;
-  // aspect-ratio: 980 / 717;
 
   display: flex;
   background: #fafafa;
@@ -25,7 +24,7 @@
   gap: 24px;
 }
 
-.left {
+.right {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -33,7 +32,7 @@
   align-items: center;
 }
 
-.left > * {
+.right > * {
   width: 70%;
 }
 
@@ -149,7 +148,7 @@
   border-color: #ccc;
 }
 
-.right {
+.left {
   position: relative;
   flex: 1;
 }
