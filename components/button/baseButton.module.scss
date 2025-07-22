@@ -1,0 +1,28 @@
+.container {
+  color: white;
+  padding: 12px;
+  text-align: center;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.black{
+    background-color: black;
+}
+
+.red {
+  background-color: red;
+}
+
+.green {
+  background-color: green;
+}
+
+.blue {
+  background-color: blue;
+}
+
+.container:hover {
+  filter: brightness(1.1);
+}
