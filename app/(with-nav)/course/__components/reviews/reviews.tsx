@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
+import ReviewCard from "../reviewCard/reviewCard";
 import styles from "./reviews.module.scss";
-import ReviewCard from "./reviewCard";
 export interface Review {
   id: number;
   nickname: string;

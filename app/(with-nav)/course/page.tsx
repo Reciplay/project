@@ -1,20 +1,16 @@
 "use client";
 
-import Image from "next/image";
 import { useRef } from "react";
+import ScrollTabs from "../../../components/scrollTab/scrollTabs";
+import Notices from "./__components/notices/notices";
+import Overview from "./__components/overview/overview";
+import QnA from "./__components/qna/qna";
+import Review from "./__components/reviewPrompt/reviewPrompt";
+import Reviews from "./__components/reviews/reviews";
+import Schedule from "./__components/schedule/schedule";
+import Status from "./__components/status/status";
+import Summary from "./__components/summary/summary";
 import styles from "./page.module.scss";
-import IconWithText from "@/components/text/iconWithText";
-import BaseButton from "@/components/button/baseButton";
-import ProgressPieChart from "@/components/chart/progressPieChart";
-import ScrollTabs from "./scrollTabs";
-import Summary from "./__components/summary";
-import Review from "./__components/reviewPrompt";
-import Status from "./__components/status";
-import Overview from "./__components/overview";
-import QnA from "./__components/qna";
-import Notices from "./__components/notices";
-import Schedule from "./__components/schedule";
-import Reviews from "./__components/reviews";
 
 export default function Page() {
   const sectionRefs = [
