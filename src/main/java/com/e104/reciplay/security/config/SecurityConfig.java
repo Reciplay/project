@@ -3,6 +3,7 @@ package com.e104.reciplay.security.config;
 import com.e104.reciplay.security.filter.CustomLoginFilter;
 import com.e104.reciplay.security.filter.JWTFilter;
 import com.e104.reciplay.security.jwt.JWTUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -38,6 +43,28 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(auth -> auth.disable());
+        http.cors(cors -> cors
+                .configurationSource(new CorsConfigurationSource() {
+                    @Override
+                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                        CorsConfiguration configuration = new CorsConfiguration();
+                        // 허용할 오리진 설정
+                        configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
+                        // 허용할 메서드 설정
+                        configuration.setAllowedMethods(Collections.singletonList("*"));
+                        // 프론트엔드에서 Credential 설정을 하면
+                        configuration.setAllowCredentials(true);
+                        // 허용할 헤더
+                        configuration.setAllowedHeaders(Collections.singletonList("*"));
+                        // 허용할 시간
+                        configuration.setMaxAge(3600L);
+
+                        // 응답의 Authorization 헤더가 토큰을 포함하니까 노출하도록 허용.
+                        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+
+                        return configuration;
+                    }
+                }));
 
         http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
 
