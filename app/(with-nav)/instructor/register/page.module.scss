@@ -1,0 +1,30 @@
+.frame {
+    display: flex;
+    height: 231px;
+    width: 100%;
+    justify-content: space-between; // 좌우 끝으로 분배
+    justify-self: center;
+}
+
+.textContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.innerText {
+    display: flex;
+    gap: 30px;
+}
+
+.imageWrapper {
+    position: relative;
+    height: 231px;
+    width: 174px;
+}
+
+.name {
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 43px;
+}
