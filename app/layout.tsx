@@ -1,6 +1,7 @@
 // app/layout.tsx
 import type { Metadata } from "next";
 import "../styles/globals.scss";
+import "../styles/calendar.scss";
 
 export const metadata: Metadata = {
   title: "Reciplay",

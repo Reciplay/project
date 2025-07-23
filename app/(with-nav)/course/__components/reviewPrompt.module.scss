@@ -1,0 +1,22 @@
+.review {
+  display: flex;
+  justify-content: space-between;
+  margin: 40px 0;
+  background-color: #fff0a7;
+  padding: 16px;
+  border-radius: 16px;
+}
+.reviewBox {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.reviewTitle {
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-normal);
+}
+.reviewDesc {
+  font-weight: var(--font-weight-regular);
+  letter-spacing: var(--letter-spacing-normal);
+  line-height: var(--line-height-tight);
+}
