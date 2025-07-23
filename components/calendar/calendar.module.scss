@@ -1,40 +1,7 @@
 :global(.fc) {
   font-family: "Pretendard", sans-serif;
-}
-
-:global(.fc-daygrid-day-frame) {
-  border: none;
-  padding: 8px;
-  border-radius: 8px;
-  transition: background-color 0.2s ease;
-}
-
-:global(.fc-daygrid-day:hover .fc-daygrid-day-frame) {
-  background-color: #f5f5f5;
-  cursor: pointer;
-}
-
-:global(.fc-daygrid-day-number) {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 14px;
   color: #111;
-  margin-bottom: 4px;
-}
-
-:global(.fc-day-today) {
-  background-color: #ffeef0 !important;
-  border-radius: 10px;
-  font-weight: bold;
-  color: #d6336c !important;
-}
-
-:global(.fc-event) {
-  background: none !important;
-  color: #999 !important;
-  font-size: 12px;
-  padding: 0;
-  margin: 0;
-  border: none;
 }
 
 :global(.fc-scrollgrid),
@@ -43,10 +10,62 @@
   border: none !important;
 }
 
-:global(.fc-daygrid-day) {
-  vertical-align: top;
-  height: 80px;
-  padding: 4px;
+:global(.fc-daygrid-day-frame) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100%;
+  padding: 10px 4px;
+  border-radius: 12px;
+  transition: background-color 0.2s ease;
+  gap: 4px;
+}
+
+:global(.fc-daygrid-day:hover .fc-daygrid-day-frame) {
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+:global(.fc-daygrid-day-number) {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111;
+}
+
+:global(.fc-day-today) {
+  background-color: #fff0f3 !important;
+  border-radius: 12px;
+  font-weight: 700;
+  color: #d6336c !important;
+}
+
+:global(.fc-event) {
+  background: none !important;
+  border: none !important;
+  padding: 0;
+  margin: 0;
+}
+
+:global(.fc-daygrid-event-harness) {
+  display: inline-flex;
+  gap: 4px;
+  justify-content: center;
+  margin: 0;
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  background-color: #ff4d4f;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.dotMore {
+  font-size: 10px;
+  color: #999;
+  margin-left: 2px;
 }
 
 .eventSummary {
@@ -54,18 +73,54 @@
   color: #d6336c;
   font-weight: 500;
 }
-/* calendar.module.scss */
+
+/* 전체 레이아웃 */
 .layout {
   display: flex;
+  gap: 12px;
 }
 
 .sidebar {
-  width: 280px;
-  padding: 24px;
+  width: 260px;
+  padding: 16px;
   background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.03);
 }
 
 .calendar {
   flex: 1;
-  padding: 16px;
+  padding: 8px;
+}
+
+.eventList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.eventList li {
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  margin-bottom: 6px;
+}
+
+.eventList li:hover {
+  background-color: #f0f0f0;
+}
+
+.selected {
+  background-color: #ffeef0;
+  color: #d6336c;
+  font-weight: 600;
+}
+
+.eventDate {
+  font-weight: 500;
+  margin-right: 6px;
+}
+.fc-highlight {
+  margin: 8px;
 }
