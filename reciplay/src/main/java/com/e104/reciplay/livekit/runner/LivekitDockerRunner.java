@@ -1,4 +1,4 @@
-package com.e104.reciplay.runner;
+package com.e104.reciplay.livekit.runner;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
