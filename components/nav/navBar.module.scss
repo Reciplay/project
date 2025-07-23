@@ -6,6 +6,7 @@
   justify-content: space-between;
   align-items: center;
   position: relative;
+  line-height: 60px;
 }
 
 .left {
@@ -30,6 +31,8 @@
 
 .right {
   margin: 0 40px;
+  display: flex;
+  align-items: center;
 }
 
 .profile {
