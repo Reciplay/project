@@ -35,4 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
-./src/main/resourses/application.properties
+
+# Application Configuration
+# Contains sensitive data or environment-specific settings.
+/src/main/resources/application.properties
