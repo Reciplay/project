@@ -25,6 +25,7 @@ export default function ScrollTabs({
       {tabTitles.map((title, idx) => (
         <BaseButton
           key={idx}
+          variant="ghost"
           onClick={() => handleScrollTo(idx)}
           title={title}
         />
