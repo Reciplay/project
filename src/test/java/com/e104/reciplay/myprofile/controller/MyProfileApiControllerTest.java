@@ -1,19 +1,17 @@
 package com.e104.reciplay.myprofile.controller;
 
 import com.e104.reciplay.myprofile.dto.ProfileInfoRequest;
+import com.e104.reciplay.myprofile.dto.ProfileInformation;
 import com.e104.reciplay.myprofile.service.MyProfileManagementService;
+import com.e104.reciplay.myprofile.service.MyProfileQueryService;
 import com.e104.reciplay.security.exception.EmailNotFoundException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,7 +21,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = {MyProfileApiController.class})
 @AutoConfigureMockMvc(addFilters = false)
@@ -37,6 +36,10 @@ class MyProfileApiControllerTest {
     @MockitoBean
     private MyProfileManagementService myProfileManagementService;
 
+    @MockitoBean
+    private MyProfileQueryService myProfileQueryService;
+
+
     @Test
     public void 프로필_정보_입력에_성공한다() throws Exception {
         // given
@@ -47,7 +50,7 @@ class MyProfileApiControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
-        resultActions.andExpect(MockMvcResultMatchers.status().isOk());
+        resultActions.andExpect(status().isOk());
         Mockito.verify(myProfileManagementService, Mockito.times(1)).setupMyProfile("wonjun@mail.com", request);
     }
 
@@ -61,6 +64,17 @@ class MyProfileApiControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
-        resultActions.andExpect(MockMvcResultMatchers.status().isBadRequest());
+        resultActions.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void 회원정보_조회에_성공한다() throws Exception{
+        Mockito.when(myProfileQueryService.queryProfileInformation()).thenReturn(ProfileInformation.builder()
+                .job("개발자").email("wonjun@mail.com").name("이원준").activated(true).gender(1).build());
+
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/my-profile/info"));
+
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.data.email").value("wonjun@mail.com"));
     }
 }
