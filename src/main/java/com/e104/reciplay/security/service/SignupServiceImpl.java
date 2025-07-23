@@ -20,7 +20,8 @@ public class SignupServiceImpl implements SignupService{
         User user = User.builder().email(request.getEmail())
                 .password(bCryptPasswordEncoder.encode(request.getPassword()))
                 .nickname(request.getNickname())
-                .role("ROLE_ADMIN").build();
+                .activated(true)
+                .role("ROLE_USER").build();
 
         if(userRepository.existsByEmail(request.getEmail())) {
             log.debug("이미 존재하는 이메일 입니다. (email : "+request.getEmail() + ")");
