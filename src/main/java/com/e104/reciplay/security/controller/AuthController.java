@@ -1,5 +1,6 @@
 package com.e104.reciplay.security.controller;
 
+import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.security.dto.SignupRequest;
 import com.e104.reciplay.security.exception.DuplicateUserEmailException;
 import com.e104.reciplay.security.service.SignupService;
@@ -35,8 +36,8 @@ public class AuthController {
             signupService.signup(request);
         } catch(DuplicateUserEmailException e) {
             log.debug("에러발생 : {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return CommonResponseBuilder.fail(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return CommonResponseBuilder.create("회원가입이 완료되었습니다.", null);
     }
 }

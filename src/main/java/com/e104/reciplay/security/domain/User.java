@@ -30,17 +30,19 @@ public class User {
 
     private String name;
 
-    private LocalDate birthday;
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
 
     private Integer gender;
 
     private String job;
 
-    @Column(name = "signup_date")
+    @Column(name = "created_at")
     @CreatedDate
-    private LocalDateTime signupDate;
+    private LocalDateTime createdAt;
 
-    private String img;
+    @Column(name = "img_url")
+    private String imgUrl;
 
     private Boolean activated;
 
