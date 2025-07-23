@@ -9,6 +9,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className={styles.body}>
         <SideBar />
         <main className={styles.main}>{children}</main>
+        <div className={styles.divTag}></div>
       </div>
     </div>
   );

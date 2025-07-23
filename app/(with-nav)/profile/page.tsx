@@ -46,8 +46,22 @@ export default function page() {
             <div className={styles.type}>직업</div>
             <div className={styles.value}>얼리 어답터, C신</div>
           </div>
-          <div></div>
-          <div></div>
+          <div className={styles.item}>
+            <div className={styles.type}>이메일</div>
+            <div className={styles.value}>leejiun0102@gmail.com</div>
+          </div>
+          <div className={styles.item}>
+            <div className={styles.type}>나이</div>
+            <div className={styles.value}>2000.01.02 (25세)</div>
+          </div>
+          <div className={styles.item}>
+            <div className={styles.type}>성별</div>
+            <div className={styles.value}>남성</div>
+          </div>
+          <div className={styles.item}>
+            <div className={styles.type}>즐겨찾는 카테고리</div>
+            <div className={styles.value}>한식 • 제과제빵</div>
+          </div>
         </div>
       </div>
     </div>

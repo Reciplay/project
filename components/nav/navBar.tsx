@@ -15,7 +15,7 @@ export default function NavBar() {
         <div className={styles.logo}>Reciplay</div>
       </div>
 
-      <div>
+      <div className={styles.searchWrapper}>
         <BaseInput type="search" placeholder="검색" />
       </div>
       <div className={styles.right}>
