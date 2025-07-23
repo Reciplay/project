@@ -2,6 +2,8 @@ import Image from "next/image";
 import styles from "./page.module.scss";
 import IconWithText from "@/components/text/iconWithText";
 import BaseButton from "@/components/button/baseButton";
+import ProgressPieChart from "@/components/chart/progressPieChart";
+import ScrollTabs from "./scrollTabs";
 
 export default function page() {
   return (
@@ -45,8 +47,25 @@ export default function page() {
             간단한 피드백을 남겨주세요.
           </div>
         </div>
-        <BaseButton title="수강평 남기기" type="" color="red" />
+        {/* <BaseButton title="수강평 남기기" type="" color="red" /> */}
       </div>
+
+      <div className={styles.status}>
+        <div className={styles.left}>
+          <div className={styles.title}>나의 학습 현황</div>
+          <div className={styles.content}>
+            <div className={styles.center}>
+              <ProgressPieChart pathColor="#14ae5c" />
+              <div>오늘의 학습량</div>
+            </div>
+            <div className={styles.center}>
+              <ProgressPieChart pathColor="#007aff" />
+              <div>총 학습량</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ScrollTabs />
     </>
   );
 }
