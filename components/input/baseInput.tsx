@@ -7,7 +7,17 @@ interface BaseInputProps {
 }
 
 export default function BaseInput({ placeholder, type }: BaseInputProps) {
-  return (
+  const isCustom = type === "custom";
+
+  return isCustom ? (
+    <div className={styles.inputContainer}>
+      <input
+        type="text"
+        placeholder={placeholder}
+        className={styles.input}
+      />
+    </div>
+  ) : (
     <input
       type={type}
       placeholder={placeholder}

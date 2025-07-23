@@ -2,6 +2,8 @@ import Image from "next/image";
 import styles from "./page.module.scss";
 import classNames from "classnames";
 import IconWithText from "@/components/text/iconWithText";
+import Introduction from "./__components/introduction";
+import Certificate from "./__components/certificate";
 
 export default function page() {
 	return (
@@ -29,6 +31,8 @@ export default function page() {
 					<Image src="/images/profile2.jpg" fill alt="profile" style={{ objectFit: 'cover' }} />
 				</div>
 			</div>
+			<Introduction></Introduction>
+			<Certificate></Certificate>
 		</div>
 	)
 }
