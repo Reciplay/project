@@ -5,7 +5,7 @@ type ButtonType = "button" | "submit" | "reset";
 
 interface BaseButtonProps {
   title: string;
-  color?: "black" | "red" | "green" | "blue";
+  color?: "black" | "red" | "green" | "blue" | "white";
   type?: ButtonType; // ✅ 수정
   variant?: "default" | "custom" | "outline" | "ghost";
   size?: "sm" | "md" | "lg";

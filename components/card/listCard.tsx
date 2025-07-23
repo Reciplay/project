@@ -37,6 +37,7 @@ export default function ListCard({
 							title="찜"
 							variant="custom"
 							type="submit"
+							color="black"
 							size="sm"
 							className={styles.wishButton}
 						/>
