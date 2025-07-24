@@ -1,10 +1,36 @@
+'use client'
+
 import Image from "next/image";
 import styles from "./page.module.scss";
 import Link from "next/link";
 import BaseInput from "@/components/input/baseInput";
 import BaseButton from "@/components/button/baseButton";
+import React, { useState } from "react";
+
+import { useAuthStore } from "@/stores/authStore";
 
 export default function Page() {
+  const [email, setEmail] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
+
+  const login = useAuthStore((state) => state.login)
+  
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (email.length < 5 || email.length > 30) {
+      alert('이메일이 너무 짧거나 깁니다.')
+      return
+    }
+    if (!password || password.length <8 || password.length > 30) {
+      alert('비밀번호는 8자 이상 20자 이하여야 합니다.')
+      return
+    }
+
+    login(email, password)
+
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.card}>
@@ -13,11 +39,11 @@ export default function Page() {
           <h1 className={styles.logo}>Reciplay</h1>
           <p className={styles.tagline}>자유롭게 배우는 우리</p>
 
-          <form className={styles.form}>
-            <BaseInput placeholder="이메일" type="email" />
-            <BaseInput placeholder="비밀번호" type="password" />
+          <form className={styles.form} onSubmit={handleLogin}>
+            <BaseInput placeholder="이메일" type="email" onChange={(e) => setEmail((e.target as HTMLInputElement).value)} />
+            <BaseInput placeholder="비밀번호" type="password" onChange={(e) => setPassword((e.target as HTMLInputElement).value)} />
 
-            <BaseButton title="로그인" type="submit" />
+            <BaseButton title="로그인" type="submit"/>
           </form>
 
           <div className={styles.links}>

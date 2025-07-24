@@ -1,6 +1,6 @@
 'use client';
 
-import { useChatStore } from '@/stores/chatStore';
+import { useChatBotStore } from '../../stores/chatBotStore';
 import { useEffect, useRef, useState } from 'react';
 import styles from './ChatConversation.module.scss';
 
@@ -13,7 +13,7 @@ export default function ChatConversation() {
     selectStyle,
     setInput,
     sendMessage,
-  } = useChatStore();
+  } = useChatBotStore();
 
   const logRef = useRef<HTMLDivElement>(null);
   const [isComposing, setIsComposing] = useState(false);

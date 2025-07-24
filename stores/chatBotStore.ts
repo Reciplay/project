@@ -1,52 +1,23 @@
 import { create } from 'zustand';
-
-// 메시지 타입 정의
-interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-}
-
-// 스토어 상태 및 액션 타입 정의
-interface ChatState {
-  isChatOpen: boolean;
-  selectedStyle: string | null;
-  input: string;
-  messages: Message[];
-  isLoading: boolean;
-  styles: Record<string, { name: string }>;
-  toggleChat: () => void;
-  selectStyle: (styleKey: string | null) => void;
-  setInput: (input: string) => void;
-  sendMessage: () => Promise<void>;
-}
+import { ChatBotState, Message } from './types/chatBotStore';
+import chatbotClient from '../lib/axios/chatbotClient';
 
 // 실제 API 호출을 위한 채팅 메시지 전송 함수
-const sendChatMessage = async (style: string, message: string): Promise<{ answer: string }> => {
+const sendChatBotMessage = async (style: string, message: string): Promise<{ answer: string }> => {
   try {
-    const response = await fetch('/api/chat/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'user-id': 'jake', // ← 하이픈!
-      },
-      body: JSON.stringify({
-        message: message,
-      }),
-    })
+    const response = await chatbotClient.post('/chat', {
+      message: message,
+      style: style,
+    });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const text = await response.text();
-    return { answer: text || '응답 형식이 올바르지 않습니다.' };
+    return { answer: response.data || '응답 형식이 올바르지 않습니다.' };
   } catch (error) {
     console.error('Failed to send message:', error);
     return { answer: '메시지 전송에 실패했습니다. 잠시 후 다시 시도해주세요.' };
   }
 };
 
-export const useChatStore = create<ChatState>((set, get) => ({
+export const useChatBotStore = create<ChatBotState>((set, get) => ({
   isChatOpen: false,
   selectedStyle: null,
   input: '',
@@ -87,7 +58,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     set((state) => ({ messages: [...state.messages, loadingMsg] }));
 
     const style = selectedStyle || 'default';
-    const response = await sendChatMessage(style, input);
+    const response = await sendChatBotMessage(style, input);
 
     const assistantMsg: Message = { role: 'assistant', content: response.answer };
     set((state) => ({
