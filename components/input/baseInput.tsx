@@ -4,9 +4,11 @@ import classNames from "classnames";
 interface BaseInputProps {
   placeholder: string;
   type: string;
+  value?: string; // ✅ 추가
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void; // ✅ 추가
 }
 
-export default function BaseInput({ placeholder, type }: BaseInputProps) {
+export default function BaseInput({ placeholder, type, value, onChange }: BaseInputProps) {
   const isCustom = type === "custom";
 
   return isCustom ? (
@@ -15,6 +17,8 @@ export default function BaseInput({ placeholder, type }: BaseInputProps) {
         type="text"
         placeholder={placeholder}
         className={styles.input}
+        value={value} // ✅ 전달
+        onChange={onChange} // ✅ 전달
       />
     </div>
   ) : (
@@ -22,6 +26,8 @@ export default function BaseInput({ placeholder, type }: BaseInputProps) {
       type={type}
       placeholder={placeholder}
       className={classNames(styles.input, styles[type])}
+      value={value} // ✅ 전달
+      onChange={onChange} // ✅ 전달
     />
   );
 }
