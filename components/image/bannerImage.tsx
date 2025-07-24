@@ -1,10 +1,10 @@
-import styles from "./banner.module.scss";
+import styles from "./bannerImage.module.scss";
 
 interface BannerProps {
   imageUrl: string;
 }
 
-export default function Banner({ imageUrl }: BannerProps) {
+export default function BannerImage({ imageUrl }: BannerProps) {
   return (
     <div
       className={styles.bannerWrapper}

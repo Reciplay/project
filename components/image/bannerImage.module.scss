@@ -2,7 +2,7 @@
   height: 200px; // 보여주고 싶은 영역만큼
   overflow: hidden;
   position: relative;
-  border-radius: $radius-lg;
+  border-radius: var(--radius-lg);
 
   background-size: cover;
   background-repeat: no-repeat;

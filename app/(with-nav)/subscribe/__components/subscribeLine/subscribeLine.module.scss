@@ -16,17 +16,6 @@
   align-items: center;
 }
 
-.imageWrapper {
-  position: relative;
-  width: 175px;
-  height: 175px;
-}
-
-.image {
-  border-radius: 100px;
-  object-fit: cover;
-}
-
 .name {
   font-size: 20px;
   font-weight: var(--font-weight-semibold);
