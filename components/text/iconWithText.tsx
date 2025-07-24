@@ -5,6 +5,7 @@ interface IconWithTextProps {
   iconName: string;
   title: string;
   onClick?: () => void;
+  size?: "sm" | "md";
 }
 
 export default function IconWithText({ iconName, title, onClick }: IconWithTextProps) {

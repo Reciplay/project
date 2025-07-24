@@ -13,7 +13,7 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import styles from "./monthDatePicker.module.scss"; // SCSS 모듈
 import classNames from "classnames"; // 선택된 월 강조를 위한 className 결합
 
-function MonthDatePicker() {
+function Component() {
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
@@ -118,6 +118,6 @@ function MonthDatePicker() {
   );
 }
 
-export default function App() {
-  return <MonthDatePicker />;
+export default function MonthDatePicker() {
+  return <Component />;
 }

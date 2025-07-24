@@ -4,6 +4,7 @@ import classNames from "classnames";
 import IconWithText from "@/components/text/iconWithText";
 import Introduction from "./__components/introduction";
 import Certificate from "./__components/certificate";
+import Career from "./__components/career";
 
 export default function page() {
 	return (
@@ -31,8 +32,12 @@ export default function page() {
 					<Image src="/images/profile2.jpg" fill alt="profile" style={{ objectFit: 'cover' }} />
 				</div>
 			</div>
-			<Introduction></Introduction>
-			<Certificate></Certificate>
+			<div className={styles.infoContainer}>
+
+				<Introduction></Introduction>
+				<Certificate></Certificate>
+				<Career />
+			</div>
 		</div>
 	)
 }
