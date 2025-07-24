@@ -1,6 +1,4 @@
-// globals.scss
-
-@import "./tokens/index"; // 여기에 이미 fonts 포함되어 있음
+@import "@/styles/tokens/index";
 
 @font-face {
   font-family: "Pretendard";
