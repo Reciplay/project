@@ -28,3 +28,11 @@
     font-size: 36px;
     line-height: 43px;
 }
+
+.infoContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    margin-top: 10px;
+
+}

@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useState } from 'react';
 import MonthDatePicker from "@/components/calendar/monthDatePicker";
 
-export default function Certificate() {
+export default function Career() {
     const [showInput, setShowInput] = useState(false);
     const [certificateName, setCertificateName] = useState('');
     const [issuer, setIssuer] = useState('');
@@ -31,7 +31,7 @@ export default function Certificate() {
     return (
         <div>
             <div className={styles.topContainer}>
-                <span className={styles.title}>자격증</span>
+                <span className={styles.title}>경력</span>
                 <div className={styles.addContainer} onClick={() => setShowInput(true)} style={{ cursor: 'pointer' }}>
                     <Image src="/icons/plus.svg" alt="plus" width={13} height={13} />
                     <span className={styles.addText}>추가</span>
@@ -42,7 +42,7 @@ export default function Certificate() {
             {/* Display existing certificates */}
             {certificates.length === 0 && !showInput && (
                 <div className={styles.holderContainer}>
-                    <span className={styles.placeHolder}>자격증을 입력해주세요</span>
+                    <span className={styles.placeHolder}>경력을 입력해주세요</span>
                 </div>
             )}
 
@@ -58,17 +58,18 @@ export default function Certificate() {
                 <>
                     <div className={styles.inputContainer}>
                         <BaseInput
-                            placeholder="자격증명"
+                            placeholder="회사명 *"
                             type="custom"
                             value={certificateName}
                             onChange={(e) => setCertificateName(e.target.value)}
                         />
                         <BaseInput
-                            placeholder="발행처/기관"
+                            placeholder="직책"
                             type="custom"
                             value={issuer}
                             onChange={(e) => setIssuer(e.target.value)}
                         />
+                        <MonthDatePicker />
                         <MonthDatePicker />
                     </div>
 
