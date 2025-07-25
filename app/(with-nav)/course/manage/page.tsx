@@ -3,6 +3,7 @@
 import React from "react";
 import { Segmented, Tabs } from "antd";
 import type { TabsProps } from "antd";
+import CourseTable from "./__components/courseTable";
 
 const onChange = (key: string) => {
   console.log(key);
