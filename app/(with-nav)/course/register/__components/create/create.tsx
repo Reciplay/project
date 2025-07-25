@@ -6,6 +6,8 @@ import { Flex, Input, Radio, Select, InputNumber } from 'antd';
 import { useState } from 'react';
 import type { RadioChangeEvent, SelectProps } from 'antd';
 import LectureForm from "../lectureform/lectureForm";
+import BaseButton from "@/components/button/baseButton";
+import TableComponent from "@/components/table/table";
 
 export default function Create() {
     type SelectCommonPlacement = SelectProps['placement'];
@@ -49,6 +51,8 @@ export default function Create() {
                 <span>강의별 스케줄을 등록해주세요 (커리큘럼)</span>
                 <LectureForm></LectureForm>
             </section>
+            <TableComponent></TableComponent>
+            <BaseButton title="강좌 등록 요청하기" size="lg" variant="custom"></BaseButton>
         </div>
     );
 }
