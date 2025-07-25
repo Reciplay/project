@@ -1,39 +1,34 @@
-"use client";
+import SegmentedToggle from "@/components/tab/segmentedToggle";
+import VerticalTab from "@/components/tab/verticalTab";
+import {
+  sampleCourse1,
+  sampleCourse2,
+  sampleCourse3,
+} from "@/config/sampleCourse";
 
-import React from "react";
-import { Segmented, Tabs } from "antd";
-import type { TabsProps } from "antd";
+function RecruitingCourses() {
+  return <div>📢 현재 모집중인 강의 목록</div>;
+}
 
-const onChange = (key: string) => {
-  console.log(key);
-};
+function UpcomingCourses() {
+  return <div>📅 곧 개강 예정인 강의 목록</div>;
+}
 
-const items: TabsProps["items"] = [
-  { key: "1", label: "Tab 1", children: "Content of Tab Pane 1" },
-  { key: "2", label: "Tab 2", children: "Content of Tab Pane 2" },
-  { key: "3", label: "Tab 3", children: "Content of Tab Pane 3" },
-];
+function EndedCourses() {
+  return <div>📕 종료된 강의 목록</div>;
+}
 
-type Align = "start" | "center" | "end";
-
-const App: React.FC = () => {
-  const [alignValue, setAlignValue] = React.useState<Align>("center");
+export default function Page() {
   return (
-    <>
-      <Segmented
-        value={alignValue}
-        style={{ marginBottom: 8 }}
-        onChange={setAlignValue}
-        options={["start", "center", "end"]}
+    <div>
+      <SegmentedToggle
+        options={["모집중", "예정", "종료"]}
+        contents={[
+          <VerticalTab course={sampleCourse1} key="recruiting" />,
+          <VerticalTab course={sampleCourse2} key="upcoming" />,
+          <VerticalTab course={sampleCourse3} key="ended" />,
+        ]}
       />
-      <Tabs
-        defaultActiveKey="1"
-        items={items}
-        onChange={onChange}
-        indicator={{ size: (origin) => origin - 20, align: alignValue }}
-      />
-    </>
+    </div>
   );
-};
-
-export default App;
+}

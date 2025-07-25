@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef } from "react";
-import ScrollTabs from "@/components/scrollTab/scrollTabs";
+import ScrollTabs from "@/components/tab/scrollTabs";
 import BannerProfile, { Instructor } from "../bannerProfile/bannerProfile";
 import Career from "../career/career";
 import Qualifications from "../qualifications/qualifications";
