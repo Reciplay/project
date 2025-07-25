@@ -2,6 +2,7 @@ import BaseInput from "@/components/input/baseInput";
 import styles from "./navBar.module.scss";
 import Image from "next/image";
 import Link from "next/link";
+import { ROUTES } from "@/config/routes";
 
 export default function NavBar() {
   return (
@@ -13,7 +14,9 @@ export default function NavBar() {
           width={24}
           height={24}
         />
-        <div className={styles.logo}>Reciplay</div>
+        <Link href={ROUTES.HOME}>
+          <div className={styles.logo}>Reciplay</div>
+        </Link>
       </div>
 
       <div className={styles.searchWrapper}>

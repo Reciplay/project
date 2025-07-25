@@ -1,4 +1,4 @@
-@import "./colors";
-@import "./fonts";
-@import "./spacing";
-@import "./radius";
+@forward "colors";
+@forward "fonts";
+@forward "spacing";
+@forward "radius";

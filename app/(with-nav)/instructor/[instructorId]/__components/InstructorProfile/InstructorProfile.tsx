@@ -1,15 +1,22 @@
 "use client";
 
+import React, { useRef } from "react";
 import ScrollTabs from "@/components/scrollTab/scrollTabs";
-import BannerImage from "../../../../components/image/bannerImage";
-import BannerProfile from "./__components/bannerProfile/bannerProfile";
-import { useRef } from "react";
-import Career from "./__components/career/career";
-import Qualifications from "./__components/qualifications/qualifications";
-import Category from "./__components/category/category";
-import Classes from "./__components/classes/classes";
+import BannerProfile, { Instructor } from "../bannerProfile/bannerProfile";
+import Career from "../career/career";
+import Qualifications from "../qualifications/qualifications";
+import Category from "../category/category";
+import Classes from "../classes/classes";
 
-export default function Page() {
+import BannerImage from "@/components/image/bannerImage";
+
+interface InstructorProfileProps {
+  instructor: Instructor;
+}
+
+export default function InstructorProfile({
+  instructor,
+}: InstructorProfileProps) {
   const sectionRefs = [
     useRef<HTMLDivElement>(null),
     useRef<HTMLDivElement>(null),
@@ -40,16 +47,14 @@ export default function Page() {
     "WACS 국제조리사 자격증",
   ];
   return (
-    <>
-      <div>
-        <BannerImage imageUrl="/images/instructor-banner.png" />
-        <BannerProfile />
-        <ScrollTabs sectionRefs={sectionRefs} tabTitles={tabTitles} />
-        <Career ref={sectionRefs[0]} items={careerList} />
-        <Qualifications ref={sectionRefs[1]} items={certifications} />
-        <Category ref={sectionRefs[2]} />
-        <Classes ref={sectionRefs[3]} />
-      </div>
-    </>
+    <div>
+      <BannerImage imageUrl="/images/instructor-banner.png" />
+      <BannerProfile instructorThumbnail={instructor.thumbnail} />
+      <ScrollTabs sectionRefs={sectionRefs} tabTitles={tabTitles} />
+      <Career ref={sectionRefs[0]} items={careerList} />
+      <Qualifications ref={sectionRefs[1]} items={certifications} />
+      <Category ref={sectionRefs[2]} />
+      <Classes ref={sectionRefs[3]} />
+    </div>
   );
 }

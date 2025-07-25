@@ -15,4 +15,5 @@ export const ROUTES = {
 
   // 동적 경로 (필요 시)
   COURSE_DETAIL: (id: string) => `/course/${id}`,
+  INSTRUCTOR_PROFILE: (id: number) => `/instructor/${id}`,
 };
