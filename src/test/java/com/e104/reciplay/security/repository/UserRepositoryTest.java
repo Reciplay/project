@@ -1,14 +1,17 @@
 package com.e104.reciplay.security.repository;
 
+import com.e104.reciplay.common.config.QueryDslConfig;
 import com.e104.reciplay.security.domain.User;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@Import(QueryDslConfig.class)
 class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
