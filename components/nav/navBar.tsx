@@ -1,6 +1,7 @@
 import BaseInput from "@/components/input/baseInput";
 import styles from "./navBar.module.scss";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function NavBar() {
   return (
@@ -19,13 +20,15 @@ export default function NavBar() {
         <BaseInput type="search" placeholder="검색" />
       </div>
       <div className={styles.right}>
-        <Image
-          className={styles.profile}
-          src="/images/profile.jpg"
-          alt="profile"
-          width={40}
-          height={40}
-        />
+        <Link href="/api/auth/login">
+          <Image
+            className={styles.profile}
+            src="/images/profile.jpg"
+            alt="profile"
+            width={40}
+            height={40}
+          />
+        </Link>
       </div>
     </div>
   );
