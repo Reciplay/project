@@ -6,9 +6,7 @@ import com.e104.reciplay.myprofile.dto.ProfileInfoRequest;
 import com.e104.reciplay.myprofile.dto.ProfileInformation;
 import com.e104.reciplay.myprofile.service.MyProfileManagementService;
 import com.e104.reciplay.myprofile.service.MyProfileQueryService;
-import com.e104.reciplay.myprofile.service.MyProfileQueryServiceImpl;
 import com.e104.reciplay.security.exception.EmailNotFoundException;
-import com.e104.reciplay.security.service.UserQueryService;
 import com.e104.reciplay.security.util.AuthenticationUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,9 +33,7 @@ public class MyProfileApiController {
         String email = AuthenticationUtil.getSessionUsername();
         log.debug("정보 입력 요청자 이메일 : {}", email);
         try {
-
             myProfileManagementService.setupMyProfile(email, request);
-
         } catch (EmailNotFoundException e) {
             return CommonResponseBuilder.fail(e.getMessage());
         }

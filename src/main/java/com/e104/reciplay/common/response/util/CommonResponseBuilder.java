@@ -29,4 +29,9 @@ public class CommonResponseBuilder {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON)
                 .body(ResponseRoot.builder().status(failureMessage).message(message).build());
     }
+
+    public static ResponseEntity<?> unauthorized(String message) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).contentType(MediaType.APPLICATION_JSON)
+                .body(ResponseRoot.builder().status(failureMessage).message(message).build());
+    }
 }

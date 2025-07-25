@@ -25,7 +25,7 @@ class MyProfileManagementServiceImplIntegrationTest {
     @Test
     @Transactional
     public void 유저_정보_수정에_성공한다() {
-        User user = userRepository.save(User.builder().activated(true).role("USER").nickname("하나").name("필교")
+        User user = userRepository.save(User.builder().isActivated(true).role("USER").nickname("하나").name("필교")
                 .email("wonjun@mail.com").job("프론트 개발자").password("123").gender(1).birthDate(LocalDate.of(2000, 2, 6)).build());
 
         ProfileInfoRequest request = new ProfileInfoRequest("원준", "백엔드 개발자", LocalDate.of(1999, 11, 10), 2);

@@ -20,7 +20,7 @@ public class SignupServiceImpl implements SignupService{
         User user = User.builder().email(request.getEmail())
                 .password(bCryptPasswordEncoder.encode(request.getPassword()))
                 .nickname(request.getNickname())
-                .activated(true)
+                .isActivated(true)
                 .role("ROLE_USER").build();
 
         if(userRepository.existsByEmail(request.getEmail())) {

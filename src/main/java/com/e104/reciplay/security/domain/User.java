@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.util.FileCopyUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,7 +45,7 @@ public class User {
     @Column(name = "img_url")
     private String imgUrl;
 
-    private Boolean activated;
+    private Boolean isActivated;
 
     private String role;
 }

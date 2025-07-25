@@ -23,7 +23,7 @@ public class MyProfileQueryServiceImpl implements MyProfileQueryService{
         String email = AuthenticationUtil.getSessionUsername();
         ProfileInformation profile = new ProfileInformation(userRepository.findByEmail(email).orElseThrow(() -> new EmailNotFoundException("해당하는 유저의 이메일이 없습니다. (아이디 : "+email+")")));
         // 역량 넣기
-        profile.setLevels(Map.of(FoodCategory.KOREAN, 0, FoodCategory.CHAINESE, 0, FoodCategory.JAPANESE, 0, FoodCategory.DESSERT, 0 , FoodCategory.ETC, 0));
+        profile.setLevels(Map.of(FoodCategory.KOREAN, 0, FoodCategory.CHINESE, 0, FoodCategory.JAPANESE, 0, FoodCategory.DESSERT, 0 , FoodCategory.ETC, 0));
         return profile;
     }
 }
