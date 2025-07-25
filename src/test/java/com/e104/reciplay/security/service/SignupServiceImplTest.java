@@ -19,7 +19,6 @@ class SignupServiceImplTest {
     private UserRepository userRepository;
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
     @InjectMocks
     private SignupServiceImpl signupService;
 
@@ -27,7 +26,7 @@ class SignupServiceImplTest {
     private static final String TEST_USER_PASSWORD = "123";
 
     @Test
-    public void 회원가입에_성공한다() {
+    public void 중복_없는_아이디로_회원가입에_성공한다() {
         Mockito.when(userRepository.existsByEmail(TEST_USER_MAIL)).thenReturn(false);
         Mockito.when(bCryptPasswordEncoder.encode(TEST_USER_PASSWORD)).thenReturn(TEST_USER_PASSWORD);
 
@@ -38,7 +37,7 @@ class SignupServiceImplTest {
     }
 
     @Test
-    public void 회원가입에_실패한다() {
+    public void 아이디_중복으로_회원가입에_실패한다() {
         Mockito.when(userRepository.existsByEmail(TEST_USER_MAIL)).thenReturn(true);
 
         SignupRequest request = new SignupRequest(TEST_USER_MAIL, TEST_USER_PASSWORD, "");

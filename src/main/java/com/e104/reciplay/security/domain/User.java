@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.util.FileCopyUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,19 +31,21 @@ public class User {
 
     private String name;
 
-    private LocalDate birthday;
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
 
     private Integer gender;
 
     private String job;
 
-    @Column(name = "signup_date")
+    @Column(name = "created_at")
     @CreatedDate
-    private LocalDateTime signupDate;
+    private LocalDateTime createdAt;
 
-    private String img;
+    @Column(name = "img_url")
+    private String imgUrl;
 
-    private Boolean activated;
+    private Boolean isActivated;
 
     private String role;
 }
