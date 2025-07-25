@@ -1,11 +1,6 @@
-package com.e104.reciplay.livekit;
+package com.e104.reciplay.livekit.controller;
 
-import io.livekit.server.AccessToken;
-import io.livekit.server.RoomJoin;
-import io.livekit.server.RoomName;
-import io.livekit.server.WebhookReceiver;
-import livekit.LivekitWebhook.WebhookEvent;
-import org.springframework.beans.factory.annotation.Value;
+import com.e104.reciplay.livekit.service.LivekitService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -17,15 +12,11 @@ import java.util.Map;
 @RequestMapping("/livekit")
 public class LivekitController {
 
-    @Value("${livekit.api.key}")
-    private String LIVEKIT_API_KEY;
-
-    @Value("${livekit.api.secret}")
-    private String LIVEKIT_API_SECRET;
-
+    private final LivekitService livekitService;
     private final SimpMessagingTemplate messagingTemplate;
 
-    public LivekitController(SimpMessagingTemplate messagingTemplate) {
+    public LivekitController(LivekitService livekitService, SimpMessagingTemplate messagingTemplate) {
+        this.livekitService = livekitService;
         this.messagingTemplate = messagingTemplate;
     }
 
@@ -44,15 +35,8 @@ public class LivekitController {
             return ResponseEntity.badRequest().body(Map.of("errorMessage", "roomName and participantName are required"));
         }
 
-        // LiveKit AccessToken 생성
-        AccessToken token = new AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET);
-        token.setName(participantName);
-        token.setIdentity(participantName);
-        // 방 참여 권한 부여
-        token.addGrants(new RoomJoin(true), new RoomName(roomName));
-
-        // 생성된 토큰 반환
-        return ResponseEntity.ok(Map.of("token", token.toJwt()));
+        String token = livekitService.createToken(roomName, participantName);
+        return ResponseEntity.ok(Map.of("token", token));
     }
 
     /**
@@ -64,15 +48,7 @@ public class LivekitController {
      */
     @PostMapping(value = "/webhook", consumes = "application/webhook+json")
     public ResponseEntity<String> receiveWebhook(@RequestHeader("Authorization") String authHeader, @RequestBody String body) {
-        WebhookReceiver webhookReceiver = new WebhookReceiver(LIVEKIT_API_KEY, LIVEKIT_API_SECRET);
-        try {
-            // 웹훅 이벤트 유효성 검증 및 파싱
-            WebhookEvent event = webhookReceiver.receive(body, authHeader);
-            System.out.println("LiveKit Webhook: " + event.toString());
-            // TODO: 실제 애플리케이션 로직에 따라 웹훅 이벤트 처리 (예: DB 업데이트, 다른 서비스 호출 등)
-        } catch (Exception e) {
-            System.err.println("Error validating webhook event: " + e.getMessage());
-        }
+        livekitService.handleWebhook(authHeader, body);
         return ResponseEntity.ok("ok");
     }
 
