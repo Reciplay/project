@@ -1,4 +1,4 @@
-import { Instructor } from "@/app/(with-nav)/instructor/[instructorId]/__components/bannerProfile/bannerProfile";
+import { Instructor } from "@/app/(with-nav)/(main-center)/instructor/[instructorId]/__components/bannerProfile/bannerProfile";
 
 export const sampleInstructors: Instructor[] = [
   {

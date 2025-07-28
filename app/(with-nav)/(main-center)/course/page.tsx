@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import ScrollTabs from "../../../components/tab/scrollTabs";
+import ScrollTabs from "../../../../components/tab/scrollTabs";
 import Notices from "./__components/notices/notices";
 import Overview from "./__components/overview/overview";
 import QnA from "./__components/qna/qna";

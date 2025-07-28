@@ -1,5 +1,5 @@
 import { sampleInstructors } from "@/config/sampleData";
-import MonthPicker from "../../../components/calendar/monthDatePicker";
+import MonthPicker from "../../../../components/calendar/monthDatePicker";
 import SubscribeLine from "./__components/subscribeLine/subscribeLine";
 
 export default function Page() {

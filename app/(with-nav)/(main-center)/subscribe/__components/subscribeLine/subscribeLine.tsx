@@ -4,7 +4,7 @@ import BaseButton from "@/components/button/baseButton";
 import CircleAvatar from "@/components/image/circleAvatar";
 import Link from "next/link";
 import { ROUTES } from "@/config/routes";
-import { Instructor } from "@/app/(with-nav)/instructor/[instructorId]/__components/bannerProfile/bannerProfile";
+import { Instructor } from "@/app/(with-nav)/(main-center)/instructor/[instructorId]/__components/bannerProfile/bannerProfile";
 
 interface SubscribeLineProps {
   type: string;
