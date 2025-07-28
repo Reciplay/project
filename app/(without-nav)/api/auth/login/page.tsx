@@ -18,8 +18,6 @@ export default function Page() {
     e.preventDefault()
 
     if (email.length < 5 || email.length > 30) {
-      console.log(email)
-      console.log(email.length)
       alert('이메일은 5자 이상 30자 이하로 입력해주세요.')
       return
     }

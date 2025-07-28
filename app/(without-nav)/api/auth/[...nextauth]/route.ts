@@ -3,7 +3,8 @@ import GoogleProvider from "next-auth/providers/google"
 import KakaoProvider from "next-auth/providers/kakao"
 import NaverProvider from "next-auth/providers/naver"
 import CredentialsProvider from "next-auth/providers/credentials"
-import restClient from "@/lib/axios/restClient"
+import FormData from "form-data"
+import axios from "axios"
 
 const handler = NextAuth({
   providers: [
@@ -19,22 +20,26 @@ const handler = NextAuth({
         }
 
         try {
-          const res = await restClient.post('/login', {
-            email: credentials.email,
-            password: credentials.password,
+          const formdata = new FormData()
+          formdata.append('username', credentials.email)
+          formdata.append('password', credentials.password)
+          const res = await axios.post('http://i13e104.p.ssafy.io:8080/api/v1/login', formdata, {
+            headers: {
+              ...formdata.getHeaders()
+            }
           })
 
-          // Assuming a successful login returns a token in res.data.token
-          // and the rest client will throw for non-2xx responses.
-          const { token } = res.data
+          const accessToken = res.headers.authorization
+          const refreshToken = res.headers['set-cookie'][0]
+          const expires = res.headers.expires
 
-          if (token) {
+          if (accessToken || refreshToken) {
             const user = {
               id: credentials.email,
               email: credentials.email,
-              accessToken: token,
-              refreshToken: "",
-              accessTokenExpires: 0,
+              accessToken: accessToken,
+              refreshToken: refreshToken,
+              accessTokenExpires: expires,
             }
             return user
           } else {
@@ -61,22 +66,23 @@ const handler = NextAuth({
   ],
   callbacks: {
     async jwt({ token, user }) {
-      // The 'user' object is only passed on the first call after a successful login.
       if (user) {
-        token.accessToken = (user as any).accessToken
+        token.accessToken = (user as any).accessToken;
+        token.refreshToken = (user as any).refreshToken;
       }
-      return token
+      return token;
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken as string;
+      session.refreshToken = token.refreshToken as string;
       if (token.email) {
-        session.user.email = token.email
+        session.user.email = token.email;
       }
-      return session
+      return session;
     },
   },
   pages: {
-    signIn: "/auth/login",
+    signIn: "/auth/login/",
   },
   secret: process.env.NEXTAUTH_SECRET,
 });

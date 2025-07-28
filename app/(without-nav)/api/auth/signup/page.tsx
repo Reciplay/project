@@ -5,7 +5,6 @@ import styles from "./page.module.scss";
 import BaseButton from "@/components/button/baseButton";
 import BaseInput from "@/components/input/baseInput";
 
-import { useAuthStore } from "@/stores/authStore";
 import React, { useState } from 'react'
 
 import restClient from "@/lib/axios/restClient";
@@ -58,8 +57,8 @@ export default function Page() {
       return
     }
 
-    const res = await restClient.post('/signup', {email : email, password : password, nickname : nickname})
-    if (res.status !== 200) {
+    const res = await restClient.post('/signup', {nickname : nickname, email : email, password : password })
+    if (res.status !== 201) {
       alert('회원가입 중 오류가 발생했습니다.')
     }
     else {

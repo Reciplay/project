@@ -1,5 +1,6 @@
 // app/layout.tsx
 import type { Metadata } from "next";
+import SessionProviderWrapper from "../components/SessionProviderWrapper";
 import "../styles/globals.scss";
 
 export const metadata: Metadata = {
@@ -14,7 +15,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <SessionProviderWrapper>{children}</SessionProviderWrapper>
+      </body>
     </html>
   );
 }
