@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class CareerItem {
-
+    private Long id;
     private String companyName;
     private String position;
     private String jobDescription;

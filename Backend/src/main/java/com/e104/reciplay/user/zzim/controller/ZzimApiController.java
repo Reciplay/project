@@ -16,7 +16,7 @@ public class ZzimApiController {
     @PostMapping("")
     @Operation(summary = "특정 강좌를 찜합니다.", description = "강좌 ID를 받으면, 강좌 찜 데이터가 생성됩니다. 중복 찜은 에러를 반환합니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 찜한 경우")
-    @ApiResponse(responseCode = "403", description = "이미 찜한 강좌를 찜한 경우")
+    @ApiResponse(responseCode = "400", description = "이미 찜한 강좌를 찜한 경우")
     public ResponseEntity<ResponseRoot<Object>> doZzim(@RequestParam("courseId") Long courseId) {
 
         return CommonResponseBuilder.success("찜하기에 성공했습니다.", null);
@@ -25,7 +25,7 @@ public class ZzimApiController {
     @DeleteMapping("")
     @Operation(summary = "찜을 취소합니다.", description = "강좌 ID를 받으면, 해당 강좌에 대한 찜을 해제합니다. 찜하지 않은 경우 에러를 반환합니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 찜 취소한 경우")
-    @ApiResponse(responseCode = "403", description = "찜하지 않은 강좌를 찜 취소한 경우")
+    @ApiResponse(responseCode = "400", description = "찜하지 않은 강좌를 찜 취소한 경우")
     public ResponseEntity<ResponseRoot<Object>> undoZzim(@RequestParam("courseId") Long courseId) {
         
         return CommonResponseBuilder.success("찜취소에 성공했습니다.", null);
