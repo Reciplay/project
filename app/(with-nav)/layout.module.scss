@@ -1,28 +1,28 @@
-.layout {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-
-.body {
-  display: flex;
-  flex: 1;
-}
-
-// .main {
-//   flex: 1;
-//   padding: 20px;
-//   overflow-y: auto;
+// .layout {
+//   display: flex;
+//   flex-direction: column;
+//   height: 100vh;
 // }
-.main {
-  width: 60%;
-  max-width: 1200px; // 원한다면 추가
-  margin: 24px auto; // 🔥 중앙 정렬 핵심
-  // padding: 20px;
-  // overflow-y: auto;
-  overflow: hidden;
-}
 
-.divTag {
-  width: 220px;
-}
+// .body {
+//   display: flex;
+//   flex: 1;
+// }
+
+// // .main {
+// //   flex: 1;
+// //   padding: 20px;
+// //   overflow-y: auto;
+// // }
+// .main {
+//   width: 60%;
+//   max-width: 1200px; // 원한다면 추가
+//   margin: 24px auto; // 🔥 중앙 정렬 핵심
+//   // padding: 20px;
+//   // overflow-y: auto;
+//   overflow: hidden;
+// }
+
+// .divTag {
+//   width: 220px;
+// }

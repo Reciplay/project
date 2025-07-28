@@ -1,0 +1,7 @@
+export enum IMAGETYPE {
+  FEAUTRED_MAIN,
+  FEATURED_THUMNAIL,
+  BANNER,
+  CARD,
+  PROFILE,
+}

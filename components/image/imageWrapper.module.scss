@@ -1,0 +1,56 @@
+.wrapper {
+  position: relative;
+}
+
+.image {
+  object-fit: cover;
+}
+/* 
+varient - featured_main
+캐러셀 메인 이미지
+*/
+.featured_main {
+  height: var(--size-featured-main-height);
+  width: 1000px;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center bottom 20%;
+
+  @media (max-width: 768px) {
+    background-position: center center;
+  }
+}
+
+/* 
+varient - featured_thumbnail
+캐러셀 그리드 이미지
+*/
+.featured_thumbnail {
+  height: var(--size-featured-thumbnail);
+  width: var(--size-featured-thumbnail);
+}
+.featured_main > .image,
+.featured_thumbnail > .image {
+  border-radius: var(--radius-lg);
+}
+
+/* 
+varient - banner
+배너 이미지
+*/
+.banner {
+  height: 200;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center bottom 20%;
+
+  @media (max-width: 768px) {
+    background-position: center center;
+  }
+}
