@@ -1,10 +1,11 @@
 package com.e104.reciplay.myprofile.controller;
 
-import com.e104.reciplay.myprofile.dto.ProfileInfoRequest;
-import com.e104.reciplay.myprofile.dto.ProfileInformation;
-import com.e104.reciplay.myprofile.service.MyProfileManagementService;
-import com.e104.reciplay.myprofile.service.MyProfileQueryService;
-import com.e104.reciplay.security.exception.EmailNotFoundException;
+import com.e104.reciplay.user.profile.controller.MyProfileApiController;
+import com.e104.reciplay.user.profile.dto.ProfileInfoRequest;
+import com.e104.reciplay.user.profile.dto.ProfileInformation;
+import com.e104.reciplay.user.profile.service.MyProfileManagementService;
+import com.e104.reciplay.user.profile.service.MyProfileQueryService;
+import com.e104.reciplay.user.security.exception.EmailNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,7 +18,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDate;
 
@@ -39,6 +39,7 @@ class MyProfileApiControllerTest {
     @MockitoBean
     private MyProfileQueryService myProfileQueryService;
 
+    private static final String PROFILE_DOMAIN_URI = "/api/v1/user/profile";
 
     @Test
     public void 프로필_정보_입력에_성공한다() throws Exception {
@@ -46,7 +47,7 @@ class MyProfileApiControllerTest {
         ProfileInfoRequest request = new ProfileInfoRequest("원준", "백엔드개발자", LocalDate.of(2000, 2, 6), 1);
 
         // when
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/my-profile/info")
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(PROFILE_DOMAIN_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -60,7 +61,7 @@ class MyProfileApiControllerTest {
         Mockito.doThrow(new EmailNotFoundException("존재하지 않는 이메일")).when(myProfileManagementService).setupMyProfile("wonjun@mail.com", request);
 
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-                .post("/api/v1/my-profile/info")
+                .post(PROFILE_DOMAIN_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -72,7 +73,7 @@ class MyProfileApiControllerTest {
         Mockito.when(myProfileQueryService.queryProfileInformation()).thenReturn(ProfileInformation.builder()
                 .job("개발자").email("wonjun@mail.com").name("이원준").activated(true).gender(1).build());
 
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/my-profile/info"));
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(PROFILE_DOMAIN_URI));
 
         resultActions.andExpect(status().isOk());
         resultActions.andExpect(jsonPath("$.data.email").value("wonjun@mail.com"));
