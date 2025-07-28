@@ -7,14 +7,12 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class LicenseItem {
-    private Long id;
-    private String licenseName;
-    private String institution;
-    private LocalDate acquisitionDate;
-    private Integer grade;
+public class SubscriberHistory {
+    private LocalDate date;
+    private Integer subscriber;
 }
