@@ -1,7 +1,9 @@
-import ImageWrapper from "@/components/image/imageWrapper";
+// import CircleAvatar from "@/components/image/circleAvatar";
 import styles from "./bannerProfile.module.scss";
-import { IMAGETYPE } from "@/types/image";
 import BaseButton from "@/components/button/baseButton";
+import ImageWrapper from "@/components/image/imageWrapper";
+import { sampleInstructors } from "@/config/sampleData";
+import { IMAGETYPE } from "@/types/image";
 
 interface BannerProfileProps {
   instructorThumbnail: string;

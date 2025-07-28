@@ -1,7 +1,7 @@
 import React from "react";
-import { Instructor } from "./__components/bannerProfile/bannerProfile";
 import { sampleInstructors } from "@/config/sampleData";
 import InstructorProfile from "./__components/InstructorProfile/InstructorProfile";
+import { Instructor } from "./__components/bannerProfile/bannerProfile";
 
 interface PageProps {
   params: {

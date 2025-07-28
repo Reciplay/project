@@ -1,19 +1,28 @@
+"use client";
+
 import BaseInput from "@/components/input/baseInput";
 import styles from "./navBar.module.scss";
 import Image from "next/image";
 import Link from "next/link";
 import { ROUTES } from "@/config/routes";
+import { useSidebarStore } from "@/store/sideBarStore";
+import ImageWrapper from "../image/imageWrapper";
+import { IMAGETYPE } from "@/types/image";
 
 export default function NavBar() {
+  const { isOpen, toggle } = useSidebarStore();
+
   return (
     <div className={styles.container}>
       <div className={styles.left}>
-        <Image
+        <ImageWrapper
           src="/icons/hamburger.svg"
           alt="hamberger"
-          width={24}
-          height={24}
-        />
+          type={IMAGETYPE.ICON}
+          className={styles.hamberger}
+          onClick={toggle}
+        ></ImageWrapper>
+
         <Link href={ROUTES.HOME}>
           <div className={styles.logo}>Reciplay</div>
         </Link>

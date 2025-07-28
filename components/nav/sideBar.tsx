@@ -1,11 +1,17 @@
+"use client";
+
 import Link from "next/link";
 import IconWithText from "../text/iconWithText";
 import styles from "./sideBar.module.scss";
 import { ROUTES } from "@/config/routes";
+import { useSidebarStore } from "@/store/sideBarStore";
+import classNames from "classnames";
 
 export default function SideBar() {
+  const { isOpen, toggle } = useSidebarStore();
+
   return (
-    <aside className={styles.sidebar}>
+    <aside className={classNames(styles.sidebar, { [styles.closed]: !isOpen })}>
       <div className={styles.sectionList}>
         <IconWithText iconName="live" title="전체 라이브" />
         <IconWithText iconName="category" title="카테고리" />
