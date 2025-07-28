@@ -1,6 +1,1 @@
-[submodule "reciplay_frontend"]
-	path = reciplay_frontend
-	url = https://lab.ssafy.com/day2201/reciplay_frontend.git
-[submodule "reciplay_backend"]
-	path = reciplay_backend
-	url = https://lab.ssafy.com/evenil0206/reciplay_backend
+
