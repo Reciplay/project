@@ -1,12 +1,22 @@
 .sidebar {
-  width: 220px;
+  width: 260px;
   padding: 24px 40px;
-  height: 100%;
   background-color: #fff;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: 32px;
+  transition: width 0.3s ease;
+  white-space: nowrap;
+  text-overflow: hidden;
+
+  &.closed {
+    width: 0;
+    padding: 0;
+    opacity: 0;
+    visibility: hidden;
+  }
 }
+
 .section {
   display: flex;
   flex-direction: column;

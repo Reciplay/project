@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useRef } from "react";
-import BannerProfile, { Instructor } from "../bannerProfile/bannerProfile";
-import BannerImage from "@/components/image/bannerImage";
 import ScrollTabs from "@/components/tab/scrollTabs";
-import Career from "../../introduce/__components/career/career";
-import Qualifications from "../../introduce/__components/qualifications/qualifications";
-import Category from "../../introduce/__components/category/category";
-import Classes from "../../introduce/__components/classes/classes";
+import BannerProfile, { Instructor } from "../bannerProfile/bannerProfile";
+import Career from "../career/career";
+import Qualifications from "../qualifications/qualifications";
+import Category from "../category/category";
+import Classes from "../classes/classes";
+
+import BannerImage from "@/components/image/bannerImage";
 
 interface InstructorProfileProps {
   instructor: Instructor;

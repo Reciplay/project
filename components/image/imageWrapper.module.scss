@@ -1,5 +1,7 @@
 .wrapper {
   position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .image {
@@ -42,7 +44,7 @@ varient - banner
 배너 이미지
 */
 .banner {
-  height: 200;
+  height: 200px;
   overflow: hidden;
   border-radius: var(--radius-lg);
 
@@ -53,4 +55,30 @@ varient - banner
   @media (max-width: 768px) {
     background-position: center center;
   }
+}
+
+/*
+varient - vertical_card
+세로 카드형 이미지
+*/
+.vertical_card {
+  height: 190px;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center bottom 20%;
+
+  @media (max-width: 768px) {
+    background-position: center center;
+  }
+}
+/*
+varient - icon
+아이콘 이미지
+*/
+.icon {
+  height: 24;
+  width: 24;
 }
