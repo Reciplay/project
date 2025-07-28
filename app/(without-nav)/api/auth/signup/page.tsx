@@ -33,8 +33,8 @@ export default function Page() {
       return
     }
 
-    if (email.length < 5 || email.length > 20) {
-      alert('이메일이 너무 짧거나 깁니다.')
+    if (email.length < 5 || email.length > 30) {
+      alert('이메일은 5자 이상 30자 이하여야 합니다.')
       return
     }
 

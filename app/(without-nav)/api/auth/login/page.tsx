@@ -6,29 +6,39 @@ import Link from "next/link";
 import BaseInput from "@/components/input/baseInput";
 import BaseButton from "@/components/button/baseButton";
 import React, { useState } from "react";
-
-import { useAuthStore } from "@/stores/authStore";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
-
-  const login = useAuthStore((state) => state.login)
+  const router = useRouter();
   
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (email.length < 5 || email.length > 30) {
-      alert('이메일이 너무 짧거나 깁니다.')
+      console.log(email)
+      console.log(email.length)
+      alert('이메일은 5자 이상 30자 이하로 입력해주세요.')
       return
     }
-    if (!password || password.length <8 || password.length > 30) {
+    if (!password || password.length < 8 || password.length > 20) {
       alert('비밀번호는 8자 이상 20자 이하여야 합니다.')
       return
     }
 
-    login(email, password)
+    const result = await signIn('credentials', {
+      email,
+      password,
+      redirect: false,
+    })
 
+    if (result?.ok) {
+      router.push('/');
+    } else {
+      alert('로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.');
+    }
   }
 
   return (
