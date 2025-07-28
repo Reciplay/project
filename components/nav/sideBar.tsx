@@ -1,55 +1,64 @@
 "use client";
 
+import { menuData } from "@/config/sideBarMenu";
+import { useSidebarStore } from "@/store/sideBarStore";
+import { IMAGETYPE } from "@/types/image";
+import classNames from "classnames";
 import Link from "next/link";
+import ImageWrapper from "../image/imageWrapper";
 import IconWithText from "../text/iconWithText";
 import styles from "./sideBar.module.scss";
-import { ROUTES } from "@/config/routes";
-import { useSidebarStore } from "@/store/sideBarStore";
-import classNames from "classnames";
 
 export default function SideBar() {
-  const { isOpen, toggle } = useSidebarStore();
+  const { isOpen } = useSidebarStore();
+
+  const renderLink = (
+    href: string,
+    icon: string,
+    title: string,
+    key: number
+  ) => (
+    <Link href={href} key={key}>
+      {isOpen ? (
+        <IconWithText iconName={icon} title={title} />
+      ) : (
+        <ImageWrapper
+          src={`/icons/${icon}.svg`}
+          alt={title}
+          type={IMAGETYPE.ICON}
+        />
+      )}
+    </Link>
+  );
 
   return (
     <aside className={classNames(styles.sidebar, { [styles.closed]: !isOpen })}>
-      <div className={styles.sectionList}>
-        <IconWithText iconName="live" title="전체 라이브" />
-        <IconWithText iconName="category" title="카테고리" />
-      </div>
+      {menuData.map((item, idx) => {
+        if ("section" in item) {
+          return (
+            <div className={styles.section} key={idx}>
+              <div className={styles.sectionTitle}>
+                <IconWithText
+                  iconName="arrow"
+                  title={item.section}
+                  left={false}
+                />
+              </div>
+              <div className={styles.sectionList}>
+                {item.children.map((child, subIdx) =>
+                  renderLink(child.href, child.icon, child.title, subIdx)
+                )}
+              </div>
+            </div>
+          );
+        }
 
-      <div className={styles.section}>
-        <div className={styles.sectionTitle}>
-          <Link href={ROUTES.PROFILE}>
-            <IconWithText iconName="arrow" title="내 프로필" left={false} />
-          </Link>
-        </div>
-        <div className={styles.sectionList}>
-          <Link href={ROUTES.SUBSCRIBE}>
-            <IconWithText iconName="subscribe" title="구독" />
-          </Link>
-
-          {/* <Link href={ROUTES.SUBSCRIBE}></Link> */}
-          <IconWithText iconName="record" title="기록" />
-
-          {/* <Link href={ROUTES.SUBSCRIBE}></Link> */}
-          <IconWithText iconName="security" title="보안" />
-
-          {/* <Link href={ROUTES.SUBSCRIBE}></Link> */}
-          <IconWithText iconName="setting" title="설정" />
-        </div>
-      </div>
-
-      <div className={styles.section}>
-        <div className={styles.sectionTitle}>
-          {/* <Link href={ROUTES.SUBSCRIBE}></Link> */}
-          <IconWithText iconName="arrow" title="스튜디오" left={false} />
-        </div>
-        <div className={styles.sectionList}>
-          <IconWithText iconName="list" title="강사 전용" />
-          <IconWithText iconName="list" title="강좌 관리" />
-          <IconWithText iconName="list" title="강좌 생성" />
-        </div>
-      </div>
+        return (
+          <div className={styles.sectionList} key={idx}>
+            {renderLink(item.href, item.icon, item.title, idx)}
+          </div>
+        );
+      })}
     </aside>
   );
 }

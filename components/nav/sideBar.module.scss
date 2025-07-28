@@ -10,20 +10,21 @@
   text-overflow: hidden;
 
   &.closed {
-    width: 0;
-    padding: 0;
-    opacity: 0;
-    visibility: hidden;
+    width: 120px;
+    // padding: 8px 0;
+    opacity: 1;
+    visibility: visible;
+    align-items: center;
   }
 }
 
 .section {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: 16px;
 }
 .sectionTitle {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
 
   white-space: nowrap;
@@ -32,24 +33,17 @@
 .sectionList {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: 12px;
 }
 
-// .label {
-//   font-weight: bold;
-//   margin-bottom: 8px;
-// }
+.sidebar.closed .iconWithText .label {
+  display: none;
+}
 
-// .item {
-//   display: flex;
-//   align-items: center;
-//   gap: 8px;
-//   padding: 8px 0;
-//   cursor: pointer;
-//   font-size: 14px;
-//   color: #222;
-// }
-
-// .item:hover {
-//   color: #e00;
-// }
+.sidebar.closed .iconWithText {
+  padding: 0;
+  gap: 0;
+}
+.sidebar.closed .sectionTitle {
+  display: none;
+}

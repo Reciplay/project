@@ -1,7 +1,7 @@
 import { IMAGETYPE } from "@/types/image";
-import styles from "./imageWrapper.module.scss";
 import Image from "next/image";
 import { HTMLAttributes } from "react";
+import styles from "./imageWrapper.module.scss";
 
 interface ImageWrapperProps extends HTMLAttributes<HTMLDivElement> {
   src: string; // 이미지 주소 url
@@ -9,17 +9,6 @@ interface ImageWrapperProps extends HTMLAttributes<HTMLDivElement> {
   type?: IMAGETYPE; // optional로 처리하면 썸네일용 등도 대응 가능
   className?: string; // 외부에서 className 덮어쓰기 허용
 }
-
-// const typeClassMap: Record<IMAGETYPE, string> = {
-//   [IMAGETYPE.FEAUTRED_MAIN]: "featured_main",
-//   [IMAGETYPE.FEATURED_THUMNAIL]: "featured_thumbnail",
-//   [IMAGETYPE.BANNER]: "banner",
-//   [IMAGETYPE.CARD]: "card",
-//   [IMAGETYPE.PROFILE]: "profile",
-//   [IMAGETYPE.VERTICAL_CARD]: "vertical_card",
-//   [IMAGETYPE.HORIZONTAL_CARD]: "horizontal_card",
-//   [IMAGETYPE.ICON]: "horizontal_card",
-// };
 
 export default function ImageWrapper({
   src,
