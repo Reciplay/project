@@ -1,7 +1,8 @@
 package com.e104.reciplay.security.repository;
 
 import com.e104.reciplay.common.config.QueryDslConfig;
-import com.e104.reciplay.security.domain.User;
+import com.e104.reciplay.user.security.domain.User;
+import com.e104.reciplay.user.security.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

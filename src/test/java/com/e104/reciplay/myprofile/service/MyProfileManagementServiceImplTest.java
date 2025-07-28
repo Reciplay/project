@@ -1,8 +1,9 @@
 package com.e104.reciplay.myprofile.service;
 
-import com.e104.reciplay.myprofile.dto.ProfileInfoRequest;
-import com.e104.reciplay.security.domain.User;
-import com.e104.reciplay.security.repository.UserRepository;
+import com.e104.reciplay.user.profile.dto.ProfileInfoRequest;
+import com.e104.reciplay.user.security.domain.User;
+import com.e104.reciplay.user.profile.service.MyProfileManagementService;
+import com.e104.reciplay.user.security.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 
