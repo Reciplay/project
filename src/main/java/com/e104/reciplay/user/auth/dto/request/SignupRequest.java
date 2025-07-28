@@ -1,4 +1,4 @@
-package com.e104.reciplay.user.security.dto;
+package com.e104.reciplay.user.auth.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,4 +11,5 @@ public class SignupRequest {
     private String email;
     private String password;
     private String nickname;
+    private String hash;
 }

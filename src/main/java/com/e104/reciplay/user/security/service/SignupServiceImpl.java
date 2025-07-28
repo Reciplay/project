@@ -1,7 +1,7 @@
 package com.e104.reciplay.user.security.service;
 
 import com.e104.reciplay.user.security.domain.User;
-import com.e104.reciplay.user.security.dto.SignupRequest;
+import com.e104.reciplay.user.auth.dto.request.SignupRequest;
 import com.e104.reciplay.user.security.exception.DuplicateUserEmailException;
 import com.e104.reciplay.user.security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

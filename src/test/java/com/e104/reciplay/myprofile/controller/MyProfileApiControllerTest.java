@@ -1,6 +1,6 @@
 package com.e104.reciplay.myprofile.controller;
 
-import com.e104.reciplay.user.profile.controller.MyProfileApiController;
+import com.e104.reciplay.user.profile.controller.ProfileApiController;
 import com.e104.reciplay.user.profile.dto.ProfileInfoRequest;
 import com.e104.reciplay.user.profile.dto.ProfileInformation;
 import com.e104.reciplay.user.profile.service.MyProfileManagementService;
@@ -24,7 +24,7 @@ import java.time.LocalDate;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = {MyProfileApiController.class})
+@WebMvcTest(controllers = {ProfileApiController.class})
 @AutoConfigureMockMvc(addFilters = false)
 @WithMockUser(username = "wonjun@mail.com", password = "123", roles = {"USER"})
 class MyProfileApiControllerTest {
