@@ -26,7 +26,7 @@ public class ReviewApiController {
     @PostMapping("/like")
     @Operation(summary = "좋아요 하기", description = "특정 수강평에 좋아요 함. 중복 체크하여 이미 좋아요 했으면 에러.")
     @ApiResponse(responseCode = "201", description = "좋아요 성공")
-    @ApiResponse(responseCode = "403", description = "중복된 좋아요 요청.")
+    @ApiResponse(responseCode = "400", description = "중복된 좋아요 요청.")
     public ResponseEntity<ResponseRoot<Object>> likeReview(@RequestParam("reviewId") Long reviewId) {
 
         return CommonResponseBuilder.success("좋아요에 성공했습니다.", null);
@@ -35,7 +35,7 @@ public class ReviewApiController {
     @PostMapping("")
     @Operation(summary = "수강평 작성하기", description = "특정 강좌에 대한 별점을 매기고 수강평를 작성한다.")
     @ApiResponse(responseCode = "200", description = "수강평 성공")
-    @ApiResponse(responseCode = "403", description = "중복된 수강평 요청 또는 존재하지 않는 강좌에 대한 수강평")
+    @ApiResponse(responseCode = "400", description = "중복된 수강평 요청 또는 존재하지 않는 강좌에 대한 수강평")
     public ResponseEntity<ResponseRoot<Object>> createReview(
             @RequestBody ReviewRequest request
             ) {
@@ -46,7 +46,7 @@ public class ReviewApiController {
     @GetMapping("")
     @Operation(summary = "수강평 조회하기", description = "특정 강좌에 대한 수강평를 조회한다.")
     @ApiResponse(responseCode = "200", description = "수강평 조회 성공")
-    @ApiResponse(responseCode = "403", description = "존재하지 않는 강좌에 대한 수강평 조회")
+    @ApiResponse(responseCode = "400", description = "존재하지 않는 강좌에 대한 수강평 조회")
     public ResponseEntity<ResponseRoot<List<ReviewSummary>>> getReviews(
             @RequestParam(name = "coursdId") Long courseId,
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
@@ -57,7 +57,7 @@ public class ReviewApiController {
     @DeleteMapping("/like")
     @Operation(summary = "좋아요 취소하기", description = "특정 수강평에 좋아요 했다면 취소함.")
     @ApiResponse(responseCode = "200", description = "좋아요 취소 성공")
-    @ApiResponse(responseCode = "403", description = "중복된 좋아요 취소 요청.")
+    @ApiResponse(responseCode = "400", description = "중복된 좋아요 취소 요청.")
     public ResponseEntity<ResponseRoot<Object>> unlikeReview(@RequestParam("reviewId") Long reviewId) {
 
         return CommonResponseBuilder.success("좋아요를 취소했습니다.", null);
