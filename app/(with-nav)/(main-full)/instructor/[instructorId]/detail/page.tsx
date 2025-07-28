@@ -7,7 +7,7 @@ import styles from './page.module.scss';
 export default function Page() {
     return (
         <div>
-            <div>
+            <div className={styles.cardContainer}>
                 <div>
                     <Statistics></Statistics>
                     <Overview></Overview>

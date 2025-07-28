@@ -2,7 +2,7 @@ import styles from './overview.module.scss';
 
 export default function Overview() {
     return (
-        <div>
+        <div className={styles.divTag}>
         </div>
     )
 }

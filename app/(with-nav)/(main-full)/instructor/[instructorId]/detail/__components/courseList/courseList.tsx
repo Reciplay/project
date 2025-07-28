@@ -1,8 +1,8 @@
 import styles from './courseList.module.scss';
 
-export default function CourseList() {
+export default function Overview() {
     return (
-        <div>
+        <div className={styles.divTag}>
         </div>
     )
 }
