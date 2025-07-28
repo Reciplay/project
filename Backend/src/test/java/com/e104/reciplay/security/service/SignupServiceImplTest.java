@@ -31,7 +31,7 @@ class SignupServiceImplTest {
         Mockito.when(userRepository.existsByEmail(TEST_USER_MAIL)).thenReturn(false);
         Mockito.when(bCryptPasswordEncoder.encode(TEST_USER_PASSWORD)).thenReturn(TEST_USER_PASSWORD);
 
-        SignupRequest request = new SignupRequest(TEST_USER_MAIL, TEST_USER_PASSWORD, "");
+        SignupRequest request = new SignupRequest(TEST_USER_MAIL, TEST_USER_PASSWORD, "", "");
 
         assertDoesNotThrow(()->signupService.signup(request));
         Mockito.verify(bCryptPasswordEncoder, Mockito.times(1)).encode(TEST_USER_PASSWORD);
@@ -41,7 +41,7 @@ class SignupServiceImplTest {
     public void 아이디_중복으로_회원가입에_실패한다() {
         Mockito.when(userRepository.existsByEmail(TEST_USER_MAIL)).thenReturn(true);
 
-        SignupRequest request = new SignupRequest(TEST_USER_MAIL, TEST_USER_PASSWORD, "");
+        SignupRequest request = new SignupRequest(TEST_USER_MAIL, TEST_USER_PASSWORD, "", "");
 
         assertThrows(DuplicateUserEmailException.class, () -> signupService.signup(request));
     }
