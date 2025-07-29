@@ -7,7 +7,7 @@ interface IconWithTextProps {
   left?: boolean;
   size?: number;
   onClick?: () => void;
-  size?: "sm" | "md";
+  // size?: "sm" | "md";
 }
 
 export default function IconWithText({
@@ -26,7 +26,7 @@ export default function IconWithText({
           width={size}
           height={size}
         />
-        <div>{title}</div>
+        <div className={styles.title}>{title}</div>
       </div>
     );
   }

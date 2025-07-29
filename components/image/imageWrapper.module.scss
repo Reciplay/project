@@ -62,7 +62,8 @@ varient - vertical_card
 세로 카드형 이미지
 */
 .vertical_card {
-  height: 190px;
+  aspect-ratio: 3/4;
+  height: 150px;
   overflow: hidden;
   border-radius: var(--radius-lg);
 
