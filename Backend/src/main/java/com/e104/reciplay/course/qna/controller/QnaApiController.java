@@ -21,7 +21,7 @@ public class QnaApiController{
 
     @GetMapping("/summary")
     @Operation(summary = "Q&A 요약 정보 리스트 조회 API", description = "Q&A 요약 정보 리스트 조회")
-    public ResponseEntity<ResponseRoot<List<Object>>> getQnaSummaries(
+    public ResponseEntity<ResponseRoot<List<QnaSummary>>> getQnaSummaries(
             @RequestParam Long courseId
     ) {
 
@@ -31,7 +31,7 @@ public class QnaApiController{
 
     @GetMapping("")
     @Operation(summary = "Q&A 상세 정보 조회 API", description = "Q&A 상세 정보 조회")
-    public ResponseEntity<ResponseRoot<Object>> getQnaDetail(
+    public ResponseEntity<ResponseRoot<QnaDetail>> getQnaDetail(
             @RequestParam Long qnaId
     ) {
 

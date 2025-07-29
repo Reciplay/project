@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CourseSummaryCondition {
-
+public class CourseCardCondition {
+    private String requestCategory; // 요청을 구분한기 위한 카테고리
+    private String searchContent; // 검색 문자열
+    private Integer instructorId; // 강사 Id
 }
