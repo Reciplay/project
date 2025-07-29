@@ -1,8 +1,8 @@
 // app/layout.tsx
-import type { Metadata } from "next";
-import "../styles/calendar.scss";
 import "@/styles/globals.scss";
 import 'antd/dist/reset.css';
+import type { Metadata } from "next";
+import "../styles/calendar.scss";
 
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import React from 'react'; // React 임포트
