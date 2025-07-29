@@ -5,16 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class LicenseItem {
+public class QnaDetail {
     private Long id;
-    private String licenseName;
-    private String institution;
-    private LocalDate acquisitionDate;
-    private Integer grade;
+    private String title;
+    private String content;
+    private LocalDateTime questionAt;
+    private String courseName;
+    private Long courseId;
 }
