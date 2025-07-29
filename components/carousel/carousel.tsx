@@ -2,19 +2,19 @@
 
 import { useEffect, useRef, useState } from "react";
 import styles from "./carousel.module.scss";
-import Image from "next/image";
-import BannerImage from "../image/bannerImage";
 import ImageWrapper from "../image/imageWrapper";
 import { IMAGETYPE } from "@/types/image";
 
-const images = [
-  "/images/featured_banner_0.jpg",
-  "/images/featured_banner_1.jpg",
-  "/images/featured_banner_2.jpg",
-  "/images/featured_banner_3.jpg",
-];
+interface CarouselItem {
+  image: string;
+  onClick?: VoidFunction;
+}
 
-export default function Carousel() {
+interface CarouselProps {
+  props: CarouselItem[];
+}
+
+export default function Carousel({ props }: CarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -26,7 +26,7 @@ export default function Carousel() {
   const resetTimer = () => {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % images.length);
+      setCurrentIndex((prev) => (prev + 1) % props.length);
     }, 4000); // 4초 간격
   };
 
@@ -35,25 +35,27 @@ export default function Carousel() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, []);
+  }, [props.length]);
 
   return (
     <div className={styles.carousel}>
       <div className={styles.main}>
         <ImageWrapper
-          src={images[currentIndex]}
+          src={props[currentIndex].image}
           alt={`featured_banner`}
-          onClick={() => {}}
+          onClick={props[currentIndex].onClick}
           type={IMAGETYPE.FEAUTRED_MAIN}
         />
       </div>
       <div className={styles.thumbnails}>
-        {images.map((img, i) => (
+        {props.map((item, i) => (
           <ImageWrapper
             key={i}
-            src={img}
+            src={item.image}
             alt={`Thumb ${i}`}
-            onClick={() => changeImage(i)}
+            onClick={() => {
+              changeImage(i);
+            }}
             type={IMAGETYPE.FEATURED_THUMNAIL}
             className={`${styles.thumbnail} ${
               i === currentIndex ? styles.active : ""

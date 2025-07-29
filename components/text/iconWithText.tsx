@@ -26,7 +26,7 @@ export default function IconWithText({
           width={size}
           height={size}
         />
-        <div>{title}</div>
+        <div className={styles.title}>{title}</div>
       </div>
     );
   }

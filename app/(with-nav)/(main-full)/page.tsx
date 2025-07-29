@@ -1,23 +1,28 @@
-import BaseInput from "@/components/input/baseInput";
 import styles from "./page.module.scss";
-import NavBar from "@/components/nav/navBar";
-import Carousel from "@/components/carousel/carousel";
-import { Course } from "@/types/course";
 import Card from "@/components/card/card";
-import { sampleCourse1 } from "@/config/sampleCourse";
+import { sampleCourse1, sampleCourse2 } from "@/config/sampleCourse";
 import { CARDTYPE } from "@/types/card";
+import SpecialCourse from "./__components/specialCourse";
+import Sliding from "./__components/sliding";
 
 export default function Page() {
   // const sampleCourse1: Course = sampleCourse1;
   return (
     <>
-      <Carousel />
+      <SpecialCourse />
 
-      <div className={styles.slide}>
-        {sampleCourse1.map((course, index) => (
-          <Card key={index} data={course} type={CARDTYPE.VERTICAL} />
-        ))}
-      </div>
+      <Sliding
+        props={{
+          section: "수강중인 강좌",
+          items: sampleCourse1,
+        }}
+      />
+      <Sliding
+        props={{
+          section: "개설 예정 강좌",
+          items: sampleCourse2,
+        }}
+      />
     </>
   );
 }
