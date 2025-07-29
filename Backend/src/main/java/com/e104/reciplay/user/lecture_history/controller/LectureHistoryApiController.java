@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
 @Tag(name = "회원별 수강 이력 통계 및 관리 API", description = "수강 이력 조회 및 역량 조회")
 @RestController
 @RequestMapping("/api/v1/user/lecture-history")

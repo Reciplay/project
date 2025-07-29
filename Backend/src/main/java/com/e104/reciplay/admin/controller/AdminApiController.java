@@ -1,0 +1,93 @@
+package com.e104.reciplay.admin.controller;
+
+import com.e104.reciplay.common.response.dto.ResponseRoot;
+import com.e104.reciplay.common.response.util.CommonResponseBuilder;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@Tag(name = "관리자 페이지 API", description = "관리자 페이지")
+@RestController
+@RequestMapping("/api/v1/course/admin")
+@Slf4j
+
+public class AdminApiController{
+    @GetMapping("")
+    @Operation(summary = "강사 요약 정보 리스트 조회 API", description = "강사 요약 정보 신청 리스트 조회")
+    public ResponseEntity<ResponseRoot<List<Object>>> getInstructorSummaries(
+    ) {
+
+        return CommonResponseBuilder.success("강사 요약 정보 리스트 조회에 성공하였습니다.",
+                List.of(new Object()));
+    }
+
+    @GetMapping("/co")
+    @Operation(summary = "강사 상세 정보 조회 API", description = "강사 상세 정보 조회")
+    public ResponseEntity<ResponseRoot<Object>> getInstructorDetail(
+    ){
+
+        return CommonResponseBuilder.success("강사 상세 정보 조회에 성공하였습니다.", new Object());
+    }
+
+    @PutMapping("")
+    @Operation(summary = "강사 상태(등록 여부) 변경 API", description = "강사 상태(등록 여부) 정보 조회")
+    public ResponseEntity<ResponseRoot<Object>> updateInstructorStatus(
+    ){
+
+        return CommonResponseBuilder.success("강사 상태(등록 여부) 변경에 성공하였습니다.", new Object());
+    }
+
+    @GetMapping("")
+    @Operation(summary = "강좌 요약 정보 리스트 조회 API", description = "강좌 요약 정보 신청 리스트 조회")
+    public ResponseEntity<ResponseRoot<List<Object>>> getCourseSummaries(
+    ) {
+
+        return CommonResponseBuilder.success("강좌 요약 정보 리스트 조회에 성공하였습니다.",
+                List.of(new Object()));
+    }
+
+    @GetMapping("")
+    @Operation(summary = "강좌 상세 정보 조회 API", description = "강좌 상세 정보 조회")
+    public ResponseEntity<ResponseRoot<Object>> getCourseDetail(
+    ){
+
+        return CommonResponseBuilder.success("강좌 상세 정보 조회에 성공하였습니다.", new Object());
+    }
+
+    @PutMapping("")
+    @Operation(summary = "강좌 상태(등록 여부) 변경 API", description = "강좌 상태(등록 여부) 정보 조회")
+    public ResponseEntity<ResponseRoot<Object>> updateCourseStatus(
+    ){
+
+        return CommonResponseBuilder.success("강좌 상태(등록 여부) 변경에 성공하였습니다.", new Object());
+    }
+
+    @GetMapping("")
+    @Operation(summary = "일반 회원 요약 정보 리스트 조회 API", description = "일반 회원 요약 정보 신청 리스트 조회")
+    public ResponseEntity<ResponseRoot<List<Object>>> getUserSummaries(
+    ) {
+
+        return CommonResponseBuilder.success("일반 회원 요약 정보 리스트 조회에 성공하였습니다.",
+                List.of(new Object()));
+    }
+
+    @GetMapping("")
+    @Operation(summary = "일반 회원 상세 정보 조회 API", description = "일반 회원 상세 정보 조회")
+    public ResponseEntity<ResponseRoot<Object>> getUserDetail(
+    ){
+
+        return CommonResponseBuilder.success("일반 회원 상세 정보 조회에 성공하였습니다.", new Object());
+    }
+
+    @DeleteMapping("")
+    @Operation(summary = "회원 탈퇴 API", description = "회원 탈퇴")
+    public ResponseEntity<ResponseRoot<Object>> DeleteUser(
+    ){
+
+        return CommonResponseBuilder.success("회원 탈퇴에 성공하였습니다.", new Object());
+    }
+}
