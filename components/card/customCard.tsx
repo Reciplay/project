@@ -4,14 +4,14 @@ import { IMAGETYPE } from "@/types/image";
 import classNames from "classnames";
 import ImageWrapper from "../image/imageWrapper";
 import MetaInfo from "./__components/metaInfo";
-import styles from "./card.module.scss";
+import styles from "./customCard.module.scss";
 
 interface CardProps {
   data: Course;
   type: CARDTYPE;
 }
 
-export default function Card({ data, type }: CardProps) {
+export default function CustomCard({ data, type }: CardProps) {
   const filledStars = Math.floor(data.ratingAvg);
   const emptyStars = 5 - filledStars;
 

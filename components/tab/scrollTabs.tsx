@@ -1,8 +1,8 @@
 "use client";
 
-import styles from "./scrollTabs.module.scss";
 import BaseButton from "@/components/button/baseButton";
 import { RefObject } from "react";
+import styles from "./scrollTabs.module.scss";
 
 interface ScrollTabsProps {
   sectionRefs: RefObject<HTMLDivElement | null>[];
@@ -28,6 +28,7 @@ export default function ScrollTabs({
           variant="ghost"
           onClick={() => handleScrollTo(idx)}
           title={title}
+          size="lg"
         />
       ))}
     </div>

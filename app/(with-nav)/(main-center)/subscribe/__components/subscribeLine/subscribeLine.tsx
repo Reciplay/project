@@ -1,10 +1,9 @@
-import Image from "next/image";
-import styles from "./subscribeLine.module.scss";
+import { Instructor } from "@/app/(with-nav)/(main-center)/instructor/[instructorId]/profile/__components/bannerProfile/bannerProfile";
 import BaseButton from "@/components/button/baseButton";
 import CircleAvatar from "@/components/image/circleAvatar";
-import Link from "next/link";
 import { ROUTES } from "@/config/routes";
-import { Instructor } from "@/app/(with-nav)/(main-center)/instructor/[instructorId]/introduce/__components/bannerProfile/bannerProfile";
+import Link from "next/link";
+import styles from "./subscribeLine.module.scss";
 
 interface SubscribeLineProps {
   type: string;
