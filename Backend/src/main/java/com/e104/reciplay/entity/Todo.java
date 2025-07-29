@@ -25,4 +25,6 @@ public class Todo {
 
     @Enumerated(EnumType.ORDINAL)
     private TodoType type;
+
+    private Integer seconds;
 }
