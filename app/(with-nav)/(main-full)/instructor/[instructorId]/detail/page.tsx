@@ -1,8 +1,8 @@
-import CourseList from './__components/courseList/courseList';
 import Overview from './__components/overview/overview';
 import Schedule from './__components/schedule/schedule';
-import Statistics from './__components/statistics/statistics';
 import styles from './page.module.scss';
+import Statistics from './__components/statistics/statistics';
+import QandAList from './__components/q&alist/q&aList';
 
 export default function Page() {
     return (
@@ -10,11 +10,11 @@ export default function Page() {
             <div className={styles.cardContainer}>
                 <div>
                     <Statistics></Statistics>
-                    <Overview></Overview>
+                    <Overview />
                 </div>
-                <Schedule></Schedule>
+                <Schedule />
             </div>
-            <CourseList></CourseList>
+            <QandAList></QandAList>
         </div>
-    )
+    );
 }
