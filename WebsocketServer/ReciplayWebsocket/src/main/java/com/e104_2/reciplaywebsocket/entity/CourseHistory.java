@@ -1,4 +1,4 @@
-package com.e104.reciplay.entity;
+package com.e104_2.reciplaywebsocket.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,6 @@
-package com.e104.reciplay.entity;
+package com.e104_2.reciplaywebsocket.entity;
 
-import com.e104.reciplay.common.types.TodoType;
+import com.e104_2.reciplaywebsocket.common.types.TodoType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

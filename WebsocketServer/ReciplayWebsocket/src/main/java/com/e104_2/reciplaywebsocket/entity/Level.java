@@ -1,4 +1,4 @@
-package com.e104_2.reciplaywebsocket.domain;
+package com.e104_2.reciplaywebsocket.entity;
 
 
 import jakarta.persistence.Column;

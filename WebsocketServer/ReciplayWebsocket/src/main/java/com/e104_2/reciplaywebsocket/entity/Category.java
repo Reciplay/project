@@ -1,7 +1,6 @@
-package com.e104.reciplay.entity;
+package com.e104_2.reciplaywebsocket.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
