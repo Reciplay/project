@@ -7,9 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/livekit")
+@RequestMapping("/api/v1/livekit")
 public class LivekitController {
 
     private final LivekitService livekitService;
@@ -48,6 +47,7 @@ public class LivekitController {
      */
     @PostMapping(value = "/webhook", consumes = "application/webhook+json")
     public ResponseEntity<String> receiveWebhook(@RequestHeader("Authorization") String authHeader, @RequestBody String body) {
+        System.out.println("WEBHOOK @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         livekitService.handleWebhook(authHeader, body);
         return ResponseEntity.ok("ok");
     }

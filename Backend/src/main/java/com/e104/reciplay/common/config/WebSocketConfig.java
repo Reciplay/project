@@ -1,10 +1,11 @@
-package com.e104.reciplay.livekit.config;
+package com.e104.reciplay.common.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 
 @Configuration
 @EnableWebSocketMessageBroker // WebSocket 메시지 브로커를 활성화합니다.
@@ -29,8 +30,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         // /topic으로 시작하는 메시지는 브로커로 라우팅되어 구독자에게 전송됩니다.
-        registry.enableSimpleBroker("/topic");
+        registry.enableSimpleBroker("/topic", "/instructor");
         // /app으로 시작하는 메시지는 @MessageMapping 어노테이션이 달린 컨트롤러 메서드로 라우팅됩니다.
-        registry.setApplicationDestinationPrefixes("/app");
+        registry.setApplicationDestinationPrefixes("/appp");
+    }
+
+    @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registry) {
+        registry.setMessageSizeLimit(4 * 8192); // 메세지 최대 길이 = 32KB
+        registry.setTimeToFirstMessage(30000); // 30초 동안 최초 메세지 대기
     }
 }
