@@ -25,7 +25,6 @@ public class InstructorApiController {
     public ResponseEntity<ResponseRoot<InstructorProfile>> getInstructorProfile(
             @RequestParam("instructorId") Long instructorId
     ) {
-
         return CommonResponseBuilder.success("강사 정보 조회에 성공했습니다.", new InstructorProfile());
     }
 
