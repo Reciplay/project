@@ -1,0 +1,22 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  letter-spacing: var(--letter-spacing-tight);
+
+  .title {
+    font-size: 2rem;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .value {
+    font-size: 1.6rem;
+    font-weight: var(--font-weight-regular);
+  }
+}

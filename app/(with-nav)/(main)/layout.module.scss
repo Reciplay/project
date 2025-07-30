@@ -1,0 +1,24 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  width: 65%;
+  // max-width: 1200px;
+  padding: 0 40px 40px 40px;
+  margin: 24px auto;
+  overflow: hidden;
+}
+
+.divTag {
+  width: 200px;
+}
