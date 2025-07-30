@@ -5,14 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Chapter {
+public class TodoInfo {
     private Integer sequence;
     private String title;
-    private List<Todo> todos;
+    private String type;
+    private String seconds;
 }

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "수강 신청 관리 API", description = "수강 신청 관리")
 @RestController
-@RequestMapping("/api/v1/course/enrollent")
+@RequestMapping("/api/v1/course/enrollment")
 @Slf4j
 
 public class EnrollmentApiController{

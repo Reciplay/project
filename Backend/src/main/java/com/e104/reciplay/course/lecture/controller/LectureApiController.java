@@ -3,7 +3,6 @@ package com.e104.reciplay.course.lecture.controller;
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.course.lecture.dto.LectureDetail;
-import com.e104.reciplay.course.lecture.dto.request.LectureUpdateInfo;
 import com.e104.reciplay.course.lecture.dto.response.LectureSummary;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,12 +19,12 @@ import java.util.List;
 
 public class LectureApiController{
 
-    @GetMapping("/summary")
+    @GetMapping("/summaries")
     @Operation(summary = "강의 요약 정보 리스트 조회 API", description = "강의 요약 정보 리스트 조회")
     public ResponseEntity<ResponseRoot<List<LectureSummary>>> getLectureSummaries(
     ) {
 
-        return CommonResponseBuilder.success("강의 요약 리스트 조회에 성공하였습니다.",
+        return CommonResponseBuilder.success("강의 요약 정보 리스트 조회에 성공하였습니다.",
                 List.of(new LectureSummary()));
     }
 
@@ -38,7 +37,7 @@ public class LectureApiController{
 
         return CommonResponseBuilder.success("강의 상세 정보 조회에 성공하였습니다.", new LectureDetail());
     }
-    @GetMapping("/")
+    @GetMapping("list")
     @Operation(summary = "강의 상세 정보 리스트 조회 API", description = "강의 상세 정보 리스트 조회")
     public ResponseEntity<ResponseRoot<List<LectureDetail>>> getLectureDetails(
     ) {
@@ -51,7 +50,7 @@ public class LectureApiController{
     @Operation(summary = "강의 휴강 상태 변경 API", description = "강의 휴강 상태 변경")
     public ResponseEntity<ResponseRoot<Object>> updateSkipStatus(
             @RequestParam Long lectureId,
-            @RequestParam Integer isSkpied
+            @RequestParam Boolean isSkipped
     ){
 
         return CommonResponseBuilder.success("강의 휴강 상태 변경에 성공하였습니다.", null);
@@ -60,7 +59,7 @@ public class LectureApiController{
     @PutMapping("")
     @Operation(summary = "강의 정보 수정 API", description = "강의 정보 수정")
     public ResponseEntity<ResponseRoot<Object>> updateLecture(
-            @RequestBody LectureUpdateInfo lectureUpdateInfo
+            @RequestBody LectureDetail lectureDetail
             ){
 
         return CommonResponseBuilder.success("강의 정보 수정에 성공하였습니다.", null);

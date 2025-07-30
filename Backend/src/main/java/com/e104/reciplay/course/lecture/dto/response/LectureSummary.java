@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,6 +15,6 @@ public class LectureSummary {
     private Integer sequence;
     private Long lectureId;
     private String title;
-    private String startedAt;
+    private LocalDateTime startedAt;
     private Boolean isSkipped;
 }

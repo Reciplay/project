@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,14 +16,14 @@ public class CourseDetail {
     // 썸네일 이미지들 필요함
 
     private String courseName;
-    private String courseStartDate;
-    private String courseEndDate;
+    private LocalDate courseStartDate;
+    private LocalDate courseEndDate;
     private Long instructorId;
-    private String enrollmentStartDate;
-    private String enrollmentEndDate;
+    private LocalDate enrollmentStartDate;
+    private LocalDate enrollmentEndDate;
     private String category;
     private Integer reviewCount; // 총 리뷰 수
-    private Integer averageReviewScore; // 평균 별점
+    private Double averageReviewScore; // 평균 별점
     private String summary;
     private Integer maxEnrollments;
     private Boolean isEnrollment;

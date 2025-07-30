@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class CourseCardCondition {
     private String requestCategory; // 요청을 구분한기 위한 카테고리
     private String searchContent; // 검색 문자열
-    private Integer instructorId; // 강사 Id
+    private Long instructorId; // 강사 Id
+    private Boolean isEnrollment; // 필터링(수강 여부)
 }

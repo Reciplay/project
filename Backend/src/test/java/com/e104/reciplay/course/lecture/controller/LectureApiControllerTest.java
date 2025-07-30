@@ -1,6 +1,5 @@
 package com.e104.reciplay.course.lecture.controller;
 
-import com.e104.reciplay.course.lecture.dto.request.LectureUpdateInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

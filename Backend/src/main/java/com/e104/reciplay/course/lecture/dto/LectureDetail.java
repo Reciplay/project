@@ -1,7 +1,7 @@
 package com.e104.reciplay.course.lecture.dto;
 
 
-import com.e104.reciplay.course.lecture.dto.response.Chapter;
+import com.e104.reciplay.course.lecture.dto.response.ChapterInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,6 +24,6 @@ public class LectureDetail {
     private String resourceName;
     private String startedAt;
     private String endedAt;
-    private List<Chapter> chapters;
+    private List<ChapterInfo> chapters;
 
 }

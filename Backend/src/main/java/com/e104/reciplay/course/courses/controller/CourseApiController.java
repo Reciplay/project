@@ -24,7 +24,7 @@ public class CourseApiController {
 
     // 분홍색 통합 API
     // 페이징한 결과와 페이징 하지 않은 결과를 조건문으로 두개의 결과 선택지를 줘야함
-    @GetMapping("/Card")
+    @GetMapping("/cards")
     @Operation(summary = "강좌 카드 정보 리스트 조회 통합 API", description = "강좌 카드 정보 리스트 조회")
     public ResponseEntity<ResponseRoot<List<CourseCard>>> getCourseCards(
             @ModelAttribute CourseCardCondition courseCardCondition,

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -13,22 +14,22 @@ import java.util.List;
 @Builder
 public class CourseCard {
     // 배너 이미지 필요
-    // 썸네일 이미지 필요 , 썸네일 리스트도 필요함
+    // 썸네일 이미지 필요
     // 현재 시청자 수?
     // 강좌 배너 이미지 필요
 
     private String title;
     private Long courseId;
     private String category;
-    private Integer averageReviewScore;
-    private Integer isLive;
-    private String courseStartDate;
-    private String courseEndData;
+    private Double averageReviewScore;
+    private Boolean isLive;
+    private LocalDate courseStartDate;
+    private LocalDate courseEndData;
     private Integer level;
     private String summary;
-    private List<String> canLearns;
+    private List<String> canLearns; //이런걸 배울 수 있어요
 
-    private Integer isEnrolled;
+    private Boolean isEnrolled; //수강 여부
     private String announcement;
 
     private Long instructorId;
