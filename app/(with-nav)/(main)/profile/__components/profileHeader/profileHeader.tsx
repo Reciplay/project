@@ -14,7 +14,7 @@ export default function ProfileHeader({ props }: ProfileHeaderProps) {
   return (
     <div
       className={styles.container}
-      style={{ backgroundImage: 'url("/images/profile.webp")' }}
+      style={{ backgroundImage: `url("${props.profileUrl}")` }}
     >
       <div className={styles.profileContainer}>
         <div className={styles.profileImageWrapper}>

@@ -1,13 +1,31 @@
-import Image from "next/image";
 import styles from "./page.module.scss";
 import ProfileHeader from "./__components/profileHeader/profileHeader";
-import { User } from "@/types/user";
-import { sampleUser } from "@/config/sampleUser";
+import { User, UserResponse } from "@/types/user";
 import ProfileInfo from "./__components/profileInfo/profileInfo";
 import RadarChart from "@/components/chart/radarChart";
+import axiosInstance from "@/config/axiosInstance";
 
-export default function page() {
-  const data: User = sampleUser.data;
+const getProfile = async () => {
+  try {
+    const res: UserResponse = await axiosInstance.get("/api/v1/user/profile", {
+      // headers: {
+      //   Authorization: `Bearer ${token}`,
+      // },
+    });
+    return res.data;
+  } catch (e) {
+    console.error("프로필 불러오기 실패:", e);
+    return null;
+  }
+};
+
+export default async function Page() {
+  const data = await getProfile();
+
+  if (!data) {
+    return <div>프로필 정보를 불러올 수 없습니다.</div>;
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.title}>내 프로필</div>
