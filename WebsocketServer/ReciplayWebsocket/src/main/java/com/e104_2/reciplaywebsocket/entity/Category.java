@@ -1,23 +1,20 @@
 package com.e104.reciplay.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "live_rooms")
+@Entity(name = "categories")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class LiveRoom {
+public class Category {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "lecture_id")
-    private Long lectureId;
-
-    private String roomname;
+    private String name;
 }

@@ -6,18 +6,23 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "live_rooms")
+import java.time.LocalDate;
+
+@Entity(name = "subscription_histories")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class LiveRoom {
+public class SubscriptionHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "lecture_id")
-    private Long lectureId;
+    @Column(name = "instructor_id")
+    private Long instructorId;
 
-    private String roomname;
+    @Column(name = "subscriber_count")
+    private Integer subscriberCount;
+
+    private LocalDate date;
 }

@@ -1,0 +1,33 @@
+package com.e104.reciplay.livekit.service.depends;
+
+import com.e104.reciplay.entity.LiveParticipation;
+import com.e104.reciplay.entity.LiveRoom;
+import com.e104.reciplay.repository.LiveParticipationRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class LiveParticipationManagementServiceImpl implements LiveParticipationManagementService{
+    private final LiveParticipationRepository liveParticipationRepository;
+
+    @Override
+    @Transactional
+    public void participateIn(Long liveRoomId, String email) {
+        LiveParticipation liveParticipation = new LiveParticipation();
+        liveParticipation.setEmail(email);
+        liveParticipation.setLiveroomId(liveRoomId);
+        liveParticipationRepository.save(liveParticipation);
+    }
+
+    @Override
+    public void participateIn(LiveRoom liveRoom, String email) {
+        LiveParticipation liveParticipation = new LiveParticipation();
+        liveParticipation.setEmail(email);
+        liveParticipation.setLiveroomId(liveRoom.getId());
+        liveParticipationRepository.save(liveParticipation);
+    }
+}

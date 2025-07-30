@@ -6,18 +6,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "live_rooms")
+@Entity(name = "special_courses")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class LiveRoom {
+public class SpecialCourse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "lecture_id")
-    private Long lectureId;
+    @Column(name = "course_id")
+    private Long courseId;
 
-    private String roomname;
+    @Column(name = "banner_image_url")
+    private String bannerImageUrl;
 }
