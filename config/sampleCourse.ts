@@ -54,6 +54,40 @@ export const sampleCourse1: Course[] = [
     endDate: "2025-09-16",
     isEnrolled: false,
   },
+  {
+    id: 8,
+    title: "스페인 타파스 마스터클래스: 감바스와 또르띠야",
+    instructorId: 108,
+    instructorName: "가르시아 셰프",
+    thumbnail: "/images/sample8.jpg",
+    category: "스페인 요리",
+    difficulty: 30,
+    summary: "정통 스페인 타파스 요리를 집에서 따라하는 비법을 배워보세요.",
+    learningPoints: ["감바스 알 아히요", "스페인 오믈렛", "와인 페어링"],
+    ratingAvg: 4.8,
+    isLive: true,
+    viewerCount: 42,
+    startDate: "2025-08-20",
+    endDate: "2025-09-20",
+    isEnrolled: false
+  },
+  {
+    id: 9,
+    title: "스페인 타파스 마스터클래스: 감바스와 또르띠야",
+    instructorId: 108,
+    instructorName: "가르시아 셰프",
+    thumbnail: "/images/sample8.jpg",
+    category: "스페인 요리",
+    difficulty: 30,
+    summary: "정통 스페인 타파스 요리를 집에서 따라하는 비법을 배워보세요.",
+    learningPoints: ["감바스 알 아히요", "스페인 오믈렛", "와인 페어링"],
+    ratingAvg: 4.8,
+    isLive: true,
+    viewerCount: 42,
+    startDate: "2025-08-20",
+    endDate: "2025-09-20",
+    isEnrolled: false
+  }
 ];
 export const sampleCourse2: Course[] = [
   {

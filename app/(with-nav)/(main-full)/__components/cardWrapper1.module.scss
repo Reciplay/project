@@ -1,0 +1,6 @@
+.cardWrapper {
+    display: flex;
+    flex-wrap: wrap; // ✅ 자동 줄바꿈
+    gap: 10px;
+    overflow-x: hidden; // ✅ 가로 스크롤 방지 (선택)
+}
