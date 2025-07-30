@@ -31,6 +31,14 @@ export default function MainCarousel() {
           className={styles.bannerImage}
           style={{ objectFit: 'cover' }}
         />
+        <Image
+          src="/images/mainbanner2.png"
+          alt="메인 배너 이미지2"
+          width={1250}
+          height={350}
+          className={styles.bannerImage}
+          style={{ objectFit: 'cover' }}
+        />
       </AntdCarousel>
     </div>
   );
