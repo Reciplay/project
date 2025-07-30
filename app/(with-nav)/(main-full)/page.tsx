@@ -5,7 +5,7 @@ import CardWrapper1 from './__components/cardWrapper1'
 
 export default function Page() {
   return (
-    <div>
+    <div className={styles.container}>
       <div className={styles.carouselWrapper}>
         <MainCarousel></MainCarousel>
       </div>
