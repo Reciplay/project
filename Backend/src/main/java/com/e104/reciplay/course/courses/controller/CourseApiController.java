@@ -3,6 +3,7 @@ package com.e104.reciplay.course.courses.controller;
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.course.courses.dto.request.CourseCardCondition;
+import com.e104.reciplay.course.courses.dto.response.CourseCard;
 import com.e104.reciplay.course.courses.dto.response.CourseDetail;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,17 +23,17 @@ import java.util.List;
 public class CourseApiController {
 
     // 분홍색 통합 API
-    // 수정 해야 댐
+    // 페이징한 결과와 페이징 하지 않은 결과를 조건문으로 두개의 결과 선택지를 줘야함
     @GetMapping("/Card")
     @Operation(summary = "강좌 카드 정보 리스트 조회 통합 API", description = "강좌 카드 정보 리스트 조회")
-    public ResponseEntity<ResponseRoot<Object>> getCourseCards(
+    public ResponseEntity<ResponseRoot<List<CourseCard>>> getCourseCards(
             @ModelAttribute CourseCardCondition courseCardCondition,
             @PageableDefault(page = 0, size = 10, sort = "courseStartDate", direction = Sort.Direction.DESC) Pageable pageable
             ) {
 
 
         return CommonResponseBuilder.success("강좌 카드 정보 리스트 조회에 성공하였습니다.",
-                List.of(new Object()));
+                List.of(new CourseCard()));
     }
 
 

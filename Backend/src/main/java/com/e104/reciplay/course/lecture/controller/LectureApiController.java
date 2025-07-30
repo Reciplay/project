@@ -66,12 +66,6 @@ public class LectureApiController{
         return CommonResponseBuilder.success("강의 정보 수정에 성공하였습니다.", null);
     }
 
-    @PostMapping("")
-    @Operation(summary = "ToDo 리스트 생성 API", description = "ToDo 리스트 생성")
-    public ResponseEntity<ResponseRoot<Object>> createTodos(
-    ){
-        return CommonResponseBuilder.success("ToDo 리스트 생성에 성공하였습니다.", new Object());
-    }
 
 
 }
