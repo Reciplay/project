@@ -1,68 +1,37 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
-import styles from "./carousel.module.scss";
-import ImageWrapper from "../image/imageWrapper";
-import { IMAGETYPE } from "@/types/image";
+import React from 'react';
+import { Carousel as AntdCarousel } from 'antd';
+import styles from './carousel.module.scss';
+import Image from 'next/image';
 
-interface CarouselItem {
-  image: string;
-  onClick?: VoidFunction;
-}
+const contentStyle: React.CSSProperties = {
+  margin: 0,
+  height: '300px',
+  color: '#fff',
+  lineHeight: '160px',
+  textAlign: 'center',
+  background: '#364d79',
+};
 
-interface CarouselProps {
-  props: CarouselItem[];
-}
-
-export default function Carousel({ props }: CarouselProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-  const changeImage = (index: number) => {
-    setCurrentIndex(index);
-    resetTimer();
+export default function MainCarousel() {
+  const onChange = (currentSlide: number) => {
+    console.log(currentSlide);
   };
-
-  const resetTimer = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % props.length);
-    }, 4000); // 4초 간격
-  };
-
-  useEffect(() => {
-    resetTimer();
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [props.length]);
 
   return (
-    <div className={styles.carousel}>
-      <div className={styles.main}>
-        <ImageWrapper
-          src={props[currentIndex].image}
-          alt={`featured_banner`}
-          onClick={props[currentIndex].onClick}
-          type={IMAGETYPE.FEAUTRED_MAIN}
+    <div className={styles.carouselWrapper}>
+      <AntdCarousel afterChange={onChange}>
+
+        <Image
+          src="/images/mainbanner1.png"
+          alt="메인 배너 이미지"
+          width={1250}
+          height={350}
+          className={styles.bannerImage}
+          style={{ objectFit: 'cover' }}
         />
-      </div>
-      <div className={styles.thumbnails}>
-        {props.map((item, i) => (
-          <ImageWrapper
-            key={i}
-            src={item.image}
-            alt={`Thumb ${i}`}
-            onClick={() => {
-              changeImage(i);
-            }}
-            type={IMAGETYPE.FEATURED_THUMNAIL}
-            className={`${styles.thumbnail} ${
-              i === currentIndex ? styles.active : ""
-            }`}
-          />
-        ))}
-      </div>
+      </AntdCarousel>
     </div>
   );
 }

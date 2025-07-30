@@ -1,28 +1,22 @@
-import styles from "./page.module.scss";
-import Card from "@/components/card/card";
-import { sampleCourse1, sampleCourse2 } from "@/config/sampleCourse";
-import { CARDTYPE } from "@/types/card";
-import SpecialCourse from "./__components/specialCourse";
-import Sliding from "./__components/sliding";
+import MainCarousel from '@/components/carousel/carousel'
+import styles from './page.module.scss'
+import CardWrapper from './__components/cardWrapper'
+import CardWrapper1 from './__components/cardWrapper1'
 
 export default function Page() {
-  // const sampleCourse1: Course = sampleCourse1;
   return (
-    <>
-      <SpecialCourse />
-
-      <Sliding
-        props={{
-          section: "수강중인 강좌",
-          items: sampleCourse1,
-        }}
-      />
-      <Sliding
-        props={{
-          section: "개설 예정 강좌",
-          items: sampleCourse2,
-        }}
-      />
-    </>
-  );
+    <div>
+      <div className={styles.carouselWrapper}>
+        <MainCarousel></MainCarousel>
+      </div>
+      <div className={styles.learning}>
+        <span className={styles.learntitle}>수강중인 강좌</span>
+        <CardWrapper></CardWrapper>
+      </div>
+      <div className={styles.commingsoon}>
+        <span className={styles.soontitle}>계설예정 강좌</span>
+        <CardWrapper1></CardWrapper1>
+      </div>
+    </div>
+  )
 }

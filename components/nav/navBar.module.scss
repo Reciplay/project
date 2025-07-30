@@ -10,11 +10,12 @@
 }
 
 .left {
-  margin: 0 40px;
+  margin: 0 20px;
   display: flex;
   align-items: center;
   gap: 16px;
 }
+
 .hamberger {
   cursor: pointer;
 }
@@ -26,6 +27,7 @@
   color: #111;
   text-align: center;
 }
+
 .searchWrapper {
   position: absolute;
   left: 50%;

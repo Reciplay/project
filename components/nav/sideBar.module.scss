@@ -1,49 +1,51 @@
 .sidebar {
-  width: 260px;
-  padding: 24px 40px;
-  background-color: #fff;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  transition: width 0.3s ease;
-  white-space: nowrap;
-  text-overflow: hidden;
+    width: 200px;
+    padding: 24px 20px;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    transition: width 0.3s ease;
+    white-space: nowrap;
+    text-overflow: hidden;
 
-  &.closed {
-    width: 120px;
-    // padding: 8px 0;
-    opacity: 1;
-    visibility: visible;
-    align-items: center;
-  }
+    &.closed {
+        width: 120px;
+        // padding: 8px 0;
+        opacity: 1;
+        visibility: visible;
+        align-items: center;
+    }
 }
 
 .section {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
-.sectionTitle {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-bold);
 
-  white-space: nowrap;
+.sectionTitle {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+
+    white-space: nowrap;
 }
 
 .sectionList {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .sidebar.closed .iconWithText .label {
-  display: none;
+    display: none;
 }
 
 .sidebar.closed .iconWithText {
-  padding: 0;
-  gap: 0;
+    padding: 0;
+    gap: 0;
 }
+
 .sidebar.closed .sectionTitle {
-  display: none;
+    display: none;
 }
