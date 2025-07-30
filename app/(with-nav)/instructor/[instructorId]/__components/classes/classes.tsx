@@ -1,4 +1,4 @@
-import Sliding from "@/app/(with-nav)/(main-full)/__components/sliding";
+import Sliding from "@/app/(with-nav)/__components/sliding";
 import { sampleCourse1, sampleCourse2 } from "@/config/sampleCourse";
 import { forwardRef } from "react";
 import styles from "./classes.module.scss";

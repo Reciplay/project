@@ -1,7 +1,7 @@
-import MainCarousel from '@/components/carousel/carousel'
-import styles from './page.module.scss'
-import CardWrapper from './__components/cardWrapper'
-import CardWrapper1 from './__components/cardWrapper1'
+import MainCarousel from "@/components/carousel/carousel";
+import CardWrapper from "./__components/cardWrapper";
+import CardWrapper1 from "./__components/cardWrapper1";
+import styles from "./page.module.scss";
 
 export default function Page() {
   return (
@@ -18,5 +18,5 @@ export default function Page() {
         <CardWrapper1></CardWrapper1>
       </div>
     </div>
-  )
+  );
 }

@@ -1,4 +1,6 @@
-export const sampleUser = {
+import { UserResponse } from "@/types/user";
+
+export const sampleUser: UserResponse = {
   status: "success",
   message: "사용자 정보 조회 성공",
   data: {

@@ -1,9 +1,10 @@
-import styles from "./page.module.scss";
-import ProfileHeader from "./__components/profileHeader/profileHeader";
-import { User, UserResponse } from "@/types/user";
-import ProfileInfo from "./__components/profileInfo/profileInfo";
 import RadarChart from "@/components/chart/radarChart";
 import axiosInstance from "@/config/axiosInstance";
+import { sampleUser } from "@/config/sampleUser";
+import { UserResponse } from "@/types/user";
+import ProfileHeader from "./__components/profileHeader/profileHeader";
+import ProfileInfo from "./__components/profileInfo/profileInfo";
+import styles from "./page.module.scss";
 
 const getProfile = async () => {
   try {
@@ -15,7 +16,7 @@ const getProfile = async () => {
     return res.data;
   } catch (e) {
     console.error("프로필 불러오기 실패:", e);
-    return null;
+    return sampleUser.data;
   }
 };
 
