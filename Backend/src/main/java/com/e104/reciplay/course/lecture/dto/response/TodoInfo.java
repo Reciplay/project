@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class TodoInfo {
     private Integer sequence;
     private String title;
-    private String type;
-    private String seconds;
+    private Integer type;
+    private Integer seconds;
 }

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -15,16 +17,15 @@ public class AdminInstructorDetail {
     private Long instructorId;
     private String name;
     private String email;
-    private String registeredAt;
+    private LocalDateTime registeredAt;
     private String nickName;
-    private String birthDate;
-    private Boolean role;
-    private String createdAt;
-    private String instroduction;
+    private LocalDate birthDate;
+    private LocalDateTime createdAt;
+    private String introduction;
     private String address;
     private String phoneNumber;
-    private List<License> licenses;
-    private List<Career> careers;
+    private List<LicenseInfo> licenses;
+    private List<Careerinfo> careers;
 
 
 }

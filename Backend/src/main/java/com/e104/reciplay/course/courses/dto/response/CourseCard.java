@@ -15,6 +15,7 @@ import java.util.List;
 public class CourseCard {
     // 배너 이미지 필요
     // 썸네일 이미지 필요
+    //
     // 현재 시청자 수?
     // 강좌 배너 이미지 필요
 
@@ -27,6 +28,7 @@ public class CourseCard {
     private LocalDate courseEndData;
     private Integer level;
     private String summary;
+    private String description;
     private List<String> canLearns; //이런걸 배울 수 있어요
 
     private Boolean isEnrolled; //수강 여부

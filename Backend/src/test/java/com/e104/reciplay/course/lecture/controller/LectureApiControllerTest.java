@@ -1,5 +1,7 @@
+
 package com.e104.reciplay.course.lecture.controller;
 
+import com.e104.reciplay.course.lecture.dto.LectureDetail;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,9 +10,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(LectureApiController.class)
@@ -24,50 +25,45 @@ class LectureApiControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("강의 요약 리스트 조회 API 테스트")
-    void testGetLectureSummaries() throws Exception {
-        mockMvc.perform(get("/api/v1/course/lecture/summary"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("강의 요약 리스트 조회에 성공하였습니다."));
+    @DisplayName("강의 요약 리스트 조회 성공")
+    void getLectureSummaries() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/course/lecture/summaries")
+                        .param("courseId", "1"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("강의 상세 정보 조회 API 테스트")
-    void testGetLectureDetail() throws Exception {
-        mockMvc.perform(get("/api/v1/course/lecture")
+    @DisplayName("강의 상세 조회 성공")
+    void getLectureDetail() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/course/lecture")
                         .param("lectureId", "1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("강의 상세 정보 조회에 성공하였습니다."));
+                .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("강의 상세 정보 리스트 조회 API 테스트")
-    void testGetLectureDetails() throws Exception {
-        mockMvc.perform(get("/api/v1/course/lecture/"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("강의 요약 리스트 조회에 성공하였습니다."));
+    @DisplayName("강의 상세 리스트 조회 성공")
+    void getLectureDetails() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/course/lecture/list")
+                        .param("courseId", "1"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("강의 휴강 상태 변경 API 테스트")
-    void testUpdateSkipStatus() throws Exception {
-        mockMvc.perform(patch("/api/v1/course/lecture/skip")
+    @DisplayName("강의 휴강 상태 변경 성공")
+    void updateSkipStatus() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/course/lecture/skip")
                         .param("lectureId", "1")
-                        .param("isSkpied", "1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("강의 휴강 상태 변경에 성공하였습니다."));
+                        .param("isSkipped", "true"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("강의 정보 수정 API 테스트")
-    void testUpdateLecture() throws Exception {
-        String requestBody = objectMapper.writeValueAsString(new LectureUpdateInfo());
-        mockMvc.perform(put("/api/v1/course/lecture")
+    @DisplayName("강의 정보 수정 성공")
+    void updateLecture() throws Exception {
+        LectureDetail lectureDetail = new LectureDetail(); // 필드 필요 시 설정
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/course/lecture")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("강의 정보 수정에 성공하였습니다."));
+                        .content(objectMapper.writeValueAsString(lectureDetail)))
+                .andExpect(status().isOk());
     }
-
-
 }

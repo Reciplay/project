@@ -9,11 +9,9 @@ import com.e104.reciplay.user.instructor.dto.response.InstructorStat;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import retrofit2.http.Multipart;
 
 @Tag(name = "강사 관련 API", description = "강사에 대한 데이터를 조회하거나 강사 데이터 수정을 위한 API를 제공합니다.")
 @RestController
@@ -23,7 +21,7 @@ public class InstructorApiController {
     @GetMapping("/profile")
     @Operation(summary = "강사 소개 조회 API", description = "강사 명, 프로필 이미지, 커버 이미지 등을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "강사 소개 정보 조회에 성공함.")
-    @ApiResponse(responseCode = "400", description = "없는 강사에 대한 조회 시도시.")
+    @ApiResponse(responseCode = "400", description = "없는 강사에 대한 조회 시도.")
     public ResponseEntity<ResponseRoot<InstructorProfile>> getInstructorProfile(
             @RequestParam("instructorId") Long instructorId
     ) {

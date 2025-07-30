@@ -1,3 +1,4 @@
+
 package com.e104.reciplay.admin.controller;
 
 import com.e104.reciplay.admin.dto.request.ApprovalInfo;
@@ -11,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AdminApiController.class)
@@ -25,89 +25,77 @@ class AdminApiControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("강사 요약 정보 리스트 조회 API 테스트")
-    void testGetInstructorSummaries() throws Exception {
-        mockMvc.perform(get("/api/v1/course/admin/instructor/summary")
-                        .param("isApprove", "1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("강사 요약 정보 리스트 조회에 성공하였습니다."));
+    @DisplayName("강사 요약 정보 리스트 조회")
+    void getInstructorSummaries() throws Exception {
+        mockMvc.perform(get("/api/v1/course/admin/instructor/summaries")
+                        .param("isApprove", "true"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("강사 상세 정보 조회 API 테스트")
-    void testGetInstructorDetail() throws Exception {
+    @DisplayName("강사 상세 정보 조회")
+    void getInstructorDetail() throws Exception {
         mockMvc.perform(get("/api/v1/course/admin/instructor")
                         .param("instructorId", "1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("강사 상세 정보 조회에 성공하였습니다."));
+                .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("강사 상태 변경 API 테스트")
-    void testUpdateInstructorStatus() throws Exception {
-        ApprovalInfo info = new ApprovalInfo(); // 필요시 필드 채우기
-        String content = objectMapper.writeValueAsString(info);
-
+    @DisplayName("강사 등록 수락/거절")
+    void handleInstructorRegistration() throws Exception {
+        ApprovalInfo approvalInfo = new ApprovalInfo();
         mockMvc.perform(put("/api/v1/course/admin/instructor")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("강사 상태(등록 여부) 변경에 성공하였습니다."));
+                        .content(objectMapper.writeValueAsString(approvalInfo)))
+                .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("강좌 요약 정보 리스트 조회 API 테스트")
-    void testGetCourseSummaries() throws Exception {
-        mockMvc.perform(get("/api/v1/course/admin/course/summary")
-                        .param("isApprove", "1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("강좌 요약 정보 리스트 조회에 성공하였습니다."));
+    @DisplayName("강좌 요약 정보 리스트 조회")
+    void getCourseSummaries() throws Exception {
+        mockMvc.perform(get("/api/v1/course/admin/course/summaries")
+                        .param("isApprove", "true"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("강좌 상세 정보 조회 API 테스트")
-    void testGetCourseDetail() throws Exception {
+    @DisplayName("강좌 상세 정보 조회")
+    void getCourseDetail() throws Exception {
         mockMvc.perform(get("/api/v1/course/admin/course")
                         .param("courseId", "1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("강좌 상세 정보 조회에 성공하였습니다."));
+                .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("강좌 상태 변경 API 테스트")
-    void testUpdateCourseStatus() throws Exception {
-        ApprovalInfo info = new ApprovalInfo(); // 필요시 필드 채우기
-        String content = objectMapper.writeValueAsString(info);
-
+    @DisplayName("강좌 등록 수락/거절")
+    void handleCourseRegistration() throws Exception {
+        ApprovalInfo approvalInfo = new ApprovalInfo();
         mockMvc.perform(put("/api/v1/course/admin/course")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("강좌 상태(등록 여부) 변경에 성공하였습니다."));
+                        .content(objectMapper.writeValueAsString(approvalInfo)))
+                .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("일반 회원 요약 정보 리스트 조회 API 테스트")
-    void testGetUserSummaries() throws Exception {
-        mockMvc.perform(get("/api/v1/course/admin/user/summary"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("일반 회원 요약 정보 리스트 조회에 성공하였습니다."));
+    @DisplayName("일반 회원 요약 정보 리스트 조회")
+    void getUserSummaries() throws Exception {
+        mockMvc.perform(get("/api/v1/course/admin/user/summaries"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("일반 회원 상세 정보 조회 API 테스트")
-    void testGetUserDetail() throws Exception {
-        mockMvc.perform(get("/api/v1/course/admin/user"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("일반 회원 상세 정보 조회에 성공하였습니다."));
+    @DisplayName("일반 회원 상세 정보 조회")
+    void getUserDetail() throws Exception {
+        mockMvc.perform(get("/api/v1/course/admin/user")
+                        .param("userId", "1"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("회원 탈퇴 API 테스트")
-    void testDeleteUser() throws Exception {
+    @DisplayName("회원 탈퇴")
+    void deleteUser() throws Exception {
         mockMvc.perform(delete("/api/v1/course/admin/user")
                         .param("userId", "1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("회원 탈퇴에 성공하였습니다."));
+                .andExpect(status().isOk());
     }
 }

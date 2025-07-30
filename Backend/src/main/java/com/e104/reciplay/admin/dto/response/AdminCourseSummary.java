@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,5 +15,5 @@ public class AdminCourseSummary {
     private Long courseId;
     private String instructorName;
     private String title;
-    private String registeredAt;
+    private LocalDateTime registeredAt;
 }

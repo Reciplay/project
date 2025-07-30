@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -15,11 +16,11 @@ import java.util.List;
 public class AdminCourseDetail {
     private Long courseId;
     private String courseName;
-    private String courseStartDate;
-    private String courseEndDate;
+    private LocalDate courseStartDate;
+    private LocalDate courseEndDate;
     private Long instructorId;
-    private String enrollmentStartDate;
-    private String enrollmentEndDate;
+    private LocalDate enrollmentStartDate;
+    private LocalDate enrollmentEndDate;
     private String category;
     private String summary;
     private Integer maxEnrollments;

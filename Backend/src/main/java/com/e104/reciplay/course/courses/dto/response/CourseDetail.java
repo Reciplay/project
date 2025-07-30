@@ -27,6 +27,7 @@ public class CourseDetail {
     private String summary;
     private Integer maxEnrollments;
     private Boolean isEnrollment;
+    private String description;
     private Integer level;
     private Boolean isZzim;
     private Boolean isLive;

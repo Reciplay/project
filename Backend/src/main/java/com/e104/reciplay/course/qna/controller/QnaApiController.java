@@ -5,6 +5,7 @@ import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.course.qna.dto.response.QnaDetail;
 import com.e104.reciplay.course.qna.dto.response.QnaSummary;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,10 @@ import java.util.List;
 
 public class QnaApiController{
 
-    @GetMapping("/summary")
+    @GetMapping("/summaries")
+    @ApiResponse(responseCode = "200", description = "Q&A 요약 정보 리스트 조회 성공")
+    @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")
+    @ApiResponse(responseCode = "404", description = "조회할 강좌를 찾을 수 없음")
     @Operation(summary = "Q&A 요약 정보 리스트 조회 API", description = "Q&A 요약 정보 리스트 조회")
     public ResponseEntity<ResponseRoot<List<QnaSummary>>> getQnaSummaries(
             @RequestParam Long courseId
@@ -30,6 +34,9 @@ public class QnaApiController{
     }
 
     @GetMapping("")
+    @ApiResponse(responseCode = "200", description = "Q&A 상세 정보 조회 성공")
+    @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")
+    @ApiResponse(responseCode = "404", description = "조회할 Q&A를 찾을 수 없음")
     @Operation(summary = "Q&A 상세 정보 조회 API", description = "Q&A 상세 정보 조회")
     public ResponseEntity<ResponseRoot<QnaDetail>> getQnaDetail(
             @RequestParam Long qnaId
@@ -40,16 +47,21 @@ public class QnaApiController{
     }
 
     @PutMapping("/question")
+    @ApiResponse(responseCode = "200", description = "Q&A 질문 수정 성공")
+    @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")
+    @ApiResponse(responseCode = "404", description = "수정할 질문를 찾을 수 없음")
     @Operation(summary = "Q&A 질문 수정 API", description = "Q&A 질문 수정")
     public ResponseEntity<ResponseRoot<Object>> updateQuestion(
-            @RequestParam Long qnaId,
-            @RequestParam String title,
-            @RequestParam String content
+            @RequestBody QnaDetail qnaDetail
     ){
         return CommonResponseBuilder.success("Q&A 질문 수정에 성공하였습니다.", null);
     }
 
     @DeleteMapping("")
+    @ApiResponse(responseCode = "200", description = "Q&A 질문 삭제 성공")
+    @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")
+    @ApiResponse(responseCode = "403", description = "해당 Q&A의 회원&강사가 아닌 다른 사용자 접근")
+    @ApiResponse(responseCode = "404", description = "삭제할 질문을 찾을 수 없음")
     @Operation(summary = "Q&A 질문 삭제 API", description = "Q&A 질문 삭제")
     public ResponseEntity<ResponseRoot<Object>> deleteQuestion(
             @RequestParam Long qnaId
@@ -60,11 +72,11 @@ public class QnaApiController{
     }
 
     @PostMapping("/question")
+    @ApiResponse(responseCode = "201", description = "Q&A 질문 등록 성공")
+    @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")
     @Operation(summary = "Q&A 질문 등록 API", description = "Q&A 질문 등록")
     public ResponseEntity<ResponseRoot<Object>> insertQuestion(
-            @RequestParam Long qnaId,
-            @RequestParam String title,
-            @RequestParam String content
+            @RequestBody QnaDetail qnaDetail
     ){
 
         return CommonResponseBuilder.success("Q&A 질문 등록에 성공하였습니다.",
@@ -72,20 +84,26 @@ public class QnaApiController{
     }
 
     @PutMapping("/answer")
+    @ApiResponse(responseCode = "200", description = "Q&A 답변 수정 성공")
+    @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")
+    @ApiResponse(responseCode = "403", description = "해당 Q&A의 강사가 아닌 다른 사용자 접근")
+    @ApiResponse(responseCode = "404", description = "수정할 Q&A를 찾을 수 없음")
     @Operation(summary = "Q&A 답변 수정 API", description = "Q&A 답변 수정")
     public ResponseEntity<ResponseRoot<Object>> updateAnswer(
-            @RequestParam Long qnaId,
-            @RequestParam String content
+            @RequestBody QnaDetail qnaDetail
     ){
         return CommonResponseBuilder.success("Q&A 답변 수정에 성공하였습니다.",
                 null);
     }
 
     @PostMapping("/answer")
+    @ApiResponse(responseCode = "200", description = "Q&A 답변 등록 성공")
+    @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")
+    @ApiResponse(responseCode = "403", description = "해당 Q&A의 강사가 아닌 다른 사용자 접근")
+    @ApiResponse(responseCode = "404", description = "수정할 Q&A를 찾을 수 없음")
     @Operation(summary = "Q&A 답변 등록 API", description = "Q&A 답변 등록")
     public ResponseEntity<ResponseRoot<Object>> insertAnswer(
-            @RequestParam Long qnaId,
-            @RequestParam String content
+            @RequestBody QnaDetail qnaDetail
     ){
 
         return CommonResponseBuilder.success("Q&A 답변 등록에 성공하였습니다.",

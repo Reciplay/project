@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -22,8 +23,8 @@ public class LectureDetail {
     private String materials;
     private Boolean isSkipped;
     private String resourceName;
-    private String startedAt;
-    private String endedAt;
+    private LocalDate startedAt;
+    private LocalDate endedAt;
     private List<ChapterInfo> chapters;
 
 }

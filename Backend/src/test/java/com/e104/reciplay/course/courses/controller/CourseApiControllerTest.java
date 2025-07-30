@@ -25,49 +25,49 @@ class CourseApiControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("강좌 카드 정보 리스트 조회 API 테스트")
-    void testGetCourseCards() throws Exception {
-        mockMvc.perform(get("/api/v1/course/courses/Card")
-                        .param("categoryId", "1")
-                        .param("page", "0")
-                        .param("size", "5")
-                        .param("sort", "courseStartDate,DESC"))
+    @DisplayName("GET /cards - 강좌 카드 리스트 조회 성공")
+    void getCourseCards_shouldReturnList() throws Exception {
+        mockMvc.perform(get("/api/v1/course/courses/cards"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("강좌 카드 정보 리스트 조회에 성공하였습니다."));
+                .andExpect(jsonPath("$.status").value("success"));
     }
 
     @Test
-    @DisplayName("강좌 상세 정보 조회 API 테스트")
-    void testGetCourseDetail() throws Exception {
+    @DisplayName("GET /cards/page - 강좌 카드 페이지 조회 성공")
+    void getCourseCardsPage_shouldReturnPagedList() throws Exception {
+        mockMvc.perform(get("/api/v1/course/courses/cards/page"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"));
+    }
+
+    @Test
+    @DisplayName("GET / - 강좌 상세 조회 성공")
+    void getCourseDetail_shouldReturnDetail() throws Exception {
         mockMvc.perform(get("/api/v1/course/courses")
-                        .param("courseId", "123"))
+                        .param("courseId", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("강좌 상세 정보 조회에 성공하였습니다."));
+                .andExpect(jsonPath("$.status").value("success"));
     }
 
     @Test
-    @DisplayName("강좌 등록 API 테스트")
-    void testCreateCourse() throws Exception {
-        CourseDetail courseDetail = new CourseDetail();
-        String content = objectMapper.writeValueAsString(courseDetail);
-
+    @DisplayName("POST / - 강좌 등록 성공")
+    void createCourse_shouldReturnCreated() throws Exception {
+        CourseDetail dummy = new CourseDetail(); // 필요한 필드 세팅 가능
         mockMvc.perform(post("/api/v1/course/courses")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("강좌 등록에 성공하였습니다."));
+                        .content(objectMapper.writeValueAsString(dummy)))
+                .andExpect(status().isOk()) // 실제는 .isCreated()이나, 컨트롤러에서 200 반환
+                .andExpect(jsonPath("$.status").value("success"));
     }
 
     @Test
-    @DisplayName("강좌 수정 API 테스트")
-    void testUpdateCourse() throws Exception {
-        CourseDetail courseDetail = new CourseDetail();
-        String content = objectMapper.writeValueAsString(courseDetail);
-
+    @DisplayName("PUT / - 강좌 수정 성공")
+    void updateCourse_shouldReturnSuccess() throws Exception {
+        CourseDetail dummy = new CourseDetail(); // 필요한 필드 세팅 가능
         mockMvc.perform(put("/api/v1/course/courses")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
+                        .content(objectMapper.writeValueAsString(dummy)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("강좌 정보 수정에 성공하였습니다."));
+                .andExpect(jsonPath("$.status").value("success"));
     }
 }

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,6 +15,6 @@ public class QnaSummary {
     private Long qnaId;
     private String title;
     private String questionerNicname;
-    private String questionAt;
+    private LocalDateTime questionAt;
     private Boolean isAnswered;
 }
