@@ -2,11 +2,11 @@ bind_addresses:
   - 0.0.0.0
 
 rtc:
-  node_ip: 192.168.30.136
+  node_ip: 43.203.241.163
 
 turn:
   enabled: true
   udp_port: 3478
 
 keys:
-  devkey: secret
+  devkey: sooeixnaheiqh4h3h1589eesaf89dah53489hred89q43h2iqlred8s9qfewqh5432uiqy5r
