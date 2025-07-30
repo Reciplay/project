@@ -4,6 +4,7 @@ export const sampleInstructor: InstructorResponse = {
   status: "200",
   message: "강사 정보를 성공적으로 불러왔습니다.",
   data: {
+    id: "1",
     name: "이지언",
     profileImage: "/images/profile.jpg",
     coverImage: "/images/instructor-banner.png",

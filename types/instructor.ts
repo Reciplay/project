@@ -5,6 +5,7 @@ export interface InstructorResponse {
 }
 
 export interface Instructor {
+  id: string;
   name: string;
   profileImage: string;
   coverImage: string;

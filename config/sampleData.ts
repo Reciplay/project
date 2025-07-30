@@ -1,65 +1,59 @@
-import { Instructor } from "@/app/(with-nav)/(main-center)/instructor/[instructorId]/profile/__components/bannerProfile/bannerProfile";
+import { Instructor } from "@/types/instructor";
 
 export const sampleInstructors: Instructor[] = [
   {
-    id: 0,
+    id: "2",
     name: "김도윤",
-    thumbnail: "/images/김도윤.webp",
-    subscribers: 210000,
+    profileImage: "/images/김도윤.webp",
+    coverImage: "/images/default-banner.png",
+    introduction: "요리는 즐겁게! 실전 위주의 이탈리안 요리 전문가입니다.",
+    licenses: [],
+    careers: [],
+    subscriberCount: 210000,
+    isSubscribed: true,
   },
   {
-    id: 1,
+    id: "3",
     name: "김승민",
-    thumbnail: "/images/김승민.webp",
-    subscribers: 210000,
+    profileImage: "/images/김승민.webp",
+    coverImage: "/images/default-banner.png",
+    introduction: "누구나 따라할 수 있는 집밥 레시피로 함께해요.",
+    licenses: [],
+    careers: [],
+    subscriberCount: 210000,
+    isSubscribed: true,
   },
   {
-    id: 2,
+    id: "4",
     name: "남정석",
-    thumbnail: "/images/남정석.webp",
-    subscribers: 210000,
+    profileImage: "/images/남정석.webp",
+    coverImage: "/images/default-banner.png",
+    introduction: "디저트와 베이킹 전문 셰프, 감성 가득한 수업을 지향합니다.",
+    licenses: [],
+    careers: [],
+    subscriberCount: 210000,
+    isSubscribed: true,
   },
   {
-    id: 3,
+    id: "5",
     name: "박준우",
-    thumbnail: "/images/박준우.webp",
-    subscribers: 210000,
+    profileImage: "/images/박준우.webp",
+    coverImage: "/images/default-banner.png",
+    introduction: "한식부터 분식까지! 실생활 밀착형 요리를 전합니다.",
+    licenses: [],
+    careers: [],
+    subscriberCount: 210000,
+    isSubscribed: true,
   },
   {
-    id: 4,
+    id: "6",
     name: "방기수",
-    thumbnail: "/images/방기수.webp",
-    subscribers: 210000,
+    profileImage: "/images/방기수.webp",
+    coverImage: "/images/default-banner.png",
+    introduction: "호텔 출신 양식 셰프, 고급 레스토랑 스타일을 집으로!",
+    licenses: [],
+    careers: [],
+    subscriberCount: 210000,
+    isSubscribed: true,
   },
-  // ...
 ];
-
-// export const sampleCourse: Course = {
-//   id: 1,
-//   title:
-//     "이탈리아 현지 미슐랭 요리사에게 배우는 파스타, 뇨끼, 리조또! 프리미 피아띠 정복하기",
-//   instructorId: 101,
-//   instructorName: "김밀란",
-//   thumbnail: "/images/cook2.jpg",
-
-//   category: "이탈리아 요리",
-//   difficulty: 122,
-//   summary:
-//     "전채, 파스타, 해산물, 고기요기 그리고 마지막 디저트로 완성된 5코스 요리. 플레이팅까지 근사한 홈 파티에 최적화된 요리들로 준비했습니다.",
-//   learningPoints: [
-//     "파스타 만들기",
-//     "뇨끼 반죽과 조리",
-//     "리조또 기본과 응용",
-//     "5코스 구성 이해",
-//     "홈 파티용 플레이팅",
-//   ],
-
-//   ratingAvg: 4.0,
-//   isLive: true,
-//   viewerCount: 8,
-
-//   startDate: "2025-08-10",
-//   endDate: "2025-09-10",
-
-//   isEnrolled: false,
-// };
