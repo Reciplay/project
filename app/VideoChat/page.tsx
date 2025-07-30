@@ -18,7 +18,7 @@ type TrackInfo = {
     participantIdentity: string;
 };
 
-let APPLICATION_SERVER_URL = "http://i13e104.p.ssafy.io:8080/";
+// let APPLICATION_SERVER_URL = "http://i13e104.p.ssafy.io:8080/";
 let LIVEKIT_URL = "ws://i13e104.p.ssafy.io:7880/";
 
 
@@ -69,7 +69,7 @@ function videoApp() {
     }
 
     async function getToken(roomName: string, participantName: string) {
-        const response = await fetch(APPLICATION_SERVER_URL + "/token", {
+        const response = await fetch("api/rest/livekit/token", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
