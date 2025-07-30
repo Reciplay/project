@@ -1,23 +1,29 @@
 import Image from "next/image";
-import styles from "./page.module.scss";
 import Link from "next/link";
+import styles from "./page.module.scss";
 import BaseInput from "@/components/input/baseInput";
 import BaseButton from "@/components/button/baseButton";
+import LogoWIthDesc from "../__components/logoWithDesc/logoWithDesc";
+import Separator from "../__components/separator/separator";
+import SNS from "../__components/sns/sns";
 
 export default function Page() {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        {/* left */}
+        {/* Left section */}
         <div className={styles.left}>
-          <h1 className={styles.logo}>Reciplay</h1>
-          <p className={styles.tagline}>자유롭게 배우는 우리</p>
+          <LogoWIthDesc props={{ desc: "자유롭게 배우는 우리" }} />
 
           <form className={styles.form}>
             <BaseInput placeholder="이메일" type="email" />
             <BaseInput placeholder="비밀번호" type="password" />
-
-            <BaseButton title="로그인" type="submit" color="red" />
+            <BaseButton
+              title="로그인"
+              type="submit"
+              size="inf"
+              className={styles.button}
+            />
           </form>
 
           <div className={styles.links}>
@@ -26,44 +32,13 @@ export default function Page() {
             <a href="#">비밀번호 찾기</a>
             <span> | </span>
             <Link href="/api/auth/signup">회원가입</Link>
-            {/* <a href="#">회원가입</a> */}
           </div>
 
-          <div className={styles.separator}>
-            <span className={styles.line} />
-            <span className={styles.or}>or</span>
-            <span className={styles.line} />
-          </div>
-          <p className={styles.tagline}>SNS 계정으로 간편 로그인</p>
-          <div className={styles.snsIcons}>
-            <a href="#">
-              <Image
-                src="/icons/apple.svg"
-                alt="Apple"
-                width={28}
-                height={28}
-              />
-            </a>
-            <a href="#">
-              <Image
-                src="/icons/google.svg"
-                alt="Google"
-                width={28}
-                height={28}
-              />
-            </a>
-            <a href="#">
-              <Image
-                src="/icons/kakao.svg"
-                alt="Kakao"
-                width={28}
-                height={28}
-              />
-            </a>
-          </div>
+          <Separator />
+          <SNS props={{ isLogin: true }} />
         </div>
 
-        {/* right */}
+        {/* Right section */}
         <div className={styles.right}>
           <div className={styles.imageWrapper}>
             <Image

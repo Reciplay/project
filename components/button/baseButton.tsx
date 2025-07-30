@@ -8,7 +8,7 @@ interface BaseButtonProps {
   color?: "black" | "red" | "green" | "blue" | "white";
   type?: ButtonType; // ✅ 수정
   variant?: "default" | "custom" | "outline" | "ghost";
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "inf";
   className?: string;
   onClick?: VoidFunction;
 }
