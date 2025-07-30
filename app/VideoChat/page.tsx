@@ -18,8 +18,8 @@ type TrackInfo = {
     participantIdentity: string;
 };
 
-let APPLICATION_SERVER_URL = "http://127.0.0.1:6080/";
-let LIVEKIT_URL = "ws://localhost:7880/";
+let APPLICATION_SERVER_URL = "http://i13e104.p.ssafy.io:8080/";
+let LIVEKIT_URL = "ws://i13e104.p.ssafy.io:7880/";
 
 
 function videoApp() {
@@ -72,7 +72,8 @@ function videoApp() {
         const response = await fetch(APPLICATION_SERVER_URL + "/token", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Indvbmp1bkBtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3NTM4NDAzNTMsImV4cCI6MTc1NDQ0MDM1M30.XdN2T5LtkJsnz1_Mhg7vWuHZgmcWuef-xYXXSh5qFZc"
             },
             body: JSON.stringify({
                 roomName: roomName,
