@@ -12,9 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.security.SignatureException;
 import java.util.Set;
 
 @Slf4j
@@ -45,7 +47,7 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         String token = auth.split(" ")[1];
-        if(jwtUtil.isExpired(token)) {
+        if (jwtUtil.isExpired(token)) {
             log.debug("Expired token -> refresh-token is needed");
             // 기간이 지난 액세스 토큰을 만료 처리해야함.
             authService.invalidateToken(token, jwtUtil.getUsername(token), "ACCESS");
