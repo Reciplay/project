@@ -12,7 +12,7 @@ export default function TestPage() {
 
   useEffect(() => {
     // Connect to the socket server
-    socketRef.current = io("ws://echo.websocket.org")
+    socketRef.current = io("ws://127.0.0.1:8000/ws")
 
     // Listen for "chat" events
     socketRef.current.on("chat", (msg: string) => {
