@@ -1,24 +1,40 @@
-import styles from "./baseButton.module.scss";
 import classNames from "classnames";
+import styles from "./baseButton.module.scss";
+
+type ButtonType = "button" | "submit" | "reset";
 
 interface BaseButtonProps {
   title: string;
-  onClick?: () => void;
-  type?: "button" | "submit" | "reset";
-  color?: "black" | "red" | "green" | "blue";
+  color?: "black" | "red" | "green" | "blue" | "white";
+  type?: ButtonType; // ✅ 수정
+  variant?: "default" | "custom" | "outline" | "ghost";
+  size?: "sm" | "md" | "lg" | "inf";
+  className?: string;
+  onClick?: VoidFunction;
 }
 
 export default function BaseButton({
   title,
   type = "button",
   color = "black",
-  ...rest
+  variant = "default",
+  size = "md",
+  className,
+  onClick,
+  ...props
 }: BaseButtonProps) {
   return (
     <button
-      className={classNames(styles.container, color && styles[color])}
-      type={type}
-      {...rest}
+      type={type} // ✅ 여기 정확히 들어감
+      className={classNames(
+        styles.container,
+        styles[size],
+        styles[variant],
+        styles[color],
+        className
+      )}
+      onClick={onClick}
+      {...props}
     >
       {title}
     </button>

@@ -2,4 +2,18 @@
   display: flex;
   gap: 8px;
   align-items: center;
+  cursor: pointer;
+}
+
+.sm {
+  width: 10px;
+  height: 10px;
+}
+
+.md {
+  width: 20px;
+  height: 20px;
+}
+.title {
+  font-size: var(--font-size-md);
 }

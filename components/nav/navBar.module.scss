@@ -5,26 +5,41 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  line-height: 60px;
 }
 
 .left {
-  margin: 0 40px;
+  margin: 0 20px;
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
+.hamberger {
+  cursor: pointer;
+}
+
 .logo {
   font-family: var(--font-protest);
-  font-size: 2rem;
+  font-size: var(--font-size-2xl);
   margin: 0;
   color: #111;
   text-align: center;
 }
+
+.searchWrapper {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .right {
-  margin: 0 40px;
+  margin: 0 20px;
 }
 
 .profile {
+  display: flex;
+  align-items: center;
   border-radius: 100px;
 }

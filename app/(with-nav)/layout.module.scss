@@ -1,7 +1,7 @@
 .layout {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  // height: 100vh;
 }
 
 .body {
@@ -10,7 +10,7 @@
 }
 
 .main {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
+  margin: 24px 40px;
+  width: calc(100vw - 260px);
+  // overflow: hidden;
 }

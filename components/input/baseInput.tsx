@@ -5,16 +5,37 @@ import React from "react";
 interface BaseInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   placeholder: string;
   type: string;
-  error? : string;
+  value?: string;
+  error?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void; // ✅ 추가
 }
 
-export default function BaseInput({ className, error, placeholder, type, ...rest }: BaseInputProps) {
-  return (
+export default function BaseInput({
+  placeholder,
+  type,
+  value,
+  error,
+  onChange,
+}: BaseInputProps) {
+  const isCustom = type === "custom";
+
+  return isCustom ? (
+    <div className={styles.inputContainer}>
+      <input
+        type="text"
+        placeholder={placeholder}
+        className={styles.input}
+        value={value}
+        onChange={onChange}
+      />
+    </div>
+  ) : (
     <input
       type={type}
       placeholder={placeholder}
-      className={classNames(styles.input, className, error, styles[type])}
-      {...rest}
+      className={classNames(styles.input, error, styles[type])}
+      value={value} // ✅ 전달
+      onChange={onChange} // ✅ 전달
     />
   );
 }

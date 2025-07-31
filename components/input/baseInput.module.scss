@@ -13,3 +13,52 @@
   border-radius: 50px;
   margin-bottom: 0px;
 }
+
+/* 기존 공용 input 스타일 */
+.input {
+  font-size: 16px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* 타입별 예시 (선택 사항) */
+.text {
+  color: #333;
+}
+
+.password {
+  letter-spacing: 2px;
+}
+
+/* custom 타입일 때만 사용하는 컨테이너 스타일 */
+.inputContainer {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 13px;
+  width: 250px;
+  height: 52px;
+  background: #ffffff;
+  border: 1px solid #6c738c;
+  border-radius: 5px;
+  gap: 8px;
+
+  &:focus-within {
+    border: 1px solid #007aff;
+  }
+}
+
+.inputContainer .input {
+  margin-bottom: 0px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  color: #333;
+
+  &::placeholder {
+    color: #6c738c;
+  }
+}
