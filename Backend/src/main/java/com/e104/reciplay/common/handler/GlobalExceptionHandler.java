@@ -4,6 +4,7 @@ import com.e104.reciplay.common.exception.InvalidUserRoleException;
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.livekit.exception.CanNotOpenLiveRoomException;
+import com.e104.reciplay.livekit.exception.CanNotParticipateInLiveRoomException;
 import com.e104.reciplay.livekit.exception.EmptyPropertyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,5 +26,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidUserRoleException.class)
     public ResponseEntity<?> invalidUserRoleExceptionHandler(InvalidUserRoleException e) {
         return CommonResponseBuilder.forbidden(e.getMessage());
+    }
+
+    @ExceptionHandler(CanNotParticipateInLiveRoomException.class)
+    public ResponseEntity<?> canNotPariticipateIntLiveRoomExceptionHandler(CanNotParticipateInLiveRoomException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
     }
 }

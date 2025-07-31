@@ -5,6 +5,7 @@ import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.livekit.dto.request.LiveEstablishRequest;
 import com.e104.reciplay.livekit.dto.response.LivekitTokenResponse;
 import com.e104.reciplay.livekit.exception.CanNotOpenLiveRoomException;
+import com.e104.reciplay.livekit.exception.CanNotParticipateInLiveRoomException;
 import com.e104.reciplay.livekit.service.LivekitOpenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +43,7 @@ public class LivekitController {
         Long lectureId = request.getLectureId();
 
         if (courseId == null || lectureId == null) {
-            throw new CanNotOpenLiveRoomException("요청에 강좌 또는 강의 ID가 없습니다.");
+            throw new CanNotParticipateInLiveRoomException("요청에 강좌 또는 강의 ID가 없습니다.");
         }
 
         String token = livekitOpenService.createStudentToken(lectureId, courseId);
