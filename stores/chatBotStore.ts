@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { ChatBotState, Message } from './types/chatBotStore';
+import { ChatBotState, Message } from '../types/chatBotStore';
 import chatbotClient from '../lib/axios/chatbotClient';
 
 // 실제 API 호출을 위한 채팅 메시지 전송 함수

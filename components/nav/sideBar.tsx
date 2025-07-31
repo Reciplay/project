@@ -1,7 +1,7 @@
 "use client";
 
 import { menuData } from "@/config/sideBarMenu";
-import { useSidebarStore } from "@/store/sideBarStore";
+import { useSidebarStore } from "@/stores/sideBarStore";
 import { IMAGETYPE } from "@/types/image";
 import classNames from "classnames";
 import Link from "next/link";

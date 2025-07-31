@@ -5,7 +5,7 @@ import styles from "./navBar.module.scss";
 import Image from "next/image";
 import Link from "next/link";
 import { ROUTES } from "@/config/routes";
-import { useSidebarStore } from "@/store/sideBarStore";
+import { useSidebarStore } from "@/stores/sideBarStore";
 import ImageWrapper from "../image/imageWrapper";
 import { IMAGETYPE } from "@/types/image";
 
