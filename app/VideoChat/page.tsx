@@ -1,5 +1,6 @@
 'use client'
 
+import styles from "./page.module.css";
 import {
     LocalVideoTrack,
     RemoteParticipant,
@@ -17,31 +18,9 @@ type TrackInfo = {
     participantIdentity: string;
 };
 
-// When running OpenVidu locally, leave these variables empty
-// For other deployment type, configure them with correct URLs depending on your deployment
-let APPLICATION_SERVER_URL = "http://localhost:8080/livekit";
-let LIVEKIT_URL = "ws://192.168.30.136:7880/";
-// configureUrls();
+// let APPLICATION_SERVER_URL = "http://i13e104.p.ssafy.io:8080/";
+let LIVEKIT_URL = "ws://i13e104.p.ssafy.io:7880/";
 
-// function configureUrls() {
-//     // If APPLICATION_SERVER_URL is not configured, use default value from OpenVidu Local deployment
-//     if (!APPLICATION_SERVER_URL) {
-//         if (window.location.hostname === "localhost") {
-//             APPLICATION_SERVER_URL = "http://localhost:6080/";
-//         } else {
-//             APPLICATION_SERVER_URL = "https://" + window.location.hostname + ":6443/";
-//         }
-//     }
-
-//     // If LIVEKIT_URL is not configured, use default value from OpenVidu Local deployment
-//     if (!LIVEKIT_URL) {
-//         if (window.location.hostname === "localhost") {
-//             LIVEKIT_URL = "ws://localhost:7880/";
-//         } else {
-//             LIVEKIT_URL = "wss://" + window.location.hostname + ":7443/";
-//         }
-//     }
-// }
 
 function videoApp() {
     const [room, setRoom] = useState<Room | undefined>(undefined);
@@ -52,12 +31,9 @@ function videoApp() {
     const [roomName, setRoomName] = useState("Test Room");
 
     async function joinRoom() {
-        // Initialize a new Room object
         const room = new Room();
         setRoom(room);
 
-        // Specify the actions when events take place in the room
-        // On every new Track received...
         room.on(
             RoomEvent.TrackSubscribed,
             (_track: RemoteTrack, publication: RemoteTrackPublication, participant: RemoteParticipant) => {
@@ -68,19 +44,14 @@ function videoApp() {
             }
         );
 
-        // On every Track destroyed...
         room.on(RoomEvent.TrackUnsubscribed, (_track: RemoteTrack, publication: RemoteTrackPublication) => {
             setRemoteTracks((prev) => prev.filter((track) => track.trackPublication.trackSid !== publication.trackSid));
         });
 
         try {
-            // Get a token from your application server with the room name and participant name
+            await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             const token = await getToken(roomName, participantName);
-
-            // Connect to the room with the LiveKit URL and the token
             await room.connect(LIVEKIT_URL, token);
-
-            // Publish your camera and microphone
             await room.localParticipant.enableCameraAndMicrophone();
             setLocalTrack(room.localParticipant.videoTrackPublications.values().next().value.videoTrack);
         } catch (error) {
@@ -90,33 +61,19 @@ function videoApp() {
     }
 
     async function leaveRoom() {
-        // Leave the room by calling 'disconnect' method over the Room object
         await room?.disconnect();
 
-        // Reset the state
         setRoom(undefined);
         setLocalTrack(undefined);
         setRemoteTracks([]);
     }
 
-    /**
-     * --------------------------------------------
-     * GETTING A TOKEN FROM YOUR APPLICATION SERVER
-     * --------------------------------------------
-     * The method below request the creation of a token to
-     * your application server. This prevents the need to expose
-     * your LiveKit API key and secret to the client side.
-     *
-     * In this sample code, there is no user control at all. Anybody could
-     * access your application server endpoints. In a real production
-     * environment, your application server must identify the user to allow
-     * access to the endpoints.
-     */
     async function getToken(roomName: string, participantName: string) {
-        const response = await fetch(APPLICATION_SERVER_URL + "/token", {
+        const response = await fetch("api/rest/livekit/token", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Indvbmp1bkBtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3NTM4NDAzNTMsImV4cCI6MTc1NDQ0MDM1M30.XdN2T5LtkJsnz1_Mhg7vWuHZgmcWuef-xYXXSh5qFZc"
             },
             body: JSON.stringify({
                 roomName: roomName,
@@ -185,17 +142,20 @@ function videoApp() {
                             Leave Room
                         </button>
                     </div>
-                    <div id="layout-container">
+                    <div id="layout-container" className={styles.videoContainer}>
                         {localTrack && (
-                            <VideoComponent track={localTrack} participantIdentity={participantName} local={true} />
+                            <div className={styles.video}>
+                                <VideoComponent track={localTrack} participantIdentity={participantName} local={true} />
+                            </div>
                         )}
                         {remoteTracks.map((remoteTrack) =>
                             remoteTrack.trackPublication.kind === "video" ? (
-                                <VideoComponent
-                                    key={remoteTrack.trackPublication.trackSid}
-                                    track={remoteTrack.trackPublication.videoTrack!}
-                                    participantIdentity={remoteTrack.participantIdentity}
-                                />
+                                <div className={styles.video} key={remoteTrack.trackPublication.trackSid}>
+                                    <VideoComponent
+                                        track={remoteTrack.trackPublication.videoTrack!}
+                                        participantIdentity={remoteTrack.participantIdentity}
+                                    />
+                                </div>
                             ) : (
                                 <AudioComponent
                                     key={remoteTrack.trackPublication.trackSid}
