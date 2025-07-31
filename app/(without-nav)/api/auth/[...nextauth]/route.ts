@@ -23,14 +23,15 @@ const handler = NextAuth({
           const formdata = new FormData()
           formdata.append('username', credentials.email)
           formdata.append('password', credentials.password)
-          const res = await axios.post('http://i13e104.p.ssafy.io:8080/api/v1/login', formdata, {
+          const res = await axios.post('http://i13e104.p.ssafy.io:8080/api/v1/user/auth/login', formdata, {
             headers: {
               ...formdata.getHeaders()
             }
           })
 
           const accessToken = res.headers.authorization
-          const refreshToken = res.headers['set-cookie'][0]
+          const cookieString = res.headers['set-cookie'][0]
+          const refreshToken = cookieString.split('=')[1]
           const expires = res.headers.expires
 
           if (accessToken || refreshToken) {

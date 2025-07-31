@@ -63,7 +63,7 @@ export default function Page() {
       return;
     }
 
-    const res = await restClient.post("/signup", {
+    const res = await restClient.post("/user/auth/signup", {
       nickname: nickname,
       email: email,
       password: password,
@@ -97,14 +97,14 @@ export default function Page() {
           />
 
           <form className={styles.form} onSubmit={handleSignup}>
-            {/* <BaseInput
+            <BaseInput
               placeholder="닉네임"
               type="text"
               value={nickname}
               onChange={(e) =>
                 setNickname((e.target as HTMLInputElement).value)
               }
-            /> */}
+            />
 
             {/* <form className={styles.form}> */}
             <BaseInput

@@ -1,5 +1,4 @@
-import axios, { AxiosRequestConfig } from "axios"
-import { useAuthStore } from "../../stores/authStore"
+import axios from 'axios'
 
 const chatbotClient = axios.create({
   baseURL: 'api/chatbot/',

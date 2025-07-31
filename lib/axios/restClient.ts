@@ -1,8 +1,11 @@
-import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from "axios"
-import { getSession, signIn, signOut } from "next-auth/react"
+import axios, { InternalAxiosRequestConfig } from "axios"
+import { getSession } from "next-auth/react"
 
-interface CustomAxiosRequestConfig extends AxiosRequestConfig {
-  Auth?: boolean
+declare module "axios" {
+  export interface AxiosRequestConfig {
+    requireAuth?: boolean
+    useCors?: boolean
+  }
 }
 
 const restClient = axios.create({
@@ -16,8 +19,17 @@ restClient.interceptors.request.use(
   async (
     config: InternalAxiosRequestConfig,
   ): Promise<InternalAxiosRequestConfig> => {
-    const customConfig = config as CustomAxiosRequestConfig
-    const requireAuth = customConfig.Auth ?? false
+    console.log(
+      `[restClient REQUEST]`,
+      {
+        method: config.method,
+        url: config.baseURL + config.url,
+        requireAuth: config.requireAuth,
+        useCors: config.useCors,
+        headers: config.headers,
+      }
+    )
+    const requireAuth = config.requireAuth ?? false
 
     if (requireAuth) {
       const session = await getSession()
@@ -27,54 +39,56 @@ restClient.interceptors.request.use(
         config.headers.Authorization = `Bearer ${accessToken}`
       }
     }
+
+    if (config.useCors === false) {
+      config.baseURL = "http://i13e104.p.ssafy.io:8080/api/v1/"
+    } else {
+      config.baseURL = "/api/rest"
+    }
     return config
   },
 )
 
-// 응답 인터셉터
-restClient.interceptors.response.use(
-  (response) => response, // 성공적인 응답은 그대로 반환
-  async (error: any) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & {
-      _retry?: boolean
-    }
+// restClient.interceptors.response.use(
+//   (response) => response,
+//   async (error: any) => {
+//     const originalRequest = error.config as InternalAxiosRequestConfig & {
+//       _retry?: boolean
+//     }
 
-    // 401 에러이고, 재시도한 요청이 아닐 경우
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true // 무한 재시도 방지를 위해 플래그 설정
+//     if (error.response?.status === 401 && !originalRequest._retry) {
+//       originalRequest._retry = true
 
-      const session = await getSession()
-      if (session?.refreshToken) {
-        try {
-          const response = await axios.post("/api/rest/refresh-token", {
-            refreshToken: session.refreshToken,
-          })
+//       const session = await getSession()
+//       if (session?.refreshToken) {
+//         try {
+//           const response = await axios.post("/api/rest/refresh-token", {
+//             refreshToken: session.refreshToken,
+//           })
 
-          const newAccessToken = response.data.accessToken
-          await signIn("credentials", {
-            redirect: false,
-            accessToken: newAccessToken,
-            refreshToken: session.refreshToken,
-          })
+//           const newAccessToken = response.data.accessToken
+//           await signIn("credentials", {
+//             redirect: false,
+//             accessToken: newAccessToken,
+//             refreshToken: session.refreshToken,
+//           })
 
-          // 원래 요청의 헤더에 새로운 토큰 설정
-          if (originalRequest.headers) {
-            originalRequest.headers.Authorization = newAccessToken
-          }
+//           if (originalRequest.headers) {
+//             originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
+//           }
 
-          // 원래 요청 재시도
-          return restClient(originalRequest)
-        } catch (refreshError) {
+//           return restClient(originalRequest)
+//         } catch (refreshError) {
 
-          console.error("Session refresh failed:", refreshError)
-          signOut()
-          return Promise.reject(refreshError)
-        }
-      }
-    }
+//           console.error("Session refresh failed:", refreshError)
+//           signOut()
+//           return Promise.reject(refreshError)
+//         }
+//       }
+//     }
 
-    return Promise.reject(error)
-  },
-)
+//     return Promise.reject(error)
+//   },
+// )
 
 export default restClient
