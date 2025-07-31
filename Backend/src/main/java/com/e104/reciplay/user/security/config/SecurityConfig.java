@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,6 +42,23 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final AuthService authService;
+
+    private String[] permittedUrls = {
+            URL_PREFIX + "/user/auth/login", URL_PREFIX + "/user/auth/refresh-token",
+            URL_PREFIX + "/user/auth/signup", "/h2-console/**", "/practice-ui.html",
+            "/swagger-ui/**", // swagger-ui 관련 모든 경로 허용
+            "/api-docs/json/**",  // openapi v3 문서 경로 허용
+            "/swagger-resources/**"
+    };
+
+    private String[] instructorsOnly = {
+            URL_PREFIX+"/livekit/instructor/token"
+    };
+
+    private String [] adminOnly = {
+            URL_PREFIX + "/admin"
+    };
+
 
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
@@ -81,12 +100,11 @@ public class SecurityConfig {
         // 도달시 SecurityContext의 여부와 권한을 검증할지를 설정한다.
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(URL_PREFIX + "/user/auth/login", URL_PREFIX + "/user/auth/refresh-token",
-                                 URL_PREFIX + "/user/auth/signup",
-                                 "/h2-console/**",
-                                 "/practice-ui.html",
-                                 "/swagger-ui/**", // swagger-ui 관련 모든 경로 허용
-                                 "/api-docs/json/**",  // openapi v3 문서 경로 허용
-                                 "/swagger-resources/**").permitAll()
+                        URL_PREFIX + "/user/auth/signup", "/h2-console/**", "/practice-ui.html",
+                        "/swagger-ui/**", // swagger-ui 관련 모든 경로 허용
+                        "/api-docs/json/**",  // openapi v3 문서 경로 허용
+                        "/swagger-resources/**").permitAll()
+                .requestMatchers(URL_PREFIX+"/livekit/instructor/token").hasRole("INSTRUCTOR")
                 .requestMatchers(URL_PREFIX + "/admin").hasRole("ADMIN")
                 .anyRequest().authenticated());
 
@@ -117,6 +135,9 @@ public class SecurityConfig {
                 .addLogoutHandler(authService)
                 .logoutSuccessHandler((request, response, authentication) ->
                 {
+                    ///////////////////////////////////////////////////////////
+                    // 이제 로그아웃 할 때, 라이브 같은 상태도 함께 관리 되어야 한다.
+                    ///////////////////////////////////////////////////////////
                     // 존재하는 토큰을 삭제해야 한다.
                     // 로그인 할 때, DB에 액세스 토큰이든 리프레시 토큰이든 저장하자.
                     // 여기서 이제 응답에 포함되는 토큰을 제거해야함.
@@ -130,5 +151,13 @@ public class SecurityConfig {
                 }));
 
         return http.build();
+    }
+
+    @Bean
+    RoleHierarchy roleHierarchy() {
+        return RoleHierarchyImpl.withDefaultRolePrefix()
+                .role("ADMIN").implies("INSTRUCTOR")
+                .role("INSTRUCTOR").implies("STUDENT")
+                .build();
     }
 }

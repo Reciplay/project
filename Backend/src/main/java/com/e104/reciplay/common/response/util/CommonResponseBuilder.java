@@ -19,9 +19,9 @@ public class CommonResponseBuilder {
                 .body(new ResponseRoot(failureMessage, message, null));
     }
 
-    public static ResponseEntity<?> create(String message, Object data) { // 201
+    public static <T> ResponseEntity<ResponseRoot<T>> create(String message, T data) { // 201
         return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON)
-                .body(ResponseRoot.builder().status(successMessage).message(message).data(data).build());
+                .body(ResponseRoot.<T>builder().status(successMessage).message(message).data(data).build());
     }
 
     public static ResponseEntity notFound(String message) { // 404
@@ -29,8 +29,18 @@ public class CommonResponseBuilder {
                 .body(ResponseRoot.builder().status(failureMessage).message(message).build());
     }
 
-    public static ResponseEntity unauthorized(String message) { // 403
+    public static ResponseEntity unauthorized(String message) { // 401
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).contentType(MediaType.APPLICATION_JSON)
+                .body(ResponseRoot.builder().status(failureMessage).message(message).build());
+    }
+
+    public static ResponseEntity badRequest(String message) { // 400
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON)
+                .body(ResponseRoot.builder().status(failureMessage).message(message).build());
+    }
+
+    public static ResponseEntity forbidden(String message) { // 403
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).contentType(MediaType.APPLICATION_JSON)
                 .body(ResponseRoot.builder().status(failureMessage).message(message).build());
     }
 }

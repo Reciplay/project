@@ -1,4 +1,4 @@
-package com.e104.reciplay.entity;
+package com.e104_2.reciplaywebsocket.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,18 +6,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "live_rooms")
-@Builder
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class LiveRoom {
+@Builder
+@Entity(name = "live_participation")
+public class LiveParticipation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "lecture_id")
-    private Long lectureId;
+    @Column(name = "liveroom_id")
+    private Long liveroomId;
 
-    private String roomname;
+    private String email;
 }
