@@ -128,7 +128,7 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
     @Override
     public String createStudentToken(Long lectureId, Long courseId) {
         if(!isTest) {
-            isOpenable(lectureId, courseId);
+            isParticipatable(lectureId, courseId);
         }
         // 강좌 참여가 가능한 상태이다.
         // 토큰 발급 + 참여 처리.

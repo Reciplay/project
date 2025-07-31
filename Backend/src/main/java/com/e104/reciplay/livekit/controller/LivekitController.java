@@ -1,17 +1,18 @@
 package com.e104.reciplay.livekit.controller;
 
-import com.e104.reciplay.common.exception.InvalidUserRoleException;
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.livekit.dto.request.LiveEstablishRequest;
 import com.e104.reciplay.livekit.dto.response.LivekitTokenResponse;
 import com.e104.reciplay.livekit.exception.CanNotOpenLiveRoomException;
 import com.e104.reciplay.livekit.service.LivekitOpenService;
-import com.e104.reciplay.user.security.util.AuthenticationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/livekit")
