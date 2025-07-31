@@ -3,6 +3,7 @@ import ImageWrapper from "../image/imageWrapper";
 import { IMAGETYPE } from "@/types/image";
 import BaseButton from "../button/baseButton";
 import { Course } from "@/types/course";
+import Image from "next/image";
 
 export type CardVariant = "vertical" | "horizontal";
 
@@ -39,6 +40,12 @@ export default function Card({ data, variant = "vertical" }: CourseCardProps) {
         <div>
           <div className={styles.title}>
             <span className={styles.highlight}>{data.title}</span>
+            <Image
+              src="/icons/learning.svg"
+              width={80}
+              height={30}
+              alt="learning"
+            ></Image>
           </div>
           <div className={styles.meta}>
             <span className={styles.instructorName}>{data.instructorName}</span>
@@ -52,6 +59,7 @@ export default function Card({ data, variant = "vertical" }: CourseCardProps) {
             평균 별점 {"★".repeat(filledStars)}
             {"☆".repeat(emptyStars)}
           </div>
+          <div className={styles.rating}>“이 강의 하나면 한식 기본 끝!”</div>
         </div>
         <BaseButton
           title="찜"
