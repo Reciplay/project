@@ -1,42 +1,69 @@
-import { MenuItem, MenuSection } from "@/types/sideBar";
+import { MenuSection } from "@/types/sideBar";
 
-export const menuData: (MenuItem | MenuSection)[] = [
+export const sidebarMenu: MenuSection[] = [
   {
-    section: "라이브",
+    section: "강좌",
     children: [
       {
-        title: "전체 라이브",
-        icon: "live",
-        href: "/live",
+        title: "전체 강좌",
+        icon: "Book",
+        href: "/",
       },
       {
-        title: "카테고리",
-        icon: "category",
-        href: "/courses",
+        title: "카테고리별 강좌",
+        icon: "Category",
+        href: "/course/category",
       },
-    ],
-  },
-
-  {
-    section: "프로필",
-    children: [
-      { title: "구독", icon: "subscribe", href: "/profile/subscription" },
-      { title: "기록", icon: "record", href: "/profile/learning" },
-      { title: "보안", icon: "security", href: "/profile/security" },
       {
-        title: "설정",
-        icon: "setting",
-        href: "/settings",
+        title: "강좌 검색",
+        icon: "Search",
+        href: "/search",
       },
     ],
   },
   {
-    section: "스튜디오 관리",
+    section: "마이페이지",
     children: [
-      { title: "강사 목록", icon: "list", href: "/instructors" },
-      { title: "강좌 목록", icon: "list", href: "/studio/my-courses" },
-      { title: "강좌 등록", icon: "plus", href: "/studio/create" },
-      { title: "대시보드", icon: "user", href: "/studio/dashboard" },
+      {
+        title: "내 정보",
+        icon: "User",
+        href: "/profile",
+      },
+      {
+        title: "구독 강사",
+        icon: "Heart",
+        href: "/profile/subscriptions",
+      },
+      {
+        title: "수강 이력/찜",
+        icon: "History",
+        href: "/profile/history",
+      },
     ],
   },
-] as const;
+  {
+    section: "강사 전용",
+    children: [
+      {
+        title: "대시보드",
+        icon: "DeviceDesktop", // ✅ 정확한 이름
+        href: "/instructor",
+      },
+      {
+        title: "강좌 관리",
+        icon: "DeviceDesktopCog",
+        href: "/instructor/manage",
+      },
+      {
+        title: "강사 등록",
+        icon: "Chalkboard",
+        href: "/instructor/register",
+      },
+      {
+        title: "강좌 등록",
+        icon: "DeviceIpadHorizontalPlus",
+        href: "/instructor/create-course",
+      },
+    ],
+  },
+];

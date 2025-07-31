@@ -1,64 +1,76 @@
 "use client";
 
-import { menuData } from "@/config/sideBarMenu";
-import { useSidebarStore } from "@/stores/sideBarStore";
-import { IMAGETYPE } from "@/types/image";
 import classNames from "classnames";
 import Link from "next/link";
-import ImageWrapper from "../image/imageWrapper";
-import IconWithText from "../text/iconWithText";
+import { usePathname } from "next/navigation";
+import { sidebarMenu } from "@/config/sideBarMenu";
+import TablerIcon from "../icon/tablerIcon";
 import styles from "./sideBar.module.scss";
+import { useSidebarStore } from "@/stores/sideBarStore";
 
-export default function SideBar() {
-  const { isOpen } = useSidebarStore();
+interface LinkItemProps {
+  href: string;
+  icon: string;
+  title: string;
+  isOpen: boolean;
+}
 
-  const renderLink = (
-    href: string,
-    icon: string,
-    title: string,
-    key: number
-  ) => (
-    <Link href={href} key={key}>
+function LinkItem({ href, icon, title, isOpen }: LinkItemProps) {
+  const pathname = usePathname();
+  const isActive = pathname === href;
+
+  return (
+    <Link
+      href={href}
+      className={classNames(styles.link, { [styles.active]: isActive })}
+    >
       {isOpen ? (
-        <IconWithText iconName={icon} title={title} />
+        <div className={styles.linkItem}>
+          <TablerIcon
+            name={icon}
+            size={20}
+            className={styles.icon}
+            filled={isActive}
+          />
+          <span className={styles.title}>{title}</span>
+        </div>
       ) : (
-        <ImageWrapper
-          src={`/icons/${icon}.svg`}
-          alt={title}
-          type={IMAGETYPE.ICON}
+        <TablerIcon
+          name={icon}
+          size={20}
+          className={styles.iconOnly}
+          filled={isActive}
         />
       )}
     </Link>
   );
+}
+
+export default function SideBar() {
+  const { isOpen } = useSidebarStore();
 
   return (
     <aside className={classNames(styles.sidebar, { [styles.closed]: !isOpen })}>
-      {menuData.map((item, idx) => {
-        if ("section" in item) {
-          return (
-            <div className={styles.section} key={idx}>
-              <div className={styles.sectionTitle}>
-                <IconWithText
-                  iconName="arrow"
-                  title={item.section}
-                  left={false}
-                />
-              </div>
-              <div className={styles.sectionList}>
-                {item.children.map((child, subIdx) =>
-                  renderLink(child.href, child.icon, child.title, subIdx)
-                )}
-              </div>
+      {sidebarMenu.map((section, idx) => (
+        <div className={styles.section} key={idx}>
+          {isOpen && (
+            <div className={styles.sectionTitle}>
+              <span>{section.section}</span>
             </div>
-          );
-        }
-
-        return (
-          <div className={styles.sectionList} key={idx}>
-            {renderLink(item.href, item.icon, item.title, idx)}
+          )}
+          <div className={styles.sectionList}>
+            {section.children.map((item, subIdx) => (
+              <LinkItem
+                key={subIdx}
+                href={item.href}
+                icon={item.icon}
+                title={item.title}
+                isOpen={isOpen}
+              />
+            ))}
           </div>
-        );
-      })}
+        </div>
+      ))}
     </aside>
   );
 }

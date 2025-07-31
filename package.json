@@ -9,9 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "form-data": "^4.0.4",
-    "livekit": "^0.0.1",
-    "livekit-client": "^2.15.3",
     "@ant-design/icons": "^6.0.0",
     "@ant-design/nextjs-registry": "^1.1.0",
     "@emotion/react": "^11.14.0",
@@ -24,11 +21,15 @@
     "@mui/icons-material": "^7.2.0",
     "@mui/material": "^7.2.0",
     "@mui/x-date-pickers": "^8.9.0",
+    "@tabler/icons-react": "^3.34.1",
     "antd": "^5.26.6",
     "axios": "^1.11.0",
     "chart.js": "^4.5.0",
     "classnames": "^2.5.1",
     "date-fns": "^4.1.0",
+    "form-data": "^4.0.4",
+    "livekit": "^0.0.1",
+    "livekit-client": "^2.15.3",
     "next": "15.4.1",
     "next-auth": "^4.24.11",
     "openvidu-browser": "^2.31.0",
@@ -39,8 +40,8 @@
     "react-dom": "19.1.0",
     "react-infinite-scroll-component": "^6.1.0",
     "recharts": "^3.1.0",
-    "victory": "^37.3.6",
     "socket.io-client": "^4.8.1",
+    "victory": "^37.3.6",
     "zustand": "^5.0.6"
   },
   "devDependencies": {
