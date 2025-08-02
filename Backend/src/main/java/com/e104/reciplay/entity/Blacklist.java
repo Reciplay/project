@@ -19,6 +19,6 @@ public class Blacklist {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "lecture_id")
-    private Long lectureId;
+    @Column(name = "course_id")
+    private Long courseId;
 }

@@ -7,9 +7,6 @@ import com.e104.reciplay.user.review.dto.response.ReviewSummary;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.hibernate.query.SortDirection;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +31,7 @@ public class ReviewApiController {
 
     @PostMapping("")
     @Operation(summary = "수강평 작성하기", description = "특정 강좌에 대한 별점을 매기고 수강평를 작성한다.")
-    @ApiResponse(responseCode = "200", description = "수강평 성공")
+    @ApiResponse(responseCode = "201", description = "수강평 성공")
     @ApiResponse(responseCode = "400", description = "중복된 수강평 요청 또는 존재하지 않는 강좌에 대한 수강평")
     public ResponseEntity<ResponseRoot<Object>> createReview(
             @RequestBody ReviewRequest request

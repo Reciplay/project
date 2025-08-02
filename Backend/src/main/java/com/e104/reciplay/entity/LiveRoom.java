@@ -19,5 +19,5 @@ public class LiveRoom {
     @Column(name = "lecture_id")
     private Long lectureId;
 
-    private String title;
+    private String roomname;
 }

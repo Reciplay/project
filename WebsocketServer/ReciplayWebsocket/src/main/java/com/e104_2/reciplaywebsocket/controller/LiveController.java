@@ -1,15 +1,10 @@
-package com.e104.reciplay.live.controller;
+package com.e104_2.reciplaywebsocket.controller;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
-import livekit.LivekitModels;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "라이브 클래스용 컨트롤러", description = "라이브 클래스 관련 API 및 웹소켓 메시지를 처리합니다.")
 @RestController
 @Slf4j
 @RequiredArgsConstructor
