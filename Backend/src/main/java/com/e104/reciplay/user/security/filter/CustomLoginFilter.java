@@ -66,7 +66,11 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         authService.issueNewToken(refreshToken, username, "REFRESH");
 
         response.addHeader("Authorization", "Bearer " + accessToken);
-        response.addCookie(new Cookie("refresh-token", refreshToken));
+        Cookie cookie = new Cookie("refresh-token", refreshToken);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge((int)(REFRESH_TOKEN_EXPIRATION / 1000));
+        response.addCookie(cookie); // refresh-token 프리픽스를 붙여서 검증.
     }
 
     @Override
