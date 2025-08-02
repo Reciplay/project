@@ -1,88 +1,91 @@
 package com.e104.reciplay.s3.controller;
 
+import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.s3.enums.FileCategory;
 import com.e104.reciplay.s3.enums.RelatedType;
 import com.e104.reciplay.s3.service.S3Service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.http.MediaType;
+import org.mockito.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.filter.CharacterEncodingFilter;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doNothing;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
-class S3ControllerTest {
+class S3ControllerUnitTest {
 
-    private MockMvc mockMvc;
+    @Mock
     private S3Service s3Service;
+
+    @InjectMocks
+    private S3Controller s3Controller;
 
     @BeforeEach
     void setUp() {
-        s3Service = Mockito.mock(S3Service.class);
-        S3Controller s3Controller = new S3Controller(s3Service);
-        mockMvc = MockMvcBuilders.standaloneSetup(s3Controller)
-                .addFilter(new CharacterEncodingFilter("UTF-8", true)) // 한글 응답 처리
-                .build();
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    @DisplayName(" 파일 업로드 성공")
-    void uploadFile() throws Exception {
-        MockMultipartFile file = new MockMultipartFile("file", "test.png", MediaType.IMAGE_PNG_VALUE, "data".getBytes());
-        String path = "images/recipe/1.png";
+    @DisplayName("파일 업로드 성공")
+    void testUploadFile() throws Exception {
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "test.png", "image/png", "dummy-image".getBytes()
+        );
 
-        Mockito.when(s3Service.uploadFile(any(), any(), any(), anyLong(), anyInt()))
-                .thenReturn(path);
+        doNothing().when(s3Service).uploadFile(
+                eq(file),
+                eq(FileCategory.IMAGES),
+                eq(RelatedType.USER_PROFILE),
+                eq(123L),
+                eq(1)
+        );
 
-        mockMvc.perform(multipart("/api/v1/files")
-                        .file(file)
-                        .param("category", FileCategory.IMAGES.name())
-                        .param("relatedType", RelatedType.USER_PROFILE.name())
-                        .param("relatedId", "1")
-                        .param("sequence", "0"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("파일 업로드에 성공하였습니다."))
-                .andExpect(jsonPath("$.data").value(path));
+        ResponseEntity<?> response = s3Controller.upload(
+                file,
+                FileCategory.IMAGES,
+                RelatedType.USER_PROFILE,
+                123L,
+                1
+        );
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getBody().toString()).contains("파일 업로드에 성공하였습니다.");
+
+        verify(s3Service, times(1)).uploadFile(file, FileCategory.IMAGES, RelatedType.USER_PROFILE, 123L, 1);
     }
 
     @Test
-    @DisplayName(" Presigned URL 조회 성공")
-    void getPresignedUrl() throws Exception {
-        String url = "https://s3.bucket/abc123.png";
+    @DisplayName("Presigned URL 반환 성공")
+    void testGetPresignedUrl() {
+        String expectedUrl = "https://mock-url.com";
+        when(s3Service.getPresignedUrl(FileCategory.IMAGES, RelatedType.USER_PROFILE, 123L, 1))
+                .thenReturn(expectedUrl);
 
-        Mockito.when(s3Service.getPresignedUrl(any(), any(), anyLong(), anyInt()))
-                .thenReturn(url);
+        ResponseEntity<ResponseRoot<String>> response = s3Controller.getPresignedUrl(
+                FileCategory.IMAGES, RelatedType.USER_PROFILE, 123L, 1
+        );
 
-        mockMvc.perform(get("/api/v1/files")
-                        .param("category", FileCategory.IMAGES.name())
-                        .param("relatedType", RelatedType.USER_PROFILE.name())
-                        .param("relatedId", "1")
-                        .param("sequence", "0"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Presigned Url 생성에 성공하였습니다."))
-                .andExpect(jsonPath("$.data").value(url));
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getBody().getData()).isEqualTo(expectedUrl);
+        assertThat(response.getBody().getMessage()).contains("Presigned Url 생성에 성공하였습니다.");
+
+        verify(s3Service, times(1)).getPresignedUrl(FileCategory.IMAGES, RelatedType.USER_PROFILE, 123L, 1);
     }
 
     @Test
-    @DisplayName(" 파일 삭제 성공")
-    void deleteFile() throws Exception {
-        doNothing().when(s3Service).deleteFile(any(), any(), anyLong(), anyInt());
+    @DisplayName("파일 삭제 성공")
+    void testDeleteFile() {
+        doNothing().when(s3Service).deleteFile(FileCategory.IMAGES, RelatedType.USER_PROFILE, 123L, 1);
 
-        mockMvc.perform(delete("/api/v1/files")
-                        .param("category", FileCategory.IMAGES.name())
-                        .param("relatedType", RelatedType.USER_PROFILE.name())
-                        .param("relatedId", "1")
-                        .param("sequence", "0"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("파일이 성공적으로 삭제되었습니다."))
-                .andExpect(jsonPath("$.data").doesNotExist());
+        ResponseEntity<ResponseRoot<String>> response = s3Controller.deleteFile(
+                FileCategory.IMAGES, RelatedType.USER_PROFILE, 123L, 1
+        );
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getBody().getMessage()).contains("파일이 성공적으로 삭제되었습니다.");
+
+        verify(s3Service, times(1)).deleteFile(FileCategory.IMAGES, RelatedType.USER_PROFILE, 123L, 1);
     }
 }

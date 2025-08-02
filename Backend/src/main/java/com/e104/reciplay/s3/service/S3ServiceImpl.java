@@ -1,9 +1,7 @@
 package com.e104.reciplay.s3.service;
 
 
-
-
-import com.e104.reciplay.s3.dto.FileMetadata;
+import com.e104.reciplay.s3.domain.FileMetadata;
 import com.e104.reciplay.s3.enums.FileCategory;
 import com.e104.reciplay.s3.enums.RelatedType;
 import com.e104.reciplay.s3.repository.FileMetadataRepository;
@@ -49,9 +47,10 @@ public class S3ServiceImpl implements S3Service {
     private String region;
 
     // 해당 파일 s3에 업로드 및 메타 데이터 db에 저장
-    public String uploadFile(MultipartFile file, FileCategory category, RelatedType relatedType, Long relatedId, Integer sequence) throws IOException {
+    public void uploadFile(MultipartFile file, FileCategory category, RelatedType relatedType, Long relatedId, Integer sequence) throws IOException {
 
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+
 
         // 1. DB에 메타데이터 저장
         FileMetadata metadata = repository.save(
@@ -64,7 +63,7 @@ public class S3ServiceImpl implements S3Service {
                         .sequence(sequence)
                         .build()
         );
-        repository.save(metadata);
+
 
         // 2. S3 경로 구성
         String path = String.format("%s/%s/%d.%s",
@@ -83,13 +82,12 @@ public class S3ServiceImpl implements S3Service {
 
         s3Client.putObject(request, RequestBody.fromBytes(file.getBytes()));
 
-        return path;
     }
 
     // 해당 파일 PresigedUrl 생성 후 반환
     public String getPresignedUrl(FileCategory category, RelatedType relatedType, Long relatedId, Integer sequence) {
         // 1. DB에서 해당 파일 메타데이터 찾기
-        FileMetadata metadata = repository.findFirstByCategoryAndRelatedTypeAndRelatedIdAndSequenceOrderByUploadedAtDesc(
+        FileMetadata metadata = repository.findMetadata(
                 category, relatedType, relatedId, sequence
         ).orElseThrow(() -> new RuntimeException("파일을 찾을 수 없습니다."));
 
@@ -123,7 +121,7 @@ public class S3ServiceImpl implements S3Service {
 
     public void deleteFile(FileCategory category, RelatedType relatedType, Long relatedId ,Integer sequence) {
         // 1. 메타데이터 조회
-        FileMetadata metadata = repository.findFirstByCategoryAndRelatedTypeAndRelatedIdAndSequenceOrderByUploadedAtDesc(
+        FileMetadata metadata = repository.findMetadata(
                 category, relatedType, relatedId, sequence
         ).orElseThrow(() -> new RuntimeException("삭제할 파일을 찾을 수 없습니다."));
 

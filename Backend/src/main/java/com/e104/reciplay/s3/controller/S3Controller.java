@@ -27,8 +27,8 @@ public class S3Controller {
             @RequestParam("relatedId") Long relatedId,
             @RequestParam("sequence") Integer sequence
     ) throws IOException {
-        String filePath = s3Service.uploadFile(file, category, relatedType, relatedId, sequence);
-        return CommonResponseBuilder.success("파일 업로드에 성공하였습니다.", filePath);
+        s3Service.uploadFile(file, category, relatedType, relatedId, sequence);
+        return CommonResponseBuilder.success("파일 업로드에 성공하였습니다.", null);
     }
 
     @GetMapping("")
