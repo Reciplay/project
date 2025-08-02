@@ -1,4 +1,4 @@
-package com.e104.reciplay.entity;
+package com.e104_2.reciplaywebsocket.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,12 +6,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "blacklists")
+import java.time.LocalDate;
+
+@Entity(name = "subscriptions")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Blacklist {
+public class Subscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,6 +21,9 @@ public class Blacklist {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "course_id")
-    private Long courseId;
+    @Column(name = "instructor_id")
+    private Long instructorId;
+
+    @Column(name = "subscribed_date")
+    private LocalDate subscribedDate;
 }
