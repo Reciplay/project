@@ -1,0 +1,57 @@
+package com.e104.reciplay.s3.controller;
+
+import com.e104.reciplay.common.response.dto.ResponseRoot;
+import com.e104.reciplay.common.response.util.CommonResponseBuilder;
+import com.e104.reciplay.s3.enums.FileCategory;
+import com.e104.reciplay.s3.enums.RelatedType;
+import com.e104.reciplay.s3.service.S3Service;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/files")
+public class S3Controller {
+
+    private final S3Service s3Service;
+
+    @PostMapping("")
+    public ResponseEntity<ResponseRoot<String>> upload(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("category") FileCategory category,
+            @RequestParam("relatedType") RelatedType relatedType,
+            @RequestParam("relatedId") Long relatedId,
+            @RequestParam("sequence") Integer sequence
+    ) throws IOException {
+        String filePath = s3Service.uploadFile(file, category, relatedType, relatedId, sequence);
+        return CommonResponseBuilder.success("파일 업로드에 성공하였습니다.", filePath);
+    }
+
+    @GetMapping("")
+    public ResponseEntity<ResponseRoot<String>> getPresignedUrl(
+            @RequestParam("category") FileCategory category,
+            @RequestParam("relatedType") RelatedType relatedType,
+            @RequestParam("relatedId") Long relatedId,
+            @RequestParam("sequence") Integer sequence
+    ) {
+        String presignedUrl = s3Service.getPresignedUrl(category, relatedType, relatedId, sequence);
+        return CommonResponseBuilder.success("Presigned Url 생성에 성공하였습니다.", presignedUrl);
+    }
+
+    @DeleteMapping("")
+    public ResponseEntity<ResponseRoot<String>> deleteFile(
+            @RequestParam("category") FileCategory category,
+            @RequestParam("relatedType") RelatedType relatedType,
+            @RequestParam("relatedId") Long relatedId,
+            @RequestParam("sequence") Integer sequence
+    ) {
+        s3Service.deleteFile(category, relatedType, relatedId, sequence);
+        return CommonResponseBuilder.success("파일이 성공적으로 삭제되었습니다.", null);
+    }
+}
+
+
