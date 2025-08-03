@@ -2,6 +2,7 @@
 
 // import Create from "./__components/create/create";
 import BaseButton from "@/components/button/baseButton";
+import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
 import { CreateCourseRequest } from "@/types/course";
 import { message } from "antd";
@@ -48,39 +49,41 @@ export default function Page() {
     },
   });
 
-  const onSubmit = async (data: CreateCourseRequest) => {
+  const onSubmit = methods.handleSubmit(async (data) => {
     try {
-      const res = await fetch("/api/rest/course/courses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      const res = await restClient.post<ApiResponse<object>>(
+        "/api/rest/course/courses",
+        {
+          auth: true,
+          cors: false,
+          data,
+        }
+      );
 
-      // Use `object` (or `Record<string, unknown>`) for data
-      const body = (await res.json()) as ApiResponse<object>;
+      const httpStatus = res.status;
+      // API 응답 본문
+      const apiRes = res.data;
 
-      if (!res.ok) {
-        message.error(body.message);
-        console.error("등록 실패:", body);
+      // HTTP 에러 체크
+      if (httpStatus !== 200) {
+        message.error(apiRes.message);
+        console.error("등록 실패:", httpStatus, apiRes);
         return;
       }
 
-      message.success(body.message);
-      console.log("서버 응답 data:", body.data);
+      // 성공
+      message.success(apiRes.message);
+      console.log("등록된 강좌 데이터:", apiRes.data);
       methods.reset();
-      // router.push("/courses");
     } catch (err) {
       console.error("등록 요청 중 오류 발생:", err);
       message.error("강좌 등록 중 오류가 발생했습니다.");
     }
-  };
+  });
 
   return (
     <FormProvider {...methods}>
-      <form
-        className={styles.container}
-        onSubmit={methods.handleSubmit(onSubmit)}
-      >
+      <form className={styles.container} onSubmit={onSubmit}>
         <div className={styles.content}>
           {/* Todo! - SWAGGER 수정 후 반영 */}
           <ThumbNailForm />
