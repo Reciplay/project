@@ -75,6 +75,7 @@ public class LiveController {
         registry.setApplicationDestinationPrefixes("/app");
         registry.setUserDestinationPrefix("/instructor");
      */
+
     @MessageMapping("/todo-item")
     public void finishTodo() {
 
@@ -104,10 +105,10 @@ public class LiveController {
             @RequestParam("lectureId") Long lectureId,
             @RequestParam("targetEmail") String targetEmail,
             @AuthenticationPrincipal CustomUserDetails user
-    ) {
+    ) throws IOException {
         String userEmail = user.getUsername();
 
-
+        liveControlService.muteStudent(lectureId, targetEmail, userEmail);
         return CommonResponseBuilder.success("음소거에 성공했습니다.", null);
     }
 

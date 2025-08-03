@@ -8,6 +8,8 @@ import com.e104_2.reciplaywebsocket.entity.LiveRoom;
 import com.e104_2.reciplaywebsocket.room.redis.ForceQuitRedisService;
 import com.e104_2.reciplaywebsocket.room.service.addtional.*;
 import io.livekit.server.RoomServiceClient;
+import livekit.LivekitModels;
+import livekit.LivekitRoom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +18,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -85,12 +88,22 @@ public class LiveControlServiceImpl implements LiveControlService{
     }
 
     @Override
-    public void muteStudent(Long lectureId, String email, String userEmail) {
+    public void muteStudent(Long lectureId, String email, String userEmail) throws IOException {
         String roomName = getRoomName(lectureId);
 
         verifyMutePrivilege(lectureId, email, userEmail);
+        Call<LivekitModels.ParticipantInfo> call= roomServiceClient.getParticipant(getRoomName(lectureId), email);
+        Response<LivekitModels.ParticipantInfo> response = call.execute();
+        LivekitModels.ParticipantInfo participantInfos = response.body();
 
-        roomServiceClient.mutePublishedTrack()
+        assert participantInfos != null;
+        for(LivekitModels.TrackInfo trackInfo : participantInfos.getTracksList()) {
+                if(trackInfo.getType().toString().equals("AUDIO")) {
+                    String sid = trackInfo.getSid();
+                    Call<LivekitModels.TrackInfo> muteCall = roomServiceClient.mutePublishedTrack(getRoomName(lectureId), email, sid, true);
+                    muteCall.execute();
+                }
+        }
     }
 
     @Override
@@ -108,6 +121,7 @@ public class LiveControlServiceImpl implements LiveControlService{
     }
 
     public void verifyPrivilege(Long lectureId, String email, String userEmail, String msg) {
+        if(test) return;
         if(userEmail.equals(adminKey)) return; // admin 권한으로 강제 퇴장.
         Lecture lecture = lectureQueryService.queryLectureById(lectureId);
         Course course = courseQueryService.queryCourseById(lecture.getCourseId());

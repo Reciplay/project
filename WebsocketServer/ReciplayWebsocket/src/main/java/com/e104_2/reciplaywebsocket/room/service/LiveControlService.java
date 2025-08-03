@@ -8,7 +8,7 @@ public interface LiveControlService {
     void removeParticipant(Long lectureId, String email, String userEmail) throws IOException;
     void verifyRemovePrivilege(Long lectureId, String email, String userEmail);
 
-    void muteStudent(Long lectureId, String email, String userEmail);
+    void muteStudent(Long lectureId, String email, String userEmail) throws IOException;
     void verifyMutePrivilege(Long lectureId, String email, String userEmail);
 
     void unpublishStudent(String roomName, String targetEmail);
