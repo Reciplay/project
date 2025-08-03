@@ -9,6 +9,7 @@ interface IconWithTextProps {
   editable?: boolean;
   onChange?: (value: string) => void;
   onClick?: () => void;
+  value?: string; // ✅ react-hook-form Controller 지원용
 }
 
 export default function IconWithText({
@@ -19,41 +20,38 @@ export default function IconWithText({
   editable = false,
   onChange,
   onClick,
+  value,
 }: IconWithTextProps) {
   const content = editable ? (
     <input
       type="text"
-      className={styles.input}
-      value={title}
+      className={styles.input} // ✅ 기존 디자인 유지
+      value={value !== undefined ? value : title} // ✅ form value가 없으면 title fallback
       onChange={(e) => onChange?.(e.target.value)}
     />
   ) : (
     <div className={styles.title}>{title}</div>
   );
 
-  if (left) {
-    return (
-      <div className={styles.container} onClick={onClick}>
+  return (
+    <div className={styles.container} onClick={onClick}>
+      {left && (
         <Image
           src={`/icons/${iconName}.svg`}
           alt={iconName}
           width={size}
           height={size}
         />
-        {content}
-      </div>
-    );
-  }
-
-  return (
-    <div className={styles.container} onClick={onClick}>
+      )}
       {content}
-      <Image
-        src={`/icons/${iconName}.svg`}
-        alt={iconName}
-        width={size}
-        height={size}
-      />
+      {!left && (
+        <Image
+          src={`/icons/${iconName}.svg`}
+          alt={iconName}
+          width={size}
+          height={size}
+        />
+      )}
     </div>
   );
 }

@@ -20,7 +20,7 @@ export default function page() {
 		genderBirth: '여 2000 (25세)',
 		email: 'ssafyjoa@example.com',
 		job: '양식 강사',
-		phone: '010-5555-6666',
+		phoneNumber: '010-5555-6666',
 		address: '부산 강서구 명지국제6로 107 부산명지 대방디엠시티 센텀오션 2차',
 	});
 	const [originalProfile, setOriginalProfile] = useState(profile);
@@ -32,20 +32,11 @@ export default function page() {
 	return (
 		<div className={styles.container}>
 			<ProfileForm
-				isEditMode={isEditMode}
-				onEditToggle={setIsEditMode}
-				value={profile}
-				onChange={handleChange}
-				onCancel={() => {
-					setProfile(originalProfile);
-					setIsEditMode(false);
-				}}
-				onSave={() => {
-					console.log('저장된 값:', profile);
-					setIsEditMode(false);
-				}}
-			/>
-
+  value={profile}
+  onChange={(updated) => {
+    setProfile((prev) => ({ ...prev, ...updated }));
+  }}
+/>
 			<div className={styles.infoContainer}>
 
 				<Introduction></Introduction>
