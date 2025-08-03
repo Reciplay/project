@@ -6,9 +6,11 @@ import com.e104.reciplay.course.courses.dto.request.CourseCardCondition;
 import com.e104.reciplay.course.courses.dto.response.CourseCard;
 import com.e104.reciplay.course.courses.dto.response.CourseDetail;
 import com.e104.reciplay.course.courses.dto.response.PagedResponse;
+import com.e104.reciplay.course.courses.service.CourseDetailQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,10 +24,12 @@ import java.util.List;
 
 @Tag(name = "강좌 관리 API", description = "강좌 관리")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/course/courses")
 @Slf4j
 public class CourseApiController {
 
+    private final CourseDetailQueryService courseDetailQueryService;
     // 분홍색 통합 API
     // 페이징한 결과와 페이징 하지 않은 결과를 조건문으로 두개의 결과 선택지를 줘야함
     @GetMapping("/cards/page")
@@ -62,8 +66,8 @@ public class CourseApiController {
     public ResponseEntity<ResponseRoot<CourseDetail>> getCourseDetail(
             @RequestParam Long courseId
     ){
-
-        return CommonResponseBuilder.success("강좌 상세 정보 조회에 성공하였습니다.", new CourseDetail());
+        CourseDetail courseDetail = courseDetailQueryService.queryCourseDetailByCourseId(courseId);
+        return CommonResponseBuilder.success("강좌 상세 정보 조회에 성공하였습니다.", courseDetail);
     }
 
     @PutMapping("")
