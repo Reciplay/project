@@ -2,25 +2,27 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: #f7f7f7;
+  background-color: #1c1d1f;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
-  padding: 16px 24px;
-  background-color: #1a1a1a;
+  padding: 20px 32px;
+  background-color: #4b2c20; // deep brown
   color: white;
   font-size: 16px;
   font-weight: bold;
 
   .badge {
-    font-size: 16px;
+    font-size: 18px;
+    font-weight: 600;
   }
 
   .timer {
-    background-color: #ffd600;
-    padding: 6px 12px;
+    background-color: #ffe082; // warm yellow
+    color: #333;
+    padding: 8px 16px;
     border-radius: 20px;
     font-size: 14px;
   }
@@ -66,11 +68,58 @@
   }
 
   .instructorArea {
-    flex: 1;
-    background-color: #ddd;
+    position: relative;
+    background-color: #000;
     border-radius: 12px;
-    min-height: 240px;
-    margin-top: auto;
+    width: 100%;
+    /* use internal wrapper to maintain aspect ratio */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .videoWrapper {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* 16:9 aspect ratio */
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+
+      /* make any child (e.g., VideoApp) fill the wrapper */
+      & > * {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 12px;
+      }
+    }
+
+    .localVideoOverlay {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      width: 25%;
+      max-width: 240px;
+      aspect-ratio: 16 / 9;
+      background-color: #111;
+      border: 2px solid white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+      z-index: 10;
+
+      /* ensure its child fills it */
+      & > * {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 6px;
+      }
+    }
   }
 }
 
@@ -85,6 +134,29 @@
     border-radius: 12px;
     height: 100%;
     overflow-y: auto;
+
+    h4 {
+      font-size: 17px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+
+      li {
+        position: relative;
+        padding-left: 20px;
+        margin-bottom: 8px;
+
+        &::before {
+          content: "✅";
+          position: absolute;
+          left: 0;
+        }
+      }
+    }
   }
 
   .chapter {

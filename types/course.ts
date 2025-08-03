@@ -21,3 +21,24 @@ export interface Course {
 
   isEnrolled: boolean; // 수강 여부
 }
+
+export interface CreateCourseRequest {
+  courseName: string;
+  courseStartDate: string;
+  courseEndDate: string;
+  instructorId: number;
+  enrollmentStartDate: string;
+  enrollmentEndDate: string;
+  category: string;
+  reviewCount: number;
+  averageReviewScore: number;
+  summary: string;
+  maxEnrollments: number;
+  isEnrollment: boolean;
+  description: string;
+  level: number;
+  isZzim: boolean;
+  isLive: boolean;
+  announcement: string;
+  isReviwed: boolean;
+}
