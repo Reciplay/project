@@ -6,10 +6,12 @@ import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.livekit.exception.CanNotOpenLiveRoomException;
 import com.e104.reciplay.livekit.exception.CanNotParticipateInLiveRoomException;
 import com.e104.reciplay.livekit.exception.EmptyPropertyException;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Hidden
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

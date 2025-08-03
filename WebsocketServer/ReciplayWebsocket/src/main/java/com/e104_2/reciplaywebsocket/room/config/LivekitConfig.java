@@ -1,4 +1,4 @@
-package com.e104.reciplay.livekit.config;
+package com.e104_2.reciplaywebsocket.room.config;
 
 import io.livekit.server.RoomServiceClient;
 import org.springframework.beans.factory.annotation.Value;
