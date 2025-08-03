@@ -6,8 +6,9 @@ interface IconWithTextProps {
   title: string;
   left?: boolean;
   size?: number;
+  editable?: boolean;
+  onChange?: (value: string) => void;
   onClick?: () => void;
-  // size?: "sm" | "md";
 }
 
 export default function IconWithText({
@@ -15,8 +16,21 @@ export default function IconWithText({
   title,
   left = true,
   size = 20,
+  editable = false,
+  onChange,
   onClick,
 }: IconWithTextProps) {
+  const content = editable ? (
+    <input
+      type="text"
+      className={styles.input}
+      value={title}
+      onChange={(e) => onChange?.(e.target.value)}
+    />
+  ) : (
+    <div className={styles.title}>{title}</div>
+  );
+
   if (left) {
     return (
       <div className={styles.container} onClick={onClick}>
@@ -26,14 +40,14 @@ export default function IconWithText({
           width={size}
           height={size}
         />
-        <div className={styles.title}>{title}</div>
+        {content}
       </div>
     );
   }
 
   return (
     <div className={styles.container} onClick={onClick}>
-      <div>{title}</div>
+      {content}
       <Image
         src={`/icons/${iconName}.svg`}
         alt={iconName}

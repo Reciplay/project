@@ -2,7 +2,7 @@
 
 import BaseInput from "@/components/input/baseInput";
 import BaseButton from '@/components/button/baseButton';
-import styles from "./certificate.module.scss";
+import styles from "./career.module.scss";
 import Image from "next/image";
 import { useState } from 'react';
 import MonthDatePicker from "@/components/calendar/monthDatePicker";
@@ -56,22 +56,26 @@ export default function Career() {
             {/* Input fields and buttons */}
             {showInput && (
                 <>
-                    <div className={styles.inputContainer}>
-                        <BaseInput
-                            placeholder="회사명 *"
-                            type="custom"
-                            value={certificateName}
-                            onChange={(e) => setCertificateName(e.target.value)}
-                        />
-                        <BaseInput
-                            placeholder="직책"
-                            type="custom"
-                            value={issuer}
-                            onChange={(e) => setIssuer(e.target.value)}
-                        />
-                        <MonthDatePicker />
-                        <MonthDatePicker />
+                    <div>
+                        <div className={styles.inputContainer}>
+                            <BaseInput
+                                placeholder="회사명 *"
+                                type="custom"
+                                value={certificateName}
+                                onChange={(e) => setCertificateName(e.target.value)}
+                            />
+                            <BaseInput
+                                placeholder="직책"
+                                type="custom"
+                                value={issuer}
+                                onChange={(e) => setIssuer(e.target.value)}
+                            />
+                            <MonthDatePicker />
+                            <MonthDatePicker />
+                        </div>
+                        <textarea className={styles.textarea} placeholder="담당했던 업무에 대해 작성해주세요"></textarea>
                     </div>
+
 
                     <div className={styles.buttonWrapper}>
                         <BaseButton
@@ -93,7 +97,8 @@ export default function Career() {
                         />
                     </div>
                 </>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 }
