@@ -4,6 +4,7 @@ package com.e104.reciplay.course.lecture.controller;
 import com.e104.reciplay.course.lecture.dto.LectureDetail;
 import com.e104.reciplay.course.lecture.dto.response.LectureSummary;
 import com.e104.reciplay.course.lecture.repository.ChapterQueryRepository;
+import com.e104.reciplay.course.lecture.service.LectureManagementService;
 import com.e104.reciplay.course.lecture.service.LectureQueryService;
 import com.e104.reciplay.repository.CourseRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,6 +41,8 @@ class LectureApiControllerTest {
     @MockitoBean
     private ChapterQueryRepository chapterQueryRepository;
 
+    @MockitoBean
+    private LectureManagementService lectureManagementService;
     @Test
     @DisplayName("강의 요약 리스트 조회 성공")
     void getLectureSummaries() throws Exception {

@@ -22,9 +22,9 @@ public class LectureQueryServiceImpl implements LectureQueryService{
     private final LectureQueryRepository lectureQueryRepository;
     private final CourseRepository courseRepository;
     private final ChapterQueryRepository chapterQueryRepository;
-    private final LectureRepository lectureRepository;
+
     @Override
-    public List<LectureSummary> getLectureSummaries(Long courseId) {
+    public List<LectureSummary> queryLectureSummaries(Long courseId) {
         if (!courseRepository.existsById(courseId)) {
             throw new CourseNotFoundException(courseId);
         }
@@ -34,7 +34,7 @@ public class LectureQueryServiceImpl implements LectureQueryService{
 
     @Override
     @Transactional(readOnly = true)
-    public LectureDetail getLectureDetail(Long lectureId) {
+    public LectureDetail queryLectureDetail(Long lectureId) {
         LectureDetail detail = lectureQueryRepository.findLectureDetailById(lectureId);
         if (detail == null) {
             throw new LectureNotFoundException(lectureId);
@@ -48,7 +48,7 @@ public class LectureQueryServiceImpl implements LectureQueryService{
 
     @Override
     @Transactional(readOnly = true)
-    public List<LectureDetail> getLectureDetails(Long courseId) {
+    public List<LectureDetail> queryLectureDetails(Long courseId) {
         List<LectureDetail> details = lectureQueryRepository.findLectureDetailsByCourseId(courseId);
         if (details == null || details.isEmpty()) {
             throw new CourseNotFoundException(courseId);
@@ -60,24 +60,5 @@ public class LectureQueryServiceImpl implements LectureQueryService{
         }
 
         return details;
-    }
-    @Transactional
-    @Override
-    public void updateSkipStatus(Long lectureId, boolean isSkipped) {
-        Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new LectureNotFoundException(lectureId));
-
-        lecture.setIsSkipped(isSkipped); // 엔티티의 필드 setter 사용
-    }
-    @Transactional
-    @Override
-    public void updateLecture(LectureDetail detail) {
-        Lecture lecture = lectureRepository.findById(detail.getLectureId())
-                .orElseThrow(() -> new LectureNotFoundException(detail.getLectureId()));
-
-        lecture.setTitle(detail.getName());          // 강의 명
-        lecture.setSummary(detail.getSummary());   // 강의 요약
-        lecture.setMaterials(detail.getMaterials()); // 강의 준비물
-        //강의 자료 업데이트는 추후 작성
     }
 }
