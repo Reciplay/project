@@ -3,69 +3,59 @@
 import styles from '../page.module.scss';
 import classNames from 'classnames';
 import IconWithText from '@/components/text/iconWithText';
-import BaseButton from '@/components/button/baseButton';
 import Image from 'next/image';
-import { Controller, useForm } from 'react-hook-form';
-import { useState, useEffect } from 'react';
+import { useInstructorStore } from '@/stores/instructorStore';
+import { Upload } from 'antd';
+import type { GetProp, UploadFile, UploadProps } from 'antd';
+import ImgCrop from 'antd-img-crop';
+import React, { useState } from 'react';
 
 interface ProfileFormProps {
   value: {
-    address: string;
-    phoneNumber: string;
     name: string;
     genderBirth: string;
     email: string;
     job: string;
   };
-  onChange: (data: FormData) => void;
 }
+type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
-interface FormData {
-  address: string;
-  phoneNumber: string;
-}
-
-export default function ProfileForm({ value, onChange }: ProfileFormProps) {
-  const [isEditMode, setIsEditMode] = useState(false);
-
-  const { control, handleSubmit, reset } = useForm<FormData>({
-    defaultValues: {
-      address: value.address,
-      phoneNumber: value.phoneNumber,
+export default function ProfileForm({ value }: ProfileFormProps) {
+  const phoneRegex = /^010-\d{4}-\d{4}$/;
+  const [phoneError, setPhoneError] = useState('');
+  const { profile, setProfile } = useInstructorStore();
+  const [fileList, setFileList] = useState<UploadFile[]>([
+    {
+      uid: '-1',
+      name: 'upload',
+      status: 'done',
+      url: '',
     },
-  });
+  ]);
 
-  // 외부 상태가 바뀌면 폼 초기화
-  useEffect(() => {
-    reset({
-      address: value.address,
-      phoneNumber: value.phoneNumber,
-    });
-  }, [value, reset]);
-
-  const handleCancel = () => {
-    reset(); // 기본값으로 초기화
-    setIsEditMode(false);
+  const onPreview = async (file: UploadFile) => {
+    let src = file.url as string;
+    if (!src) {
+      src = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file.originFileObj as FileType);
+        reader.onload = () => resolve(reader.result as string);
+      });
+    }
+    const image = document.createElement('img');
+    image.src = src;
+    const imgWindow = window.open(src);
+    imgWindow?.document.write(image.outerHTML);
   };
 
-  const handleSave = (data: FormData) => {
-  // 👉 백엔드에 저장 요청 보내기 (API 호출 위치)
-  // await axios.post('/api/profile/update', data);
-
-  onChange(data); // ✅ 부모 컴포넌트에 변경 알림
-  setIsEditMode(false);
-  console.log(data);
-};
 
 
   return (
-    <form onSubmit={handleSubmit(handleSave)} className={styles.frame}>
+    <form className={styles.frame}>
       <div className={styles.textContainer}>
         <div className={styles.nameWrapper}>
           <span className={styles.name}>{value.name}</span>
-          {!isEditMode && (
-            <IconWithText iconName="update" title="" onClick={() => setIsEditMode(true)} />
-          )}
+
         </div>
 
         <span className={styles.text}>{value.genderBirth}</span>
@@ -74,60 +64,69 @@ export default function ProfileForm({ value, onChange }: ProfileFormProps) {
           <IconWithText iconName="email" title={value.email} />
           <IconWithText iconName="user2" title={value.job} />
 
-          <Controller
-            control={control}
-            name="phoneNumber"
-            render={({ field }) => (
-              <IconWithText
-                iconName="phoneNumber"
-                title={value.phoneNumber}
-                editable={isEditMode}
-                value={field.value}
-                onChange={field.onChange}
-              />
-            )}
+          <IconWithText
+            iconName="phoneNumber"
+            title={profile.phoneNumber}
+            editable={true}
+            value={profile.phoneNumber}
+            onChange={(v: string) => {
+              // 숫자/하이픈 외 입력 차단
+              if (!/^[\d-]*$/.test(v)) return;
+
+              setProfile({ ...profile, phoneNumber: v });
+
+              // 포맷 검사 후 에러 메시지 설정
+              if (v === '' || phoneRegex.test(v)) {
+                setPhoneError('');
+              } else {
+                setPhoneError('형식: 010-1234-5678');
+              }
+            }}
           />
         </div>
 
-        <Controller
-          control={control}
-          name="address"
-          render={({ field }) => (
-            <IconWithText
-              iconName="address"
-              title={value.address}
-              editable={isEditMode}
-              value={field.value}
-              onChange={field.onChange}
-            />
-          )}
+        <IconWithText
+          iconName="address"
+          title={profile.address}
+          editable={true}
+          value={profile.address}
+          onChange={(v: string) => setProfile({ ...profile, address: v })}
         />
 
-        {isEditMode && (
-          <div className={styles.buttonWrapper}>
-            <BaseButton
-              title="취소"
-              variant="custom"
-              type="button"
-              size="sm"
-              color="white"
-              className={styles.wishButton}
-              onClick={handleCancel}
-            />
-            <BaseButton
-              title="저장"
-              variant="custom"
-              type="submit"
-              size="sm"
-              className={styles.wishButton}
-            />
-          </div>
-        )}
+        <ImgCrop rotationSlider>
+          <Upload
+            // 나중에 백엔드가 제공하는 진짜 API 주소로 바꿔야함 이미지 저장하는 저장소 api
+            action="..."
+            // listType="picture-card": 업로드 UI를 썸네일 카드형으로 만듦
+            listType="picture-card"
+            // maxCount={1}: 최대 1개의 파일만 업로드 가능 (중복 업로드 방지)
+            maxCount={1}
+            // 현재 선택된 파일 리스트 (useState로 관리됨)
+            fileList={fileList}
+            // 파일이 업로드될 때마다 실행되는 콜백 함수
+            // newList는 현재까지의 전체 파일 목록을 의미
+            onChange={({ fileList: newList }) => {
+              // 가장 마지막에 업로드된 파일 하나만 추출
+              // 만약 여러 개 드래그로 올렸을 경우, 가장 최신 1개만 유지
+              const latest = newList.slice(-1);
+              // 현재 파일 리스트 상태를 마지막 하나로 덮어쓰기
+              setFileList(latest);
+              // 업로드가 완료되면 서버 응답에 포함된 이미지 URL 추출
+              const url = latest[0]?.response?.url;
+              // 추출한 url이 존재하면 기존 profile 객체를 펼친 뒤(...profile), 
+              // coverImage 필드를 새 URL로 덮어서 상태 저장
+              if (url) setProfile({ ...profile, coverImage: url });
+            }}
+            onPreview={onPreview}
+          >
+            {fileList.length < 1 && '+ Upload'}
+          </Upload>
+        </ImgCrop>
       </div>
 
       <div className={styles.imageWrapper}>
         <Image
-          src="/images/profile2.jpg"
+          src="/images/profile2.png"
           fill
           alt="profile"
           style={{ objectFit: 'cover' }}
