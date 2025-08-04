@@ -7,7 +7,9 @@ import com.e104.reciplay.course.lecture.dto.response.ChapterInfo;
 import com.e104.reciplay.course.lecture.dto.response.LectureSummary;
 import com.e104.reciplay.course.lecture.repository.ChapterQueryRepository;
 import com.e104.reciplay.course.lecture.repository.LectureQueryRepository;
+import com.e104.reciplay.entity.Lecture;
 import com.e104.reciplay.repository.CourseRepository;
+import com.e104.reciplay.repository.LectureRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ public class LectureQueryServiceImpl implements LectureQueryService{
     private final LectureQueryRepository lectureQueryRepository;
     private final CourseRepository courseRepository;
     private final ChapterQueryRepository chapterQueryRepository;
+    private final LectureRepository lectureRepository;
     @Override
     public List<LectureSummary> getLectureSummaries(Long courseId) {
         if (!courseRepository.existsById(courseId)) {
@@ -58,7 +61,12 @@ public class LectureQueryServiceImpl implements LectureQueryService{
 
         return details;
     }
+    @Transactional
+    @Override
+    public void updateSkipStatus(Long lectureId, boolean isSkipped) {
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new LectureNotFoundException(lectureId));
 
-
-
+        lecture.setIsSkipped(isSkipped); // 엔티티의 필드 setter 사용
+    }
 }

@@ -70,7 +70,7 @@ public class LectureApiController{
             @RequestParam Long lectureId,
             @RequestParam Boolean isSkipped
     ){
-
+        lectureQueryService.updateSkipStatus(lectureId, isSkipped);
         return CommonResponseBuilder.success("강의 휴강 상태 변경에 성공하였습니다.", null);
     }
 
@@ -85,7 +85,4 @@ public class LectureApiController{
 
         return CommonResponseBuilder.success("강의 정보 수정에 성공하였습니다.", null);
     }
-
-
-
 }
