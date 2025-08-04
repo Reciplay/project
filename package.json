@@ -26,6 +26,7 @@
     "@tabler/icons-react": "^3.34.1",
     "ant-design": "^1.0.0",
     "antd": "^5.26.6",
+    "antd-img-crop": "^4.25.0",
     "axios": "^1.11.0",
     "chart.js": "^4.5.0",
     "classnames": "^2.5.1",

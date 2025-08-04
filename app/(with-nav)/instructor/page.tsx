@@ -9,12 +9,13 @@ export default function Page() {
         <div>
             <div className={styles.cardContainer}>
                 <div>
-                    <Statistics></Statistics>
+                    <Statistics />
                     <Overview />
                 </div>
                 <Schedule />
             </div>
-            <QandAList></QandAList>
+            <QandAList />
         </div>
     );
 }
+

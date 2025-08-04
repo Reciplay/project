@@ -1,19 +1,24 @@
 .container {
   display: flex;
-  gap: 8px;
   align-items: center;
-  cursor: pointer;
+  gap: 10px;
 }
 
-.sm {
-  width: 10px;
-  height: 10px;
-}
-
-.md {
-  width: 20px;
-  height: 20px;
-}
 .title {
   font-size: var(--font-size-md);
+}
+
+.input {
+  font-size: 14px;
+  padding: 6px 10px;
+  border: 1px solid #d1d1d1;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+
+  &:focus {
+    border-color: #3182f6;
+    box-shadow: 0 0 0 2px rgba(49, 130, 246, 0.2);
+  }
 }

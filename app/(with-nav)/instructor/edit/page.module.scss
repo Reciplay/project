@@ -11,18 +11,6 @@
     flex-direction: column;
     gap: 10px;
     padding-right: 3rem;
-    display: flex;
-    height: 180px;
-    width: 100%;
-    justify-content: space-between; // 좌우 끝으로 분배
-    justify-self: center;
-}
-
-.textContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-
 }
 
 .innerText {
@@ -110,11 +98,4 @@
     gap: 10px;
     margin-top: 16px;
     position: static !important;
-}
-
-.infoContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-    margin-top: 10px;
 }
