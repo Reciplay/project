@@ -69,4 +69,15 @@ public class LectureQueryServiceImpl implements LectureQueryService{
 
         lecture.setIsSkipped(isSkipped); // 엔티티의 필드 setter 사용
     }
+    @Transactional
+    @Override
+    public void updateLecture(LectureDetail detail) {
+        Lecture lecture = lectureRepository.findById(detail.getLectureId())
+                .orElseThrow(() -> new LectureNotFoundException(detail.getLectureId()));
+
+        lecture.setTitle(detail.getName());          // 강의 명
+        lecture.setSummary(detail.getSummary());   // 강의 요약
+        lecture.setMaterials(detail.getMaterials()); // 강의 준비물
+        //강의 자료 업데이트는 추후 작성
+    }
 }

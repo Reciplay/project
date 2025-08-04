@@ -10,4 +10,5 @@ public interface LectureQueryService {
     LectureDetail getLectureDetail(Long lectureId);
     List<LectureDetail> getLectureDetails(Long courseId);
     void updateSkipStatus(Long lectureId, boolean isSkipped);
+    void updateLecture(LectureDetail lectureDetail);
 }
