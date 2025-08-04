@@ -1,0 +1,137 @@
+/* 테이블 래퍼: 뒤에 배경, 패딩, 둥근 모서리 */
+.tableWrapper {
+  background-color: #e1e1e1; // 원하는 배경색
+  padding: 16px; // 테이블과 래퍼 사이 여백
+  border-radius: 8px; // 외곽 둥글게
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 12px; // 제목과 테이블 사이 간격
+}
+
+/* 기존 .table 수정 */
+.table {
+  font-size: 1.6rem;
+  width: 100%;
+  border-collapse: separate; // collapse 대신 separate
+  border-spacing: 0; // 셀 간격 제거
+  border-radius: 6px; // 테이블 내부 모서리 둥글게
+  overflow: hidden; // 모서리 밖 내용 숨김
+}
+
+.table th,
+.table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+.table thead th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+/* hover 효과, 클릭 가능한 행 */
+.table tbody tr:hover {
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+/* 로딩 / 에러 메시지 스타일 */
+.input.loading,
+.input.error {
+  background-color: #fffbeb;
+  color: #bb1d1d;
+}
+
+/* 예외: 로딩/에러 표시용 */
+.input {
+  background-color: #fff;
+  padding: 1.4rem 1.6rem;
+  border-radius: 0.6rem;
+  color: #bb1d1d;
+  box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.1);
+  cursor: default;
+  font-size: 1.6rem; /* 글자 키움 */
+}
+
+/* 상세 리스트 */
+.detailList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2.4rem;
+  font-size: 1.6rem; /* 글자 키움 */
+}
+.detailList li {
+  margin-bottom: 0.8rem;
+  line-height: 1.5;
+}
+.detailList li strong {
+  width: 10rem;
+  display: inline-block;
+  color: #333;
+}
+
+/* 모달 오버레이 */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* 모달 박스 */
+.modal {
+  background-color: #fff;
+  border-radius: 0.8rem;
+  padding: 2.4rem;
+  width: 70rem;
+  max-width: 95vw;
+  position: relative;
+}
+
+/* 모달 내용 스크롤 숨김 */
+.modalContent {
+  max-height: 80vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+  font-size: 1.6rem; /* 글자 키움 */
+}
+.modalContent::-webkit-scrollbar {
+  display: none;
+}
+
+/* 버튼 그룹 */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.2rem;
+  margin-top: 2.4rem;
+}
+
+/* 공통 버튼 */
+.btn {
+  padding: 0.8rem 1.6rem;
+  border: none;
+  border-radius: 0.4rem;
+  font-size: 1.6rem; /* 글자 키움 */
+  cursor: pointer;
+}
+.btnRegister {
+  background-color: #2ecc71;
+  color: #fff;
+}
+.btnClose {
+  background-color: #95a5a6;
+  color: #fff;
+}
+.btnReject {
+  background-color: #e74c3c;
+  color: #fff;
+}

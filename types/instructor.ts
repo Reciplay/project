@@ -1,9 +1,3 @@
-export interface InstructorResponse {
-  status: string; // 200 or 400
-  message: string;
-  data: Instructor;
-}
-
 export interface Instructor {
   id: string;
   name: string;
@@ -15,13 +9,12 @@ export interface Instructor {
   subscriberCount: number;
   isSubscribed: true;
 }
-
 export interface License {
   id: number;
   licenseName: string;
   institution: string;
-  acquisitionDate: Date;
-  grade: number;
+  acquisitionDate: string;
+  grade: string;
 }
 
 export interface Career {
@@ -29,6 +22,39 @@ export interface Career {
   companyName: string;
   position: string;
   jobDescription: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
+}
+
+export interface InstructorSummary {
+  instructorId: number;
+  name: string;
+  email: string;
+  registeredAt: string;
+}
+
+export interface InstructorDetail {
+  instructorId: number;
+  name: string;
+  email: string;
+  registeredAt: string; // ISO string
+  nickName: string;
+  birthDate: string; // YYYY-MM-DD
+  createdAt: string; // ISO string
+  introduction: string;
+  address: string;
+  phoneNumber: string;
+  licenses: {
+    name: string;
+    institution: string;
+    acquisitionDate: string;
+    grade: string;
+  }[];
+  careers: {
+    companyName: string;
+    position: string;
+    jobDescription: string;
+    startDate: string;
+    endDate: string;
+  }[];
 }

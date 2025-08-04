@@ -1,24 +1,3 @@
-.container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background: #f0f0f0;
-}
-
-.card {
-  width: 90vw;
-  max-width: 980px;
-  aspect-ratio: 980 / 600;
-  display: flex;
-  background: #fafafa;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  padding: 12px;
-  gap: 24px;
-}
-
 .left {
   flex: 1;
   display: flex;
@@ -34,6 +13,7 @@
 .form {
   display: flex;
   flex-direction: column;
+  gap: 1.6rem;
 }
 
 .input {
@@ -87,16 +67,4 @@
 .right {
   position: relative;
   flex: 1;
-}
-
-.imageWrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-.image {
-  object-fit: fill;
 }
