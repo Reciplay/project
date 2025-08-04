@@ -1,17 +1,14 @@
 package com.e104.reciplay.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Entity(name = "special_courses")
+@Entity(name = "can_learn")
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class SpecialCourse {
+public class CanLearn {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,4 +16,5 @@ public class SpecialCourse {
     @Column(name = "course_id")
     private Long courseId;
 
+    private String content;
 }
