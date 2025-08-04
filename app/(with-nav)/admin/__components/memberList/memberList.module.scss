@@ -1,23 +1,23 @@
-/* app/admin/courseList.module.scss */
-
-/* 패널 전체 래퍼 */
-.panel {
-  flex: 1;
-  background: none;
-  padding: 0;
-  border-radius: 0.8rem;
+/* 리스트 컨테이너 */
+.sectionBox {
   display: flex;
   flex-direction: column;
+  gap: 12px;
+  // background-color: #d7d7d7;
 }
 
-/* 제목 */
-.sectionTitle {
-  margin: 0 0 0.8rem;
-  font-size: 2rem;
-  font-weight: bold;
-  color: #333;
-  padding: 0.4rem 0;
-  background: none;
+/* 리스트 아이템 스타일 (개별 div 대신 테이블을 사용할 경우 비활성화) */
+.input {
+  background-color: #ffffff;
+  padding: 12px 16px;
+  border-radius: 6px;
+  color: #333333;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.input:hover {
+  background-color: #f5f5f5;
 }
 
 /* 테이블 래퍼: 뒤에 배경, 패딩, 둥근 모서리 */
@@ -64,35 +64,7 @@
   color: #bb1d1d;
 }
 
-/* 예외: 로딩/에러 표시용 */
-.input {
-  background-color: #fff;
-  padding: 1.4rem 1.6rem;
-  border-radius: 0.6rem;
-  color: #bb1d1d;
-  box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.1);
-  cursor: default;
-  font-size: 1.6rem; /* 글자 키움 */
-}
-
-/* 상세 리스트 */
-.detailList {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 2.4rem;
-  font-size: 1.6rem; /* 글자 키움 */
-}
-.detailList li {
-  margin-bottom: 0.8rem;
-  line-height: 1.5;
-}
-.detailList li strong {
-  width: 10rem;
-  display: inline-block;
-  color: #333;
-}
-
-/* 모달 오버레이 */
+/* 모달 관련 스타일 */
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -101,59 +73,72 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-}
-
+} /* 모달 박스 크기 & 패딩 */
 /* 모달 박스 */
 .modal {
   background-color: #fff;
   border-radius: 0.8rem;
   padding: 2.4rem;
-  width: 70rem;
+  width: 50rem;
   max-width: 95vw;
   position: relative;
 }
 
-/* 모달 내용 스크롤 숨김 */
+/* 모달 내용(스크롤 숨김 포함) */
 .modalContent {
   max-height: 80vh;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 2.4rem;
-  font-size: 1.6rem; /* 글자 키움 */
 }
 .modalContent::-webkit-scrollbar {
   display: none;
 }
 
-/* 버튼 그룹 */
+/* 제목 */
+.modalContent h3 {
+  font-size: 2.6rem;
+  margin-bottom: 1.6rem;
+  color: #333;
+}
+
+/* 상세 정보 리스트 */
+.detailList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.detailList li {
+  display: flex;
+  margin-bottom: 1.2rem;
+  font-size: 1.8rem;
+  line-height: 1.4;
+}
+.detailList li strong {
+  display: inline-block;
+  width: 12rem; /* 라벨 너비 고정 */
+  color: #555;
+  font-weight: 600;
+}
+
+/* 액션 버튼 그룹 */
 .actions {
   display: flex;
   justify-content: flex-end;
   gap: 1.2rem;
-  margin-top: 2.4rem;
+  margin-top: 1.6rem;
 }
 
-/* 공통 버튼 */
+/* 버튼 스타일 */
 .btn {
   padding: 0.8rem 1.6rem;
   border: none;
   border-radius: 0.4rem;
-  font-size: 1.6rem; /* 글자 키움 */
+  font-size: 1.6rem;
   cursor: pointer;
-}
-.btnRegister {
-  background-color: #2ecc71;
-  color: #fff;
 }
 .btnClose {
   background-color: #95a5a6;
-  color: #fff;
-}
-.btnReject {
-  background-color: #e74c3c;
   color: #fff;
 }

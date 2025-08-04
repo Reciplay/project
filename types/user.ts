@@ -1,19 +1,26 @@
-export interface UserResponse {
-  status: string;
-  message: string;
-  data: User;
-}
 export interface User {
   activated: boolean;
-  birthDate: string; // ISO date string
-  createdAt: string; // ISO datetime string
+  birthDate: string;
+  createdAt: string;
   email: string;
-  gender: number; // 0: 여성, 1: 남성 등
+  gender: number;
   imgUrl: string;
   job: string;
   name: string;
   nickname: string;
-  levels: {
-    [key: string]: number;
-  };
+  levels: Record<string, number>;
+}
+
+export interface UserSummary {
+  userId: number;
+  name: string;
+  email: string;
+  createdAt: string;
+}
+
+export interface UserDetail extends UserSummary {
+  role: boolean;
+  job: string;
+  nickname: string;
+  birthDate: string;
 }
