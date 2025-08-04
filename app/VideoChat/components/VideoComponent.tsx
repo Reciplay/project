@@ -24,7 +24,7 @@ async function gestureRecognition(
     video: HTMLVideoElement,
     canvas: HTMLCanvasElement,
     setLandmarksData: (landmarks: Landmark[][]) => void,
-    setRecognizedGesture: (gesture: string) => void
+    setGestures: (gestures: { left: string; right: string }) => void
 ) {
     const canvasCtx = canvas.getContext("2d");
     if (!canvasCtx) {
@@ -41,14 +41,20 @@ async function gestureRecognition(
             canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
             if (gestureRecognizerResult.landmarks) {
                 setLandmarksData(gestureRecognizerResult.landmarks);
+                let gestures = { left: "No Gesture", right: "No Gesture" };
                 if (gestureRecognizerResult.gestures.length > 0) {
-                    const categoryName = gestureRecognizerResult.gestures[0][0].categoryName;
-                    const categoryScore = gestureRecognizerResult.gestures[0][0].score.toFixed(2);
-                    const handedness = gestureRecognizerResult.handedness[0][0].displayName;
-                    setRecognizedGesture(`${handedness}: ${categoryName} (${categoryScore})`);
-                } else {
-                    setRecognizedGesture("No Gesture");
+                    for (let i = 0; i < gestureRecognizerResult.gestures.length; i++) {
+                        const categoryName = gestureRecognizerResult.gestures[i][0].categoryName;
+                        const categoryScore = gestureRecognizerResult.gestures[i][0].score.toFixed(2);
+                        const handedness = gestureRecognizerResult.handedness[i][0].displayName;
+                        if (handedness === 'Left') {
+                            gestures.left = `${categoryName} (${categoryScore})`;
+                        } else if (handedness === 'Right') {
+                            gestures.right = `${categoryName} (${categoryScore})`;
+                        }
+                    }
                 }
+                setGestures(gestures);
 
                 for (const landmarks of gestureRecognizerResult.landmarks) {
                     drawingUtils.drawLandmarks(landmarks, {
@@ -73,14 +79,14 @@ interface VideoComponentProps {
     track: LocalVideoTrack | RemoteVideoTrack;
     participantIdentity: string;
     local?: boolean;
+    setGestures: (gestures: { left: string; right: string }) => void;
 }
 
 
-function VideoComponent({ track, participantIdentity, local = false }: VideoComponentProps) {
+function VideoComponent({ track, participantIdentity, local = false, setGestures }: VideoComponentProps) {
     const videoElement = useRef<HTMLVideoElement | null>(null);
     const canvasElement = useRef<HTMLCanvasElement | null>(null);
     const [landmarksData, setLandmarksData] = useState<Landmark[][]>([]);
-    const [recognizedGesture, setRecognizedGesture] = useState<string>("No Gesture");
 
     useEffect(() => {
         if (videoElement.current && canvasElement.current) {
@@ -88,7 +94,7 @@ function VideoComponent({ track, participantIdentity, local = false }: VideoComp
             const currentVideo = videoElement.current;
             const currentCanvas = canvasElement.current;
             createGestureRecognizer().then(() => {
-                gestureRecognition(currentVideo, currentCanvas, setLandmarksData, setRecognizedGesture);
+                gestureRecognition(currentVideo, currentCanvas, setLandmarksData, setGestures);
             });
         }
 
@@ -102,13 +108,9 @@ function VideoComponent({ track, participantIdentity, local = false }: VideoComp
             <div className="participant-data">
                 <p>{participantIdentity + (local ? " (You)" : "")}</p>
             </div>
-            <video ref={videoElement} id={track.sid}></video>
-            <div>
+            <div className="media-wrapper">
+                <video ref={videoElement} id={track.sid}></video>
                 <canvas ref={canvasElement} className="output-canvas"></canvas>
-            </div>
-            <div className="landmark-container">
-                <p>Recognized Gesture: {recognizedGesture}</p>
-                <pre>{JSON.stringify(landmarksData, null, 2)}</pre>
             </div>
         </div>
     );

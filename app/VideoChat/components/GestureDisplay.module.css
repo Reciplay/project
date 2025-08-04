@@ -1,0 +1,27 @@
+.gestureContainer {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    width: 300px;
+    height: fit-content;
+    margin-left: 20px;
+}
+
+.gestureText {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+}
+
+.gestureLog {
+    margin-top: 20px;
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+}
+
+.logEntry {
+    font-size: 1em;
+    color: #666;
+    margin: 5px 0;
+}

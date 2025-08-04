@@ -12,20 +12,29 @@ import {
 import { useState } from "react";
 import VideoComponent from "./components/VideoComponent";
 import AudioComponent from "./components/AudioComponent";
+import GestureDisplay from "./components/GestureDisplay";
 
 type TrackInfo = {
     trackPublication: RemoteTrackPublication;
     participantIdentity: string;
 };
 
+
 // let APPLICATION_SERVER_URL = "http://i13e104.p.ssafy.io:8080/";
-let LIVEKIT_URL = "ws://i13e104.p.ssafy.io:7880/";
+// let LIVEKIT_URL = "ws://i13e104.p.ssafy.io:7880/";
+
+// for local test
+let APPLICATION_SERVER_URL = "/test/local/"
+let LIVEKIT_URL = "ws://localhost:7880"
+
+
 
 
 function videoApp() {
     const [room, setRoom] = useState<Room | undefined>(undefined);
     const [localTrack, setLocalTrack] = useState<LocalVideoTrack | undefined>(undefined);
     const [remoteTracks, setRemoteTracks] = useState<TrackInfo[]>([]);
+    const [gestures, setGestures] = useState({ left: "No Gesture", right: "No Gesture" });
 
     const [participantName, setParticipantName] = useState("Participant" + Math.floor(Math.random() * 100));
     const [roomName, setRoomName] = useState("Test Room");
@@ -69,7 +78,8 @@ function videoApp() {
     }
 
     async function getToken(roomName: string, participantName: string) {
-        const response = await fetch("api/rest/livekit/token", {
+        const response = await fetch(APPLICATION_SERVER_URL + 'token', {
+        // const response = await fetch("api/rest/livekit/token", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -142,27 +152,36 @@ function videoApp() {
                             Leave Room
                         </button>
                     </div>
-                    <div id="layout-container" className={styles.videoContainer}>
-                        {localTrack && (
-                            <div className={styles.video}>
-                                <VideoComponent track={localTrack} participantIdentity={participantName} local={true} />
-                            </div>
-                        )}
-                        {remoteTracks.map((remoteTrack) =>
-                            remoteTrack.trackPublication.kind === "video" ? (
-                                <div className={styles.video} key={remoteTrack.trackPublication.trackSid}>
+                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                        <div id="layout-container" className={styles.videoContainer}>
+                            {localTrack && (
+                                <div className={styles.video}>
                                     <VideoComponent
-                                        track={remoteTrack.trackPublication.videoTrack!}
-                                        participantIdentity={remoteTrack.participantIdentity}
+                                        track={localTrack}
+                                        participantIdentity={participantName}
+                                        local={true}
+                                        setGestures={setGestures}
                                     />
                                 </div>
-                            ) : (
-                                <AudioComponent
-                                    key={remoteTrack.trackPublication.trackSid}
-                                    track={remoteTrack.trackPublication.audioTrack!}
-                                />
-                            )
-                        )}
+                            )}
+                            {remoteTracks.map((remoteTrack) =>
+                                remoteTrack.trackPublication.kind === "video" ? (
+                                    <div className={styles.video} key={remoteTrack.trackPublication.trackSid}>
+                                        <VideoComponent
+                                            track={remoteTrack.trackPublication.videoTrack!}
+                                            participantIdentity={remoteTrack.participantIdentity}
+                                            setGestures={setGestures}
+                                        />
+                                    </div>
+                                ) : (
+                                    <AudioComponent
+                                        key={remoteTrack.trackPublication.trackSid}
+                                        track={remoteTrack.trackPublication.audioTrack!}
+                                    />
+                                )
+                            )}
+                        </div>
+                        {localTrack && <GestureDisplay gestures={gestures} />}
                     </div>
                 </div>
             )}
