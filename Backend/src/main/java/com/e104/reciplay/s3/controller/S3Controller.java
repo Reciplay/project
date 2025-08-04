@@ -52,6 +52,7 @@ public class S3Controller {
         s3Service.deleteFile(category, relatedType, relatedId, sequence);
         return CommonResponseBuilder.success("파일이 성공적으로 삭제되었습니다.", null);
     }
+
 }
 
 

@@ -1,105 +1,91 @@
 package com.e104.reciplay.course.courses.controller;
 
-import com.e104.reciplay.common.response.dto.ResponseRoot;
-import com.e104.reciplay.course.courses.dto.response.CourseDetail;
-import com.e104.reciplay.course.courses.service.CourseDetailQueryService;
+import com.e104.reciplay.course.courses.dto.request.CourseRegisterInfo;
+import com.e104.reciplay.common.dto.FileCondition;
+import com.e104.reciplay.s3.enums.FileCategory;
+import com.e104.reciplay.s3.enums.RelatedType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@AutoConfigureMockMvc(addFilters = false)
 class CourseApiControllerTest {
 
-    @Mock
-    private CourseDetailQueryService courseDetailQueryService;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @InjectMocks
-    private CourseApiController courseApiController;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("강좌 상세 조회 - courseId로 CourseDetail 반환")
-    void testGetCourseDetail() {
-        // given
-        Long courseId = 1L;
-
-        CourseDetail mockDetail = CourseDetail.builder()
-                .courseName("요리 클래스")
-                .courseStartDate(LocalDate.of(2025, 8, 10))
-                .courseEndDate(LocalDate.of(2025, 9, 1))
-                .instructorId(101L)
-                .enrollmentStartDate(LocalDate.of(2025, 7, 1))
-                .enrollmentEndDate(LocalDate.of(2025, 8, 1))
-                .category("한식")
-                .reviewCount(12)
-                .averageReviewScore(4.8)
-                .summary("간단한 한식 배우기")
-                .maxEnrollments(30)
-                .isEnrollment(true)
-                .description("된장찌개, 김치찌개 등 다양한 요리를 배울 수 있어요.")
-                .level(2)
-                .isZzim(true)
-                .isLive(false)
-                .announcement("첫 수업은 온라인으로 진행됩니다.")
-                .isReviwed(false)
+    @DisplayName("강좌 등록 API - JSON 기반 요청 성공")
+    void testCreateCourse() throws Exception {
+        CourseRegisterInfo courseDto = CourseRegisterInfo.builder()
+                .title("강좌 제목 예시")
+                .category("요리")
+                .summary("한식을 배워요")
+                .description("기초부터 배우는 요리 수업")
+                .level(1)
+                .maxEnrollments(100)
+                .announcement("칼과 재료를 준비해주세요.")
+                .canLearns(List.of("재료 손질", "불 조절"))
+                .enrollmentStartDate(LocalDateTime.now())
+                .enrollmentEndDate(LocalDateTime.now().plusDays(7))
+                .coverimageCondition(FileCondition.builder()
+                        .fileCategory(FileCategory.IMAGES)
+                        .relatedType(RelatedType.USER_PROFILE)
+                        .relatedId(1L)
+                        .sequuence(0)
+                        .file(null)  // MultipartFile은 JSON 직렬화 시 제외됨
+                        .build())
+                .thumbnailConditions(List.of()) // 테스트용 비워둠
+                .chapters(List.of())
                 .build();
 
-        when(courseDetailQueryService.queryCourseDetailByCourseId(courseId)).thenReturn(mockDetail);
-
-        // when
-        ResponseEntity<ResponseRoot<CourseDetail>> response = courseApiController.getCourseDetail(courseId);
-
-        // then
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getMessage()).isEqualTo("강좌 상세 정보 조회에 성공하였습니다.");
-        assertThat(response.getBody().getData().getCourseName()).isEqualTo("요리 클래스");
-        assertThat(response.getBody().getData().getInstructorId()).isEqualTo(101L);
+        mockMvc.perform(post("/api/v1/course/courses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(courseDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("강좌 등록에 성공하였습니다."));
     }
 
     @Test
-    @DisplayName("강좌 등록 요청 - 성공 응답 반환")
-    void testCreateCourse() {
-        // given
-        CourseDetail newCourse = CourseDetail.builder()
-                .courseName("신규 강좌")
-                .courseStartDate(LocalDate.of(2025, 9, 1))
-                .courseEndDate(LocalDate.of(2025, 10, 1))
-                .instructorId(5L)
-                .build();
-
-        // when
-        ResponseEntity<ResponseRoot<Object>> response = courseApiController.createCourse(newCourse);
-
-        // then
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getMessage()).isEqualTo("강좌 등록에 성공하였습니다.");
+    @DisplayName("강좌 상세 조회 API 테스트")
+    void testGetCourseDetail() throws Exception {
+        mockMvc.perform(get("/api/v1/course/courses")
+                        .param("courseId", "1")) // 존재하는 ID로 테스트
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("강좌 상세 정보 조회에 성공하였습니다."));
     }
 
     @Test
-    @DisplayName("강좌 수정 요청 - 성공 응답 반환")
-    void testUpdateCourse() {
-        // given
-        CourseDetail updated = CourseDetail.builder()
-                .courseName("업데이트된 강좌명")
-                .description("업데이트된 설명")
-                .build();
+    @DisplayName("강좌 카드 리스트 조회 API 테스트")
+    void testGetCourseCardPage() throws Exception {
+        mockMvc.perform(get("/api/v1/course/courses/cards")
+                        .param("requestCategory", "ALL")
+                        .param("page", "0")
+                        .param("size", "5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("강좌 카드 정보 리스트 조회에 성공하였습니다."));
+    }
 
-        // when
-        ResponseEntity<ResponseRoot<Object>> response = courseApiController.updateCourse(updated);
-
-        // then
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getMessage()).isEqualTo("강좌 정보 수정에 성공하였습니다.");
+    @Test
+    @DisplayName("강사의 강좌 목록 조회 API 테스트")
+    void testGetCourseListByInstructor() throws Exception {
+        mockMvc.perform(get("/api/v1/course/courses/list"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("강좌 상세 정보 리스트 조회에 성공하였습니다."));
     }
 }

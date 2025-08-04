@@ -39,5 +39,7 @@ public class FileMetadata {
     @CreatedDate
     @Column(name = "uploaded_at")
     private LocalDateTime uploadedAt;
+
+    private String name;
 }
 
