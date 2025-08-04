@@ -1,7 +1,7 @@
 package com.e104.reciplay.s3.repository.custom;
 
-import com.e104.reciplay.s3.domain.FileMetadata;
-import com.e104.reciplay.s3.domain.QFileMetadata;
+import com.e104.reciplay.entity.FileMetadata;
+import com.e104.reciplay.entity.QFileMetadata;
 import com.e104.reciplay.s3.enums.FileCategory;
 import com.e104.reciplay.s3.enums.RelatedType;
 import com.querydsl.jpa.impl.JPAQueryFactory;

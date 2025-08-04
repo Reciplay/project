@@ -1,4 +1,4 @@
-package com.e104.reciplay.s3.domain;
+package com.e104.reciplay.entity;
 
 import com.e104.reciplay.s3.enums.FileCategory;
 import com.e104.reciplay.s3.enums.RelatedType;
