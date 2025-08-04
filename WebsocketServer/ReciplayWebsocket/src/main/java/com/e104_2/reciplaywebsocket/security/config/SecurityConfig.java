@@ -5,6 +5,7 @@ import com.e104_2.reciplaywebsocket.security.jwt.JWTUtil;
 import com.e104_2.reciplaywebsocket.security.service.TokenQueryService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -28,11 +29,13 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final TokenQueryService tokenQueryService;
-
+    @Value("${application.url-prefix}")
+    private String URL_PREFIX;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.csrf(auth -> auth.disable());
         http.authorizeHttpRequests(auth -> auth
+                .requestMatchers("/ws/v1/sub/**").permitAll()
                 .anyRequest().authenticated()
         );
 

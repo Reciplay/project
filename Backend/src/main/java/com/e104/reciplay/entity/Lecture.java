@@ -30,9 +30,6 @@ public class Lecture {
 
     private String materials; // 문비물
 
-    @Column(name = "resource_url")
-    private String resourceUrl;
-
     @Column(name = "started_at")
     private LocalDateTime startedAt;
 

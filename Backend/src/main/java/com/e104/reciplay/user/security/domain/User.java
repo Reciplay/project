@@ -42,9 +42,6 @@ public class User {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column(name = "img_url")
-    private String imgUrl;
-
     private Boolean isActivated;
 
     private String role;
