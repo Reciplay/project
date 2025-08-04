@@ -16,8 +16,8 @@ public class LiveParticipation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "liveroom_id")
-    private Long liveroomId;
+    @Column(name = "live_room_id")
+    private Long liveRoomId;
 
     private String email;
 }

@@ -19,7 +19,7 @@ public class LiveParticipationManagementServiceImpl implements LiveParticipation
     public void participateIn(Long liveRoomId, String email) {
         LiveParticipation liveParticipation = new LiveParticipation();
         liveParticipation.setEmail(email);
-        liveParticipation.setLiveroomId(liveRoomId);
+        liveParticipation.setLiveRoomId(liveRoomId);
         liveParticipationRepository.save(liveParticipation);
     }
 
@@ -27,7 +27,7 @@ public class LiveParticipationManagementServiceImpl implements LiveParticipation
     public void participateIn(LiveRoom liveRoom, String email) {
         LiveParticipation liveParticipation = new LiveParticipation();
         liveParticipation.setEmail(email);
-        liveParticipation.setLiveroomId(liveRoom.getId());
+        liveParticipation.setLiveRoomId(liveRoom.getId());
         liveParticipationRepository.save(liveParticipation);
     }
 }
