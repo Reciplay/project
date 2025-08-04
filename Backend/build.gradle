@@ -92,6 +92,15 @@ tasks.withType(JavaCompile).configureEach {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+tasks.register("compileQuerydsl", JavaCompile) {
+	group = "build"
+	description = "Generate QueryDSL Q-classes"
+	source = sourceSets.main.java
+	classpath = sourceSets.main.compileClasspath
+	destinationDirectory.set(file(generated))
+
+	options.annotationProcessorPath = configurations.annotationProcessor
+}
 
 clean {
     delete file(generated)

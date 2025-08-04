@@ -1,6 +1,8 @@
 package com.e104.reciplay.common.handler;
 
+import com.e104.reciplay.common.exception.CourseNotFoundException;
 import com.e104.reciplay.common.exception.InvalidUserRoleException;
+import com.e104.reciplay.common.exception.LectureNotFoundException;
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.livekit.exception.CanNotOpenLiveRoomException;
@@ -34,4 +36,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> canNotPariticipateIntLiveRoomExceptionHandler(CanNotParticipateInLiveRoomException e) {
         return CommonResponseBuilder.badRequest(e.getMessage());
     }
+    @ExceptionHandler(CourseNotFoundException.class)
+    public ResponseEntity<?> courseNotFoundExceptionHandler(CourseNotFoundException e) {
+        return CommonResponseBuilder.notFound(e.getMessage());
+    }
+    @ExceptionHandler(CourseNotFoundException.class)
+    public ResponseEntity<?> lectureNotFoundExceptionHandler(LectureNotFoundException e) {
+        return CommonResponseBuilder.notFound(e.getMessage());
+    }
+
 }

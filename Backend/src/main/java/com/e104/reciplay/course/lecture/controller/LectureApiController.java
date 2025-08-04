@@ -3,10 +3,14 @@ package com.e104.reciplay.course.lecture.controller;
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.course.lecture.dto.LectureDetail;
+import com.e104.reciplay.course.lecture.dto.response.ChapterInfo;
 import com.e104.reciplay.course.lecture.dto.response.LectureSummary;
+import com.e104.reciplay.course.lecture.repository.ChapterQueryRepository;
+import com.e104.reciplay.course.lecture.service.LectureQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +21,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/course/lecture")
 @Slf4j
-
+@RequiredArgsConstructor
 public class LectureApiController{
+    private final LectureQueryService lectureQueryService;
+    private final ChapterQueryRepository chapterQueryRepository;
 
     @GetMapping("/summaries")
     @ApiResponse(responseCode = "200", description = "강의 요약 정보 리스트 조회 성공")
@@ -28,9 +34,9 @@ public class LectureApiController{
     public ResponseEntity<ResponseRoot<List<LectureSummary>>> getLectureSummaries(
             @RequestParam Long courseId
             ) {
-
+        List<LectureSummary> result = lectureQueryService.getLectureSummaries(courseId);
         return CommonResponseBuilder.success("강의 요약 정보 리스트 조회에 성공하였습니다.",
-                List.of(new LectureSummary()));
+                result);
     }
 
 
@@ -42,9 +48,12 @@ public class LectureApiController{
     public ResponseEntity<ResponseRoot<LectureDetail>> getLectureDetail(
             @RequestParam Long lectureId
     ){
-
-        return CommonResponseBuilder.success("강의 상세 정보 조회에 성공하였습니다.", new LectureDetail());
+        LectureDetail detail = lectureQueryService.getLectureDetail(lectureId);
+        List<ChapterInfo> chapters = chapterQueryRepository.findChaptersWithTodosByLectureId(lectureId);
+        detail.setChapters(chapters);
+        return CommonResponseBuilder.success("강의 상세 정보 조회에 성공하였습니다.",detail);
     }
+
     @GetMapping("list")
     @ApiResponse(responseCode = "200", description = "강의 상세 정보 리스트 조회 성공")
     @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")

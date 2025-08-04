@@ -20,27 +20,27 @@ public class ChapterQueryRepositoryImpl implements ChapterQueryRepository {
 
     @Override
     public List<ChapterInfo> findChaptersWithTodosByLectureId(Long lectureId) {
-        QChapter chapter = QChapter.chapter;
-        QTodo todo = QTodo.todo;
-
-        List<ChapterInfo> result = queryFactory
-                .selectFrom(chapter)
-                .leftJoin(todo).on(todo.chapterId.eq(chapter.id))
-                .where(chapter.lectureId.eq(lectureId))
+        return queryFactory
+                .from(QChapter.chapter)
+                .leftJoin(QTodo.todo).on(QChapter.chapter.id.eq(QTodo.todo.chapterId))
+                .where(QChapter.chapter.lectureId.eq(lectureId))
                 .transform(
-                        GroupBy.groupBy(chapter.id).list(
-                                Projections.constructor(ChapterInfo.class,
-                                        chapter.sequence,
-                                        chapter.title,
-                                        GroupBy.list(Projections.constructor(TodoInfo.class,
-                                                todo.sequence,
-                                                todo.title,
-                                                todo.type,
-                                                todo.seconds
-                                        ))
+                        GroupBy.groupBy(QChapter.chapter.id).list(
+                                com.querydsl.core.types.Projections.constructor(
+                                        ChapterInfo.class,
+                                        QChapter.chapter.sequence,
+                                        QChapter.chapter.title,
+                                        GroupBy.list(
+                                                com.querydsl.core.types.Projections.constructor(
+                                                        TodoInfo.class,
+                                                        QTodo.todo.sequence,
+                                                        QTodo.todo.title,
+                                                        QTodo.todo.type,      // Enum → Integer 자동 변환됨
+                                                        QTodo.todo.seconds
+                                                )
+                                        )
                                 )
                         )
                 );
-        return result;
     }
 }

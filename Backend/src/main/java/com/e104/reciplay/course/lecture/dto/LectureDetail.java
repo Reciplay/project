@@ -2,6 +2,7 @@ package com.e104.reciplay.course.lecture.dto;
 
 
 import com.e104.reciplay.course.lecture.dto.response.ChapterInfo;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,5 +27,20 @@ public class LectureDetail {
     private LocalDate startedAt;
     private LocalDate endedAt;
     private List<ChapterInfo> chapters;
+    @QueryProjection
+    public LectureDetail(Long lectureId, Integer sequence, String name, String summary,
+                         String materials, Boolean isSkipped, String resourceName,
+                         LocalDate startedAt, LocalDate endedAt) {
+        this.lectureId = lectureId;
+        this.sequence = sequence;
+        this.name = name;
+        this.summary = summary;
+        this.materials = materials;
+        this.isSkipped = isSkipped;
+        this.resourceName = resourceName;
+        this.startedAt = startedAt;
+        this.endedAt = endedAt;
+        this.chapters = null; // 따로 set 예정
+    }
 
 }
