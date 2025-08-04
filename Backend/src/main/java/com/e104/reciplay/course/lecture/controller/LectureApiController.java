@@ -24,7 +24,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LectureApiController{
     private final LectureQueryService lectureQueryService;
-    private final ChapterQueryRepository chapterQueryRepository;
 
     @GetMapping("/summaries")
     @ApiResponse(responseCode = "200", description = "강의 요약 정보 리스트 조회 성공")
@@ -38,8 +37,6 @@ public class LectureApiController{
         return CommonResponseBuilder.success("강의 요약 정보 리스트 조회에 성공하였습니다.",
                 result);
     }
-
-
     @GetMapping("")
     @ApiResponse(responseCode = "200", description = "강의 상세 정보 조회 성공")
     @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")
@@ -49,9 +46,7 @@ public class LectureApiController{
             @RequestParam Long lectureId
     ){
         LectureDetail detail = lectureQueryService.getLectureDetail(lectureId);
-        List<ChapterInfo> chapters = chapterQueryRepository.findChaptersWithTodosByLectureId(lectureId);
-        detail.setChapters(chapters);
-        return CommonResponseBuilder.success("강의 상세 정보 조회에 성공하였습니다.",detail);
+        return CommonResponseBuilder.success("강의 상세 정보 조회에 성공하였습니다.", detail);
     }
 
     @GetMapping("list")
@@ -62,9 +57,8 @@ public class LectureApiController{
     public ResponseEntity<ResponseRoot<List<LectureDetail>>> getLectureDetails(
             @RequestParam Long courseId
     ) {
-
-        return CommonResponseBuilder.success("강의 요약 리스트 조회에 성공하였습니다.",
-                List.of(new LectureDetail()));
+        List<LectureDetail> details = lectureQueryService.getLectureDetails(courseId);
+        return CommonResponseBuilder.success("강의 상세 정보 리스트 조회에 성공하였습니다.", details);
     }
 
     @PatchMapping("/skip")

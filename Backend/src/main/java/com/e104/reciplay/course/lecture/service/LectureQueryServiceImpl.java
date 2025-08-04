@@ -3,14 +3,14 @@ package com.e104.reciplay.course.lecture.service;
 import com.e104.reciplay.common.exception.CourseNotFoundException;
 import com.e104.reciplay.common.exception.LectureNotFoundException;
 import com.e104.reciplay.course.lecture.dto.LectureDetail;
+import com.e104.reciplay.course.lecture.dto.response.ChapterInfo;
 import com.e104.reciplay.course.lecture.dto.response.LectureSummary;
+import com.e104.reciplay.course.lecture.repository.ChapterQueryRepository;
 import com.e104.reciplay.course.lecture.repository.LectureQueryRepository;
-import com.e104.reciplay.entity.Lecture;
-import com.e104.reciplay.entity.QLecture;
 import com.e104.reciplay.repository.CourseRepository;
-import com.querydsl.core.QueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,6 +19,7 @@ import java.util.List;
 public class LectureQueryServiceImpl implements LectureQueryService{
     private final LectureQueryRepository lectureQueryRepository;
     private final CourseRepository courseRepository;
+    private final ChapterQueryRepository chapterQueryRepository;
     @Override
     public List<LectureSummary> getLectureSummaries(Long courseId) {
         if (!courseRepository.existsById(courseId)) {
@@ -27,14 +28,37 @@ public class LectureQueryServiceImpl implements LectureQueryService{
         return lectureQueryRepository.findLectureSummariesByCourseId(courseId);
     }
 
+
     @Override
+    @Transactional(readOnly = true)
     public LectureDetail getLectureDetail(Long lectureId) {
         LectureDetail detail = lectureQueryRepository.findLectureDetailById(lectureId);
         if (detail == null) {
             throw new LectureNotFoundException(lectureId);
         }
+
+        List<ChapterInfo> chapters = chapterQueryRepository.findChaptersWithTodosByLectureId(lectureId);
+        detail.setChapters(chapters);
+
         return detail;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<LectureDetail> getLectureDetails(Long courseId) {
+        List<LectureDetail> details = lectureQueryRepository.findLectureDetailsByCourseId(courseId);
+        if (details == null || details.isEmpty()) {
+            throw new CourseNotFoundException(courseId);
+        }
+
+        for (LectureDetail detail : details) {
+            List<ChapterInfo> chapters = chapterQueryRepository.findChaptersWithTodosByLectureId(detail.getLectureId());
+            detail.setChapters(chapters);
+        }
+
+        return details;
+    }
+
 
 
 }

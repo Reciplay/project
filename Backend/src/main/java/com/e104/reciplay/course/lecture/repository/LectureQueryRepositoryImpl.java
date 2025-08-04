@@ -40,17 +40,36 @@ public class LectureQueryRepositoryImpl implements  LectureQueryRepository{
                 .select(new QLectureDetail(
                         lecture.id,
                         lecture.sequence,
-                        lecture.title, // name
+                        lecture.title,
                         lecture.summary,
                         lecture.materials,
                         lecture.isSkipped,
                         lecture.resourceName,
                         Expressions.dateTemplate(LocalDate.class, "DATE({0})", lecture.startedAt),
-                        Expressions.dateTemplate(LocalDate.class, "DATE({0})", lecture.endedAt),
-                        null
+                        Expressions.dateTemplate(LocalDate.class, "DATE({0})", lecture.endedAt)
                 ))
                 .from(lecture)
                 .where(lecture.id.eq(lectureId))
                 .fetchOne();
+    }
+    @Override
+    public List<LectureDetail> findLectureDetailsByCourseId(Long courseId) {
+        QLecture lecture = QLecture.lecture;
+
+        return queryFactory
+                .select(new QLectureDetail(   // QueryProjection 사용 시
+                        lecture.id,
+                        lecture.sequence,
+                        lecture.title,
+                        lecture.summary,
+                        lecture.materials,
+                        lecture.isSkipped,
+                        lecture.resourceName,
+                        Expressions.dateTemplate(LocalDate.class, "DATE({0})", lecture.startedAt),
+                        Expressions.dateTemplate(LocalDate.class, "DATE({0})", lecture.endedAt)
+                ))
+                .from(lecture)
+                .where(lecture.courseId.eq(courseId))
+                .fetch();
     }
 }

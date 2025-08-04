@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> courseNotFoundExceptionHandler(CourseNotFoundException e) {
         return CommonResponseBuilder.notFound(e.getMessage());
     }
-    @ExceptionHandler(CourseNotFoundException.class)
+    @ExceptionHandler(LectureNotFoundException.class)
     public ResponseEntity<?> lectureNotFoundExceptionHandler(LectureNotFoundException e) {
         return CommonResponseBuilder.notFound(e.getMessage());
     }

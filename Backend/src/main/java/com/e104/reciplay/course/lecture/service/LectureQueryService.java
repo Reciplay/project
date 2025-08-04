@@ -8,4 +8,5 @@ import java.util.List;
 public interface LectureQueryService {
     List<LectureSummary> getLectureSummaries(Long courseId);
     LectureDetail getLectureDetail(Long lectureId);
+    List<LectureDetail> getLectureDetails(Long courseId);
 }
