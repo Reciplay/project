@@ -1,12 +1,12 @@
-// app/layout.tsx
 import "@/styles/globals.scss";
+import "@ant-design/v5-patch-for-react-19";
 import "antd/dist/reset.css";
-import type { Metadata } from "next";
-import SessionProviderWrapper from "../components/SessionProviderWrapper";
 import "../styles/calendar.scss";
 
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import React from "react"; // React 임포트
+import type { Metadata } from "next";
+import React from "react";
+import SessionProviderWrapper from "../components/SessionProviderWrapper";
 
 export const metadata: Metadata = {
   title: "Reciplay",

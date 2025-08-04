@@ -1,99 +1,99 @@
 "use client";
 
-import Image from "next/image";
+import React from "react";
 import Link from "next/link";
-import styles from "./page.module.scss";
-import BaseInput from "@/components/input/baseInput";
-import BaseButton from "@/components/button/baseButton";
-import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+
+import styles from "./page.module.scss";
+import CustomInput from "@/components/input/customInput";
+import BaseButton from "@/components/button/baseButton";
 import LogoWIthDesc from "../__components/logoWithDesc/logoWithDesc";
 import Separator from "../__components/separator/separator";
 import SNS from "../__components/sns/sns";
+import { ROUTES } from "@/config/routes";
+import AuthImage from "../__components/authImage/authImage";
+import { formData } from "@/config/formData";
+
+interface LoginForm {
+  email: string;
+  password: string;
+}
 
 export default function Page() {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
   const router = useRouter();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginForm>({ mode: "onSubmit" });
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (email.length < 5 || email.length > 30) {
-      alert("이메일은 5자 이상 30자 이하로 입력해주세요.");
-      return;
-    }
-    if (!password || password.length < 8 || password.length > 20) {
-      alert("비밀번호는 8자 이상 20자 이하여야 합니다.");
-      return;
-    }
-
+  const onSubmit = async (data: LoginForm) => {
     const result = await signIn("credentials", {
-      email,
-      password,
+      email: data.email,
+      password: data.password,
       redirect: false,
     });
 
     if (result?.ok) {
-      router.push("/");
+      router.push(ROUTES.HOME);
     } else {
       alert("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.");
     }
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.card}>
-        {/* Left section */}
-        <div className={styles.left}>
-          <LogoWIthDesc props={{ desc: "자유롭게 배우는 우리" }} />
+    <>
+      <div className={styles.left}>
+        <LogoWIthDesc desc="자유롭게 배우는 우리" />
 
-          <form className={styles.form} onSubmit={handleLogin}>
-            <BaseInput
-              placeholder="이메일"
-              type="email"
-              onChange={(e) => setEmail((e.target as HTMLInputElement).value)}
-            />
-            <BaseInput
-              placeholder="비밀번호"
-              type="password"
-              onChange={(e) =>
-                setPassword((e.target as HTMLInputElement).value)
-              }
-            />
-            <BaseButton
-              title="로그인"
-              type="submit"
-              size="inf"
-              className={styles.button}
-            />
-          </form>
+        <form
+          className={styles.form}
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+        >
+          {/* email */}
+          <CustomInput
+            {...register("email", formData.email.rules)}
+            placeholder={formData.email.placeholder}
+            type={formData.email.type}
+            error={errors.email?.message}
+          />
 
-          <div className={styles.links}>
-            <a href="#">아이디 찾기</a>
-            <span> | </span>
-            <a href="#">비밀번호 찾기</a>
-            <span> | </span>
-            <Link href="/api/auth/signup">회원가입</Link>
-          </div>
+          {/* password */}
+          <CustomInput
+            {...register("password", formData.password.rules)}
+            placeholder={formData.password.placeholder}
+            type={formData.password.type}
+            error={errors.password?.message}
+          />
 
-          <Separator />
-          <SNS props={{ isLogin: true }} />
+          <BaseButton
+            title="로그인"
+            type="submit"
+            size="inf"
+            className={styles.button}
+            // disabled={isSubmitting}
+          />
+        </form>
+
+        <div className={styles.links}>
+          <a href="#">아이디 찾기</a>
+          <span> | </span>
+          <a href="#">비밀번호 찾기</a>
+          <span> | </span>
+          <Link href={ROUTES.AUTH.SIGNUP}>회원가입</Link>
         </div>
 
-        {/* Right section */}
-        <div className={styles.right}>
-          <div className={styles.imageWrapper}>
-            <Image
-              src="/images/auth-image.jpg"
-              alt="Reciplay"
-              fill
-              className={styles.image}
-            />
-          </div>
-        </div>
+        <Separator />
+        <SNS props={{ isLogin: true }} />
       </div>
-    </div>
+
+      {/* Right section */}
+      <div className={styles.right}>
+        <AuthImage />
+      </div>
+    </>
   );
 }

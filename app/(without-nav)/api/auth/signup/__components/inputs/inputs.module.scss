@@ -1,0 +1,44 @@
+.inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  gap: 1.6rem;
+}
+
+.inputWithButton {
+  display: flex;
+  align-items: start;
+  gap: 0.5rem;
+  width: 100%;
+
+  input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  button {
+    flex-shrink: 0;
+    white-space: nowrap;
+    height: 100%;
+    box-sizing: border-box;
+  }
+}
+// .inputBox {
+//   height: 48px;
+// }
+.checkButton {
+  width: 80px;
+  height: 48px !important;
+  font-size: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  padding: 0;
+
+  &:hover {
+    background-color: #0056b3; /* 호버 시 어두운 파란색 */
+  }
+}

@@ -3,19 +3,31 @@
 import classNames from "classnames";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { sidebarMenu } from "@/config/sideBarMenu";
+import {
+  adminSideBarMenus,
+  instructorSideBarMenus,
+  userSidebarMenus,
+} from "@/config/sideBarMenu";
 import TablerIcon from "../icon/tablerIcon";
 import styles from "./sideBar.module.scss";
 import { useSidebarStore } from "@/stores/sideBarStore";
+import { useSession } from "next-auth/react";
 
 interface LinkItemProps {
   href: string;
   icon: string;
   title: string;
   isOpen: boolean;
+  isButton?: boolean;
 }
 
-function LinkItem({ href, icon, title, isOpen }: LinkItemProps) {
+function LinkItem({
+  href,
+  icon,
+  title,
+  isOpen,
+  isButton = false,
+}: LinkItemProps) {
   const pathname = usePathname();
   const isActive = pathname === href;
 
@@ -48,6 +60,18 @@ function LinkItem({ href, icon, title, isOpen }: LinkItemProps) {
 
 export default function SideBar() {
   const { isOpen } = useSidebarStore();
+  const { data: session } = useSession();
+
+  const role = session?.role || "student"; // 기본값은 user
+
+  let sidebarMenu;
+  if (role === "admin") {
+    sidebarMenu = adminSideBarMenus;
+  } else if (role === "instructor") {
+    sidebarMenu = instructorSideBarMenus;
+  } else {
+    sidebarMenu = userSidebarMenus;
+  }
 
   return (
     <aside className={classNames(styles.sidebar, { [styles.closed]: !isOpen })}>

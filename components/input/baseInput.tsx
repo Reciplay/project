@@ -7,6 +7,7 @@ interface BaseInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   type: string;
   value?: string;
   error?: string;
+  success?: string; // ✅ 추가
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void; // ✅ 추가
 }
 
