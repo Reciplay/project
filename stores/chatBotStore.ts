@@ -1,70 +1,22 @@
-import { create } from 'zustand';
-import { ChatBotState, Message } from '../types/chatBotStore';
-import chatbotClient from '../lib/axios/chatbotClient';
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
-// 실제 API 호출을 위한 채팅 메시지 전송 함수
-const sendChatBotMessage = async (style: string, message: string): Promise<{ answer: string }> => {
-  try {
-    const response = await chatbotClient.post('/chat', {
-      message: message,
-      style: style,
-    });
+interface ChatbotStore {
+  messages: string[]
+  addMessage: (message: string) => void
+  clearMessages: () => void
+}
 
-    return { answer: response.data || '응답 형식이 올바르지 않습니다.' };
-  } catch (error) {
-    console.error('Failed to send message:', error);
-    return { answer: '메시지 전송에 실패했습니다. 잠시 후 다시 시도해주세요.' };
-  }
-};
-
-export const useChatBotStore = create<ChatBotState>((set, get) => ({
-  isChatOpen: false,
-  selectedStyle: null,
-  input: '',
-  messages: [],
-  isLoading: false,
-  styles: {
-    default: { name: '기본 챗봇' },
-    loopy: { name: '잔망루피' },
-    granny: { name: '욕쟁이 할머니' },
-    cat: { name: '나대는 고양이' },
-    assistant: { name: '상냥한 비서' },
-    idol: { name: '하이텐션 아이돌' },
-    edgelord: { name: '중2병 천재' },
-    cold: { name: '시크한 상담사' },
-  },
-
-  toggleChat: () => set((state) => ({ isChatOpen: !state.isChatOpen })),
-
-  selectStyle: (styleKey) => {
-    set({ selectedStyle: styleKey, messages: [], input: '' });
-  },
-
-  setInput: (input) => set({ input }),
-
-  sendMessage: async () => {
-    const { input, selectedStyle } = get();
-    if (!input.trim()) return;
-
-    const userMsg: Message = { role: 'user', content: input };
-    set((state) => ({
-      messages: [...state.messages, userMsg],
-      input: '',
-      isLoading: true,
-    }));
-
-    // 임시 로딩 메시지 추가
-    const loadingMsg: Message = { role: 'assistant', content: '...' };
-    set((state) => ({ messages: [...state.messages, loadingMsg] }));
-
-    const style = selectedStyle || 'default';
-    const response = await sendChatBotMessage(style, input);
-
-    const assistantMsg: Message = { role: 'assistant', content: response.answer };
-    set((state) => ({
-      // 마지막 로딩 메시지를 실제 응답으로 교체
-      messages: [...state.messages.slice(0, -1), assistantMsg],
-      isLoading: false,
-    }));
-  },
-}));
+export const useChatbotStore = create<ChatbotStore>()(
+  persist(
+    (set) => ({
+      messages: [],
+      addMessage: (message: string) =>
+        set((state) => ({ messages: [...state.messages, message] })),
+      clearMessages: () => set({ messages: [] }),
+    }),
+    {
+      name: 'chatbot-storage', // unique name for storage
+    },
+  ),
+)
