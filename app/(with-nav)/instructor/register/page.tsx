@@ -111,10 +111,10 @@ export default function page() {
 
 	return (
 		<div className={styles.container}>
-			<ProfileForm
-				value={basicProfile}
-			/>
 			<div className={styles.infoContainer}>
+				<ProfileForm
+					value={basicProfile}
+				/>
 
 				<Introduction></Introduction>
 				<Certificate></Certificate>
