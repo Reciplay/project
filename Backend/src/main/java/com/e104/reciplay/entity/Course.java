@@ -66,8 +66,5 @@ public class Course {
     @Column(name = "registered_at")
     private LocalDateTime registeredAt;
 
-    @Column(name = "cover_image_url")
-    private String coverImageUrl;
-
     private String announcement;
 }

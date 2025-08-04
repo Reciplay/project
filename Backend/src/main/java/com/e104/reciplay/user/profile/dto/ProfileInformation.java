@@ -32,7 +32,6 @@ public class ProfileInformation {
         this.createdAt = user.getCreatedAt();
         this.email = user.getEmail();
         this.gender = user.getGender();
-        this.imgUrl = user.getImgUrl();
         this.job = user.getJob();
         this.name = user.getName();
         this.nickname = user.getNickname();

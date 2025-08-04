@@ -27,9 +27,6 @@ public class Instructor {
     @Column(name = "is_approved")
     private Boolean isApproved;
 
-    @Column(name = "cover_image_url")
-    private String coverImageUrl;
-
     private String address;
 
     @Column(name = "phone_number")
