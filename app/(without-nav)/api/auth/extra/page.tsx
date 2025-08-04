@@ -3,25 +3,20 @@ import styles from "./page.module.scss";
 import BaseButton from "@/components/button/baseButton";
 import BaseInput from "@/components/input/baseInput";
 import LogoWIthDesc from "../__components/logoWithDesc/logoWithDesc";
+import AuthImage from "../__components/authImage/authImage";
 
 export default function Page() {
   return (
-    <div className={styles.container}>
-      <div className={styles.card}>
-        {/* left */}
+    <>
+      {/* <div className={styles.card}> */}
+      {/* left */}
+      <>
         <div className={styles.left}>
-          <div className={styles.imageWrapper}>
-            <Image
-              src="/images/auth-image.jpg"
-              alt="Reciplay"
-              fill
-              className={styles.image}
-            />
-          </div>
+          <AuthImage />
         </div>
         {/* right */}
         <div className={styles.right}>
-          <LogoWIthDesc props={{ desc: "추가 정보만 입력하고 시작하세요!" }} />
+          <LogoWIthDesc desc="추가 정보만 입력하고 시작하세요!" />
 
           <form className={styles.form}>
             <BaseInput placeholder="이름" type="name" />
@@ -37,7 +32,8 @@ export default function Page() {
             />
           </form>
         </div>
-      </div>
-    </div>
+      </>
+    </>
+    // </>
   );
 }

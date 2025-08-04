@@ -8,9 +8,14 @@ import { ROUTES } from "@/config/routes";
 import { useSidebarStore } from "@/stores/sideBarStore";
 import ImageWrapper from "../image/imageWrapper";
 import { IMAGETYPE } from "@/types/image";
+import { useSession } from "next-auth/react";
 
 export default function NavBar() {
   const { isOpen, toggle } = useSidebarStore();
+
+  const { data: session } = useSession();
+
+  const isLogin: boolean = session?.accessToken != "" || false;
 
   return (
     <div className={styles.container}>
@@ -32,10 +37,10 @@ export default function NavBar() {
         <BaseInput type="search" placeholder="검색" />
       </div>
       <div className={styles.right}>
-        <Link href="/api/auth/login">
+        <Link href={isLogin ? ROUTES.PROFILE : ROUTES.AUTH.LOGIN}>
           <Image
             className={styles.profile}
-            src="/images/profile.jpg"
+            src={isLogin ? "/images/profile.jpg" : "/icons/profile.svg"}
             alt="profile"
             width={40}
             height={40}

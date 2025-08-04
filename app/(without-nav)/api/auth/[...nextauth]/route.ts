@@ -1,10 +1,10 @@
-import NextAuth from "next-auth"
-import GoogleProvider from "next-auth/providers/google"
-import KakaoProvider from "next-auth/providers/kakao"
-import NaverProvider from "next-auth/providers/naver"
-import CredentialsProvider from "next-auth/providers/credentials"
-import FormData from "form-data"
-import axios from "axios"
+import NextAuth from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
+import KakaoProvider from "next-auth/providers/kakao";
+import NaverProvider from "next-auth/providers/naver";
+import CredentialsProvider from "next-auth/providers/credentials";
+import FormData from "form-data";
+import axios from "axios";
 
 const handler = NextAuth({
   providers: [
@@ -16,23 +16,28 @@ const handler = NextAuth({
       },
       async authorize(credentials, req) {
         if (!credentials) {
-          return null
+          return null;
         }
 
         try {
-          const formdata = new FormData()
-          formdata.append('username', credentials.email)
-          formdata.append('password', credentials.password)
-          const res = await axios.post('http://i13e104.p.ssafy.io:8080/api/v1/user/auth/login', formdata, {
-            headers: {
-              ...formdata.getHeaders()
+          const formdata = new FormData();
+          formdata.append("username", credentials.email);
+          formdata.append("password", credentials.password);
+          const res = await axios.post(
+            "http://i13e104.p.ssafy.io:8080/api/v1/user/auth/login",
+            formdata,
+            {
+              headers: {
+                ...formdata.getHeaders(),
+              },
             }
-          })
+          );
 
-          const accessToken = res.headers.authorization
-          const cookieString = res.headers['set-cookie'][0]
-          const refreshToken = cookieString.split('=')[1]
-          const expires = res.headers.expires
+          const accessToken = res.headers.authorization;
+          const cookieString = res.headers["set-cookie"][0];
+          const refreshToken = cookieString.split("=")[1];
+          const role = res.headers.role;
+          const expires = res.headers.expires;
 
           if (accessToken || refreshToken) {
             const user = {
@@ -41,14 +46,15 @@ const handler = NextAuth({
               accessToken: accessToken,
               refreshToken: refreshToken,
               accessTokenExpires: expires,
-            }
-            return user
+              role: role,
+            };
+            return user;
           } else {
-            return null
+            return null;
           }
         } catch (error) {
-          console.error("Error during authorization:", error)
-          return null
+          console.error("Error during authorization:", error);
+          return null;
         }
       },
     }),
@@ -68,14 +74,16 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.accessToken = (user as any).accessToken;
-        token.refreshToken = (user as any).refreshToken;
+        token.accessToken = user.accessToken;
+        token.refreshToken = user.refreshToken;
+        token.role = user.role;
       }
       return token;
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken as string;
       session.refreshToken = token.refreshToken as string;
+      session.role = token.role as string;
       if (token.email) {
         session.user.email = token.email;
       }

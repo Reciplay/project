@@ -17,14 +17,6 @@ import TextForm from "./__components/forms/textForm";
 import ThumbNailForm from "./__components/forms/thumbnailForm";
 import styles from "./page.module.scss";
 
-// export default function Page() {
-//   return (
-//     <div className={styles.container}>
-//       <Create />
-//     </div>
-//   );
-// }
-
 export default function Page() {
   const methods = useForm<CreateCourseRequest>({
     defaultValues: {

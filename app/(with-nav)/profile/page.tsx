@@ -1,19 +1,20 @@
 import RadarChart from "@/components/chart/radarChart";
 import axiosInstance from "@/config/axiosInstance";
 import { sampleUser } from "@/config/sampleUser";
-import { UserResponse } from "@/types/user";
+import { User, UserResponse } from "@/types/user";
 import ProfileHeader from "./__components/profileHeader/profileHeader";
 import ProfileInfo from "./__components/profileInfo/profileInfo";
 import styles from "./page.module.scss";
+import restClient from "@/lib/axios/restClient";
+import { ApiResponse } from "@/types/apiResponse";
 
 const getProfile = async () => {
   try {
-    const res: UserResponse = await axiosInstance.get("/api/v1/user/profile", {
-      // headers: {
-      //   Authorization: `Bearer ${token}`,
-      // },
+    const res = await restClient.get<ApiResponse<User>>("/user/profile", {
+      requireAuth: true,
     });
-    return res.data;
+
+    return res.data.data;
   } catch (e) {
     console.error("프로필 불러오기 실패:", e);
     return sampleUser.data;

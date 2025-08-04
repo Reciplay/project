@@ -1,16 +1,14 @@
 import styles from "./logoWithDesc.module.scss";
 
 interface LogoWIthDescProps {
-  props: {
-    desc: string;
-  };
+  desc: string;
 }
 
-export default function LogoWIthDesc({ props }: LogoWIthDescProps) {
+export default function LogoWIthDesc({ desc }: LogoWIthDescProps) {
   return (
     <>
       <div className={styles.logo}>Reciplay</div>
-      <div className={styles.tagline}>{props.desc}</div>
+      <div className={styles.tagline}>{desc}</div>
     </>
   );
 }
