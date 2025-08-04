@@ -79,7 +79,7 @@ class LivekitControllerTest {
 
         resultActions.andExpect(status().isCreated());
         resultActions.andExpect(jsonPath("$.data.token").value("test_token"));
-    }
+    `}
 
     @Test
     public void 학생이_토큰_생성에_성공한다() throws Exception {

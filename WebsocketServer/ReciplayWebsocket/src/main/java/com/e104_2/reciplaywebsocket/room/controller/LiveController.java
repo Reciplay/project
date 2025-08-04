@@ -20,6 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 
+/*
+    강의 구독 채널 : /ws/v1/topic/room/룸네임+룸아이디
+    개인 구독 채널 : /ws/v1/queue/
+ */
+
+
+
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -31,8 +39,6 @@ public class LiveController {
     private String URL_PREFIX;
 
     private final LiveControlService liveControlService;
-
-
 
     @MessageMapping("/join") // 참여자가 만약, 강제퇴장 리스트에 있다면, 다시 퇴장 시켜야 함.
     public void joinEvent(@Payload EventMessage message) {
@@ -77,7 +83,8 @@ public class LiveController {
      */
 
     @MessageMapping("/todo-item")
-    public void finishTodo() {
+    public void finishTodo(@Payload EventMessage message) {
+        String roomId = message.getLectureName() + message.getLectureId();
 
     }
 
@@ -100,16 +107,52 @@ public class LiveController {
     }
 
     // 강제 음소거
-    @GetMapping("/mute")
-    public ResponseEntity<ResponseRoot<Object>> muteParticipant(
+    @GetMapping("/mute-audio")
+    public ResponseEntity<ResponseRoot<Object>> muteAudio(
             @RequestParam("lectureId") Long lectureId,
             @RequestParam("targetEmail") String targetEmail,
             @AuthenticationPrincipal CustomUserDetails user
     ) throws IOException {
         String userEmail = user.getUsername();
 
-        liveControlService.muteStudent(lectureId, targetEmail, userEmail);
+        liveControlService.muteAudio(lectureId, targetEmail, userEmail);
         return CommonResponseBuilder.success("음소거에 성공했습니다.", null);
     }
 
+    @GetMapping("/unmute-audio")
+    public ResponseEntity<ResponseRoot<Object>> unmuteAudio(
+            @RequestParam("lectureId") Long lectureId,
+            @RequestParam("targetEmail") String targetEmail,
+            @AuthenticationPrincipal CustomUserDetails user
+    ) throws IOException {
+        String userEmail = user.getUsername();
+
+        liveControlService.unmuteAudio(lectureId, targetEmail, userEmail);
+        return CommonResponseBuilder.success("음소거에 성공했습니다.", null);
+    }
+
+
+    @GetMapping("/mute-video")
+    public ResponseEntity<ResponseRoot<Object>> muteVideo(
+            @RequestParam("lectureId") Long lectureId,
+            @RequestParam("targetEmail") String targetEmail,
+            @AuthenticationPrincipal CustomUserDetails user
+    ) throws IOException {
+        String userEmail = user.getUsername();
+
+        liveControlService.muteVideo(lectureId, targetEmail, userEmail);
+        return CommonResponseBuilder.success("비디오 차단에 성공했습니다.", null);
+    }
+
+    @GetMapping("/unmute-video")
+    public ResponseEntity<ResponseRoot<Object>> unmuteVideo(
+            @RequestParam("lectureId") Long lectureId,
+            @RequestParam("targetEmail") String targetEmail,
+            @AuthenticationPrincipal CustomUserDetails user
+    ) throws IOException {
+        String userEmail = user.getUsername();
+
+        liveControlService.unmuteVideo(lectureId, targetEmail, userEmail);
+        return CommonResponseBuilder.success("비디오 송출에 성공했습니다.", null);
+    }
 }

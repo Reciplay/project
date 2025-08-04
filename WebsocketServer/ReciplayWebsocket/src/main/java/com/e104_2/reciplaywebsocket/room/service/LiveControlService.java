@@ -1,5 +1,7 @@
 package com.e104_2.reciplaywebsocket.room.service;
 
+import livekit.LivekitModels;
+
 import java.io.IOException;
 
 public interface LiveControlService {
@@ -8,8 +10,15 @@ public interface LiveControlService {
     void removeParticipant(Long lectureId, String email, String userEmail) throws IOException;
     void verifyRemovePrivilege(Long lectureId, String email, String userEmail);
 
-    void muteStudent(Long lectureId, String email, String userEmail) throws IOException;
-    void verifyMutePrivilege(Long lectureId, String email, String userEmail);
+    void muteAudio(Long lectureId, String email, String userEmail) throws IOException;
+    void verifyAudioMutePrivilege(Long lectureId, String email, String userEmail);
 
-    void unpublishStudent(String roomName, String targetEmail);
+    void unmuteAudio(Long lectureId, String email, String userEmail) throws IOException;
+    void muteVideo(Long lectureId, String email, String userEmail) throws  IOException;
+
+    void unmuteVideo(Long lectureId, String email, String userEmail) throws  IOException;
+
+    void verifyVideoMutePrivilege(Long lectureId, String email, String userEmail);
+
+    void mutePublishedChannel(String roomName, String identity, LivekitModels.TrackType type, boolean mute) throws IOException;
 }

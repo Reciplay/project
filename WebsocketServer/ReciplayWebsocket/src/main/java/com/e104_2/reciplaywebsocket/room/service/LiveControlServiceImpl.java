@@ -9,7 +9,6 @@ import com.e104_2.reciplaywebsocket.room.redis.ForceQuitRedisService;
 import com.e104_2.reciplaywebsocket.room.service.addtional.*;
 import io.livekit.server.RoomServiceClient;
 import livekit.LivekitModels;
-import livekit.LivekitRoom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +17,6 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 import java.io.IOException;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +37,9 @@ public class LiveControlServiceImpl implements LiveControlService{
     // Redis
     private final ForceQuitRedisService forceQuitRedisService;
 
+
+    // 테스트 환경인지, 강제 퇴장 대상인지, 라이브 참여자인지 를 검사한다.
+    // true : 유효함.
     @Override
     public Boolean checkParticipationPrivilege(String email, Long lectureId) {
         if(test) return true;
@@ -88,32 +89,65 @@ public class LiveControlServiceImpl implements LiveControlService{
     }
 
     @Override
-    public void muteStudent(Long lectureId, String email, String userEmail) throws IOException {
+    public void muteAudio(Long lectureId, String email, String userEmail) throws IOException {
+        verifyAudioMutePrivilege(lectureId, email, userEmail);
+
         String roomName = getRoomName(lectureId);
 
-        verifyMutePrivilege(lectureId, email, userEmail);
-        Call<LivekitModels.ParticipantInfo> call= roomServiceClient.getParticipant(getRoomName(lectureId), email);
+        this.mutePublishedChannel(roomName, email, LivekitModels.TrackType.AUDIO, true);
+    }
+
+    @Override
+    public void verifyAudioMutePrivilege(Long lectureId, String email, String userEmail) {
+        verifyPrivilege(lectureId, email, userEmail, "오디오 제어 권한이 업습니다.");
+    }
+
+    @Override
+    public void unmuteAudio(Long lectureId, String email, String userEmail) throws IOException {
+        verifyAudioMutePrivilege(lectureId, email, userEmail);
+
+        String roomName = getRoomName(lectureId);
+
+        this.mutePublishedChannel(roomName, email, LivekitModels.TrackType.AUDIO, false);
+    }
+
+    @Override
+    public void muteVideo(Long lectureId, String email, String userEmail) throws IOException {
+        verifyVideoMutePrivilege(lectureId, email, userEmail);
+
+        String roomName = getRoomName(lectureId);
+
+        this.mutePublishedChannel(roomName, email, LivekitModels.TrackType.VIDEO, true);
+    }
+
+    @Override
+    public void unmuteVideo(Long lectureId, String email, String userEmail) throws IOException {
+        verifyVideoMutePrivilege(lectureId, email, userEmail);
+
+        String roomName = getRoomName(lectureId);
+
+        this.mutePublishedChannel(roomName, email, LivekitModels.TrackType.VIDEO, false);
+    }
+
+    @Override
+    public void verifyVideoMutePrivilege(Long lectureId, String email, String userEmail) {
+        verifyPrivilege(lectureId, email, userEmail, "비디오 송출 제어 권한이 없습니다.");
+    }
+
+    @Override
+    public void mutePublishedChannel(String roomName, String identity, LivekitModels.TrackType type, boolean mute) throws IOException{
+        Call<LivekitModels.ParticipantInfo> call = roomServiceClient.getParticipant(roomName, identity);
         Response<LivekitModels.ParticipantInfo> response = call.execute();
-        LivekitModels.ParticipantInfo participantInfos = response.body();
 
-        assert participantInfos != null;
-        for(LivekitModels.TrackInfo trackInfo : participantInfos.getTracksList()) {
-                if(trackInfo.getType().toString().equals("AUDIO")) {
-                    String sid = trackInfo.getSid();
-                    Call<LivekitModels.TrackInfo> muteCall = roomServiceClient.mutePublishedTrack(getRoomName(lectureId), email, sid, true);
-                    muteCall.execute();
-                }
+        assert response.body() != null;
+
+        for(LivekitModels.TrackInfo trackInfo : response.body().getTracksList()) {
+            if(trackInfo.getType() == type) {
+                String sid = trackInfo.getSid();
+                Call<LivekitModels.TrackInfo> muteCall = roomServiceClient.mutePublishedTrack(roomName, identity, sid, mute);
+                muteCall.execute();
+            }
         }
-    }
-
-    @Override
-    public void verifyMutePrivilege(Long lectureId, String email, String userEmail) {
-        verifyPrivilege(lectureId, email, userEmail, "강의의 지도 강사가 아니라면 음소거할 수 업습니다.");
-    }
-
-    @Override
-    public void unpublishStudent(String roomName, String targetEmail) {
-
     }
 
     public String getRoomName(Long lectureId) {
