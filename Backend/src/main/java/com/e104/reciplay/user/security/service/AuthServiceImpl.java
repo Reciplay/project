@@ -36,6 +36,9 @@ public class AuthServiceImpl implements AuthService{
             if(cookie.getName().equals("refresh-token")) {
                 // 리프레시 토큰의 유효성을 검증한다.
                 String token = cookie.getValue();
+                // 여기서 어떤 값이 날아오는지 확인해야 한다.
+                // refresh-token 이라는 prefix가 붙어서 오는지 아니면 떨어져 오는지..
+
                 String username = jwtUtil.getUsername(token);
 
                 if(!jwtUtil.isExpired(token) && tokenRepository.isValidToken(token, username, "REFRESH")) {
