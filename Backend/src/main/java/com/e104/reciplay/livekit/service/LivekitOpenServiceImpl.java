@@ -1,5 +1,6 @@
 package com.e104.reciplay.livekit.service;
 
+import com.e104.reciplay.course.lecture.service.LectureQueryService;
 import com.e104.reciplay.entity.Course;
 import com.e104.reciplay.entity.Instructor;
 import com.e104.reciplay.entity.Lecture;
@@ -48,7 +49,7 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
     Boolean isTest;
 
     public void isOpenable(Long lectureId, Long courseId) {
-        Lecture lecture = lectureQueryService.queryLectrueById(lectureId);
+        Lecture lecture = lectureQueryService.queryLectureById(lectureId);
         String email = AuthenticationUtil.getSessionUsername();
         Instructor instructor = instructorQueryService.queryInstructorByEmail(email);
         Course course = courseQueryService.queryCourseById(courseId);
@@ -99,7 +100,7 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
         token.setMetadata("{\"role\": \"instructor\"}");
 
         if(!isTest) {
-            Lecture lecture = lectureQueryService.queryLectrueById(lectureId);
+            Lecture lecture = lectureQueryService.queryLectureById(lectureId);
             LiveRoom liveRoom = liveRoomManagementService.openLiveRoom(lecture, roomName);
             // 해당 강좌를 라이브 중으로 변경한다.
             courseManagementService.activateLiveState(courseId);
@@ -171,7 +172,7 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
     public String getRoomIdOf(Long lectureId, boolean instructor) {
         String lectureName = "test";
         if(!isTest) {
-            lectureName = lectureQueryService.queryLectrueById(lectureId).getTitle();
+            lectureName = lectureQueryService.queryLectureById(lectureId).getTitle();
         }
         if(instructor) return roomRedisService.addRoomId(lectureName, lectureId);
         else return roomRedisService.getRoomId(lectureName, lectureId);

@@ -19,7 +19,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class LectureQueryServiceImpl implements LectureQueryService{
-    private final LectureQueryRepository lectureQueryRepository;
+    private final LectureRepository lectureRepository;
     private final CourseRepository courseRepository;
     private final ChapterQueryRepository chapterQueryRepository;
 
@@ -28,14 +28,14 @@ public class LectureQueryServiceImpl implements LectureQueryService{
         if (!courseRepository.existsById(courseId)) {
             throw new CourseNotFoundException(courseId);
         }
-        return lectureQueryRepository.findLectureSummariesByCourseId(courseId);
+        return lectureRepository.findLectureSummariesByCourseId(courseId);
     }
 
 
     @Override
     @Transactional(readOnly = true)
     public LectureDetail queryLectureDetail(Long lectureId) {
-        LectureDetail detail = lectureQueryRepository.findLectureDetailById(lectureId);
+        LectureDetail detail = lectureRepository.findLectureDetailById(lectureId);
         if (detail == null) {
             throw new LectureNotFoundException(lectureId);
         }
@@ -49,7 +49,7 @@ public class LectureQueryServiceImpl implements LectureQueryService{
     @Override
     @Transactional(readOnly = true)
     public List<LectureDetail> queryLectureDetails(Long courseId) {
-        List<LectureDetail> details = lectureQueryRepository.findLectureDetailsByCourseId(courseId);
+        List<LectureDetail> details = lectureRepository.findLectureDetailsByCourseId(courseId);
         if (details == null || details.isEmpty()) {
             throw new CourseNotFoundException(courseId);
         }
@@ -60,5 +60,10 @@ public class LectureQueryServiceImpl implements LectureQueryService{
         }
 
         return details;
+    }
+
+    @Override
+    public Lecture queryLectureById(Long id) {
+        return lectureRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당하는 ID의 강의(Lecture)가 없습니다."));
     }
 }
