@@ -30,8 +30,8 @@ public class LivekitController {
             throw new CanNotOpenLiveRoomException("요청에 강좌 또는 강의 ID가 없습니다.");
         }
 
-        String token = livekitOpenService.createInstructorToken(lectureId, courseId);
-        return CommonResponseBuilder.create("라이브 강좌가 개설되었습니다.", new LivekitTokenResponse(token));
+        LivekitTokenResponse response = livekitOpenService.createInstructorToken(lectureId, courseId);
+        return CommonResponseBuilder.create("라이브 강좌가 개설되었습니다.", response);
     }
 
     @PostMapping("/student/token")
@@ -43,7 +43,7 @@ public class LivekitController {
             throw new CanNotParticipateInLiveRoomException("요청에 강좌 또는 강의 ID가 없습니다.");
         }
 
-        String token = livekitOpenService.createStudentToken(lectureId, courseId);
-        return CommonResponseBuilder.create("라이브 강좌에 참여했습니다.", new LivekitTokenResponse(token));
+        LivekitTokenResponse response = livekitOpenService.createStudentToken(lectureId, courseId);
+        return CommonResponseBuilder.create("라이브 강좌에 참여했습니다.", response);
     }
 }

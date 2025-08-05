@@ -1,4 +1,4 @@
-package com.e104_2.reciplaywebsocket.room.dto;
+package com.e104_2.reciplaywebsocket.room.dto.request;
 
 
 import lombok.AllArgsConstructor;
@@ -18,6 +18,6 @@ public class EventMessage {
     private String receiver;
     private String nickname;
     private Long lectureId;
-    private String lectureName;
+    private String roomId;
     private List<String> state;
 }
