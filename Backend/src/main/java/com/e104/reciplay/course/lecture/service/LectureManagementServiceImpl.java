@@ -1,7 +1,7 @@
 package com.e104.reciplay.course.lecture.service;
 
 import com.e104.reciplay.common.exception.LectureNotFoundException;
-import com.e104.reciplay.course.lecture.dto.LectureDetail;
+import com.e104.reciplay.course.lecture.dto.response.LectureDetail;
 import com.e104.reciplay.entity.Lecture;
 import com.e104.reciplay.repository.LectureRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class LectureManagementServiceImpl implements LectureManagementService{
         Lecture lecture = lectureRepository.findById(detail.getLectureId())
                 .orElseThrow(() -> new LectureNotFoundException(detail.getLectureId()));
 
-        lecture.setTitle(detail.getName());          // 강의 명
+        lecture.setTitle(detail.getTitle());          // 강의 명
         lecture.setSummary(detail.getSummary());   // 강의 요약
         lecture.setMaterials(detail.getMaterials()); // 강의 준비물
         //강의 자료 업데이트는 추후 작성

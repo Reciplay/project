@@ -1,9 +1,9 @@
 package com.e104.reciplay.course.lecture.repository;
 
-import com.e104.reciplay.course.lecture.dto.LectureDetail;
+import com.e104.reciplay.course.lecture.dto.response.LectureDetail;
 import com.e104.reciplay.course.lecture.dto.response.LectureSummary;
 import com.e104.reciplay.course.lecture.dto.response.QLectureSummary;
-import com.e104.reciplay.course.lecture.dto.QLectureDetail;
+import com.e104.reciplay.course.lecture.dto.response.QLectureDetail;
 import com.e104.reciplay.entity.QLecture;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;

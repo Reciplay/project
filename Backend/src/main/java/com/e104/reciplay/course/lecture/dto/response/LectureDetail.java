@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,18 +28,18 @@ public class LectureDetail {
     private LocalDateTime endedAt;
     private List<ChapterInfo> chapters;
     @QueryProjection
-    public LectureDetail(Long lectureId, Integer sequence, String name, String summary,
+    public LectureDetail(Long lectureId, Integer sequence, String title, String summary,
                          String materials, Boolean isSkipped, String resourceName,
                          LocalDate startedAt, LocalDate endedAt) {
         this.lectureId = lectureId;
         this.sequence = sequence;
-        this.name = name;
+        this.title = title;
         this.summary = summary;
         this.materials = materials;
         this.isSkipped = isSkipped;
         this.resourceName = resourceName;
-        this.startedAt = startedAt;
-        this.endedAt = endedAt;
+        this.startedAt = startedAt.atStartOfDay();
+        this.endedAt = endedAt.atStartOfDay();
         this.chapters = null; // 따로 set 예정
     }
 
