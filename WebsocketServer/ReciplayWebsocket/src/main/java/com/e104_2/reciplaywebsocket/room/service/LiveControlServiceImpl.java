@@ -5,9 +5,11 @@ import com.e104_2.reciplaywebsocket.entity.Course;
 import com.e104_2.reciplaywebsocket.entity.Instructor;
 import com.e104_2.reciplaywebsocket.entity.Lecture;
 import com.e104_2.reciplaywebsocket.entity.LiveRoom;
+import com.e104_2.reciplaywebsocket.room.dto.request.LiveControlRequest;
 import com.e104_2.reciplaywebsocket.room.redis.ForceQuitRedisService;
 import com.e104_2.reciplaywebsocket.room.service.addtional.*;
 import io.livekit.server.RoomServiceClient;
+import jdk.jfr.StackTrace;
 import livekit.LivekitModels;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,8 @@ public class LiveControlServiceImpl implements LiveControlService{
     private final RoomServiceClient roomServiceClient;
     private final CourseQueryService courseQueryService;
     private final InstructorQueryService instructorQueryService;
+    private final UserQueryService userQueryService;
+
 
     // Redis
     private final ForceQuitRedisService forceQuitRedisService;
@@ -41,21 +45,23 @@ public class LiveControlServiceImpl implements LiveControlService{
     // 테스트 환경인지, 강제 퇴장 대상인지, 라이브 참여자인지 를 검사한다.
     // true : 유효함.
     @Override
-    public Boolean checkParticipationPrivilege(String email, Long lectureId) {
+    public Boolean checkParticipationPrivilege(String email, LiveControlRequest request) {
         if(test) return true;
 
-        if(forceQuitRedisService.isOnQuitList(email, lectureId)) {
+        if(forceQuitRedisService.isOnQuitList(email, request.getRoomId())) {
             try {
-                this.removeParticipant(lectureId, email, adminKey);
+                this.removeParticipant(request, adminKey);
                 return false;
             } catch (IOException e) {
                 log.warn("해당 회원은 강제 퇴장 이력이 있으며, 참여 거부 과정에서 문제가 발생했습니다. can not force quit");
                 log.warn(e.getMessage());
-                e.printStackTrace();
+                for(StackTraceElement trace : e.getStackTrace()) {
+                    log.warn(trace.toString());
+                }
                 return false;
             }
         }
-        LiveRoom liveRoom = liveRoomQueryService.queryLiveRoomByLectureId(lectureId);
+        LiveRoom liveRoom = liveRoomQueryService.queryLiveRoomByLectureId(request.getLectureId());
         return liveParticipationQueryService.queryUserParticipatedIn(email, liveRoom.getId());
     }
 
@@ -67,16 +73,14 @@ public class LiveControlServiceImpl implements LiveControlService{
     }
 
     @Override
-    public void removeParticipant(Long lectureId, String email, String userEmail) throws IOException {
-        String roomName = getRoomName(lectureId);
-
-        verifyRemovePrivilege(lectureId, email, userEmail);
+    public void removeParticipant(LiveControlRequest request, String userEmail) throws IOException {
+        verifyRemovePrivilege(request.getLectureId(), request.getTargetEmail(), userEmail);
 
         // join 메세지를 검증할 때 사용한다.
         // 레디스 강제 퇴장 셋에 저장한다.
-        forceQuitRedisService.addUserInForceQuit(email, lectureId);
+        forceQuitRedisService.addUserInForceQuit(request.getTargetEmail(), request.getRoomId());
 
-        Call<Void> call = roomServiceClient.removeParticipant(roomName, email);
+        Call<Void> call = roomServiceClient.removeParticipant(request.getRoomId(), request.getTargetEmail());
         Response<Void> response = call.execute();
 
 
@@ -89,12 +93,9 @@ public class LiveControlServiceImpl implements LiveControlService{
     }
 
     @Override
-    public void muteAudio(Long lectureId, String email, String userEmail) throws IOException {
-        verifyAudioMutePrivilege(lectureId, email, userEmail);
-
-        String roomName = getRoomName(lectureId);
-
-        this.mutePublishedChannel(roomName, email, LivekitModels.TrackType.AUDIO, true);
+    public void muteAudio(LiveControlRequest request, String userEmail) throws IOException {
+        verifyAudioMutePrivilege(request.getLectureId(), request.getTargetEmail(), userEmail);
+        this.mutePublishedChannel(request.getRoomId(), request.getTargetEmail(), LivekitModels.TrackType.AUDIO, true);
     }
 
     @Override
@@ -103,30 +104,22 @@ public class LiveControlServiceImpl implements LiveControlService{
     }
 
     @Override
-    public void unmuteAudio(Long lectureId, String email, String userEmail) throws IOException {
-        verifyAudioMutePrivilege(lectureId, email, userEmail);
+    public void unmuteAudio(LiveControlRequest request, String userEmail) throws IOException {
+        verifyAudioMutePrivilege(request.getLectureId(), request.getTargetEmail(), userEmail);
 
-        String roomName = getRoomName(lectureId);
-
-        this.mutePublishedChannel(roomName, email, LivekitModels.TrackType.AUDIO, false);
+        this.mutePublishedChannel(request.getRoomId(), request.getTargetEmail(), LivekitModels.TrackType.AUDIO, false);
     }
 
     @Override
-    public void muteVideo(Long lectureId, String email, String userEmail) throws IOException {
-        verifyVideoMutePrivilege(lectureId, email, userEmail);
-
-        String roomName = getRoomName(lectureId);
-
-        this.mutePublishedChannel(roomName, email, LivekitModels.TrackType.VIDEO, true);
+    public void muteVideo(LiveControlRequest request, String userEmail) throws IOException {
+        verifyVideoMutePrivilege(request.getLectureId(), request.getTargetEmail(), userEmail);
+        this.mutePublishedChannel(request.getRoomId(), request.getTargetEmail(), LivekitModels.TrackType.VIDEO, true);
     }
 
     @Override
-    public void unmuteVideo(Long lectureId, String email, String userEmail) throws IOException {
-        verifyVideoMutePrivilege(lectureId, email, userEmail);
-
-        String roomName = getRoomName(lectureId);
-
-        this.mutePublishedChannel(roomName, email, LivekitModels.TrackType.VIDEO, false);
+    public void unmuteVideo(LiveControlRequest request, String userEmail) throws IOException {
+        verifyVideoMutePrivilege(request.getLectureId(), request.getTargetEmail(), userEmail);
+        this.mutePublishedChannel(request.getRoomId(), request.getTargetEmail(), LivekitModels.TrackType.VIDEO, false);
     }
 
     @Override
@@ -150,8 +143,11 @@ public class LiveControlServiceImpl implements LiveControlService{
         }
     }
 
-    public String getRoomName(Long lectureId) {
-        return test ? "testRoom"+lectureId : lectureQueryService.queryLectureById(lectureId).getTitle()+lectureId;
+    @Override
+    public String getLiveInstructorIdentity(Long lectureId) {
+        Long courseId = lectureQueryService.queryLectureById(lectureId).getCourseId();
+        Long instructorId = courseQueryService.queryCourseById(courseId).getInstructorId();
+        return userQueryService.queryUserById(instructorId).getEmail();
     }
 
     public void verifyPrivilege(Long lectureId, String email, String userEmail, String msg) {

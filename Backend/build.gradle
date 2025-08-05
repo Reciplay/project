@@ -73,6 +73,9 @@ dependencies {
 	implementation("commons-io:commons-io:2.11.0")
 	// AWS SDK BOM: S3 등 AWS 모듈 버전 통일 관리(25.08.01 지욱)
 	implementation platform('software.amazon.awssdk:bom:2.25.12')
+
+	// redis 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 def generated = layout.buildDirectory.dir("generated/querydsl").get().asFile;

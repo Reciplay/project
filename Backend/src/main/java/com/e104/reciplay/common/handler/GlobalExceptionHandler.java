@@ -8,6 +8,7 @@ import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.livekit.exception.CanNotOpenLiveRoomException;
 import com.e104.reciplay.livekit.exception.CanNotParticipateInLiveRoomException;
 import com.e104.reciplay.livekit.exception.EmptyPropertyException;
+import com.e104.reciplay.livekit.exception.RoomIdExpiredException;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -36,6 +37,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> canNotPariticipateIntLiveRoomExceptionHandler(CanNotParticipateInLiveRoomException e) {
         return CommonResponseBuilder.badRequest(e.getMessage());
     }
+
     @ExceptionHandler(CourseNotFoundException.class)
     public ResponseEntity<?> courseNotFoundExceptionHandler(CourseNotFoundException e) {
         return CommonResponseBuilder.notFound(e.getMessage());
@@ -45,4 +47,9 @@ public class GlobalExceptionHandler {
         return CommonResponseBuilder.notFound(e.getMessage());
     }
 
+
+    @ExceptionHandler(RoomIdExpiredException.class)
+    public ResponseEntity<?> roomIdExpiredExceptionHandler(RoomIdExpiredException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
 }

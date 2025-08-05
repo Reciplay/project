@@ -16,4 +16,9 @@ public class UserQueryServiceImpl implements UserQueryService{
     public User queryUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("해당 이메일은 등록되지 않았습니다."));
     }
+
+    @Override
+    public User queryUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 회원은 등록되지 않았습니다."));
+    }
 }
