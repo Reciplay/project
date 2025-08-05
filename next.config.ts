@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
         source: "/api/rest/:path*",
         destination: "http://i13e104.p.ssafy.io:8080/api/v1/:path*",
       },
+      {
+        source: '/test/local/:path*',
+        destination: 'http://127.0.0.1:6080/:path*'
+      }
     ];
   },
 };

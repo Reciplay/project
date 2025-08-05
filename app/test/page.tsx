@@ -2,79 +2,13 @@
 
 import { useSession } from "next-auth/react"
 import restClient from "@/lib/axios/restClient"
-import { useState, useRef, useEffect } from "react"
-
+import { useState } from "react"
+import ChatBot from '@/components/chatbot/ChatBot'
 
 
 export default function TestPage() {
-  const [messages, setMessages] = useState<string[]>([])
-  const [input, setInput] = useState("")
-  const [isChatOpen, setIsChatOpen] = useState(false)
-  const socketRef = useRef<WebSocket | null>(null)
-  const { data: session, status, update } = useSession()
-
-  const setupWebSocket = () => {
-    if (socketRef.current && socketRef.current.readyState !== WebSocket.CLOSED) {
-      return
-    }
-
-    if (!session?.user?.email) {
-      console.error("User not logged in. Cannot open chat.")
-      setIsChatOpen(false)
-      return
-    }
-    const email = session.user.email
-
-    const ws = new WebSocket(`ws://localhost:8000/chat/${email}`)
-
-    ws.onopen = () => {
-      console.log("WebSocket connected")
-    }
-
-    ws.onmessage = (event) => {
-      setMessages((prevMessages) => [...prevMessages, event.data])
-    }
-
-    ws.onclose = () => {
-      console.log("WebSocket disconnected")
-    }
-
-    socketRef.current = ws
-  }
-
-  const closeWebSocket = () => {
-    socketRef.current?.close()
-    socketRef.current = null
-  }
-
-  const toggleChat = () => {
-    const newIsChatOpen = !isChatOpen
-    setIsChatOpen(newIsChatOpen)
-
-    if (newIsChatOpen) {
-      setupWebSocket()
-    } else {
-      closeWebSocket()
-      setMessages([]) // Clear messages when closing
-    }
-  }
-
-  // Cleanup WebSocket connection on component unmount
-  useEffect(() => {
-    return () => {
-      socketRef.current?.close()
-    }
-  }, [])
-
-  const sendMessage = () => {
-    if (input && socketRef.current?.readyState === WebSocket.OPEN) {
-      setMessages((prevMessages) => [...prevMessages, `You: ${input}`])
-      socketRef.current.send(input)
-      setInput("")
-    }
-  }
-
   
+  const { data: session, status, update } = useSession()
   const [apiResponse, setApiResponse] = useState("")
 
   const handleRefreshToken = async () => {
@@ -97,8 +31,12 @@ export default function TestPage() {
       })
 
       setApiResponse(JSON.stringify(response.data, null, 2))
-    } catch (error: any) {
-      setApiResponse(`Error: ${error.message}`)
+    } catch (error) {
+      if (error instanceof Error) {
+        setApiResponse(`Error: ${error.message}`)
+      } else {
+        setApiResponse(`An unknown error occurred`)
+      }
     }
   }
 
@@ -110,28 +48,7 @@ export default function TestPage() {
     <div>
       <h1>Test Page</h1>
 
-      <div>
-        <button onClick={toggleChat}>
-          {isChatOpen ? "Close Chat" : "Open Chat"}
-        </button>
-        {isChatOpen && (
-          <div>
-            <h2>Chat</h2>
-            <div id="messages">
-              {messages.map((msg, i) => (
-                <div key={i}>{msg}</div>
-              ))}
-            </div>
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-            />
-            <button onClick={sendMessage}>Send</button>
-          </div>
-        )}
-      </div>
+      <ChatBot/>
 
       <hr />
 
