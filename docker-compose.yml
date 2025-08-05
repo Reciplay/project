@@ -1,42 +1,8 @@
-version: "3.8"
-
 networks:
   reciplay-bridge:
-    driver: bridge
-    name: reciplay-bridge
+    external: true
 
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: reciplay-mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    ports:
-      - "3306:3306"
-    volumes:
-      - ./mysql/data:/var/lib/mysql
-      - ./mysql/initdb:/docker-entrypoint-initdb.d
-    networks:
-      reciplay-bridge:
-        aliases:
-          - mysql
-
-  redis:
-    image: redis:7
-    container_name: reciplay-redis
-    ports:
-      - "${REDIS_PORT}:6379"
-    volumes:
-      - ./redis/data:/data
-    command: ["redis-server", "--appendonly", "yes"]
-    networks:
-      reciplay-bridge:
-        aliases:
-          - redis
-
   livekit-server:
     image: livekit/livekit-server:latest
     container_name: livekit-server
@@ -51,9 +17,6 @@ services:
       reciplay-bridge:
         aliases:
           - livekit-server
-    depends_on:
-      - mysql
-      - redis
 
   api-server:
     build:
@@ -74,10 +37,6 @@ services:
       reciplay-bridge:
         aliases:
           - api-server
-    depends_on:
-      - mysql
-      - redis
-      - livekit-server
 
   websocket-server:
     build:
@@ -85,7 +44,7 @@ services:
     container_name: reciplay-socket-container
     image: molee0206/reciplay-socket:latest
     ports:
-      - "${SOCKET_PORT}:8080"
+      - "${SOCKET_PORT}:8081"
     networks:
       reciplay-bridge:
         aliases:
