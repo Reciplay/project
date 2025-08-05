@@ -8,15 +8,24 @@ import {
   Room,
   RoomEvent,
 } from "livekit-client";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import AudioComponent from "./components/AudioComponent";
 import VideoComponent from "./components/VideoComponent";
-import AudioComponent from "./components/AudioComponent";
+import NodeDisplay from "./components/NodeDisplay";
 import GestureDisplay from "./components/GestureDisplay";
+import { recognizeGesture } from "./lib/gestureRecognizer";
+import styles from "./page.module.css";
 
 type TrackInfo = {
   trackPublication: RemoteTrackPublication;
   participantIdentity: string;
+};
+
+type Node = {
+  x: number;
+  y: number;
+  z: number;
+  visibility: number;
 };
 
 
@@ -30,11 +39,27 @@ let LIVEKIT_URL = "ws://localhost:7880"
 
 
 
-function videoApp() {
+function VideoApp() {
     const [room, setRoom] = useState<Room | undefined>(undefined);
     const [localTrack, setLocalTrack] = useState<LocalVideoTrack | undefined>(undefined);
     const [remoteTracks, setRemoteTracks] = useState<TrackInfo[]>([]);
-    const [gestures, setGestures] = useState({ left: "No Gesture", right: "No Gesture" });
+    const [nodes, setNodes] = useState<Node[]>([]);
+    const [gesture, setGesture] = useState("");
+    const lastGestureCheck = useRef(0);
+
+    const handleNodesDetected = useCallback((detectedNodes: any) => {
+        if (detectedNodes.length > 0) {
+            const landmarks = detectedNodes[0];
+            setNodes(landmarks);
+
+            const now = performance.now();
+            if (now - lastGestureCheck.current > 100) { // Check every 100ms
+                lastGestureCheck.current = now;
+                const newGesture = recognizeGesture(landmarks);
+                setGesture(prev => newGesture !== prev ? newGesture : prev);
+            }
+        }
+    }, []);
 
   const [participantName, setParticipantName] = useState(
     "Participant" + Math.floor(Math.random() * 100)
@@ -82,6 +107,7 @@ function videoApp() {
         room.localParticipant.videoTrackPublications.values().next().value
           .videoTrack
       );
+
     } catch (error) {
       console.log(
         "There was an error connecting to the room:",
@@ -97,6 +123,8 @@ function videoApp() {
     setRoom(undefined);
     setLocalTrack(undefined);
     setRemoteTracks([]);
+    setNodes([]);
+    setGesture("");
   }
 
     async function getToken(roomName: string, participantName: string) {
@@ -175,6 +203,7 @@ function videoApp() {
                         </button>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
+                        <GestureDisplay gesture={gesture} />
                         <div id="layout-container" className={styles.videoContainer}>
                             {localTrack && (
                                 <div className={styles.video}>
@@ -182,7 +211,7 @@ function videoApp() {
                                         track={localTrack}
                                         participantIdentity={participantName}
                                         local={true}
-                                        setGestures={setGestures}
+                                        onNodesDetected={handleNodesDetected}
                                     />
                                 </div>
                             )}
@@ -192,7 +221,7 @@ function videoApp() {
                                         <VideoComponent
                                             track={remoteTrack.trackPublication.videoTrack!}
                                             participantIdentity={remoteTrack.participantIdentity}
-                                            setGestures={setGestures}
+                                            onNodesDetected={handleNodesDetected}
                                         />
                                     </div>
                                 ) : (
@@ -203,7 +232,7 @@ function videoApp() {
                                 )
                             )}
                         </div>
-                        {localTrack && <GestureDisplay gestures={gestures} />}
+                        <NodeDisplay nodes={nodes} />
                     </div>
                 </div>
             )}

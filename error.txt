@@ -1,0 +1,168 @@
+vision_wasm_internal.js:9 E0805 04:52:09.008000 1883440 gl_graph_runner_internal_image.cc:68] Adding Image to stream image_in was not ok: INVALID_ARGUMENT: Graph has errors: 
+Packet timestamp mismatch on a calculator receiving from stream "norm_rect". Current minimum expected timestamp is 2159856 but received 2159855. Are you using a custom InputStreamHandler? Note that some InputStreamHandlers allow timestamps that are not strictly monotonically increasing. See for example the ImmediateInputStreamHandler class comment. [type.googleapis.com/mediapipe.StatusList='\n\xe3\x02\x08\x03\x12\xde\x02Packet timestamp mismatch on a calculator receiving from stream \"norm_rect\". Current minimum expected timestamp is 2159856 but received 2159855. Are you using a custom InputStreamHandler? Note that some InputStreamHandlers allow timestamps that are not strictly monotonically increasing. See for example the ImmediateInputStreamHandler class comment.']
+=== Source Location Trace: ===
+third_party/mediapipe/framework/input_stream_manager.cc:140
+_emscripten_errn	@	vision_wasm_internal.js:9
+$func12953	@	vision_wasm_internal.wasm:0x6bf6ab
+$func5855	@	vision_wasm_internal.wasm:0x382bff
+$func3466	@	vision_wasm_internal.wasm:0x1c25d7
+$func283	@	vision_wasm_internal.wasm:0xfb61
+$qd	@	vision_wasm_internal.wasm:0x7268b4
+renderLoop	@	VideoComponent.tsx:39
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+poseRecognition	@	VideoComponent.tsx:59
+VideoComponent.useEffect	@	VideoComponent.tsx:81
+Promise.then		
+VideoComponent.useEffect	@	VideoComponent.tsx:80
+<VideoComponent>		
+VideoApp	@	page.tsx:179
+vision_wasm_internal.js:9 E0805 04:52:09.009000 1883440 calculator_graph.cc:881] INVALID_ARGUMENT: CalculatorGraph::Run() failed: 
+Packet timestamp mismatch on a calculator receiving from stream "norm_rect". Current minimum expected timestamp is 2159856 but received 2159855. Are you using a custom InputStreamHandler? Note that some InputStreamHandlers allow timestamps that are not strictly monotonically increasing. See for example the ImmediateInputStreamHandler class comment.
+=== Source Location Trace: ===
+third_party/mediapipe/framework/input_stream_manager.cc:140
+_emscripten_errn	@	vision_wasm_internal.js:9
+$func12953	@	vision_wasm_internal.wasm:0x6bf6ab
+$func5855	@	vision_wasm_internal.wasm:0x382bff
+$func3466	@	vision_wasm_internal.wasm:0x1c25d7
+$func283	@	vision_wasm_internal.wasm:0xfb61
+$func3309	@	vision_wasm_internal.wasm:0x1b33aa
+$ze	@	vision_wasm_internal.wasm:0x3feb38
+renderLoop	@	VideoComponent.tsx:39
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+poseRecognition	@	VideoComponent.tsx:59
+VideoComponent.useEffect	@	VideoComponent.tsx:81
+Promise.then		
+VideoComponent.useEffect	@	VideoComponent.tsx:80
+<VideoComponent>		
+VideoApp	@	page.tsx:179
+vision_bundle.mjs:1 Uncaught Error: INVALID_ARGUMENT: CalculatorGraph::Run() failed: 
+Packet timestamp mismatch on a calculator receiving from stream "norm_rect". Current minimum expected timestamp is 2159856 but received 2159855. Are you using a custom InputStreamHandler? Note that some InputStreamHandlers allow timestamps that are not strictly monotonically increasing. See for example the ImmediateInputStreamHandler class comment.; WaitUntilIdle failed
+=== Source Location Trace: ===
+third_party/mediapipe/framework/input_stream_manager.cc:140
+research/drishti/app/pursuit/wasm/graph_utils.cc:187
+
+    at renderLoop (VideoComponent.tsx:39:57)
+renderLoop	@	VideoComponent.tsx:39
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+poseRecognition	@	VideoComponent.tsx:59
+VideoComponent.useEffect	@	VideoComponent.tsx:81
+Promise.then		
+VideoComponent.useEffect	@	VideoComponent.tsx:80
+<VideoComponent>		
+VideoApp	@	page.tsx:179
+vision_wasm_internal.js:9 E0805 04:52:09.015000 1883440 gl_graph_runner_internal_image.cc:68] Adding Image to stream image_in was not ok: INVALID_ARGUMENT: Graph has errors: 
+Packet timestamp mismatch on a calculator receiving from stream "norm_rect". Current minimum expected timestamp is 2159856 but received 2159855. Are you using a custom InputStreamHandler? Note that some InputStreamHandlers allow timestamps that are not strictly monotonically increasing. See for example the ImmediateInputStreamHandler class comment. [type.googleapis.com/mediapipe.StatusList='\n\xe3\x02\x08\x03\x12\xde\x02Packet timestamp mismatch on a calculator receiving from stream \"norm_rect\". Current minimum expected timestamp is 2159856 but received 2159855. Are you using a custom InputStreamHandler? Note that some InputStreamHandlers allow timestamps that are not strictly monotonically increasing. See for example the ImmediateInputStreamHandler class comment.']
+=== Source Location Trace: ===
+third_party/mediapipe/framework/input_stream_manager.cc:140
+_emscripten_errn	@	vision_wasm_internal.js:9
+$func12953	@	vision_wasm_internal.wasm:0x6bf6ab
+$func5855	@	vision_wasm_internal.wasm:0x382bff
+$func3466	@	vision_wasm_internal.wasm:0x1c25d7
+$func283	@	vision_wasm_internal.wasm:0xfb61
+$qd	@	vision_wasm_internal.wasm:0x7268b4
+renderLoop	@	VideoComponent.tsx:39
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+poseRecognition	@	VideoComponent.tsx:59
+VideoComponent.useEffect	@	VideoComponent.tsx:81
+Promise.then		
+VideoComponent.useEffect	@	VideoComponent.tsx:80
+<VideoComponent>		
+VideoApp	@	page.tsx:179
+vision_wasm_internal.js:9 E0805 04:52:09.016000 1883440 calculator_graph.cc:881] INVALID_ARGUMENT: CalculatorGraph::Run() failed: 
+Packet timestamp mismatch on a calculator receiving from stream "norm_rect". Current minimum expected timestamp is 2159856 but received 2159855. Are you using a custom InputStreamHandler? Note that some InputStreamHandlers allow timestamps that are not strictly monotonically increasing. See for example the ImmediateInputStreamHandler class comment.
+=== Source Location Trace: ===
+third_party/mediapipe/framework/input_stream_manager.cc:140
+_emscripten_errn	@	vision_wasm_internal.js:9
+$func12953	@	vision_wasm_internal.wasm:0x6bf6ab
+$func5855	@	vision_wasm_internal.wasm:0x382bff
+$func3466	@	vision_wasm_internal.wasm:0x1c25d7
+$func283	@	vision_wasm_internal.wasm:0xfb61
+$func3309	@	vision_wasm_internal.wasm:0x1b33aa
+$ze	@	vision_wasm_internal.wasm:0x3feb38
+renderLoop	@	VideoComponent.tsx:39
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+poseRecognition	@	VideoComponent.tsx:59
+VideoComponent.useEffect	@	VideoComponent.tsx:81
+Promise.then		
+VideoComponent.useEffect	@	VideoComponent.tsx:80
+<VideoComponent>		
+VideoApp	@	page.tsx:179
+vision_bundle.mjs:1 Uncaught Error: Encountered multiple errors: INVALID_ARGUMENT: Graph has errors: 
+Packet timestamp mismatch on a calculator receiving from stream "norm_rect". Current minimum expected timestamp is 2159856 but received 2159855. Are you using a custom InputStreamHandler? Note that some InputStreamHandlers allow timestamps that are not strictly monotonically increasing. See for example the ImmediateInputStreamHandler class comment.; Adding proto packet of type mediapipe.NormalizedRect to stream norm_rect was not ok
+=== Source Location Trace: ===
+third_party/mediapipe/framework/input_stream_manager.cc:140
+, INVALID_ARGUMENT: CalculatorGraph::Run() failed: 
+Packet timestamp mismatch on a calculator receiving from stream "norm_rect". Current minimum expected timestamp is 2159856 but received 2159855. Are you using a custom InputStreamHandler? Note that some InputStreamHandlers allow timestamps that are not strictly monotonically increasing. See for example the ImmediateInputStreamHandler class comment.; WaitUntilIdle failed
+=== Source Location Trace: ===
+third_party/mediapipe/framework/input_stream_manager.cc:140
+research/drishti/app/pursuit/wasm/graph_utils.cc:187
+
+    at renderLoop (VideoComponent.tsx:39:57)
+renderLoop	@	VideoComponent.tsx:39
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+requestAnimationFrame		
+renderLoop	@	VideoComponent.tsx:57
+poseRecognition	@	VideoComponent.tsx:59
+VideoComponent.useEffect	@	VideoComponent.tsx:81
+Promise.then		
+VideoComponent.useEffect	@	VideoComponent.tsx:80
+<VideoComponent>		
+VideoApp	@	page.tsx:179
