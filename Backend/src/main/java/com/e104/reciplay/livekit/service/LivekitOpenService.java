@@ -1,7 +1,9 @@
 package com.e104.reciplay.livekit.service;
 
+import com.e104.reciplay.livekit.dto.response.LivekitTokenResponse;
+
 public interface LivekitOpenService {
-    String createInstructorToken(Long lectureId, Long courseId);
-    String createStudentToken(Long lectureId, Long courseId);
+    LivekitTokenResponse createInstructorToken(Long lectureId, Long courseId);
+    LivekitTokenResponse createStudentToken(Long lectureId, Long courseId);
 
 }

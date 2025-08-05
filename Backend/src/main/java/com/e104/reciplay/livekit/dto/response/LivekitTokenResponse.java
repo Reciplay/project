@@ -11,4 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LivekitTokenResponse {
     String token;
+    String roomId;
+    String nickname;
+    String email;
+    Long lectureId;
 }

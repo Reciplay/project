@@ -10,10 +10,8 @@ import com.e104.reciplay.livekit.service.LivekitOpenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/api/v1/livekit")
@@ -22,7 +20,6 @@ public class LivekitController {
 
     private final LivekitOpenService livekitOpenService;
     private final SimpMessagingTemplate messagingTemplate;
-
 
     @PostMapping("/instructor/token") // 강사에게만 허용된다.
     public ResponseEntity<ResponseRoot<LivekitTokenResponse>> createInstructorToken(@RequestBody LiveEstablishRequest request) {
@@ -33,8 +30,8 @@ public class LivekitController {
             throw new CanNotOpenLiveRoomException("요청에 강좌 또는 강의 ID가 없습니다.");
         }
 
-        String token = livekitOpenService.createInstructorToken(lectureId, courseId);
-        return CommonResponseBuilder.create("라이브 강좌가 개설되었습니다.", new LivekitTokenResponse(token));
+        LivekitTokenResponse response = livekitOpenService.createInstructorToken(lectureId, courseId);
+        return CommonResponseBuilder.create("라이브 강좌가 개설되었습니다.", response);
     }
 
     @PostMapping("/student/token")
@@ -46,8 +43,7 @@ public class LivekitController {
             throw new CanNotParticipateInLiveRoomException("요청에 강좌 또는 강의 ID가 없습니다.");
         }
 
-        String token = livekitOpenService.createStudentToken(lectureId, courseId);
-        return CommonResponseBuilder.create("라이브 강좌에 참여했습니다.", new LivekitTokenResponse(token));
+        LivekitTokenResponse response = livekitOpenService.createStudentToken(lectureId, courseId);
+        return CommonResponseBuilder.create("라이브 강좌에 참여했습니다.", response);
     }
-
 }

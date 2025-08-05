@@ -19,6 +19,4 @@ public class SpecialCourse {
     @Column(name = "course_id")
     private Long courseId;
 
-    @Column(name = "banner_image_url")
-    private String bannerImageUrl;
 }

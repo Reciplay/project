@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
@@ -103,7 +104,9 @@ public class SecurityConfig {
                         URL_PREFIX + "/user/auth/signup", "/h2-console/**", "/practice-ui.html",
                         "/swagger-ui/**", // swagger-ui 관련 모든 경로 허용
                         "/api-docs/json/**",  // openapi v3 문서 경로 허용
-                        "/swagger-resources/**").permitAll()
+                        "/swagger-resources/**",
+                        URL_PREFIX + "/livekit/**").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers(URL_PREFIX+"/livekit/instructor/token").hasRole("INSTRUCTOR")
                 .requestMatchers(URL_PREFIX + "/admin").hasRole("ADMIN")
                 .anyRequest().authenticated());

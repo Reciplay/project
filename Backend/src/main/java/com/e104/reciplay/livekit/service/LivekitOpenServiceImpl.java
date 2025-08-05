@@ -4,8 +4,10 @@ import com.e104.reciplay.entity.Course;
 import com.e104.reciplay.entity.Instructor;
 import com.e104.reciplay.entity.Lecture;
 import com.e104.reciplay.entity.LiveRoom;
+import com.e104.reciplay.livekit.dto.response.LivekitTokenResponse;
 import com.e104.reciplay.livekit.exception.CanNotOpenLiveRoomException;
 import com.e104.reciplay.livekit.exception.CanNotParticipateInLiveRoomException;
+import com.e104.reciplay.livekit.redis.RoomRedisService;
 import com.e104.reciplay.livekit.service.depends.*;
 import com.e104.reciplay.user.security.domain.User;
 import com.e104.reciplay.user.security.service.UserQueryService;
@@ -34,6 +36,7 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
     private final CourseHistoryQueryService courseHistoryQueryService;
     private final BlacklistQueryService blacklistQueryService;
     private final LiveRoomQueryService liveRoomQueryService;
+    private final RoomRedisService roomRedisService;
 
     @Value("${livekit.api.key}")
     private String LIVEKIT_API_KEY;
@@ -66,16 +69,16 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
     }
 
     @Override
-    public String createInstructorToken(Long lectureId, Long courseId) {
+    public LivekitTokenResponse createInstructorToken(Long lectureId, Long courseId) {
         if(!isTest) {
             isOpenable(lectureId, courseId); // 불가능할 경우 예외 던져짐.
         }
+
         AccessToken token = new AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET);
         token.setIdentity(AuthenticationUtil.getSessionUsername()); // participantName 대신 user의 이메일 사용
         token.setName(AuthenticationUtil.getSessionUsername());
 
-        Lecture lecture = isTest ? null : lectureQueryService.queryLectrueById(lectureId);
-        String roomName = isTest ? "testRoom" + lectureId : lecture.getTitle() + lectureId.toString();
+        String roomName = getRoomIdOf(lectureId, true);
 
         token.addGrants(
                 new RoomJoin(true),
@@ -94,14 +97,17 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
 
         // 역할 정보를 메타데이터에 추가
         token.setMetadata("{\"role\": \"instructor\"}");
+
         if(!isTest) {
+            Lecture lecture = lectureQueryService.queryLectrueById(lectureId);
             LiveRoom liveRoom = liveRoomManagementService.openLiveRoom(lecture, roomName);
             // 해당 강좌를 라이브 중으로 변경한다.
             courseManagementService.activateLiveState(courseId);
             // 라이브에 참여한다.
             liveParticipationManagementService.participateIn(liveRoom, AuthenticationUtil.getSessionUsername());
         }
-        return token.toJwt();
+        User user = userQueryService.queryUserByEmail(AuthenticationUtil.getSessionUsername());
+        return new LivekitTokenResponse(token.toJwt(), roomName, user.getNickname(), user.getEmail(), lectureId);
     }
 
     public void isParticipatable(Long lectureId, Long courseId) {
@@ -126,13 +132,13 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
     }
 
     @Override
-    public String createStudentToken(Long lectureId, Long courseId) {
+    public LivekitTokenResponse createStudentToken(Long lectureId, Long courseId) {
         if(!isTest) {
             isParticipatable(lectureId, courseId);
         }
         // 강좌 참여가 가능한 상태이다.
         // 토큰 발급 + 참여 처리.
-        String roomName = isTest ? "testRoom" + lectureId : lectureQueryService.queryLectrueById(lectureId).getTitle() + lectureId.toString();
+        String roomName = this.getRoomIdOf(lectureId, false);
         String email = AuthenticationUtil.getSessionUsername();
 
         AccessToken token = new AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET);
@@ -158,8 +164,16 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
             LiveRoom liveRoom = liveRoomQueryService.queryLiveRoomByLectureId(lectureId);
             liveParticipationManagementService.participateIn(liveRoom, email);
         }
-        return token.toJwt();
+        User user = userQueryService.queryUserByEmail(AuthenticationUtil.getSessionUsername());
+        return new LivekitTokenResponse(token.toJwt(), roomName, user.getNickname(), user.getEmail(), lectureId);
     }
 
-
+    public String getRoomIdOf(Long lectureId, boolean instructor) {
+        String lectureName = "test";
+        if(!isTest) {
+            lectureName = lectureQueryService.queryLectrueById(lectureId).getTitle();
+        }
+        if(instructor) return roomRedisService.addRoomId(lectureName, lectureId);
+        else return roomRedisService.getRoomId(lectureName, lectureId);
+    }
 }

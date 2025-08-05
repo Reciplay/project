@@ -1,17 +1,34 @@
 
 package com.e104.reciplay.course.lecture.controller;
 
-import com.e104.reciplay.course.lecture.dto.LectureDetail;
+
+import com.e104.reciplay.course.lecture.dto.response.LectureSummary;
+import com.e104.reciplay.course.lecture.repository.ChapterQueryRepository;
+import com.e104.reciplay.course.lecture.repository.LectureQueryRepository;
+import com.e104.reciplay.course.lecture.service.LectureManagementService;
+import com.e104.reciplay.course.lecture.service.LectureQueryService;
+import com.e104.reciplay.repository.CourseRepository;
+import com.e104.reciplay.course.lecture.dto.response.LectureDetail;
+import com.e104.reciplay.repository.LectureRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(LectureApiController.class)
@@ -20,10 +37,20 @@ class LectureApiControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper objectMapper;
-
+    @MockitoBean
+    private LectureQueryService lectureQueryService;
+    @MockitoBean
+    private LectureManagementService lectureManagementService;
+    @MockitoBean
+    private LectureRepository lectureRepository;
+    @MockitoBean
+    private LectureQueryRepository lectureQueryRepository;
+    @MockitoBean
+    private CourseRepository courseRepository;
+    @MockitoBean
+    private ChapterQueryRepository chapterQueryRepository;
     @Test
     @DisplayName("강의 요약 리스트 조회 성공")
     void getLectureSummaries() throws Exception {

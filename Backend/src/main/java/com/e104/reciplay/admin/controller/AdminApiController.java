@@ -19,6 +19,8 @@ import java.util.List;
 @Slf4j
 
 public class AdminApiController{
+
+    
     @GetMapping("/instructor/summaries")
     @ApiResponse(responseCode = "200", description = "강사 요약 정보 리스트 조회 성공")
     @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")
@@ -27,6 +29,7 @@ public class AdminApiController{
     public ResponseEntity<ResponseRoot<List<AdminInstructorSummary>>> getInstructorSummaries(
             @RequestParam Boolean isApprove
     ) {
+
 
         return CommonResponseBuilder.success("강사 요약 정보 리스트 조회에 성공하였습니다.",
                 List.of(new AdminInstructorSummary()));
