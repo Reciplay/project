@@ -2,13 +2,16 @@ import MainCarousel from "@/components/carousel/carousel";
 import CardWrapper from "./__components/cardWrapper";
 import CardWrapper1 from "./__components/cardWrapper1";
 import styles from "./page.module.scss";
+import SpecialCarousel from "./__components/specialCarousel/specialCarousel";
 
 export default function Page() {
   return (
     <div className={styles.container}>
-      <div className={styles.carouselWrapper}>
-        <MainCarousel></MainCarousel>
-      </div>
+      <SpecialCarousel />
+      {/* <div className={styles.carouselWrapper}> */}
+      {/* <SpecialCarousel /> */}
+      {/* <MainCarousel></MainCarousel> */}
+      {/* </div> */}
       <div className={styles.learning}>
         <span className={styles.learntitle}>수강중인 강좌</span>
         <CardWrapper></CardWrapper>

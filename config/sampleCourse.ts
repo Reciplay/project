@@ -1,6 +1,6 @@
-import { Course } from "@/types/course";
+import { MainCourse } from "@/types/course";
 
-export const sampleCourse1: Course[] = [
+export const sampleCourse1: MainCourse[] = [
   {
     id: 2,
     title: "프랑스 제과 마스터와 함께하는 마카롱과 밀푀유",
@@ -69,7 +69,7 @@ export const sampleCourse1: Course[] = [
     viewerCount: 42,
     startDate: "2025-08-20",
     endDate: "2025-09-20",
-    isEnrolled: false
+    isEnrolled: false,
   },
   {
     id: 9,
@@ -86,7 +86,7 @@ export const sampleCourse1: Course[] = [
     viewerCount: 42,
     startDate: "2025-08-20",
     endDate: "2025-09-20",
-    isEnrolled: false
+    isEnrolled: false,
   },
   {
     id: 10,
@@ -103,7 +103,7 @@ export const sampleCourse1: Course[] = [
     viewerCount: 12,
     startDate: "2025-08-21",
     endDate: "2025-09-21",
-    isEnrolled: true
+    isEnrolled: true,
   },
 
   {
@@ -121,7 +121,7 @@ export const sampleCourse1: Course[] = [
     viewerCount: 22,
     startDate: "2025-08-22",
     endDate: "2025-09-22",
-    isEnrolled: false
+    isEnrolled: false,
   },
 
   {
@@ -139,7 +139,7 @@ export const sampleCourse1: Course[] = [
     viewerCount: 8,
     startDate: "2025-08-23",
     endDate: "2025-09-23",
-    isEnrolled: true
+    isEnrolled: true,
   },
 
   {
@@ -157,7 +157,7 @@ export const sampleCourse1: Course[] = [
     viewerCount: 18,
     startDate: "2025-08-24",
     endDate: "2025-09-24",
-    isEnrolled: false
+    isEnrolled: false,
   },
 
   {
@@ -175,11 +175,10 @@ export const sampleCourse1: Course[] = [
     viewerCount: 31,
     startDate: "2025-08-25",
     endDate: "2025-09-25",
-    isEnrolled: true
-  }
-
+    isEnrolled: true,
+  },
 ];
-export const sampleCourse2: Course[] = [
+export const sampleCourse2: MainCourse[] = [
   {
     id: 8,
     title: "이탈리아 미슐랭 셰프의 프리미 피아띠 클래스",
@@ -300,7 +299,7 @@ export const sampleCourse2: Course[] = [
   //   isEnrolled: false,
   // },
 ];
-export const sampleCourse3: Course[] = [
+export const sampleCourse3: MainCourse[] = [
   {
     id: 15,
     title: "이탈리아 미슐랭 셰프의 프리미 피아띠 클래스",

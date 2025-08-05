@@ -1,0 +1,12 @@
+.carouselWrapper {
+  width: 100%;
+  height: 450px;
+  overflow: hidden;
+  border-radius: 15px;
+}
+
+.imageSlide {
+  position: relative;
+  width: 100%;
+  height: 450px; // 반드시 줘야함!
+}
