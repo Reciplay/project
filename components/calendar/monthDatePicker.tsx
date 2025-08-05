@@ -60,8 +60,8 @@ function Component() {
       <TextField
         className={styles.datePickerInput}
         id="date-input"
-        label="합격년월"
-        placeholder="합격년월"
+        label="취득일"
+        placeholder="취득일"
         value={formattedValue}
         InputProps={{
           readOnly: true,

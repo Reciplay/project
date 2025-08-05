@@ -10,6 +10,7 @@ import BaseButton from "@/components/button/baseButton";
 import ProfileForm from "./__components/profileForm"; // 맨 위에 import 추가
 import { useInstructorStore } from "@/stores/instructorStore";
 import { useRouter } from 'next/navigation';
+import restClient from "@/lib/axios/restClient";
 
 
 export default function page() {
@@ -50,6 +51,8 @@ export default function page() {
 			careers,
 		};
 
+		console.log('💾 전송할 payload:', payload);
+
 		try {
 			await postInstructorData(payload);
 			alert('등록 완료!');
@@ -67,9 +70,11 @@ export default function page() {
 	// 기본 정보 가져오는 함수 백엔드 api 요청
 	const fetchProfile = async () => {
 		try {
-			const res = await fetch("/api/v1/user/profile");
-			const result = await res.json();
-			const user = result.data;
+			const response = await restClient.get(
+				"/user/profile",   // ✅ path만 작성
+			);
+
+			const user = response.data;
 
 			const genderText = user.gender === 0 ? "여" : "남";
 			const age = calculateAge(user.birthDate);
@@ -79,11 +84,18 @@ export default function page() {
 				genderBirth: `${genderText} ${formatBirth(user.birthDate)} (${age}세)`,
 				email: user.email,
 				job: user.job,
-			})
+			});
 		} catch (e) {
-			console.error("프로필 불러오기 실패", e)
+			console.error("프로필 불러오기 실패", e);
+
+			setProfile({
+				name: '이지언',
+				genderBirth: '여 2000 (25세)',
+				email: 'ssafyfavorait@example.com',
+				job: '양식 강사',
+			});
 		}
-	}
+	};
 
 	// 만나이 계산 함수
 	const calculateAge = (birthDateStr: string): number => {

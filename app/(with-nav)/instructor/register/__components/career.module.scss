@@ -8,6 +8,7 @@
     display: flex;
     gap: 20px;
     justify-content: space-between;
+    margin: 2rem 0;
 }
 
 .placeHolder {
@@ -65,4 +66,37 @@
     resize: vertical;
     outline: none; // 🔹 기본 파란 아웃라인 제거
     transition: border 0.2s ease;
+}
+
+.customDatePicker {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 13px;
+    width: 15.625rem; // 250px ÷ 16
+    height: 6rem;
+    background: #ffffff;
+    border: 1px solid #6c738c;
+    border-radius: 5px;
+    font-size: 16px;
+    gap: 8px;
+
+    // Hover & Focus 시 스타일
+    &:hover,
+    &:focus,
+    &.ant-picker-focused {
+        border-color: #007aff;
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    }
+
+    // 내부 인풋 스타일
+    .ant-picker-input>input {
+        color: #333;
+        font-weight: 500;
+
+        &::placeholder {
+            color: #999;
+        }
+    }
 }
