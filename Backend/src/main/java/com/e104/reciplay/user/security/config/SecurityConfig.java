@@ -4,6 +4,8 @@ import com.e104.reciplay.user.security.filter.CustomLoginFilter;
 import com.e104.reciplay.user.security.filter.JWTFilter;
 import com.e104.reciplay.user.security.jwt.JWTUtil;
 import com.e104.reciplay.user.security.service.AuthService;
+import com.e104.reciplay.user.security.service.UserQueryService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +45,8 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final AuthService authService;
+    private final ObjectMapper objectMapper;
+    private final UserQueryService userQueryService;
 
     private String[] permittedUrls = {
             URL_PREFIX + "/user/auth/login", URL_PREFIX + "/user/auth/refresh-token",
@@ -114,7 +118,9 @@ public class SecurityConfig {
         http.formLogin(auth -> auth.disable());
 
         // 커스텀 필터를 addFilterAt 해줘야 함.
-        CustomLoginFilter customLoginFilter = new CustomLoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, ACCESS_TOKEN_EXPIRATION, REFRESH_TOKEN_EXPIRATION, authService);
+        CustomLoginFilter customLoginFilter = new CustomLoginFilter(authenticationManager(authenticationConfiguration),
+                jwtUtil, ACCESS_TOKEN_EXPIRATION, REFRESH_TOKEN_EXPIRATION,
+                authService, objectMapper, userQueryService);
         customLoginFilter.setFilterProcessesUrl(URL_PREFIX + "/user/auth/login");
 
         http.addFilterAt(
