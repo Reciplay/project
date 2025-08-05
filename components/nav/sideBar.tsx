@@ -1,17 +1,17 @@
 "use client";
 
-import classNames from "classnames";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   adminSideBarMenus,
   instructorSideBarMenus,
   userSidebarMenus,
 } from "@/config/sideBarMenu";
+import { useSidebarStore } from "@/stores/sideBarStore";
+import classNames from "classnames";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import TablerIcon from "../icon/tablerIcon";
 import styles from "./sideBar.module.scss";
-import { useSidebarStore } from "@/stores/sideBarStore";
-import { useSession } from "next-auth/react";
 
 interface LinkItemProps {
   href: string;
@@ -62,12 +62,14 @@ export default function SideBar() {
   const { isOpen } = useSidebarStore();
   const { data: session } = useSession();
 
-  const role = session?.role || "student"; // 기본값은 user
+  console.log(session);
+
+  const role = session?.role || "ROLE_STUDENT"; // 기본값은 user
 
   let sidebarMenu;
-  if (role === "admin") {
+  if (role === "ROLE_ADMIN") {
     sidebarMenu = adminSideBarMenus;
-  } else if (role === "instructor") {
+  } else if (role === "ROLE_INSTRUCTOR") {
     sidebarMenu = instructorSideBarMenus;
   } else {
     sidebarMenu = userSidebarMenus;

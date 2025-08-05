@@ -39,12 +39,13 @@ export const formData: Record<FieldName, FieldConfig<FieldName>> = {
     type: "password",
     rules: {
       required: "비밀번호는 필수입니다.",
-      minLength: { value: 8, message: "비밀번호는 8자 이상 입력해주세요." },
-      maxLength: { value: 20, message: "비밀번호는 20자 이하로 입력해주세요." },
-      pattern: {
-        value: /^(?=.*[A-Za-z])(?=.*\d).+$/,
-        message: "영어와 숫자를 모두 포함해야 합니다.",
-      },
+      // ! todo
+      // minLength: { value: 8, message: "비밀번호는 8자 이상 입력해주세요." },
+      // maxLength: { value: 20, message: "비밀번호는 20자 이하로 입력해주세요." },
+      // pattern: {
+      //   value: /^(?=.*[A-Za-z])(?=.*\d).+$/,
+      //   message: "영어와 숫자를 모두 포함해야 합니다.",
+      // },
     },
   },
   nickname: {
