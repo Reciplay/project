@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "like")
+@Entity(name = "likes")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
