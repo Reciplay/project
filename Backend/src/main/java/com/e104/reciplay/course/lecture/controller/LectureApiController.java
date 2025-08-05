@@ -2,8 +2,9 @@ package com.e104.reciplay.course.lecture.controller;
 
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
-import com.e104.reciplay.course.lecture.dto.LectureDetail;
+
 import com.e104.reciplay.course.lecture.dto.response.ChapterInfo;
+import com.e104.reciplay.course.lecture.dto.response.LectureDetail;
 import com.e104.reciplay.course.lecture.dto.response.LectureSummary;
 import com.e104.reciplay.course.lecture.repository.ChapterQueryRepository;
 import com.e104.reciplay.course.lecture.service.LectureManagementService;

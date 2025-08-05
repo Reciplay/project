@@ -1,12 +1,13 @@
 
 package com.e104.reciplay.course.lecture.controller;
 
-import com.e104.reciplay.course.lecture.dto.LectureDetail;
+
 import com.e104.reciplay.course.lecture.dto.response.LectureSummary;
 import com.e104.reciplay.course.lecture.repository.ChapterQueryRepository;
 import com.e104.reciplay.course.lecture.service.LectureManagementService;
 import com.e104.reciplay.course.lecture.service.LectureQueryService;
 import com.e104.reciplay.repository.CourseRepository;
+import com.e104.reciplay.course.lecture.dto.response.LectureDetail;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

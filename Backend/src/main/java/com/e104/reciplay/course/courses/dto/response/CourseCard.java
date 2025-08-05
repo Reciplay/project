@@ -13,11 +13,10 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class CourseCard {
-    // 배너 이미지 필요
-    // 썸네일 이미지 필요
-    //
-    // 현재 시청자 수?
-    // 강좌 배너 이미지 필요
+
+    private String specialBannerUrl;
+    private String thumbnailUrl;
+    private Integer viewerCount;
 
     private String title;
     private Long courseId;

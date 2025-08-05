@@ -1,6 +1,6 @@
 package com.e104.reciplay.admin.dto.response;
 
-import com.e104.reciplay.course.lecture.dto.LectureDetail;
+import com.e104.reciplay.course.lecture.dto.response.LectureDetail;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
