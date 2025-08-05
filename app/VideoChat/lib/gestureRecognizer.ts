@@ -30,11 +30,23 @@ export function recognizeGesture(landmarks: Landmark[]): string {
   const leftArmAngle = calculateAngle(leftShoulder, leftElbow, leftWrist);
   const rightArmAngle = calculateAngle(rightShoulder, rightElbow, rightWrist);
 
+  // Crossed Arm gesture
+  const areArmsCrossed = leftWrist.x < rightWrist.x
+
+  if (areArmsCrossed) {
+    return "Crossed Arm";
+  }
+
+
   // "Hands Up" gesture
   // Check if both wrists are above their respective eyes
   if (leftWrist.y < leftEye.y && rightWrist.y < rightEye.y) {
     // Further check if arms are somewhat straight
     return "Hands Up";
+  }
+
+  if (rightWrist.y < rightEye.y) {
+    return "right Hand Up"
   }
 
 
@@ -59,6 +71,7 @@ export function recognizeGesture(landmarks: Landmark[]): string {
       return "handOnShoulder";
     }
   }
+
 
   return "";
 }
