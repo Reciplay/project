@@ -123,70 +123,70 @@
   }
 }
 
-.checklistSection {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+// .checklistSection {
+//   flex: 1;
+//   display: flex;
+//   flex-direction: column;
 
-  .checklistBox {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    height: 100%;
-    overflow-y: auto;
+//   .checklistBox {
+//     background: white;
+//     padding: 20px;
+//     border-radius: 12px;
+//     height: 100%;
+//     overflow-y: auto;
 
-    h4 {
-      font-size: 17px;
-      font-weight: bold;
-      margin-bottom: 6px;
-    }
+//     h4 {
+//       font-size: 17px;
+//       font-weight: bold;
+//       margin-bottom: 6px;
+//     }
 
-    ul {
-      list-style: none;
-      padding: 0;
+//     ul {
+//       list-style: none;
+//       padding: 0;
 
-      li {
-        position: relative;
-        padding-left: 20px;
-        margin-bottom: 8px;
+//       li {
+//         position: relative;
+//         padding-left: 20px;
+//         margin-bottom: 8px;
 
-        &::before {
-          content: "✅";
-          position: absolute;
-          left: 0;
-        }
-      }
-    }
-  }
+//         &::before {
+//           content: "✅";
+//           position: absolute;
+//           left: 0;
+//         }
+//       }
+//     }
+//   }
 
-  .chapter {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    margin-bottom: 24px;
+//   .chapter {
+//     display: flex;
+//     align-items: flex-start;
+//     gap: 8px;
+//     margin-bottom: 24px;
 
-    .dot {
-      width: 12px;
-      height: 12px;
-      background-color: yellow;
-      border-radius: 50%;
-      margin-top: 8px;
-    }
+//     .dot {
+//       width: 12px;
+//       height: 12px;
+//       background-color: yellow;
+//       border-radius: 50%;
+//       margin-top: 8px;
+//     }
 
-    .chapterContent {
-      h4 {
-        margin-bottom: 8px;
-        font-size: 16px;
-      }
+//     .chapterContent {
+//       h4 {
+//         margin-bottom: 8px;
+//         font-size: 16px;
+//       }
 
-      ul {
-        list-style: none;
-        padding: 0;
+//       ul {
+//         list-style: none;
+//         padding: 0;
 
-        li {
-          margin-bottom: 6px;
-        }
-      }
-    }
-  }
-}
+//         li {
+//           margin-bottom: 6px;
+//         }
+//       }
+//     }
+//   }
+// }

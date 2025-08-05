@@ -1,20 +1,19 @@
 "use client";
 
-import React from "react";
+import { getSession, signIn } from "next-auth/react";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 
-import styles from "./page.module.scss";
-import CustomInput from "@/components/input/customInput";
 import BaseButton from "@/components/button/baseButton";
+import CustomInput from "@/components/input/customInput";
+import { formData } from "@/config/formData";
+import { ROUTES } from "@/config/routes";
+import AuthImage from "../__components/authImage/authImage";
 import LogoWIthDesc from "../__components/logoWithDesc/logoWithDesc";
 import Separator from "../__components/separator/separator";
 import SNS from "../__components/sns/sns";
-import { ROUTES } from "@/config/routes";
-import AuthImage from "../__components/authImage/authImage";
-import { formData } from "@/config/formData";
+import styles from "./page.module.scss";
 
 interface LoginForm {
   email: string;
@@ -30,17 +29,34 @@ export default function Page() {
   } = useForm<LoginForm>({ mode: "onSubmit" });
 
   const onSubmit = async (data: LoginForm) => {
+    console.log(`email: ${data.email},      password: ${data.password},`);
     const result = await signIn("credentials", {
       email: data.email,
       password: data.password,
       redirect: false,
     });
 
-    if (result?.ok) {
-      router.push(ROUTES.HOME);
-    } else {
+    if (!result?.ok) {
       alert("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.");
     }
+    const session = await getSession();
+
+    if (session.required) {
+      router.push(ROUTES.AUTH.EXTRA);
+    }
+
+    if (session.role == "student") {
+      router.push(ROUTES.HOME);
+    }
+
+    if (session.role == "instructor") {
+      router.push(ROUTES.INSTRUCTOR.DASHBOARD);
+    }
+
+    if (session.role == "admin") {
+      router.push(ROUTES.ADMIN);
+    }
+    router.push(ROUTES.HOME);
   };
 
   return (

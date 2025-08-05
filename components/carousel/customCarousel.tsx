@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Carousel as AntdCarousel } from "antd";
-import styles from "./carousel.module.scss";
+import styles from "./customCarousel.module.scss";
 import Image from "next/image";
 
 const contentStyle: React.CSSProperties = {
@@ -14,26 +14,38 @@ const contentStyle: React.CSSProperties = {
   background: "#364d79",
 };
 
-export default function MainCarousel() {
+export default function CustomCarousel() {
   const onChange = (currentSlide: number) => {
     console.log(currentSlide);
   };
 
   return (
     <div className={styles.carouselWrapper}>
-      <AntdCarousel afterChange={onChange}>
+      <AntdCarousel
+        autoplay={{ dotDuration: true }}
+        autoplaySpeed={5000}
+        afterChange={onChange}
+      >
         <Image
-          src="/images/mainbanner1.png"
+          src="/images/food1.jpg"
           alt="메인 배너 이미지"
-          width={1250}
+          width={500}
           height={350}
           className={styles.bannerImage}
           style={{ objectFit: "cover" }}
         />
         <Image
-          src="/images/mainbanner2.png"
+          src="/images/food2.jpg"
           alt="메인 배너 이미지2"
-          width={1250}
+          width={500}
+          height={350}
+          className={styles.bannerImage}
+          style={{ objectFit: "cover" }}
+        />
+        <Image
+          src="/images/food3.jpg"
+          alt="메인 배너 이미지3"
+          width={500}
           height={350}
           className={styles.bannerImage}
           style={{ objectFit: "cover" }}

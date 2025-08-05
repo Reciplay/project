@@ -1,10 +1,10 @@
+import axios from "axios";
+import FormData from "form-data";
 import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import KakaoProvider from "next-auth/providers/kakao";
 import NaverProvider from "next-auth/providers/naver";
-import CredentialsProvider from "next-auth/providers/credentials";
-import FormData from "form-data";
-import axios from "axios";
 
 const handler = NextAuth({
   providers: [
@@ -33,10 +33,15 @@ const handler = NextAuth({
             }
           );
 
+          console.log(res.headers);
+          console.log("------------");
+          console.log(res);
+
           const accessToken = res.headers.authorization;
           const cookieString = res.headers["set-cookie"][0];
           const refreshToken = cookieString.split("=")[1];
-          const role = res.headers.role;
+          const role = res.data.role;
+          const required = res.data.required;
           const expires = res.headers.expires;
 
           if (accessToken || refreshToken) {
@@ -47,6 +52,7 @@ const handler = NextAuth({
               refreshToken: refreshToken,
               accessTokenExpires: expires,
               role: role,
+              required: required,
             };
             return user;
           } else {
@@ -77,6 +83,7 @@ const handler = NextAuth({
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
         token.role = user.role;
+        token.required = user.required;
       }
       return token;
     },
@@ -84,6 +91,7 @@ const handler = NextAuth({
       session.accessToken = token.accessToken as string;
       session.refreshToken = token.refreshToken as string;
       session.role = token.role as string;
+      session.required = token.required as boolean;
       if (token.email) {
         session.user.email = token.email;
       }

@@ -4,7 +4,7 @@ export const ROUTES = {
   COURSE: "/course",
   PROFILE: "/profile",
   SUBSCRIBE: "/subscribe",
-  INSTRUCTOR: "/instructor",
+  // INSTRUCTOR: "/instructor",
   SEARCH: "/search",
 
   AUTH: {
@@ -12,6 +12,11 @@ export const ROUTES = {
     SIGNUP: "/api/auth/signup",
     EXTRA: "/api/auth/extra",
   },
+
+  INSTRUCTOR: {
+    DASHBOARD: "/instructor",
+  },
+  ADMIN: "/admin",
 
   // 동적 경로 (필요 시)
   COURSE_DETAIL: (id: string) => `/course/${id}`,

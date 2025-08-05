@@ -69,3 +69,21 @@ export interface CreateCourseRequest {
   announcement: string;
   isReviwed: boolean;
 }
+
+export interface MainCourse {
+  id: number;
+  title: string;
+  instructorId: number;
+  instructorName: string;
+  thumbnail: string;
+  category: string;
+  difficulty: number;
+  summary: string;
+  learningPoints: string[];
+  ratingAvg: number;
+  isLive: boolean;
+  viewerCount: number;
+  startDate: string;
+  endDate: string;
+  isEnrolled: boolean;
+}
