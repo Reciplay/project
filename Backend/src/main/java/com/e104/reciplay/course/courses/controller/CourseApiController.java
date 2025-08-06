@@ -71,7 +71,9 @@ public class CourseApiController {
     @Operation(summary = "강좌 상세 정보 조회  API", description = "강좌 상세 정보 조회")
     public ResponseEntity<ResponseRoot<CourseDetail>> getCourseDetail(
             @RequestParam Long courseId
+
     ){
+
         CourseDetail courseDetail = courseQueryService.queryCourseByCourseId(courseId);
         return CommonResponseBuilder.success("강좌 상세 정보 조회에 성공하였습니다.", courseDetail);
     }
