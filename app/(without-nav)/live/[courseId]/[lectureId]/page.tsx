@@ -2,9 +2,13 @@
 
 import { Usable, use } from "react";
 import Header from "./__component/header/header";
-import VideoSection from "./__component/videoSection/videoSection";
 import styles from "./page.module.scss";
 import TodoListCard from "./__component/todoList/todoListCard"
+
+import dynamic from 'next/dynamic';
+const VideoChatTestPage = dynamic(() => import('@/app/videoChatTest/page'), {
+  ssr: false,
+});
 
 export default function Page({
   params,
@@ -27,11 +31,8 @@ export default function Page({
 
       <div className={styles.main}>
         <div className={styles.videoSection}>
-          <VideoSection
-            lectureId={lectureId}
-            courseId={courseId}
-            role="student"
-          />
+          {/* 여기 */}
+          <VideoChatTestPage></VideoChatTestPage>
         </div>
         <div className={styles.checklistSection}>
           <TodoListCard />

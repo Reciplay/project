@@ -44,9 +44,9 @@ export default function Header({
       <div className={styles.left}>
         <div className={styles.lecture}>{lectureName}</div>
       </div>
-      <div className={styles.center}>
+      {/* <div className={styles.center}>
         <div className={styles.timer}>{formatDuration(elapsedSec)}</div>
-      </div>
+      </div> */}
       <div className={styles.right}>
         <button
           className={styles.leaveButton}

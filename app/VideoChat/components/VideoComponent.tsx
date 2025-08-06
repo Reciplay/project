@@ -28,7 +28,7 @@ async function poseRecognition(
 ): Promise<() => void> {
     const canvasCtx = canvas.getContext("2d");
     if (!canvasCtx) {
-        return () => {};
+        return () => { };
     }
 
     const drawingUtils = new DrawingUtils(canvasCtx);
