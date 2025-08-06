@@ -36,11 +36,8 @@ public class ProfileApiController {
     ) {
         String email = AuthenticationUtil.getSessionUsername();
         log.debug("정보 입력 요청자 이메일 : {}", email);
-        try {
-            myProfileManagementService.setupMyProfile(email, request);
-        } catch (EmailNotFoundException e) {
-            return CommonResponseBuilder.fail(e.getMessage());
-        }
+        myProfileManagementService.setupMyProfile(email, request);
+
         return CommonResponseBuilder.success("정보 기입에 성공했습니다.", null);
     }
 
