@@ -9,6 +9,8 @@ import com.e104.reciplay.livekit.exception.CanNotOpenLiveRoomException;
 import com.e104.reciplay.livekit.exception.CanNotParticipateInLiveRoomException;
 import com.e104.reciplay.livekit.exception.EmptyPropertyException;
 import com.e104.reciplay.livekit.exception.RoomIdExpiredException;
+import com.e104.reciplay.user.auth.exception.EmailAuthFailureException;
+import com.e104.reciplay.user.auth.exception.IllegalEmailFormatException;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -51,5 +53,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RoomIdExpiredException.class)
     public ResponseEntity<?> roomIdExpiredExceptionHandler(RoomIdExpiredException e) {
         return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(IllegalEmailFormatException.class)
+    public ResponseEntity<?> illegalEmailFormatException(IllegalEmailFormatException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(EmailAuthFailureException.class)
+    public ResponseEntity<?> emailAuthFailureExceptionHandler(EmailAuthFailureException e) {
+        return CommonResponseBuilder.unauthorized(e.getMessage());
     }
 }

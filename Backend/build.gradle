@@ -76,6 +76,12 @@ dependencies {
 
 	// redis 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// 메일 의존성.
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	// oauth2.0 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 }
 
 def generated = layout.buildDirectory.dir("generated/querydsl").get().asFile;
