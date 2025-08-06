@@ -1,6 +1,6 @@
 package com.e104.reciplay.user.profile.service;
 
-import com.e104.reciplay.user.profile.dto.ProfileInfoRequest;
+import com.e104.reciplay.user.profile.dto.request.ProfileInfoRequest;
 import com.e104.reciplay.user.security.service.UserQueryService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

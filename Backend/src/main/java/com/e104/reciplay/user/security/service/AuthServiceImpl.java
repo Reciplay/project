@@ -46,14 +46,14 @@ public class AuthServiceImpl implements AuthService{
     @Override
     @Transactional
     public void refresh(HttpServletRequest request, HttpServletResponse response) {
-        Cookie[] cookies = request.getCookies();
-        for(Cookie cookie : cookies) {
-            if(cookie.getName().equals("refresh-token")) {
+//        Cookie[] cookies = request.getCookies();
+//        for(Cookie cookie : cookies) {
+//            if(cookie.getName().equals("refreshToken")) {
                 // 리프레시 토큰의 유효성을 검증한다.
-                String token = cookie.getValue();
+//                String token = cookie.getValue();
                 // 여기서 어떤 값이 날아오는지 확인해야 한다.
                 // refresh-token 이라는 prefix가 붙어서 오는지 아니면 떨어져 오는지..
-
+                String token = request.getHeader("Refresh-Token");
                 String username = jwtUtil.getUsername(token);
 
                 if(!jwtUtil.isExpired(token) && tokenRepository.isValidToken(token, username, "REFRESH")) {
@@ -66,8 +66,8 @@ public class AuthServiceImpl implements AuthService{
                     tokenRepository.save(new Token(null, newToken, false, "ACCESS", null, username));
                     return;
                 }
-            }
-        }
+//            }
+//        }
         throw new JWTTokenExpiredException("쿠키에 토큰이 없거나 만료 혹은 거부되었습니다.");
     }
 

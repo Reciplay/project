@@ -4,8 +4,9 @@ import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.user.profile.service.MyProfileManagementService;
 import com.e104.reciplay.user.profile.service.MyProfileQueryService;
-import com.e104.reciplay.user.profile.dto.ProfileInfoRequest;
-import com.e104.reciplay.user.profile.dto.ProfileInformation;
+import com.e104.reciplay.user.profile.dto.request.ProfileInfoRequest;
+import com.e104.reciplay.user.profile.dto.response.ProfileInformation;
+import com.e104.reciplay.user.security.dto.CustomUserDetails;
 import com.e104.reciplay.user.security.exception.EmailNotFoundException;
 import com.e104.reciplay.user.security.util.AuthenticationUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "내 프로필 컨트롤러", description = "내 프로필 API 엔드포인트")
@@ -56,8 +58,10 @@ public class ProfileApiController {
     @GetMapping("")
     @Operation(summary = "회원 정보 조회", description = "회원 정보인 이름, 직업, 생년월일, 성별, 직업, 닉네임, 이메일, 성별을 조회 합니다.")
     @ApiResponse(responseCode = "200", description = "정보 조회 성공")
-    public ResponseEntity<ResponseRoot<ProfileInformation>> getProfileInfo() {
-        ProfileInformation answer = myProfileQueryService.queryProfileInformation();
-        return CommonResponseBuilder.success("프로필 정보 조회에 성공했습니다.", answer);
+    public ResponseEntity<ResponseRoot<ProfileInformation>> getProfileInfo(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+            ) {
+        ProfileInformation answer = myProfileQueryService.queryProfileInformation(userDetails.getUsername());
+        return CommonResponseBuilder.success("프로필 정보 조회에 성공했습니다.", null);
     }
 }
