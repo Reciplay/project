@@ -35,7 +35,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.csrf(auth -> auth.disable());
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/ws/v1/sub/**").permitAll()
+                .requestMatchers("/ws/v1/sub/**","/practice-ui.html",
+                        "/swagger-ui/**", // swagger-ui 관련 모든 경로 허용
+                        "/api-docs/json/**",  // openapi v3 문서 경로 허용
+                        "/swagger-resources/**").permitAll()
                 .anyRequest().authenticated()
         );
 
