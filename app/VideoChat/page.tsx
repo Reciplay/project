@@ -162,6 +162,7 @@ function VideoApp() {
                                 e.preventDefault();
                             }}
                         >
+                          // 참가자 이름 표시
                             <div>
                                 <label htmlFor="participant-name">Participant</label>
                                 <input
@@ -198,15 +199,17 @@ function VideoApp() {
                 <div id="room">
                     <div id="room-header">
                         <h2 id="room-title">{roomName}</h2>
+                        // 떠나기 버튼
                         <button className="btn btn-danger" id="leave-room-button" onClick={leaveRoom}>
                             Leave Room
                         </button>
                     </div>
+                    // 표시
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <GestureDisplay gesture={gesture} />
                         <div id="layout-container" className={styles.videoContainer}>
                             {localTrack && (
-                                <div className={styles.video}>
+                                <div className={`${styles.video} ${styles.localVideo}`}>
                                     <VideoComponent
                                         track={localTrack}
                                         participantIdentity={participantName}
@@ -217,7 +220,7 @@ function VideoApp() {
                             )}
                             {remoteTracks.map((remoteTrack) =>
                                 remoteTrack.trackPublication.kind === "video" ? (
-                                    <div className={styles.video} key={remoteTrack.trackPublication.trackSid}>
+                                    <div className={`${styles.video} ${styles.remoteVideo}`} key={remoteTrack.trackPublication.trackSid}>
                                         <VideoComponent
                                             track={remoteTrack.trackPublication.videoTrack!}
                                             participantIdentity={remoteTrack.participantIdentity}

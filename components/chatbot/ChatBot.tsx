@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react"
 import { useState, useRef, useEffect } from "react"
-import { useChatbotStore } from "@/stores/chatbotStore"
+import { useChatbotStore } from "@/stores/chatBotStore"
 
 export default function ChatBot() {
   const { messages, addMessage, clearMessages } = useChatbotStore()

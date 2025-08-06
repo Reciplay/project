@@ -18,3 +18,13 @@
     border-radius: 10px;
     overflow: hidden;
 }
+
+.localVideo {
+    border: 4px solid #3498db;
+    /* Blue border for local video */
+}
+
+.remoteVideo {
+    border: 4px solid #e74c3c;
+    /* Red border for remote video */
+}
