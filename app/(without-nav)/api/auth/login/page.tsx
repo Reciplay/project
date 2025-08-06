@@ -14,49 +14,24 @@ import LogoWIthDesc from "../__components/logoWithDesc/logoWithDesc";
 import Separator from "../__components/separator/separator";
 import SNS from "../__components/sns/sns";
 import styles from "./page.module.scss";
+import useAuth from "@/hooks/auth/useAuth";
 
-interface LoginForm {
+export interface LoginForm {
   email: string;
   password: string;
 }
 
 export default function Page() {
-  const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginForm>({ mode: "onSubmit" });
 
+  const { login } = useAuth();
+
   const onSubmit = async (data: LoginForm) => {
-    console.log(`email: ${data.email},      password: ${data.password},`);
-    const result = await signIn("credentials", {
-      email: data.email,
-      password: data.password,
-      redirect: false,
-    });
-
-    if (!result?.ok) {
-      alert("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.");
-    }
-    const session = await getSession();
-
-    if (session.required) {
-      router.push(ROUTES.AUTH.EXTRA);
-    }
-
-    if (session.role == "student") {
-      router.push(ROUTES.HOME);
-    }
-
-    if (session.role == "instructor") {
-      router.push(ROUTES.INSTRUCTOR.DASHBOARD);
-    }
-
-    if (session.role == "admin") {
-      router.push(ROUTES.ADMIN);
-    }
-    router.push(ROUTES.HOME);
+    await login(data);
   };
 
   return (

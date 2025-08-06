@@ -15,6 +15,7 @@ import restClient from "@/lib/axios/restClient";
 import Inputs from "./__components/inputs/inputs";
 import { ROUTES } from "@/config/routes";
 import AuthImage from "../__components/authImage/authImage";
+import useAuth from "@/hooks/auth/useAuth";
 
 export interface SignupForm {
   nickname: string;
@@ -43,28 +44,10 @@ export default function SignupPage() {
     formState: { errors },
   } = methods;
 
+  const { signup } = useAuth();
+
   const onSubmit = async (data: SignupForm) => {
-    if (data.password !== data.confirmPassword) {
-      alert("비밀번호와 확인이 일치하지 않습니다.");
-      return;
-    }
-
-    try {
-      const res = await restClient.post("/user/auth/signup", {
-        nickname: data.nickname,
-        email: data.email,
-        password: data.password,
-      });
-
-      if (res.status === 201) {
-        alert("회원가입 성공!");
-        router.push(ROUTES.AUTH.LOGIN);
-      } else {
-        alert("회원가입 실패");
-      }
-    } catch (error) {
-      alert("서버 오류 발생");
-    }
+    await signup(data);
   };
 
   return (

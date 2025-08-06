@@ -24,3 +24,10 @@ export interface UserDetail extends UserSummary {
   nickname: string;
   birthDate: string;
 }
+
+export interface UserExtra {
+  name: string;
+  job: string;
+  birthDate: string;
+  gender: number;
+}

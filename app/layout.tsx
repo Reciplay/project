@@ -7,6 +7,7 @@ import { AntdRegistry } from "@ant-design/nextjs-registry";
 import type { Metadata } from "next";
 import React from "react";
 import SessionProviderWrapper from "../components/SessionProviderWrapper";
+import RedirectGate from "@/components/gate/redirectGate";
 
 export const metadata: Metadata = {
   title: "Reciplay",
@@ -22,7 +23,9 @@ export default function RootLayout({
     <html lang="ko">
       <body>
         <SessionProviderWrapper>
-          <AntdRegistry>{children}</AntdRegistry>
+          <RedirectGate>
+            <AntdRegistry>{children}</AntdRegistry>
+          </RedirectGate>
         </SessionProviderWrapper>
       </body>
     </html>
