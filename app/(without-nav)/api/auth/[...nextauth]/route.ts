@@ -38,8 +38,7 @@ const handler = NextAuth({
           console.log(res);
 
           const accessToken = res.headers.authorization;
-          const cookieString = res.headers["set-cookie"][0];
-          const refreshToken = cookieString.split("=")[1];
+          const refreshToken = res.headers["set-cookie"][0];
           const role = res.data.role;
           const required = res.data.required;
           const expires = res.headers.expires;

@@ -1,25 +1,14 @@
 "use client";
 
-import {
-  LocalVideoTrack,
-  RemoteParticipant,
-  RemoteTrack,
-  RemoteTrackPublication,
-  Room,
-  RoomEvent,
-} from "livekit-client";
 import { useCallback, useRef, useState } from "react";
 import AudioComponent from "./components/AudioComponent";
-import VideoComponent from "./components/VideoComponent";
+import LocalVideo from "./components/LocalVideo";
+import RemoteVideo from "./components/RemoteVideo";
 import NodeDisplay from "./components/NodeDisplay";
 import GestureDisplay from "./components/GestureDisplay";
 import { recognizeGesture } from "./lib/gestureRecognizer";
 import styles from "./page.module.css";
-
-type TrackInfo = {
-  trackPublication: RemoteTrackPublication;
-  participantIdentity: string;
-};
+import { useVideoChat } from "../../hooks/useVideoChat";
 
 type Node = {
   x: number;
@@ -28,21 +17,18 @@ type Node = {
   visibility: number;
 };
 
-
-let APPLICATION_SERVER_URL = "http://i13e104.p.ssafy.io:8080/";
-let LIVEKIT_URL = "ws://i13e104.p.ssafy.io:7880/";
-
-// for local test
-// let APPLICATION_SERVER_URL = "/test/local/"
-// let LIVEKIT_URL = "ws://localhost:7880"
-
-
-
-
 function VideoApp() {
-  const [room, setRoom] = useState<Room | undefined>(undefined);
-  const [localTrack, setLocalTrack] = useState<LocalVideoTrack | undefined>(undefined);
-  const [remoteTracks, setRemoteTracks] = useState<TrackInfo[]>([]);
+  const {
+    room,
+    localTrack,
+    remoteTracks,
+    participantName,
+    setParticipantName,
+    roomName,
+    setRoomName,
+    joinRoom,
+    leaveRoom,
+  } = useVideoChat();
   const [nodes, setNodes] = useState<Node[]>([]);
   const [gesture, setGesture] = useState("");
   const lastGestureCheck = useRef(0);
@@ -61,93 +47,10 @@ function VideoApp() {
     }
   }, []);
 
-  const [participantName, setParticipantName] = useState(
-    "Participant" + Math.floor(Math.random() * 100)
-  );
-  const [roomName, setRoomName] = useState("Test Room");
-
-  async function joinRoom() {
-    const room = new Room();
-    setRoom(room);
-
-    room.on(
-      RoomEvent.TrackSubscribed,
-      (
-        _track: RemoteTrack,
-        publication: RemoteTrackPublication,
-        participant: RemoteParticipant
-      ) => {
-        setRemoteTracks((prev) => [
-          ...prev,
-          {
-            trackPublication: publication,
-            participantIdentity: participant.identity,
-          },
-        ]);
-      }
-    );
-
-    room.on(
-      RoomEvent.TrackUnsubscribed,
-      (_track: RemoteTrack, publication: RemoteTrackPublication) => {
-        setRemoteTracks((prev) =>
-          prev.filter(
-            (track) => track.trackPublication.trackSid !== publication.trackSid
-          )
-        );
-      }
-    );
-
-    try {
-      await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      const token = await getToken(roomName, participantName);
-      await room.connect(LIVEKIT_URL, token);
-      await room.localParticipant.enableCameraAndMicrophone();
-      setLocalTrack(
-        room.localParticipant.videoTrackPublications.values().next().value
-          .videoTrack
-      );
-
-    } catch (error) {
-      console.log(
-        "There was an error connecting to the room:",
-        (error as Error).message
-      );
-      await leaveRoom();
-    }
-  }
-
-  async function leaveRoom() {
-    await room?.disconnect();
-
-    setRoom(undefined);
-    setLocalTrack(undefined);
-    setRemoteTracks([]);
+  const handleLeaveRoom = () => {
+    leaveRoom();
     setNodes([]);
     setGesture("");
-  }
-
-  async function getToken(roomName: string, participantName: string) {
-    // const response = await fetch(APPLICATION_SERVER_URL + 'token', {
-    const response = await fetch("api/rest/livekit/token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Indvbmp1bkBtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3NTM4NDAzNTMsImV4cCI6MTc1NDQ0MDM1M30.XdN2T5LtkJsnz1_Mhg7vWuHZgmcWuef-xYXXSh5qFZc"
-      },
-      body: JSON.stringify({
-        roomName: roomName,
-        participantName: participantName
-      })
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(`Failed to get token: ${error.errorMessage}`);
-    }
-
-    const data = await response.json();
-    return data.token;
   }
 
   return (
@@ -162,6 +65,7 @@ function VideoApp() {
                 e.preventDefault();
               }}
             >
+                          // 참가자 이름 표시
               <div>
                 <label htmlFor="participant-name">Participant</label>
                 <input
@@ -198,32 +102,30 @@ function VideoApp() {
         <div id="room">
           <div id="room-header">
             <h2 id="room-title">{roomName}</h2>
-            <button className="btn btn-danger" id="leave-room-button" onClick={leaveRoom}>
+                        // 떠나기 버튼
+            <button className="btn btn-danger" id="leave-room-button" onClick={handleLeaveRoom}>
               Leave Room
             </button>
           </div>
+                    // 표시
           <div style={{ display: 'flex', flexDirection: 'row' }}>
             <GestureDisplay gesture={gesture} />
             <div id="layout-container" className={styles.videoContainer}>
               {localTrack && (
-                <div className={styles.video}>
-                  <VideoComponent
-                    track={localTrack}
-                    participantIdentity={participantName}
-                    local={true}
-                    onNodesDetected={handleNodesDetected}
-                  />
-                </div>
+                <LocalVideo
+                  track={localTrack}
+                  participantIdentity={participantName}
+                  onNodesDetected={handleNodesDetected}
+                />
               )}
               {remoteTracks.map((remoteTrack) =>
                 remoteTrack.trackPublication.kind === "video" ? (
-                  <div className={styles.video} key={remoteTrack.trackPublication.trackSid}>
-                    <VideoComponent
-                      track={remoteTrack.trackPublication.videoTrack!}
-                      participantIdentity={remoteTrack.participantIdentity}
-                      onNodesDetected={handleNodesDetected}
-                    />
-                  </div>
+                  <RemoteVideo
+                    key={remoteTrack.trackPublication.trackSid}
+                    trackPublication={remoteTrack.trackPublication}
+                    participantIdentity={remoteTrack.participantIdentity}
+                    onNodesDetected={handleNodesDetected}
+                  />
                 ) : (
                   <AudioComponent
                     key={remoteTrack.trackPublication.trackSid}

@@ -19,7 +19,8 @@ export default function TestPage() {
 
     try {
       const response = await restClient.get("/user/auth/refresh-token", {
-        headers: { Cookie: `refreshToken=${session.refreshToken}` },
+        withCredentials : true,
+        headers: { Cookie: `refresh-token=${session.refreshToken}` },
       })
 
       const newAccessToken = response.headers.Authorization
