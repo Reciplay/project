@@ -1,7 +1,8 @@
-// hooks/useDebouncedDuplicateCheck.ts
-import { useMemo, useState } from "react";
-import { debounce } from "lodash";
+import { formData } from "@/config/formData";
 import restClient from "@/lib/axios/restClient";
+import { debounce } from "lodash";
+import { useMemo, useState } from "react";
+
 type CheckResult = {
   ok: boolean;
   message: string;
@@ -10,20 +11,40 @@ type CheckResult = {
 export function useDuplicateCheck(type: "email" | "nickname") {
   const [checkedValue, setCheckedValue] = useState("");
   const [message, setMessage] = useState("");
+  const [ok, setOk] = useState(false); // ✅ 중복 여부 저장
 
   const checkDuplicate = async (value: string): Promise<CheckResult> => {
+    if (!value) {
+      return { ok: false, message: "값을 입력해주세요." };
+    }
+
+    const rules = formData[type].rules;
+
+    if (rules.pattern && !rules.pattern.value.test(value)) {
+      return { ok: false, message: rules.pattern.message };
+    }
+
+    if (rules.minLength && value.length < rules.minLength.value) {
+      return { ok: false, message: rules.minLength.message };
+    }
+
+    if (rules.maxLength && value.length > rules.maxLength.value) {
+      return { ok: false, message: rules.maxLength.message };
+    }
+
     try {
-      const res = await restClient.post(`/user/auth/dup-${type}`, {
-        [type]: value,
+      const res = await restClient.get(`/user/auth/dup-${type}`, {
+        params: {
+          [type]: value,
+        },
       });
 
       if (res.status === 200) {
         return {
           ok: true,
-          message:
-            "사용 가능한 " +
-            (type === "email" ? "이메일" : "닉네임") +
-            "입니다.",
+          message: `사용 가능한 ${
+            type === "email" ? "이메일" : "닉네임"
+          }입니다.`,
         };
       }
 
@@ -49,8 +70,9 @@ export function useDuplicateCheck(type: "email" | "nickname") {
   const debouncedCheck = useMemo(() => {
     return debounce(async (value: string) => {
       const result = await checkDuplicate(value);
-      setMessage(result.message); // ✅ 사용자 메시지로 UI 피드백 가능
-      setCheckedValue(result.ok ? value : "");
+      setMessage(result.message);
+      setCheckedValue(result.ok ? value : ""); // ok일 때만 저장
+      setOk(result.ok); // ✅ ok 상태 업데이트
     }, 500);
   }, [type]);
 
@@ -59,5 +81,6 @@ export function useDuplicateCheck(type: "email" | "nickname") {
     message,
     debouncedCheck,
     cancelCheck: debouncedCheck.cancel,
+    ok, // ✅ 추가
   };
 }

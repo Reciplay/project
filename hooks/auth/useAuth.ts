@@ -1,8 +1,10 @@
-import { useRouter } from "next/navigation";
-import { signIn, getSession } from "next-auth/react";
 import { ROUTES } from "@/config/routes";
 import restClient from "@/lib/axios/restClient";
+import { useUserStore } from "@/stores/userStore";
+import { ApiResponse } from "@/types/apiResponse";
 import { LoginForm, SignupForm, UserExtra } from "@/types/user";
+import { getSession, signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function useAuth() {
   const router = useRouter();
@@ -21,11 +23,6 @@ export default function useAuth() {
 
     const session = await getSession();
     if (!session) return;
-
-    // if (session.required) {
-    //   router.push(ROUTES.AUTH.EXTRA);
-    //   return;
-    // }
 
     switch (session.role) {
       case "student":
@@ -49,15 +46,27 @@ export default function useAuth() {
     }
 
     try {
-      const res = await restClient.post("/user/auth/signup", {
-        nickname: data.nickname,
-        email: data.email,
-        password: data.password,
-      });
+      const res = await restClient.post<ApiResponse<object>>(
+        "/user/auth/signup",
+        {
+          nickname: data.nickname,
+          email: data.email,
+          password: data.password,
+          hash: data.confirmPassword,
+        }
+      );
 
       if (res.status === 201) {
         alert("회원가입 성공!");
-        router.push(ROUTES.AUTH.LOGIN);
+        // 회원 가입 성공 시 바로 로그인 시도
+        await signIn("credentials", {
+          email: data.email,
+          password: data.password,
+
+          redirect: false,
+        });
+
+        router.push(ROUTES.AUTH.EXTRA);
       } else {
         alert("회원가입 실패");
       }
@@ -66,13 +75,19 @@ export default function useAuth() {
     }
   };
 
+  const setIsExtraFilled = useUserStore((state) => state.setIsExtraFilled);
+
   const submitExtra = async (data: UserExtra) => {
     try {
-      const res = await restClient.post("/api/v1/user/profile", data);
+      const res = await restClient.post("/user/profile", data, {
+        requireAuth: true,
+      });
 
+      console.log("추가 정보 제출:", data);
       if (res.status === 200) {
         alert("추가 정보가 저장되었습니다!");
-        await signIn("credentials", { redirect: true }); // 세션 갱신
+
+        setIsExtraFilled(true); // ✅ Hook에서 가져온 함수 사용
         router.push(ROUTES.HOME);
       } else {
         alert("추가 정보 저장에 실패했습니다.");

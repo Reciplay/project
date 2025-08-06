@@ -1,7 +1,10 @@
 "use client";
 
-import { useRouter, usePathname } from "next/navigation";
+import { ROUTES } from "@/config/routes";
+import { fetchUserInfo } from "@/hooks/auth/fetchUserInfo";
+import { useUserStore } from "@/stores/userStore";
 import { useSession } from "next-auth/react";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function RedirectGate({
@@ -13,14 +16,24 @@ export default function RedirectGate({
   const pathname = usePathname();
   const { data: session, status } = useSession();
 
-  useEffect(() => {
-    if (status === "loading") return;
+  const { isExtraFilled, hasHydrated } = useUserStore();
 
-    // 세션이 있고, required가 true일 때 /api/auth/extra가 아니라면 리다이렉트
-    // if (session?.required && pathname !== "/api/auth/extra") {
-    //   router.replace("/api/auth/extra");
-    // }
-  }, [session, status, pathname]);
+  // ✅ 1. 유저 정보 요청 (조건: 로그인 완료 + Zustand hydrated + 값이 아직 null일 때)
+  useEffect(() => {
+    if (status === "authenticated" && hasHydrated && isExtraFilled === null) {
+      fetchUserInfo(); // 내부에서 setIsExtraFilled 실행
+    }
+  }, [status, hasHydrated, isExtraFilled]);
+
+  // ✅ 2. 리다이렉션 처리 (조건: 로그인 완료 + hydrated + 값이 false일 때만)
+  useEffect(() => {
+    if (!hasHydrated || status === "loading" || status === "unauthenticated")
+      return;
+
+    if (isExtraFilled === false && pathname !== ROUTES.AUTH.EXTRA) {
+      router.replace(ROUTES.AUTH.EXTRA);
+    }
+  }, [status, isExtraFilled, pathname, hasHydrated, router]);
 
   return <>{children}</>;
 }

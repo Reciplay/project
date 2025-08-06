@@ -1,45 +1,37 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+// 공통 input 스타일
 .input {
-  width: 100%; // ✅ 부모 영역 꽉 채움
+  width: 100%;
   height: 48px;
   padding: 0 16px;
   font-size: 16px;
-  border: 1px solid #aaa;
+  border: 1px solid #ccc;
   border-radius: 8px;
   box-sizing: border-box;
+  transition: border-color 0.2s ease;
 }
 
-.search {
-  height: 36px;
-  width: 400px;
-  border-radius: 50px;
-  margin-bottom: 0px;
+// 커스텀 타입일 경우의 wrapper에 따라 테두리 색 변경
+.hasError .input {
+  border-color: #f44336; // 빨간 테두리
 }
 
-/* 기존 공용 input 스타일 */
-.input {
-  font-size: 16px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.hasSuccess .input {
+  border-color: #2db400; // 초록 테두리
 }
 
-/* 타입별 예시 (선택 사항) */
-.text {
-  color: #333;
-}
-
-.password {
-  letter-spacing: 2px;
-}
-
-/* custom 타입일 때만 사용하는 컨테이너 스타일 */
+// inputContainer: custom type에서 사용
 .inputContainer {
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 15px 13px;
-  // width: 250px;
   width: 100%;
   height: 52px;
   background: #ffffff;
@@ -48,12 +40,12 @@
   gap: 8px;
 
   &:focus-within {
-    border: 1px solid #007aff;
+    border-color: #007aff;
   }
 }
 
 .inputContainer .input {
-  margin-bottom: 0px;
+  margin-bottom: 0;
   border: none;
   outline: none;
   background: transparent;
@@ -64,30 +56,8 @@
     color: #6c738c;
   }
 }
-// //--
-// .wrapper {
-//   display: flex;
-//   flex-direction: column;
-//   width: 100%;
-// }
 
-.input {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  height: 48px;
-  padding: 0 16px;
-  font-size: 16px;
-  transition: border-color 0.2s;
-}
-
-.hasError .input {
-  border-color: #f44336;
-}
-
-.hasSuccess .input {
-  border-color: #2db400;
-}
-
+// 메시지 스타일 (에러/성공)
 .message {
   font-size: 13px;
   margin-top: 6px;
@@ -100,4 +70,21 @@
 
 .success {
   color: #2db400;
+}
+
+// 선택: 검색 input 예시
+.search {
+  height: 36px;
+  width: 400px;
+  border-radius: 50px;
+  margin-bottom: 0;
+}
+
+// 선택: 타입별 예시
+.text {
+  color: #333;
+}
+
+.password {
+  letter-spacing: 2px;
 }

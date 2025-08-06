@@ -1,12 +1,12 @@
 "use client";
 
-import { useForm, FormProvider } from "react-hook-form";
-import styles from "./page.module.scss";
 import BaseButton from "@/components/button/baseButton";
 import CustomInput from "@/components/input/customInput";
-import LogoWIthDesc from "../__components/logoWithDesc/logoWithDesc";
+import useAuth from "@/hooks/auth/useAuth";
+import { FormProvider, useForm } from "react-hook-form";
 import AuthImage from "../__components/authImage/authImage";
-import restClient from "@/lib/axios/restClient";
+import LogoWIthDesc from "../__components/logoWithDesc/logoWithDesc";
+import styles from "./page.module.scss";
 
 export interface UserExtra {
   name: string;
@@ -31,15 +31,7 @@ export default function ExtraPage() {
     formState: { errors },
   } = methods;
 
-  const onSubmit = async (data: UserExtra) => {
-    try {
-      // 서버로 전송
-      await restClient.post("/user/profile", data, {requireAuth :true});
-      console.log("추가 정보 제출:", data);
-    } catch (e) {
-      console.error("제출 실패:", e);
-    }
-  };
+  const { submitExtra } = useAuth();
 
   return (
     <>
@@ -51,11 +43,13 @@ export default function ExtraPage() {
         <LogoWIthDesc desc="간단한 추가 정보만 입력하고 Reciplay를 시작하세요!" />
 
         <FormProvider {...methods}>
-          <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+          <form className={styles.form} onSubmit={handleSubmit(submitExtra)}>
             <CustomInput
               placeholder="이름"
               type="text"
-              {...register("name", { required: "이름은 필수 입력 항목입니다." })}
+              {...register("name", {
+                required: "이름은 필수 입력 항목입니다.",
+              })}
               error={errors.name?.message}
             />
 

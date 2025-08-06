@@ -31,7 +31,7 @@ restClient.interceptors.request.use(
       const accessToken = session?.accessToken;
 
       if (accessToken) {
-        config.headers.Authorization = accessToken
+        config.headers.Authorization = accessToken;
       }
     }
 
