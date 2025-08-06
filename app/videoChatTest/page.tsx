@@ -1,12 +1,12 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import AudioComponent from "./components/AudioComponent";
-import LocalVideo from "./components/LocalVideo";
-import RemoteVideo from "./components/RemoteVideo";
-import NodeDisplay from "./components/NodeDisplay";
-import GestureDisplay from "./components/GestureDisplay";
-import { recognizeGesture } from "./lib/gestureRecognizer";
+import AudioComponent from "../VideoChat/components/AudioComponent";
+import LocalVideo from "../VideoChat/components/LocalVideo";
+import RemoteVideo from "../VideoChat/components/RemoteVideo";
+import NodeDisplay from "../VideoChat/components/NodeDisplay";
+import GestureDisplay from "../VideoChat/components/GestureDisplay";
+import { recognizeGesture } from "../VideoChat/lib/gestureRecognizer";
 import styles from "./page.module.css";
 import { useVideoChat } from "../../hooks/useVideoChat";
 
@@ -17,7 +17,7 @@ type Node = {
   visibility: number;
 };
 
-function VideoApp() {
+function VideoChatTestPage() {
     const {
         room,
         localTrack,
@@ -55,6 +55,7 @@ function VideoApp() {
 
     return (
         <>
+            <h1>Video Chat Test Page</h1>
             {!room ? (
                 <div id="join">
                     <div id="join-dialog">
@@ -65,7 +66,7 @@ function VideoApp() {
                                 e.preventDefault();
                             }}
                         >
-                          // 참가자 이름 표시
+                          // 참가자 정보 표시
                             <div>
                                 <label htmlFor="participant-name">Participant</label>
                                 <input
@@ -99,18 +100,20 @@ function VideoApp() {
                     </div>
                 </div> 
             ) : (
+              // 방
                 <div id="room">
                     <div id="room-header">
+                      //방 제목
                         <h2 id="room-title">{roomName}</h2>
-                        // 떠나기 버튼
+                        // 방 나가기 버튼
                         <button className="btn btn-danger" id="leave-room-button" onClick={handleLeaveRoom}>
                             Leave Room
                         </button>
                     </div>
-                    // 표시
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <GestureDisplay gesture={gesture} />
                         <div id="layout-container" className={styles.videoContainer}>
+                          // 내 화면
                             {localTrack && (
                                 <LocalVideo
                                     track={localTrack}
@@ -118,6 +121,7 @@ function VideoApp() {
                                     onNodesDetected={handleNodesDetected}
                                 />
                             )}
+                            // 다른 화면
                             {remoteTracks.map((remoteTrack) =>
                                 remoteTrack.trackPublication.kind === "video" ? (
                                     <RemoteVideo
@@ -142,4 +146,4 @@ function VideoApp() {
     );
 }
 
-export default VideoApp;
+export default VideoChatTestPage;

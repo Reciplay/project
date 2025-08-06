@@ -86,12 +86,11 @@ async function poseRecognition(
 interface VideoComponentProps {
     track: LocalVideoTrack | RemoteVideoTrack;
     participantIdentity: string;
-    local?: boolean;
     onNodesDetected: (nodes: Landmark[][]) => void;
 }
 
 
-const VideoComponent = memo(function VideoComponent({ track, participantIdentity, local = false, onNodesDetected }: VideoComponentProps) {
+const VideoComponent = memo(function VideoComponent({ track, participantIdentity, onNodesDetected }: VideoComponentProps) {
     const videoElement = useRef<HTMLVideoElement | null>(null);
     const canvasElement = useRef<HTMLCanvasElement | null>(null);
     const [landmarksData, setLandmarksData] = useState<Landmark[][]>([]);
@@ -139,7 +138,7 @@ const VideoComponent = memo(function VideoComponent({ track, participantIdentity
     return (
         <div id={"camera-" + participantIdentity} className="video-container">
             <div className="participant-data">
-                <p>{participantIdentity + (local ? " (You)" : "")}</p>
+                <p>{participantIdentity}</p>
             </div>
             <div className="media-wrapper">
                 <video ref={videoElement} id={track.sid}></video>
