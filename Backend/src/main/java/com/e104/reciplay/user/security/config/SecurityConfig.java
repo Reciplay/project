@@ -104,12 +104,23 @@ public class SecurityConfig {
 
         // 도달시 SecurityContext의 여부와 권한을 검증할지를 설정한다.
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers(URL_PREFIX + "/user/auth/login", URL_PREFIX + "/user/auth/refresh-token",
-                        URL_PREFIX + "/user/auth/signup", "/h2-console/**", "/practice-ui.html",
+                .requestMatchers(URL_PREFIX + "/user/auth/login",
+                        URL_PREFIX + "/user/auth/refresh-token",
+                        URL_PREFIX + "/user/auth/signup",
+                        "/h2-console/**",
+                        "/practice-ui.html",
                         "/swagger-ui/**", // swagger-ui 관련 모든 경로 허용
                         "/api-docs/json/**",  // openapi v3 문서 경로 허용
                         "/swagger-resources/**",
                         URL_PREFIX + "/livekit/**").permitAll()
+                .requestMatchers(HttpMethod.GET,
+                        URL_PREFIX + "/user/auth/email",
+                        URL_PREFIX + "/user/auth/mail-otp",
+                        URL_PREFIX + "/user/auth/mail-verification/**",
+                        URL_PREFIX + "/user/auth/dup-email",
+                        URL_PREFIX + "/user/auth/dup-nickname").permitAll()
+                .requestMatchers(HttpMethod.PUT,
+                        URL_PREFIX + "/user/auth/password").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers(URL_PREFIX+"/livekit/instructor/token").hasRole("INSTRUCTOR")
                 .requestMatchers(URL_PREFIX + "/admin").hasRole("ADMIN")

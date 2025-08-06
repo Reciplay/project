@@ -10,6 +10,7 @@ import com.e104_2.reciplaywebsocket.room.dto.response.ChapterTodoResponse;
 import com.e104_2.reciplaywebsocket.room.service.LiveControlService;
 import com.e104_2.reciplaywebsocket.room.service.TodoQueryService;
 import com.e104_2.reciplaywebsocket.security.dto.CustomUserDetails;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +35,7 @@ import java.util.Map;
     개인 구독 채널 : /ws/v1/queue/룸 아이디
 */
 
+@Tag(name = "라이브 관리 API", description = "웹소켓 처리와 병행합니다. 강제퇴장, 음소거, 화면 송출 관련은 REST API로 처리합니다.")
 @RestController
 @Slf4j
 @RequiredArgsConstructor
