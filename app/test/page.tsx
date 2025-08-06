@@ -5,7 +5,6 @@ import restClient from "@/lib/axios/restClient"
 import { useState } from "react"
 import ChatBot from '@/components/chatbot/ChatBot'
 
-
 export default function TestPage() {
   
   const { data: session, status, update } = useSession()
@@ -19,12 +18,16 @@ export default function TestPage() {
 
     try {
       const response = await restClient.get("/user/auth/refresh-token", {
-        headers: { Cookie: `refreshToken=${session.refreshToken}` },
+        headers : {'refresh-token' : session.refreshToken}
       })
+
+      // const response = await axios.get("https://2913fcf0f9a2.ngrok-free.app/api/v1/user/auth/refresh-token", {
+      //   headers : {'refresh-token' : session.refreshToken,
+      // 'ngrok-skip-browser-warning' : true}
+      // })
 
       const newAccessToken = response.headers.Authorization
 
-      // Update the session with the new access token
       await update({
         ...session,
         accessToken: newAccessToken,
@@ -52,7 +55,6 @@ export default function TestPage() {
 
       <hr />
 
-      {/* Session and Token Test Section */}
       <p>Current Session:</p>
       <pre>{JSON.stringify(session, null, 2)}</pre>
       <button onClick={handleRefreshToken}>토큰 재갱신 테스트</button>

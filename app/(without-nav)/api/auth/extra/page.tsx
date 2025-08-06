@@ -6,6 +6,7 @@ import BaseButton from "@/components/button/baseButton";
 import CustomInput from "@/components/input/customInput";
 import LogoWIthDesc from "../__components/logoWithDesc/logoWithDesc";
 import AuthImage from "../__components/authImage/authImage";
+import restClient from "@/lib/axios/restClient";
 
 export interface UserExtra {
   name: string;
@@ -33,7 +34,7 @@ export default function ExtraPage() {
   const onSubmit = async (data: UserExtra) => {
     try {
       // 서버로 전송
-      // await restClient.post("/user/profile/extra", data);
+      await restClient.post("/user/profile", data, {requireAuth :true});
       console.log("추가 정보 제출:", data);
     } catch (e) {
       console.error("제출 실패:", e);
@@ -47,21 +48,21 @@ export default function ExtraPage() {
       </div>
 
       <div className={styles.right}>
-        <LogoWIthDesc desc="추가 정보만 입력하고 시작하세요!" />
+        <LogoWIthDesc desc="간단한 추가 정보만 입력하고 Reciplay를 시작하세요!" />
 
         <FormProvider {...methods}>
           <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
             <CustomInput
               placeholder="이름"
               type="text"
-              {...register("name", { required: "이름은 필수입니다." })}
+              {...register("name", { required: "이름은 필수 입력 항목입니다." })}
               error={errors.name?.message}
             />
 
             <CustomInput
               placeholder="직업"
               type="text"
-              {...register("job", { required: "직업은 필수입니다." })}
+              {...register("job", { required: "직업은 필수 입력 항목입니다." })}
               error={errors.job?.message}
             />
 

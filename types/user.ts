@@ -31,3 +31,15 @@ export interface UserExtra {
   birthDate: string;
   gender: number;
 }
+
+export interface LoginForm {
+  email: string;
+  password: string;
+}
+
+export interface SignupForm {
+  nickname: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}

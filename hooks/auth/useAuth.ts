@@ -1,3 +1,9 @@
+import { useRouter } from "next/navigation";
+import { signIn, getSession } from "next-auth/react";
+import { ROUTES } from "@/config/routes";
+import restClient from "@/lib/axios/restClient";
+import { LoginForm, SignupForm, UserExtra } from "@/types/user";
+
 export default function useAuth() {
   const router = useRouter();
 
@@ -16,10 +22,10 @@ export default function useAuth() {
     const session = await getSession();
     if (!session) return;
 
-    if (session.required) {
-      router.push(ROUTES.AUTH.EXTRA);
-      return;
-    }
+    // if (session.required) {
+    //   router.push(ROUTES.AUTH.EXTRA);
+    //   return;
+    // }
 
     switch (session.role) {
       case "student":
@@ -66,7 +72,7 @@ export default function useAuth() {
 
       if (res.status === 200) {
         alert("추가 정보가 저장되었습니다!");
-        await signIn("credentials", { redirect: false }); // 세션 갱신
+        await signIn("credentials", { redirect: true }); // 세션 갱신
         router.push(ROUTES.HOME);
       } else {
         alert("추가 정보 저장에 실패했습니다.");
