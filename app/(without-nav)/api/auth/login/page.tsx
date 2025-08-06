@@ -1,20 +1,22 @@
 "use client";
 
-import { getSession, signIn } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 import BaseButton from "@/components/button/baseButton";
 import CustomInput from "@/components/input/customInput";
+import CustomModal from "@/components/modal/customModal";
 import { formData } from "@/config/formData";
 import { ROUTES } from "@/config/routes";
+import useAuth from "@/hooks/auth/useAuth";
+import { useState } from "react";
 import AuthImage from "../__components/authImage/authImage";
 import LogoWIthDesc from "../__components/logoWithDesc/logoWithDesc";
 import Separator from "../__components/separator/separator";
 import SNS from "../__components/sns/sns";
+import FindEmailModal from "./__components/findEmailModal";
+import FindPasswordModal from "./__components/findPasswordModal";
 import styles from "./page.module.scss";
-import useAuth from "@/hooks/auth/useAuth";
 
 export interface LoginForm {
   email: string;
@@ -29,6 +31,7 @@ export default function Page() {
   } = useForm<LoginForm>({ mode: "onSubmit" });
 
   const { login } = useAuth();
+  const [modalType, setModalType] = useState<"email" | "password" | null>(null);
 
   const onSubmit = async (data: LoginForm) => {
     await login(data);
@@ -64,15 +67,16 @@ export default function Page() {
             title="로그인"
             type="submit"
             size="inf"
-            className={styles.button}
-            // disabled={isSubmitting}
+            // className={styles.button}
           />
         </form>
 
         <div className={styles.links}>
-          <a href="#">아이디 찾기</a>
+          <button onClick={() => setModalType("email")}>아이디 찾기</button>
           <span> | </span>
-          <a href="#">비밀번호 찾기</a>
+          <button onClick={() => setModalType("password")}>
+            비밀번호 찾기
+          </button>
           <span> | </span>
           <Link href={ROUTES.AUTH.SIGNUP}>회원가입</Link>
         </div>
@@ -85,6 +89,12 @@ export default function Page() {
       <div className={styles.right}>
         <AuthImage />
       </div>
+      {modalType && (
+        <CustomModal isOpen={true} onClose={() => setModalType(null)}>
+          {modalType === "email" && <FindEmailModal />}
+          {modalType === "password" && <FindPasswordModal />}
+        </CustomModal>
+      )}
     </>
   );
 }

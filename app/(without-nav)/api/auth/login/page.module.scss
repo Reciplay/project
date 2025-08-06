@@ -68,3 +68,12 @@
   position: relative;
   flex: 1;
 }
+
+.links button {
+  cursor: pointer;
+  border: none;
+  background-color: inherit;
+  &:hover {
+    color: #888;
+  }
+}
