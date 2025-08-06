@@ -29,37 +29,37 @@ type Node = {
 };
 
 
-// let APPLICATION_SERVER_URL = "http://i13e104.p.ssafy.io:8080/";
-// let LIVEKIT_URL = "ws://i13e104.p.ssafy.io:7880/";
+let APPLICATION_SERVER_URL = "http://i13e104.p.ssafy.io:8080/";
+let LIVEKIT_URL = "ws://i13e104.p.ssafy.io:7880/";
 
 // for local test
-let APPLICATION_SERVER_URL = "/test/local/"
-let LIVEKIT_URL = "ws://localhost:7880"
+// let APPLICATION_SERVER_URL = "/test/local/"
+// let LIVEKIT_URL = "ws://localhost:7880"
 
 
 
 
 function VideoApp() {
-    const [room, setRoom] = useState<Room | undefined>(undefined);
-    const [localTrack, setLocalTrack] = useState<LocalVideoTrack | undefined>(undefined);
-    const [remoteTracks, setRemoteTracks] = useState<TrackInfo[]>([]);
-    const [nodes, setNodes] = useState<Node[]>([]);
-    const [gesture, setGesture] = useState("");
-    const lastGestureCheck = useRef(0);
+  const [room, setRoom] = useState<Room | undefined>(undefined);
+  const [localTrack, setLocalTrack] = useState<LocalVideoTrack | undefined>(undefined);
+  const [remoteTracks, setRemoteTracks] = useState<TrackInfo[]>([]);
+  const [nodes, setNodes] = useState<Node[]>([]);
+  const [gesture, setGesture] = useState("");
+  const lastGestureCheck = useRef(0);
 
-    const handleNodesDetected = useCallback((detectedNodes: any) => {
-        if (detectedNodes.length > 0) {
-            const landmarks = detectedNodes[0];
-            setNodes(landmarks);
+  const handleNodesDetected = useCallback((detectedNodes: any) => {
+    if (detectedNodes.length > 0) {
+      const landmarks = detectedNodes[0];
+      setNodes(landmarks);
 
-            const now = performance.now();
-            if (now - lastGestureCheck.current > 100) { // Check every 100ms
-                lastGestureCheck.current = now;
-                const newGesture = recognizeGesture(landmarks);
-                setGesture(prev => newGesture !== prev ? newGesture : prev);
-            }
-        }
-    }, []);
+      const now = performance.now();
+      if (now - lastGestureCheck.current > 100) { // Check every 100ms
+        lastGestureCheck.current = now;
+        const newGesture = recognizeGesture(landmarks);
+        setGesture(prev => newGesture !== prev ? newGesture : prev);
+      }
+    }
+  }, []);
 
   const [participantName, setParticipantName] = useState(
     "Participant" + Math.floor(Math.random() * 100)
@@ -127,19 +127,19 @@ function VideoApp() {
     setGesture("");
   }
 
-    async function getToken(roomName: string, participantName: string) {
-        const response = await fetch(APPLICATION_SERVER_URL + 'token', {
-        // const response = await fetch("api/rest/livekit/token", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Indvbmp1bkBtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3NTM4NDAzNTMsImV4cCI6MTc1NDQ0MDM1M30.XdN2T5LtkJsnz1_Mhg7vWuHZgmcWuef-xYXXSh5qFZc"
-            },
-            body: JSON.stringify({
-                roomName: roomName,
-                participantName: participantName
-            })
-        });
+  async function getToken(roomName: string, participantName: string) {
+    // const response = await fetch(APPLICATION_SERVER_URL + 'token', {
+    const response = await fetch("api/rest/livekit/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Indvbmp1bkBtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3NTM4NDAzNTMsImV4cCI6MTc1NDQ0MDM1M30.XdN2T5LtkJsnz1_Mhg7vWuHZgmcWuef-xYXXSh5qFZc"
+      },
+      body: JSON.stringify({
+        roomName: roomName,
+        participantName: participantName
+      })
+    });
 
     if (!response.ok) {
       const error = await response.json();
@@ -150,94 +150,94 @@ function VideoApp() {
     return data.token;
   }
 
-    return (
-        <>
-            {!room ? (
-                <div id="join">
-                    <div id="join-dialog">
-                        <h2>Join a Video Room</h2>
-                        <form
-                            onSubmit={(e) => {
-                                joinRoom();
-                                e.preventDefault();
-                            }}
-                        >
-                            <div>
-                                <label htmlFor="participant-name">Participant</label>
-                                <input
-                                    id="participant-name"
-                                    className="form-control"
-                                    type="text"
-                                    value={participantName}
-                                    onChange={(e) => setParticipantName(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="room-name">Room</label>
-                                <input
-                                    id="room-name"
-                                    className="form-control"
-                                    type="text"
-                                    value={roomName}
-                                    onChange={(e) => setRoomName(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <button
-                                className="btn btn-lg btn-success"
-                                type="submit"
-                                disabled={!roomName || !participantName}
-                            >
-                                Join!
-                            </button>
-                        </form>
-                    </div>
+  return (
+    <>
+      {!room ? (
+        <div id="join">
+          <div id="join-dialog">
+            <h2>Join a Video Room</h2>
+            <form
+              onSubmit={(e) => {
+                joinRoom();
+                e.preventDefault();
+              }}
+            >
+              <div>
+                <label htmlFor="participant-name">Participant</label>
+                <input
+                  id="participant-name"
+                  className="form-control"
+                  type="text"
+                  value={participantName}
+                  onChange={(e) => setParticipantName(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="room-name">Room</label>
+                <input
+                  id="room-name"
+                  className="form-control"
+                  type="text"
+                  value={roomName}
+                  onChange={(e) => setRoomName(e.target.value)}
+                  required
+                />
+              </div>
+              <button
+                className="btn btn-lg btn-success"
+                type="submit"
+                disabled={!roomName || !participantName}
+              >
+                Join!
+              </button>
+            </form>
+          </div>
+        </div>
+      ) : (
+        <div id="room">
+          <div id="room-header">
+            <h2 id="room-title">{roomName}</h2>
+            <button className="btn btn-danger" id="leave-room-button" onClick={leaveRoom}>
+              Leave Room
+            </button>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <GestureDisplay gesture={gesture} />
+            <div id="layout-container" className={styles.videoContainer}>
+              {localTrack && (
+                <div className={styles.video}>
+                  <VideoComponent
+                    track={localTrack}
+                    participantIdentity={participantName}
+                    local={true}
+                    onNodesDetected={handleNodesDetected}
+                  />
                 </div>
-            ) : (
-                <div id="room">
-                    <div id="room-header">
-                        <h2 id="room-title">{roomName}</h2>
-                        <button className="btn btn-danger" id="leave-room-button" onClick={leaveRoom}>
-                            Leave Room
-                        </button>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'row' }}>
-                        <GestureDisplay gesture={gesture} />
-                        <div id="layout-container" className={styles.videoContainer}>
-                            {localTrack && (
-                                <div className={styles.video}>
-                                    <VideoComponent
-                                        track={localTrack}
-                                        participantIdentity={participantName}
-                                        local={true}
-                                        onNodesDetected={handleNodesDetected}
-                                    />
-                                </div>
-                            )}
-                            {remoteTracks.map((remoteTrack) =>
-                                remoteTrack.trackPublication.kind === "video" ? (
-                                    <div className={styles.video} key={remoteTrack.trackPublication.trackSid}>
-                                        <VideoComponent
-                                            track={remoteTrack.trackPublication.videoTrack!}
-                                            participantIdentity={remoteTrack.participantIdentity}
-                                            onNodesDetected={handleNodesDetected}
-                                        />
-                                    </div>
-                                ) : (
-                                    <AudioComponent
-                                        key={remoteTrack.trackPublication.trackSid}
-                                        track={remoteTrack.trackPublication.audioTrack!}
-                                    />
-                                )
-                            )}
-                        </div>
-                        <NodeDisplay nodes={nodes} />
-                    </div>
-                </div>
-            )}
-        </>
-    );
+              )}
+              {remoteTracks.map((remoteTrack) =>
+                remoteTrack.trackPublication.kind === "video" ? (
+                  <div className={styles.video} key={remoteTrack.trackPublication.trackSid}>
+                    <VideoComponent
+                      track={remoteTrack.trackPublication.videoTrack!}
+                      participantIdentity={remoteTrack.participantIdentity}
+                      onNodesDetected={handleNodesDetected}
+                    />
+                  </div>
+                ) : (
+                  <AudioComponent
+                    key={remoteTrack.trackPublication.trackSid}
+                    track={remoteTrack.trackPublication.audioTrack!}
+                  />
+                )
+              )}
+            </div>
+            <NodeDisplay nodes={nodes} />
+          </div>
+        </div>
+      )}
+    </>
+  );
 }
 
 export default VideoApp;

@@ -42,7 +42,6 @@ export default function Header({
   return (
     <div className={styles.header}>
       <div className={styles.left}>
-        <div className={styles.course}>{courseName}</div>
         <div className={styles.lecture}>{lectureName}</div>
       </div>
       <div className={styles.center}>

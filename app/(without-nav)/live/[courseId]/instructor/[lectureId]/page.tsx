@@ -1,7 +1,7 @@
 // app/(without-nav)/live/instructor/[lectureId]/page.tsx
 "use client";
 
-import Header from "@/app/(without-nav)/live/[lectureId]/__component/header/header";
+import Header from "../../[lectureId]/__component/header/header";
 import { Usable, use } from "react";
 import VideoSection from "../../[lectureId]/__component/videoSection/videoSection";
 import styles from "../../[lectureId]/page.module.scss"; // 학생쪽 스타일 재사용
