@@ -1,8 +1,8 @@
 package com.e104.reciplay.myprofile.controller;
 
 import com.e104.reciplay.user.profile.controller.ProfileApiController;
-import com.e104.reciplay.user.profile.dto.ProfileInfoRequest;
-import com.e104.reciplay.user.profile.dto.ProfileInformation;
+import com.e104.reciplay.user.profile.dto.request.ProfileInfoRequest;
+import com.e104.reciplay.user.profile.dto.response.ProfileInformation;
 import com.e104.reciplay.user.profile.service.MyProfileManagementService;
 import com.e104.reciplay.user.profile.service.MyProfileQueryService;
 import com.e104.reciplay.user.security.exception.EmailNotFoundException;

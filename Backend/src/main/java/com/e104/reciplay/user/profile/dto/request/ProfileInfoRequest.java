@@ -1,4 +1,4 @@
-package com.e104.reciplay.user.profile.dto;
+package com.e104.reciplay.user.profile.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
