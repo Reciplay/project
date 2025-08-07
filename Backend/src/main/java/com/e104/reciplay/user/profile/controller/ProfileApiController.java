@@ -62,7 +62,7 @@ public class ProfileApiController {
             @AuthenticationPrincipal CustomUserDetails userDetails
             ) {
         ProfileInformation answer = myProfileQueryService.queryProfileInformation(userDetails.getUsername());
-        return CommonResponseBuilder.success("프로필 정보 조회에 성공했습니다.", null);
+        return CommonResponseBuilder.success("프로필 정보 조회에 성공했습니다.", answer);
     }
 
     @PostMapping("/photo")
