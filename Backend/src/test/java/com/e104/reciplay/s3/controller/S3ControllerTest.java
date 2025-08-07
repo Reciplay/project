@@ -1,91 +1,82 @@
 package com.e104.reciplay.s3.controller;
 
-import com.e104.reciplay.common.response.dto.ResponseRoot;
+import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import com.e104.reciplay.s3.enums.FileCategory;
 import com.e104.reciplay.s3.enums.RelatedType;
 import com.e104.reciplay.s3.service.S3Service;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
-import org.springframework.http.ResponseEntity;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class S3ControllerUnitTest {
+class S3ControllerTest {
 
-    @Mock
-    private S3Service s3Service;
+    private MockMvc mockMvc;
 
     @InjectMocks
     private S3Controller s3Controller;
 
+    @Mock
+    private S3Service s3Service;
+
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    void setup() {
+        s3Service = mock(S3Service.class);
+        s3Controller = new S3Controller(s3Service);
+        mockMvc = MockMvcBuilders.standaloneSetup(s3Controller).build();
     }
 
     @Test
-    @DisplayName("파일 업로드 성공")
     void testUploadFile() throws Exception {
-        MockMultipartFile file = new MockMultipartFile(
-                "file", "test.png", "image/png", "dummy-image".getBytes()
-        );
+        MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", "data".getBytes());
 
-        doNothing().when(s3Service).uploadFile(
-                eq(file),
-                eq(FileCategory.IMAGES),
-                eq(RelatedType.USER_PROFILE),
-                eq(123L),
-                eq(1)
-        );
+        mockMvc.perform(multipart("/api/v1/files")
+                        .file(file)
+                        .param("relatedId", "123"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("파일 업로드에 성공하였습니다."));
 
-        ResponseEntity<?> response = s3Controller.upload(
-                file,
-                FileCategory.IMAGES,
-                RelatedType.USER_PROFILE,
-                123L,
-                1
-        );
-
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
-        assertThat(response.getBody().toString()).contains("파일 업로드에 성공하였습니다.");
-
-        verify(s3Service, times(1)).uploadFile(file, FileCategory.IMAGES, RelatedType.USER_PROFILE, 123L, 1);
+        verify(s3Service).uploadFile(any(), eq(FileCategory.IMAGES), eq(RelatedType.USER_PROFILE), eq(123L), eq(1));
     }
 
     @Test
-    @DisplayName("Presigned URL 반환 성공")
-    void testGetPresignedUrl() {
-        String expectedUrl = "https://mock-url.com";
-        when(s3Service.getPresignedUrl(FileCategory.IMAGES, RelatedType.USER_PROFILE, 123L, 1))
-                .thenReturn(expectedUrl);
+    void testGetPresignedUrl() throws Exception {
+        ResponseFileInfo fileInfo = new ResponseFileInfo();
+        fileInfo.setName("sample.jpg");
+        fileInfo.setPresigedUrl("https://example.com/test");
 
-        ResponseEntity<ResponseRoot<String>> response = s3Controller.getPresignedUrl(
-                FileCategory.IMAGES, RelatedType.USER_PROFILE, 123L, 1
-        );
+        when(s3Service.getResponseFileInfo(FileCategory.IMAGES, RelatedType.USER_PROFILE, 100L, 1))
+                .thenReturn(fileInfo);
 
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
-        assertThat(response.getBody().getData()).isEqualTo(expectedUrl);
-        assertThat(response.getBody().getMessage()).contains("Presigned Url 생성에 성공하였습니다.");
-
-        verify(s3Service, times(1)).getPresignedUrl(FileCategory.IMAGES, RelatedType.USER_PROFILE, 123L, 1);
+        mockMvc.perform(get("/api/v1/files")
+                        .param("category", "IMAGES")
+                        .param("relatedType", "USER_PROFILE")
+                        .param("relatedId", "100")
+                        .param("sequence", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.name").value("sample.jpg"))
+                .andExpect(jsonPath("$.data.presigedUrl").value("https://example.com/test"))
+                .andExpect(jsonPath("$.message").value("Presigned Url 생성에 성공하였습니다."));
     }
 
     @Test
-    @DisplayName("파일 삭제 성공")
-    void testDeleteFile() {
-        doNothing().when(s3Service).deleteFile(FileCategory.IMAGES, RelatedType.USER_PROFILE, 123L, 1);
+    void testDeleteFile() throws Exception {
+        mockMvc.perform(delete("/api/v1/files")
+                        .param("category", "IMAGES")
+                        .param("relatedType", "USER_PROFILE")
+                        .param("relatedId", "100")
+                        .param("sequence", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("파일이 성공적으로 삭제되었습니다."));
 
-        ResponseEntity<ResponseRoot<String>> response = s3Controller.deleteFile(
-                FileCategory.IMAGES, RelatedType.USER_PROFILE, 123L, 1
-        );
-
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
-        assertThat(response.getBody().getMessage()).contains("파일이 성공적으로 삭제되었습니다.");
-
-        verify(s3Service, times(1)).deleteFile(FileCategory.IMAGES, RelatedType.USER_PROFILE, 123L, 1);
+        verify(s3Service).deleteFile(FileCategory.IMAGES, RelatedType.USER_PROFILE, 100L, 1);
     }
 }

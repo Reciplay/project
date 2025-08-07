@@ -1,6 +1,6 @@
 package com.e104.reciplay.myprofile.service;
 
-import com.e104.reciplay.user.profile.dto.ProfileInfoRequest;
+import com.e104.reciplay.user.profile.dto.request.ProfileInfoRequest;
 import com.e104.reciplay.user.security.domain.User;
 import com.e104.reciplay.user.profile.service.MyProfileManagementService;
 import com.e104.reciplay.user.security.repository.UserRepository;

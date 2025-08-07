@@ -2,6 +2,7 @@ package com.e104.reciplay.s3.controller;
 
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
+import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import com.e104.reciplay.s3.enums.FileCategory;
 import com.e104.reciplay.s3.enums.RelatedType;
 import com.e104.reciplay.s3.service.S3Service;
@@ -22,24 +23,21 @@ public class S3Controller {
     @PostMapping("")
     public ResponseEntity<ResponseRoot<String>> upload(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("category") FileCategory category,
-            @RequestParam("relatedType") RelatedType relatedType,
-            @RequestParam("relatedId") Long relatedId,
-            @RequestParam("sequence") Integer sequence
+            @RequestParam("relatedId") Long relatedId
     ) throws IOException {
-        s3Service.uploadFile(file, category, relatedType, relatedId, sequence);
+        s3Service.uploadFile(file, FileCategory.IMAGES, RelatedType.USER_PROFILE, relatedId, 1);
         return CommonResponseBuilder.success("파일 업로드에 성공하였습니다.", null);
     }
 
     @GetMapping("")
-    public ResponseEntity<ResponseRoot<String>> getPresignedUrl(
+    public ResponseEntity<ResponseRoot<ResponseFileInfo>> getPresignedUrl(
             @RequestParam("category") FileCategory category,
             @RequestParam("relatedType") RelatedType relatedType,
             @RequestParam("relatedId") Long relatedId,
             @RequestParam("sequence") Integer sequence
     ) {
-        String presignedUrl = s3Service.getPresignedUrl(category, relatedType, relatedId, sequence);
-        return CommonResponseBuilder.success("Presigned Url 생성에 성공하였습니다.", presignedUrl);
+        ResponseFileInfo responseFileInfo = s3Service.getResponseFileInfo(category, relatedType, relatedId, sequence);
+        return CommonResponseBuilder.success("Presigned Url 생성에 성공하였습니다.", responseFileInfo);
     }
 
     @DeleteMapping("")

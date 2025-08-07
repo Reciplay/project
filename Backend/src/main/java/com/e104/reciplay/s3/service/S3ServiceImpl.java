@@ -2,9 +2,11 @@ package com.e104.reciplay.s3.service;
 
 
 import com.e104.reciplay.entity.FileMetadata;
+import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import com.e104.reciplay.s3.enums.FileCategory;
 import com.e104.reciplay.s3.enums.RelatedType;
 import com.e104.reciplay.s3.repository.FileMetadataRepository;
+import com.e104.reciplay.s3.util.CustomFileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -25,6 +27,7 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +35,8 @@ import java.time.LocalDateTime;
 public class S3ServiceImpl implements S3Service {
 
     private final S3Client s3Client;
-    private final FileMetadataRepository repository;
+    private final FileMetadataManagementService fileMetadataManagementService;
+    private final FileMetadataQueryService fileMetadataQueryService;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -46,34 +50,93 @@ public class S3ServiceImpl implements S3Service {
     @Value("${cloud.aws.s3.region.static}")
     private String region;
 
-    // 해당 파일 s3에 업로드 및 메타 데이터 db에 저장
+    @Value("${application.presigned-ttl}")
+    private Long ttl;
+
+    ///////////// ✅
+    @Override
     public void uploadFile(MultipartFile file, FileCategory category, RelatedType relatedType, Long relatedId, Integer sequence) throws IOException {
-
-        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
-
-
-        // 1. DB에 메타데이터 저장
-        FileMetadata metadata = repository.save(
-                FileMetadata.builder()
-                        .category(category)
-                        .resourceType(extension)
-                        .relatedType(relatedType)
-                        .relatedId(relatedId)
-                        .uploadedAt(LocalDateTime.now())
-                        .sequence(sequence)
-                        .build()
-        );
+        CustomFileUtil.validateFile(file, category, relatedType); // 파일 유효성 검사.
+        FileMetadata fileMetadata = new FileMetadata(file, category, relatedType, relatedId, sequence); // 파일 개체 생성
+        fileMetadataManagementService.writeFile(fileMetadata);
+        String path = formPath(fileMetadata);
+        writeObjectOnStorage(path, file);
+    }
 
 
-        // 2. S3 경로 구성
-        String path = String.format("%s/%s/%d.%s",
-                category.name().toLowerCase(),
-                relatedType.name().toLowerCase(),
+    @Override
+    public ResponseFileInfo getResponseFileInfo(FileCategory category, RelatedType relatedType, Long relatedId, Integer sequence){
+        // 1. DB에서 해당 파일 메타데이터 찾기
+        FileMetadata metadata = fileMetadataQueryService.queryByMetadata(category, relatedType, relatedId, sequence);
+        String path = formPath(metadata);
+        String presignedUrl = generatePresignedUrl(path);
+        return new ResponseFileInfo(presignedUrl, metadata.getName(), metadata.getSequence());
+    }
+
+
+    @Override
+    // 해당 파일 PresigedUrl 생성 후 반환
+    public ResponseFileInfo getResponseFileInfo(FileMetadata metadata) {
+        String path = formPath(metadata);
+        String presignedUrl = generatePresignedUrl(path);
+        return new ResponseFileInfo(presignedUrl, metadata.getName(), metadata.getSequence());
+    }
+
+
+    @Override
+    public void deleteFile(FileCategory category, RelatedType relatedType, Long relatedId, Integer sequence) {
+        // 1. 메타데이터 조회
+        FileMetadata metadata = fileMetadataQueryService.queryByMetadata(category, relatedType, relatedId, sequence);
+        // 2. S3 Key 구성
+        String path = formPath(metadata);
+        // 3. S3에서 삭제
+        deleteFromStorage(path);
+        // 4. DB에서 메타데이터 삭제
+        fileMetadataManagementService.deleteFile(metadata);
+    }
+
+    @Override
+    public void deleteFile(FileMetadata metadata) {
+        String path = formPath(metadata);
+        // 3. S3에서 삭제
+        deleteFromStorage(path);
+        // 4. DB에서 메타데이터 삭제
+        fileMetadataManagementService.deleteFile(metadata);
+    }
+
+    // Presigned URL 생성
+    @Override
+    public String generatePresignedUrl(String path) {
+        S3Presigner presigner = S3Presigner.builder()
+                .region(Region.of(region))
+                .credentialsProvider(
+                        StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey))
+                ).build();
+
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucket)
+                .key(path).build();
+
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(ttl))
+                .getObjectRequest(getObjectRequest)
+                .build();
+
+        return presigner.presignGetObject(presignRequest).url().toString();
+    }
+
+    // S3 경로 구성
+    private String formPath(FileMetadata metadata) {
+        return String.format("%s/%s/%d.%s",
+                metadata.getCategory().name().toLowerCase(),
+                metadata.getRelatedType().name().toLowerCase(),
                 metadata.getId(),
-                extension);
-//
+                metadata.getResourceType()
+        );
+    }
 
-        // 3. S3에 직접 업로드
+    // S3에 파일을 쓰는 작업.
+    private void writeObjectOnStorage(String path, MultipartFile file) throws IOException {
         PutObjectRequest request = PutObjectRequest.builder()
                 .bucket(bucket)
                 .key(path)
@@ -81,68 +144,15 @@ public class S3ServiceImpl implements S3Service {
                 .build();
 
         s3Client.putObject(request, RequestBody.fromBytes(file.getBytes()));
-
     }
 
-    // 해당 파일 PresigedUrl 생성 후 반환
-    public String getPresignedUrl(FileCategory category, RelatedType relatedType, Long relatedId, Integer sequence) {
-        // 1. DB에서 해당 파일 메타데이터 찾기
-        FileMetadata metadata = repository.findMetadata(
-                category, relatedType, relatedId, sequence
-        ).orElseThrow(() -> new RuntimeException("파일을 찾을 수 없습니다."));
-
-        // 2. Presigner 생성
-        S3Presigner presigner = S3Presigner.builder()
-                .region(Region.of(region))
-                .credentialsProvider(
-                        StaticCredentialsProvider.create(
-                                AwsBasicCredentials.create(accessKey, secretKey)
-                        )
-                ).build();
-
-        // 3. Presigned URL 생성
-        String path = String.format("%s/%s/%d.%s",
-                metadata.getCategory().name().toLowerCase(),
-                metadata.getRelatedType().name().toLowerCase(),
-                metadata.getId(),
-                metadata.getResourceType());
-
-        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                .bucket(bucket)
-                .key(path).build();
-
-        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofMinutes(10))
-                .getObjectRequest(getObjectRequest)
-                .build();
-
-        return presigner.presignGetObject(presignRequest).url().toString();
-    }
-
-    public void deleteFile(FileCategory category, RelatedType relatedType, Long relatedId ,Integer sequence) {
-        // 1. 메타데이터 조회
-        FileMetadata metadata = repository.findMetadata(
-                category, relatedType, relatedId, sequence
-        ).orElseThrow(() -> new RuntimeException("삭제할 파일을 찾을 수 없습니다."));
-
-        // 2. S3 Key 구성
-        String path = String.format("%s/%s/%d.%s",
-                metadata.getCategory().name().toLowerCase(),
-                metadata.getRelatedType().name().toLowerCase(),
-                metadata.getId(),
-                metadata.getResourceType()
-        );
-
-        // 3. S3에서 삭제
+    private void deleteFromStorage(String path) {
         DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
                 .bucket(bucket)
                 .key(path)
                 .build();
 
         s3Client.deleteObject(deleteRequest);
-
-        // 4. DB에서 메타데이터 삭제
-        repository.deleteById(metadata.getId());
     }
 
 }
