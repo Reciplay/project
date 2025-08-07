@@ -8,7 +8,9 @@ import com.e104.reciplay.course.courses.dto.response.CourseCard;
 import com.e104.reciplay.course.courses.dto.response.CourseDetail;
 import com.e104.reciplay.course.courses.dto.response.PagedResponse;
 import com.e104.reciplay.course.courses.service.CourseCommandService;
-import com.e104.reciplay.course.courses.service.CoursesQueryService;
+import com.e104.reciplay.livekit.service.depends.CourseQueryService;
+import com.e104.reciplay.livekit.service.depends.InstructorQueryService;
+import com.e104.reciplay.user.security.util.AuthenticationUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,8 +33,10 @@ import java.util.List;
 @Slf4j
 public class CourseApiController {
 
-    private final CoursesQueryService courseQueryService;
+    //private final CoursesQueryService courseQueryService;
     private final CourseCommandService courseCommandService;
+    private final InstructorQueryService instructorQueryService;
+    private final CourseQueryService courseQueryService;
     // 분홍색 통합 API
     // 페이징한 결과와 페이징 하지 않은 결과를 조건문으로 두개의 결과 선택지를 줘야함
     @GetMapping("/cards")
@@ -53,14 +57,16 @@ public class CourseApiController {
     @GetMapping("/list")
     @ApiResponse(responseCode = "200", description = "강좌 상세 정보 리스트 조회 성공")
     @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")
-    @Operation(summary = "강좌 상세 정보 리스트 조회  API", description = "강좌 상세 정보 리스트 조회")
+    @Operation(summary = "강사의 강좌 관리 페이지에서의 상세 정보 리스트 조회  API", description = "강사의 강좌 관리 페이지에서의 상세 정보 리스트 조회")
     public ResponseEntity<ResponseRoot<List<CourseDetail>>> getCourseCards(
     ) {
-        Long instructorId = 10L;
-        List<CourseDetail> courseList = courseQueryService.queryCoursesByInstructorId(instructorId);
+        String email = AuthenticationUtil.getSessionUsername();
+        Long instructorId = instructorQueryService.queryInstructorIdByEmail(email);
 
-        return CommonResponseBuilder.success("강좌 상세 정보 리스트 조회에 성공하였습니다.",
-                courseList);
+        List<CourseDetail> courses = courseQueryService.queryCourseDetailsByInstructorId(instructorId);
+
+        return CommonResponseBuilder.success("강사의 강좌 상세 정보 리스트 조회에 성공하였습니다.",
+                courses);
     }
 
 
@@ -74,8 +80,8 @@ public class CourseApiController {
 
     ){
 
-        CourseDetail courseDetail = courseQueryService.queryCourseByCourseId(courseId);
-        return CommonResponseBuilder.success("강좌 상세 정보 조회에 성공하였습니다.", courseDetail);
+        //CourseDetail courseDetail = courseQueryService.queryCourseByCourseId(courseId);
+        return CommonResponseBuilder.success("강좌 상세 정보 조회에 성공하였습니다.", null);
     }
 
     @PutMapping("")
@@ -99,11 +105,7 @@ public class CourseApiController {
             @RequestBody CourseRegisterInfo courseRegisterInfo
 
     ){
-
-
-        Long instructorId = 10L;
-        courseCommandService.creatCourseByInstructorId(instructorId, courseRegisterInfo);
-        return CommonResponseBuilder.success("강좌 등록에 성공하였습니다.", instructorId);
+        return CommonResponseBuilder.success("강좌 등록에 성공하였습니다.", null);
     }
 
 

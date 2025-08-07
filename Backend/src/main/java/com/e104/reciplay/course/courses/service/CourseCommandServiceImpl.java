@@ -1,10 +1,6 @@
 package com.e104.reciplay.course.courses.service;
 
 
-import com.e104.reciplay.course.courses.dto.request.CourseRegisterInfo;
-import com.e104.reciplay.repository.ChapterRepository;
-import com.e104.reciplay.repository.CourseRepository;
-import com.e104.reciplay.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,11 +10,11 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CourseCommandServiceImpl implements CourseCommandService{
 
-    private final CourseRepository courseRepository;
-    private final ChapterRepository chapterRepository;
-    private final TodoRepository todoRepository;
-    @Override
-    public void creatCourseByInstructorId(Long instructorId, CourseRegisterInfo courseRegisterInfo) {
+//    private final CourseRepository courseRepository;
+//    private final ChapterRepository chapterRepository;
+//    private final TodoRepository todoRepository;
+//    @Override
+//    public void creatCourseByInstructorId(Long instructorId, CourseRegisterInfo courseRegisterInfo) {
 //        LocalDate nowDate = LocalDate.now();
 //        // 파일 처리 해야됨
 //        Course course = Course.builder()
@@ -63,6 +59,6 @@ public class CourseCommandServiceImpl implements CourseCommandService{
 //                todoRepository.save(todo);
 //            }
 //        }
-    }
+//    }
 
 }

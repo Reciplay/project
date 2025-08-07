@@ -1,7 +1,7 @@
 package com.e104.reciplay.course.courses.controller;
 
-import com.e104.reciplay.course.courses.dto.request.CourseRegisterInfo;
 import com.e104.reciplay.common.dto.FileCondition;
+import com.e104.reciplay.course.courses.dto.request.CourseRegisterInfo;
 import com.e104.reciplay.s3.enums.FileCategory;
 import com.e104.reciplay.s3.enums.RelatedType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,13 +11,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
@@ -48,9 +51,8 @@ class CourseApiControllerTest {
                         .relatedType(RelatedType.USER_PROFILE)
                         .relatedId(1L)
                         .sequuence(0)
-                        .file(null)  // MultipartFile은 JSON 직렬화 시 제외됨
                         .build())
-                .thumbnailConditions(List.of()) // 테스트용 비워둠
+                .thumbnailConditions(List.of())
                 .chapters(List.of())
                 .build();
 
@@ -62,12 +64,13 @@ class CourseApiControllerTest {
     }
 
     @Test
-    @DisplayName("강좌 상세 조회 API 테스트")
+    @DisplayName("강좌 상세 조회 API 테스트 - 현재는 null 반환 확인")
     void testGetCourseDetail() throws Exception {
         mockMvc.perform(get("/api/v1/course/courses")
-                        .param("courseId", "1")) // 존재하는 ID로 테스트
+                        .param("courseId", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("강좌 상세 정보 조회에 성공하였습니다."));
+                .andExpect(jsonPath("$.message").value("강좌 상세 정보 조회에 성공하였습니다."))
+                .andExpect(jsonPath("$.data").doesNotExist());
     }
 
     @Test
@@ -82,10 +85,11 @@ class CourseApiControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "test@ssafy.com")  // AuthenticationUtil.getSessionUsername() 용도
     @DisplayName("강사의 강좌 목록 조회 API 테스트")
     void testGetCourseListByInstructor() throws Exception {
         mockMvc.perform(get("/api/v1/course/courses/list"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("강좌 상세 정보 리스트 조회에 성공하였습니다."));
+                .andExpect(jsonPath("$.message").value("강사의 강좌 상세 정보 리스트 조회에 성공하였습니다."));
     }
 }

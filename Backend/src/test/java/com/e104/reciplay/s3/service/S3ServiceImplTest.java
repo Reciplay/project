@@ -4,7 +4,6 @@ import com.e104.reciplay.entity.FileMetadata;
 import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import com.e104.reciplay.s3.enums.FileCategory;
 import com.e104.reciplay.s3.enums.RelatedType;
-import com.e104.reciplay.s3.repository.FileMetadataRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +18,6 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -103,7 +101,7 @@ class S3ServiceImplTest {
 
         // then
         assertEquals("sample.jpg", result.getName());
-        assertTrue(result.getPresigedUrl().contains("http")); // Presigned URL 형식만 체크
+        assertTrue(result.getPresignedUrl().contains("http")); // Presigned URL 형식만 체크
     }
 
     @Test
