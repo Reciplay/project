@@ -35,16 +35,20 @@ class S3ServiceImplTest {
     private S3Client s3Client;
 
     @Mock
-    private FileMetadataRepository repository;
+    private FileMetadataManagementService fileMetadataManagementService;
+
+    @Mock
+    private FileMetadataQueryService fileMetadataQueryService;
 
     @BeforeEach
     void setUp() throws Exception {
-        s3Service = new S3ServiceImpl(s3Client, repository);
+        s3Service = new S3ServiceImpl(s3Client, fileMetadataManagementService, fileMetadataQueryService);
         // 수동 설정이므로 @Value 대체
         setPrivateField(s3Service, "bucket", "test-bucket");
         setPrivateField(s3Service, "accessKey", "test-access-key");
         setPrivateField(s3Service, "secretKey", "test-secret-key");
         setPrivateField(s3Service, "region", "ap-northeast-2");
+        setPrivateField(s3Service, "ttl", 180L);
     }
 
     @Test
@@ -52,27 +56,27 @@ class S3ServiceImplTest {
         // given
         byte[] fileContent = "test file".getBytes();
         MockMultipartFile multipartFile = new MockMultipartFile(
-                "lecture/1", "test.pdf", "material/pdf", fileContent);
+                "material", "test.pdf", "application/pdf", fileContent);
 
         FileMetadata mockSavedMetadata = FileMetadata.builder()
                 .id(123L)
-                .name("test.mp4")
-                .category(FileCategory.VIDEOS)
-                .relatedType(RelatedType.REPLAY)
+                .name("test.pdf")
+                .category(FileCategory.MATERIALS)
+                .relatedType(RelatedType.LECTURE)
                 .relatedId(1L)
-                .resourceType("mp4")
+                .resourceType("pdf")
                 .uploadedAt(LocalDateTime.now())
                 .sequence(1)
                 .build();
 
-        when(repository.save(any())).thenReturn(mockSavedMetadata);
+        when(fileMetadataManagementService.writeFile(any())).thenReturn(mockSavedMetadata);
 
         // when
-        s3Service.uploadFile(multipartFile, 1L);
+        s3Service.uploadFile(multipartFile, FileCategory.MATERIALS, RelatedType.LECTURE, 1L, 1);
 
         // then
         verify(s3Client).putObject(any(PutObjectRequest.class), any(RequestBody.class));
-        verify(repository).save(any(FileMetadata.class));
+        verify(fileMetadataManagementService).writeFile(any(FileMetadata.class));
     }
 
     @Test
@@ -89,8 +93,8 @@ class S3ServiceImplTest {
                 .uploadedAt(LocalDateTime.now())
                 .build();
 
-        when(repository.findMetadata(FileCategory.IMAGES, RelatedType.USER_PROFILE, 100L, 1))
-                .thenReturn(Optional.of(metadata));
+        when(fileMetadataQueryService.queryByMetadata(FileCategory.IMAGES, RelatedType.USER_PROFILE, 100L, 1))
+                .thenReturn(metadata);
 
         // when
         ResponseFileInfo result = s3Service.getResponseFileInfo(
@@ -115,15 +119,15 @@ class S3ServiceImplTest {
                 .sequence(1)
                 .build();
 
-        when(repository.findMetadata(FileCategory.VIDEOS, RelatedType.REPLAY, 100L, 1))
-                .thenReturn(Optional.of(metadata));
+        when(fileMetadataQueryService.queryByMetadata(FileCategory.VIDEOS, RelatedType.REPLAY, 100L, 1))
+                .thenReturn(metadata);
 
         // when
         s3Service.deleteFile(FileCategory.VIDEOS, RelatedType.REPLAY, 100L, 1);
 
         // then
         verify(s3Client).deleteObject(any(DeleteObjectRequest.class));
-        verify(repository).deleteById(1L);
+        verify(fileMetadataManagementService).deleteFile(metadata);
     }
     private void setPrivateField(Object target, String fieldName, Object value) throws Exception {
         Field field = target.getClass().getDeclaredField(fieldName);

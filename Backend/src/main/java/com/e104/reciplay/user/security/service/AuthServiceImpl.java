@@ -14,6 +14,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +32,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class AuthServiceImpl implements AuthService{
+public class AuthServiceImpl implements AuthService {
     private final JWTUtil jwtUtil;
     @Value("${spring.jwt.expiration}")
     private long ACCESS_TOKEN_EXPIRATION;
@@ -46,29 +47,24 @@ public class AuthServiceImpl implements AuthService{
     @Override
     @Transactional
     public void refresh(HttpServletRequest request, HttpServletResponse response) {
-//        Cookie[] cookies = request.getCookies();
-//        for(Cookie cookie : cookies) {
-//            if(cookie.getName().equals("refreshToken")) {
-                // 리프레시 토큰의 유효성을 검증한다.
-//                String token = cookie.getValue();
-                // 여기서 어떤 값이 날아오는지 확인해야 한다.
-                // refresh-token 이라는 prefix가 붙어서 오는지 아니면 떨어져 오는지..
-                String token = request.getHeader("Refresh-Token");
-                String username = jwtUtil.getUsername(token);
-
-                if(!jwtUtil.isExpired(token) && tokenRepository.isValidToken(token, username, "REFRESH")) {
-                    String newToken = jwtUtil.createJwt(jwtUtil.getUsername(token), null, ACCESS_TOKEN_EXPIRATION);
-                    response.setHeader("Authorization", "Bearer " + newToken);
-                    // 기존에 존재하던 액세스 토큰을 무효화한다.
-                    List<Token> preTokens = tokenRepository.findByUsernameAndIsExpiredAndType(username, false, "ACCESS");
-                    for(Token preToken : preTokens) preToken.setIsExpired(true);
-                    // 새로 발급된 토큰을 저장한다.
-                    tokenRepository.save(new Token(null, newToken, false, "ACCESS", null, username));
-                    return;
-                }
-//            }
-//        }
-        throw new JWTTokenExpiredException("쿠키에 토큰이 없거나 만료 혹은 거부되었습니다.");
+//
+        String token = request.getHeader("Refresh-Token");
+        try {
+            String username = jwtUtil.getUsername(token);
+            if (!jwtUtil.isExpired(token) && tokenRepository.isValidToken(token, username, "REFRESH")) {
+                String newToken = jwtUtil.createJwt(jwtUtil.getUsername(token), null, ACCESS_TOKEN_EXPIRATION);
+                response.setHeader("Authorization", "Bearer " + newToken);
+                // 기존에 존재하던 액세스 토큰을 무효화한다.
+                List<Token> preTokens = tokenRepository.findByUsernameAndIsExpiredAndType(username, false, "ACCESS");
+                for (Token preToken : preTokens) preToken.setIsExpired(true);
+                // 새로 발급된 토큰을 저장한다.
+                tokenRepository.save(new Token(null, newToken, false, "ACCESS", null, username));
+                return;
+            }
+        } catch (NullPointerException | IllegalArgumentException e) {
+            throw new JWTTokenExpiredException("헤더에 토큰이 없거나 만료 혹은 거부되었습니다.");
+        }
+        throw new JWTTokenExpiredException("헤더에 토큰이 없거나 만료 혹은 거부되었습니다.");
     }
 
     @Override
@@ -112,7 +108,7 @@ public class AuthServiceImpl implements AuthService{
 
     @Override
     public Boolean isValidEmail(String email) {
-        if(email == null || email.isEmpty() || email.length() > 30) return false;
+        if (email == null || email.isEmpty() || email.length() > 30) return false;
 
         String regex = "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
         return email.matches(regex);
@@ -132,7 +128,7 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public void verifyEmailOtp(String email, String otp) {
         String plain = authRedisService.getAuthToken("email", email);
-        if(plain == null || !plain.equals(otp)){
+        if (plain == null || !plain.equals(otp)) {
             throw new EmailAuthFailureException("이메일 인증에 실패했습니다. 토큰이 틀렸거나 만료 되었습니다.");
         }
     }
@@ -162,13 +158,13 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public void checkPasswordHash(PasswordChangeRequest request) {
         String original = authRedisService.getAuthToken("password", request.getEmail());
-        if(!original.equals(request.getHash())) throw new InvalidOtpHashException("패스워드 변경용 해시 값이 유효하지 않습니다.");
+        if (!original.equals(request.getHash())) throw new InvalidOtpHashException("패스워드 변경용 해시 값이 유효하지 않습니다.");
     }
 
     @Override
     public void verifySignupHash(String email, String hash) {
         String original = authRedisService.getAuthToken("signup", email);
-        if(!original.equals(hash)) throw new InvalidOtpHashException("회원가입용 해시 값이 유효하지 않습니다.");
+        if (!original.equals(hash)) throw new InvalidOtpHashException("회원가입용 해시 값이 유효하지 않습니다.");
     }
 
     @Override

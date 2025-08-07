@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class ResponseFileInfo {
     private String presigedUrl;
     private String name;
+    private Integer sequence;
 }

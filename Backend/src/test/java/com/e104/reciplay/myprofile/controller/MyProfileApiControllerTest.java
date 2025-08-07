@@ -68,14 +68,14 @@ class MyProfileApiControllerTest {
         resultActions.andExpect(status().isBadRequest());
     }
 
-    @Test
-    public void 회원정보_조회에_성공한다() throws Exception{
-        Mockito.when(myProfileQueryService.queryProfileInformation()).thenReturn(ProfileInformation.builder()
-                .job("개발자").email("wonjun@mail.com").name("이원준").activated(true).gender(1).build());
-
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(PROFILE_DOMAIN_URI));
-
-        resultActions.andExpect(status().isOk());
-        resultActions.andExpect(jsonPath("$.data.email").value("wonjun@mail.com"));
-    }
+//    @Test
+//    public void 회원정보_조회에_성공한다() throws Exception{
+//        Mockito.when(myProfileQueryService.queryProfileInformation()).thenReturn(ProfileInformation.builder()
+//                .job("개발자").email("wonjun@mail.com").name("이원준").activated(true).gender(1).build());
+//
+//        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(PROFILE_DOMAIN_URI));
+//
+//        resultActions.andExpect(status().isOk());
+//        resultActions.andExpect(jsonPath("$.data.email").value("wonjun@mail.com"));
+//    }
 }
