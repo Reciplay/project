@@ -1,62 +1,40 @@
 "use client";
 
-import { getSession, signIn } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 import BaseButton from "@/components/button/baseButton";
 import CustomInput from "@/components/input/customInput";
+import CustomModal from "@/components/modal/customModal";
 import { formData } from "@/config/formData";
 import { ROUTES } from "@/config/routes";
+import useAuth from "@/hooks/auth/useAuth";
+import { useState } from "react";
 import AuthImage from "../__components/authImage/authImage";
 import LogoWIthDesc from "../__components/logoWithDesc/logoWithDesc";
 import Separator from "../__components/separator/separator";
 import SNS from "../__components/sns/sns";
+import FindEmailModal from "./__components/findEmailModal";
+import FindPasswordModal from "./__components/findPasswordModal";
 import styles from "./page.module.scss";
 
-interface LoginForm {
+export interface LoginForm {
   email: string;
   password: string;
 }
 
 export default function Page() {
-  const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginForm>({ mode: "onSubmit" });
 
+  const { login } = useAuth();
+  const [modalType, setModalType] = useState<"email" | "password" | null>(null);
+
   const onSubmit = async (data: LoginForm) => {
-    console.log(`email: ${data.email},      password: ${data.password},`);
-    const result = await signIn("credentials", {
-      email: data.email,
-      password: data.password,
-      redirect: false,
-    });
-
-    if (!result?.ok) {
-      alert("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.");
-    }
-    const session = await getSession();
-
-    if (session.required) {
-      router.push(ROUTES.AUTH.EXTRA);
-    }
-
-    if (session.role == "student") {
-      router.push(ROUTES.HOME);
-    }
-
-    if (session.role == "instructor") {
-      router.push(ROUTES.INSTRUCTOR.DASHBOARD);
-    }
-
-    if (session.role == "admin") {
-      router.push(ROUTES.ADMIN);
-    }
-    router.push(ROUTES.HOME);
+    await login(data);
   };
 
   return (
@@ -89,15 +67,16 @@ export default function Page() {
             title="로그인"
             type="submit"
             size="inf"
-            className={styles.button}
-            // disabled={isSubmitting}
+            // className={styles.button}
           />
         </form>
 
         <div className={styles.links}>
-          <a href="#">아이디 찾기</a>
+          <button onClick={() => setModalType("email")}>아이디 찾기</button>
           <span> | </span>
-          <a href="#">비밀번호 찾기</a>
+          <button onClick={() => setModalType("password")}>
+            비밀번호 찾기
+          </button>
           <span> | </span>
           <Link href={ROUTES.AUTH.SIGNUP}>회원가입</Link>
         </div>
@@ -110,6 +89,12 @@ export default function Page() {
       <div className={styles.right}>
         <AuthImage />
       </div>
+      {modalType && (
+        <CustomModal isOpen={true} onClose={() => setModalType(null)}>
+          {modalType === "email" && <FindEmailModal />}
+          {modalType === "password" && <FindPasswordModal />}
+        </CustomModal>
+      )}
     </>
   );
 }

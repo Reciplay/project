@@ -1,25 +1,45 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
+import ProfileImageModal from "../profileImageModal/profileImageModal";
 import styles from "./profileHeader.module.scss";
 
 interface ProfileHeaderProps {
-  props: {
-    profileUrl: string;
-    name: string;
-    nickname: string;
-    job: string;
-  };
+  profileUrl: string | null;
+  name: string;
+  nickname: string;
+  job: string;
 }
 
-export default function ProfileHeader({ props }: ProfileHeaderProps) {
+export default function ProfileHeader({
+  profileUrl,
+  name,
+  nickname,
+  job,
+}: ProfileHeaderProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleFileChange = (file: File) => {
+    console.log("선택된 이미지 파일:", file);
+    // TODO: 이미지 업로드 로직 (API 호출 및 상태 갱신 등)
+    setIsModalOpen(false);
+  };
+
   return (
     <div
       className={styles.container}
-      style={{ backgroundImage: `url("${props.profileUrl}")` }}
+      style={
+        profileUrl ? { backgroundImage: `url("${profileUrl}")` } : undefined
+      }
     >
       <div className={styles.profileContainer}>
-        <div className={styles.profileImageWrapper}>
+        <div
+          className={styles.profileImageWrapper}
+          onClick={() => setIsModalOpen(true)}
+        >
           <Image
-            src={props.profileUrl}
+            src={profileUrl || "/images/default_profile.jpg"}
             alt="profile"
             fill
             className={styles.profileImage}
@@ -28,12 +48,19 @@ export default function ProfileHeader({ props }: ProfileHeaderProps) {
       </div>
 
       <div className={`${styles.textContainer} ${styles.glassBox}`}>
-        <div className={styles.name}>{props.nickname}</div>
+        <div className={styles.name}>{nickname}</div>
         <div className={styles.tags}>
-          <span>#{props.name} </span>
-          <span>#{props.job}</span>
+          <span>#{name} </span>
+          <span>#{job}</span>
         </div>
       </div>
+      {/* ✅ 모달 컴포넌트 */}
+      <ProfileImageModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        profileUrl={profileUrl || "/images/default_profile.jpg"}
+        onFileChange={handleFileChange}
+      />
     </div>
   );
 }

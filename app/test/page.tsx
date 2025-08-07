@@ -1,59 +1,59 @@
-"use client"
+"use client";
 
-import { useSession } from "next-auth/react"
-import restClient from "@/lib/axios/restClient"
-import { useState } from "react"
-import ChatBot from '@/components/chatbot/ChatBot'
-
+import { useSession } from "next-auth/react";
+import restClient from "@/lib/axios/restClient";
+import { useState } from "react";
+import ChatBot from "@/components/chatbot/ChatBot";
 
 export default function TestPage() {
-  
-  const { data: session, status, update } = useSession()
-  const [apiResponse, setApiResponse] = useState("")
+  const { data: session, status, update } = useSession();
+  const [apiResponse, setApiResponse] = useState("");
 
   const handleRefreshToken = async () => {
     if (!session?.refreshToken || !session?.accessToken) {
-      setApiResponse("Refresh token or Access token is missing.")
-      return
+      setApiResponse("Refresh token or Access token is missing.");
+      return;
     }
 
     try {
       const response = await restClient.get("/user/auth/refresh-token", {
-        withCredentials : true,
-        headers: { Cookie: `refresh-token=${session.refreshToken}` },
-      })
+        headers: { "refresh-token": session.refreshToken },
+      });
 
-      const newAccessToken = response.headers.Authorization
+      // const response = await axios.get("https://2913fcf0f9a2.ngrok-free.app/api/v1/user/auth/refresh-token", {
+      //   headers : {'refresh-token' : session.refreshToken,
+      // 'ngrok-skip-browser-warning' : true}
+      // })
 
-      // Update the session with the new access token
+      const newAccessToken = response.headers.Authorization;
+
       await update({
         ...session,
         accessToken: newAccessToken,
-      })
+      });
 
-      setApiResponse(JSON.stringify(response.data, null, 2))
+      setApiResponse(JSON.stringify(response.data, null, 2));
     } catch (error) {
       if (error instanceof Error) {
-        setApiResponse(`Error: ${error.message}`)
+        setApiResponse(`Error: ${error.message}`);
       } else {
-        setApiResponse(`An unknown error occurred`)
+        setApiResponse(`An unknown error occurred`);
       }
     }
-  }
+  };
 
   if (status === "loading") {
-    return <div>Loading...</div>
+    return <div>Loading...</div>;
   }
 
   return (
     <div>
       <h1>Test Page</h1>
 
-      <ChatBot/>
+      <ChatBot />
 
       <hr />
 
-      {/* Session and Token Test Section */}
       <p>Current Session:</p>
       <pre>{JSON.stringify(session, null, 2)}</pre>
       <button onClick={handleRefreshToken}>토큰 재갱신 테스트</button>
@@ -64,5 +64,5 @@ export default function TestPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

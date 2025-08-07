@@ -5,14 +5,16 @@ import {
   instructorSideBarMenus,
   userSidebarMenus,
 } from "@/config/sideBarMenu";
+import { useLogout } from "@/hooks/auth/useLogout";
 import { useSidebarStore } from "@/stores/sideBarStore";
+import { MenuSection } from "@/types/sideBar";
 import classNames from "classnames";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import BaseButton from "../button/baseButton";
 import TablerIcon from "../icon/tablerIcon";
 import styles from "./sideBar.module.scss";
-
 interface LinkItemProps {
   href: string;
   icon: string;
@@ -30,6 +32,8 @@ function LinkItem({
 }: LinkItemProps) {
   const pathname = usePathname();
   const isActive = pathname === href;
+
+  // 컴포넌트 내부
 
   return (
     <Link
@@ -60,13 +64,14 @@ function LinkItem({
 
 export default function SideBar() {
   const { isOpen } = useSidebarStore();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const { logout } = useLogout();
 
   console.log(session);
 
-  const role = session?.role || "ROLE_STUDENT"; // 기본값은 user
+  const role = session?.role || "ROLE_STUDENT";
 
-  let sidebarMenu;
+  let sidebarMenu: MenuSection[];
   if (role === "ROLE_ADMIN") {
     sidebarMenu = adminSideBarMenus;
   } else if (role === "ROLE_INSTRUCTOR") {
@@ -97,6 +102,12 @@ export default function SideBar() {
           </div>
         </div>
       ))}
+
+      {status === "authenticated" && (
+        <div>
+          <BaseButton title="로그아웃" onClick={logout} />
+        </div>
+      )}
     </aside>
   );
 }

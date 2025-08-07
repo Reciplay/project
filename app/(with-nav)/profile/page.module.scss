@@ -2,12 +2,20 @@
   display: flex;
   flex-direction: column;
   gap: 1.6rem;
-  width: calc(100vw - 260px);
+
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto; // ✅ 가운데 정렬
+  padding: 2rem 1rem;
+
+  // 기존: width: calc(100vw - 260px); 제거
 }
+
 .title {
   font-size: 30px;
   font-weight: 700;
 }
+
 .content {
   display: flex;
   flex-direction: column;
@@ -17,6 +25,7 @@
 .top {
   display: flex;
   gap: 24px;
+  flex-wrap: wrap; // ✅ 작은 화면 대응
 }
 
 .profileWrapper {
@@ -37,6 +46,7 @@
   flex-direction: column;
   gap: 8px;
 }
+
 .subtitle {
   font-size: 24px;
   font-weight: 700;
@@ -44,6 +54,7 @@
   gap: 8px;
   align-items: center;
 }
+
 .svgWrapper {
   position: relative;
   width: 20px;
@@ -51,10 +62,12 @@
   border-radius: 16px;
   overflow: hidden;
 }
+
 .desc {
   font-size: 16px;
   color: #666666;
 }
+
 .bio {
   font-size: 16px;
   color: #666666;
@@ -65,6 +78,10 @@
   grid-template-columns: 1fr 1fr;
   gap: 24px 40px;
   margin-top: 24px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr; // ✅ 모바일 대응
+  }
 }
 
 .item {
@@ -85,10 +102,12 @@
 .subContent {
   display: flex;
   gap: 2.4rem;
+  flex-wrap: wrap; // ✅ 작은 화면 대응
 }
 
 .child {
   flex: 1;
+  min-width: 300px;
   max-width: 50%;
 
   border: 1px solid #ccc;
@@ -97,4 +116,8 @@
   background-color: #ffffff;
 
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  @media (max-width: 768px) {
+    max-width: 100%; // ✅ 모바일 대응
+  }
 }
