@@ -6,6 +6,7 @@ import styles from "./career.module.scss";
 import Image from "next/image";
 import { useState } from 'react';
 import MonthDatePicker from "@/components/calendar/monthDatePicker";
+import { DatePicker } from "antd";
 
 export default function Career() {
     const [showInput, setShowInput] = useState(false);
@@ -70,8 +71,18 @@ export default function Career() {
                                 value={issuer}
                                 onChange={(e) => setIssuer(e.target.value)}
                             />
-                            <MonthDatePicker />
-                            <MonthDatePicker />
+                            <DatePicker
+                                onChange={() => { }}
+                                picker="month"
+                                placeholder="입사년월"
+                                className={styles.customDatePicker}
+                            />
+                            <DatePicker
+                                onChange={() => { }}
+                                picker="month"
+                                placeholder="퇴사년월"
+                                className={styles.customDatePicker}
+                            />
                         </div>
                         <textarea className={styles.textarea} placeholder="담당했던 업무에 대해 작성해주세요"></textarea>
                     </div>

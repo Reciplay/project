@@ -1,7 +1,7 @@
 import { set } from 'lodash';
 import { create } from 'zustand'
 
-interface Certificate {
+export interface Certificate {
   id?: number;
   licenseName: string;
   institution: string;
@@ -9,7 +9,7 @@ interface Certificate {
   grade: number;
 }
 
-interface Career {
+export interface Career {
   id?: number; // optional: 서버에서 부여하는 경우
   companyName: string;
   position: string;
@@ -18,13 +18,13 @@ interface Career {
   endDate: string;   // YYYY-MM-DD
 }
 
-interface Profile {
+export interface Profile {
   coverImage: string;
   phoneNumber: string;
   address: string;
 }
 
-interface InstructorState {
+export interface InstructorState {
   profile: Profile;
   introduction: string;
   certificates: Certificate[];
@@ -34,6 +34,9 @@ interface InstructorState {
   setIntroduction: (text: string) => void;
   setCertificates: (certs: Certificate[]) => void;
   setCareers: (careers: Career[]) => void;
+
+  addCertificate: (cert: Certificate) => void;
+  removeCertificate: (index: number) => void;
 }
 
 export const useInstructorStore = create<InstructorState>((set) => ({
@@ -53,4 +56,11 @@ export const useInstructorStore = create<InstructorState>((set) => ({
   setIntroduction: (text) => set({ introduction: text }),
   setCertificates: (certs) => set({ certificates: certs }),
   setCareers: (careers) => set({ careers }),
+
+  addCertificate: (cert) =>
+    set((state) => ({ certificates: [...state.certificates, cert] })),
+  removeCertificate: (index) =>
+    set((state) => ({
+      certificates: state.certificates.filter((_, i) => i !== index),
+    })),
 }));

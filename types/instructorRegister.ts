@@ -7,17 +7,18 @@ export interface InstructorProfile {
   address: string;
   phoneNumber: string;
   introduction: string;
-  licenses: License[];
+  licenses: requestLicense[];
   careers: Career[];
 }
 
-export interface License {
+export interface requestLicense {
   id: number;
   licenseName: string;
   institution: string;
   acquisitionDate: string; // YYYY-MM-DD
   grade: number;
 }
+
 
 export interface Career {
   id: number;
