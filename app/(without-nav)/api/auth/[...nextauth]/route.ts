@@ -34,13 +34,9 @@ const handler = NextAuth({
           );
 
           const accessToken = res.headers.authorization;
-<<<<<<< HEAD
-          const refreshToken = res.headers["set-cookie"][0];
-=======
           const cookieString = res.headers["set-cookie"][0];
-          console.log(cookieString)
-          const refreshToken = cookieString.split("=")[1].split(';')[0];
->>>>>>> feature/taewook
+          console.log(cookieString);
+          const refreshToken = cookieString.split("=")[1].split(";")[0];
           const role = res.data.role;
           const required = res.data.required;
           const expires = res.headers.expires;
