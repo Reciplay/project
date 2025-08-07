@@ -5,7 +5,7 @@ import com.e104.reciplay.course.lecture.dto.response.LectureSummary;
 
 import java.util.List;
 
-public interface LectureQueryRepository {
+public interface CustomLectureRepository {
     List<LectureSummary> findLectureSummariesByCourseId(Long courseId);
     LectureDetail findLectureDetailById(Long lectureId);
     List<LectureDetail> findLectureDetailsByCourseId(Long courseId);

@@ -5,9 +5,8 @@ import com.e104.reciplay.common.exception.LectureNotFoundException;
 import com.e104.reciplay.course.lecture.dto.response.LectureDetail;
 import com.e104.reciplay.course.lecture.dto.response.ChapterInfo;
 import com.e104.reciplay.course.lecture.dto.response.LectureSummary;
-import com.e104.reciplay.course.lecture.repository.ChapterQueryRepository;
-import com.e104.reciplay.course.lecture.repository.LectureQueryRepository;
 import com.e104.reciplay.entity.Lecture;
+import com.e104.reciplay.repository.ChapterRepository;
 import com.e104.reciplay.repository.CourseRepository;
 import com.e104.reciplay.repository.LectureRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,7 @@ import java.util.List;
 public class LectureQueryServiceImpl implements LectureQueryService{
     private final LectureRepository lectureRepository;
     private final CourseRepository courseRepository;
-    private final ChapterQueryRepository chapterQueryRepository;
+    private final ChapterRepository chapterRepository;
 
     @Override
     public List<LectureSummary> queryLectureSummaries(Long courseId) {
@@ -40,7 +39,7 @@ public class LectureQueryServiceImpl implements LectureQueryService{
             throw new LectureNotFoundException(lectureId);
         }
 
-        List<ChapterInfo> chapters = chapterQueryRepository.findChaptersWithTodosByLectureId(lectureId);
+        List<ChapterInfo> chapters = chapterRepository.findChaptersWithTodosByLectureId(lectureId);
         detail.setChapters(chapters);
 
         return detail;
@@ -55,7 +54,7 @@ public class LectureQueryServiceImpl implements LectureQueryService{
         }
 
         for (LectureDetail detail : details) {
-            List<ChapterInfo> chapters = chapterQueryRepository.findChaptersWithTodosByLectureId(detail.getLectureId());
+            List<ChapterInfo> chapters = chapterRepository.findChaptersWithTodosByLectureId(detail.getLectureId());
             detail.setChapters(chapters);
         }
 

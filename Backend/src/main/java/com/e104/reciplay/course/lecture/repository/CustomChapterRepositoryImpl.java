@@ -5,7 +5,6 @@ import com.e104.reciplay.course.lecture.dto.response.TodoInfo;
 import com.e104.reciplay.entity.QChapter;
 import com.e104.reciplay.entity.QTodo;
 import com.querydsl.core.group.GroupBy;
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -14,7 +13,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class ChapterQueryRepositoryImpl implements ChapterQueryRepository {
+public class CustomChapterRepositoryImpl implements CustomChapterRepository {
 
     private final JPAQueryFactory queryFactory;
 
