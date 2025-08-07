@@ -63,7 +63,7 @@ class S3ControllerTest {
                         .param("sequence", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.name").value("sample.jpg"))
-                .andExpect(jsonPath("$.data.presigedUrl").value("https://example.com/test"))
+                .andExpect(jsonPath("$.data.presignedUrl").value("https://example.com/test"))
                 .andExpect(jsonPath("$.message").value("Presigned Url 생성에 성공하였습니다."));
     }
 

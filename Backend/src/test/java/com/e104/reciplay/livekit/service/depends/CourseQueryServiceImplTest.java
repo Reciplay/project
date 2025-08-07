@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -47,11 +48,6 @@ public class CourseQueryServiceImplTest {
     @InjectMocks
     private CourseQueryServiceImpl courseQueryService;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
     void test_queryCourseDetailsByInstructorId_성공() {
         // given
@@ -77,7 +73,7 @@ public class CourseQueryServiceImplTest {
                 .registeredAt(LocalDateTime.now())
                 .build();
 
-        when(courseRepository.findAllByInstructorId(instructorId)).thenReturn(List.of(course));
+        when(courseRepository.findAllByInstructorId(instructorId.longValue())).thenReturn(List.of(course));
         when(canLearnQueryService.queryContentsByCourseId(courseId)).thenReturn(List.of("자바", "스프링"));
         when(reviewQueryService.countReviewsByCourseId(courseId)).thenReturn(3);
         when(reviewQueryService.avgStarsByCourseId(courseId)).thenReturn(4.3);
@@ -89,8 +85,7 @@ public class CourseQueryServiceImplTest {
         when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "thumbnail")).thenReturn(List.of(file1));
         when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "course_cover")).thenReturn(cover);
 
-        when(s3Service.getResponseFileInfo(FileCategory.IMAGES, RelatedType.THUMBNAIL, courseId, 1)).thenReturn(new ResponseFileInfo());
-        when(s3Service.getResponseFileInfo(FileCategory.IMAGES, RelatedType.COURSE_COVER, courseId, 99)).thenReturn(new ResponseFileInfo());
+        when(s3Service.getResponseFileInfo(Mockito.any())).thenReturn(new ResponseFileInfo());
 
         // when
         List<CourseDetail> courseDetails = courseQueryService.queryCourseDetailsByInstructorId(instructorId);
