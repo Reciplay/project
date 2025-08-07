@@ -21,4 +21,10 @@ public class CategoryQueryServiceImpl implements CategoryQueryService{
     public List<Category> queryAllCategories() {
         return categoryRepository.findAll();
     }
+
+    @Override
+    public String queryNameByCourseId(Long courseId) {
+        return categoryRepository.findNameByCourseId(courseId);
+    }
+
 }

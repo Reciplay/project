@@ -51,7 +51,7 @@ class S3ControllerTest {
     void testGetPresignedUrl() throws Exception {
         ResponseFileInfo fileInfo = new ResponseFileInfo();
         fileInfo.setName("sample.jpg");
-        fileInfo.setPresigedUrl("https://example.com/test");
+        fileInfo.setPresignedUrl("https://example.com/test");
 
         when(s3Service.getResponseFileInfo(FileCategory.IMAGES, RelatedType.USER_PROFILE, 100L, 1))
                 .thenReturn(fileInfo);
