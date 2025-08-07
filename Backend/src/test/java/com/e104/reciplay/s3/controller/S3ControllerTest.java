@@ -51,7 +51,7 @@ class S3ControllerTest {
     void testGetPresignedUrl() throws Exception {
         ResponseFileInfo fileInfo = new ResponseFileInfo();
         fileInfo.setName("sample.jpg");
-        fileInfo.setPresigedUrl("https://example.com/test");
+        fileInfo.setPresignedUrl("https://example.com/test");
 
         when(s3Service.getResponseFileInfo(FileCategory.IMAGES, RelatedType.USER_PROFILE, 100L, 1))
                 .thenReturn(fileInfo);
@@ -63,7 +63,7 @@ class S3ControllerTest {
                         .param("sequence", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.name").value("sample.jpg"))
-                .andExpect(jsonPath("$.data.presigedUrl").value("https://example.com/test"))
+                .andExpect(jsonPath("$.data.presignedUrl").value("https://example.com/test"))
                 .andExpect(jsonPath("$.message").value("Presigned Url 생성에 성공하였습니다."));
     }
 

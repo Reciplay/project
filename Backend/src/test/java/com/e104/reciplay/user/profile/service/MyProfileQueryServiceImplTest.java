@@ -94,7 +94,7 @@ class MyProfileQueryServiceImplTest {
         assertThat(profileInformation.getName()).isEqualTo("testName");
         assertThat(profileInformation.getLevels()).hasSize(1);
         assertThat(profileInformation.getLevels().get(0).getCategory()).isEqualTo("한식");
-        assertThat(profileInformation.getProfileImage().getPresigedUrl()).isEqualTo("testUrl");
+        assertThat(profileInformation.getProfileImage().getPresignedUrl()).isEqualTo("testUrl");
 
         verify(userQueryService).queryUserByEmail(email);
         verify(levelQueryService).queryUserLevelsById(user.getId());
