@@ -11,6 +11,14 @@ import styles from "./page.module.css";
 import { useVideoChat } from "../../hooks/useVideoChat";
 import { getToken } from "next-auth/jwt";
 import { useParams } from "next/navigation";
+import { useTodoStore } from "@/stores/todoStore";
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
+
+
+interface Props {
+    lectureId: string;
+}
 
 // 타입
 type Node = {
@@ -23,6 +31,7 @@ type Node = {
 function VideoChatTestPage() {
     const {
         room,
+        roomId,
         localTrack,
         remoteTracks,
         participantName,
@@ -58,6 +67,7 @@ function VideoChatTestPage() {
 
         enterRoom();
     }, []);
+
 
     // 제스처 처리
     const handleNodesDetected = useCallback((detectedNodes: any) => {

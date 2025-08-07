@@ -1,43 +1,19 @@
-"use client";
 
-import { Usable, use } from "react";
-import Header from "./__component/header/header";
-import styles from "./page.module.scss";
-import TodoListCard from "./__component/todoList/todoListCard"
+import { getSession } from "next-auth/react";
+import InstructorPage from "./__component/instructor/instructorPage";
+import StudentPage from "./__component/student/studentPage";
+import restClient from "@/lib/axios/restClient";
+import { ApiResponse } from "@/types/apiResponse";
 
-import dynamic from 'next/dynamic';
-const VideoChatTestPage = dynamic(() => import('@/app/videoChatTest/page'), {
-  ssr: false,
-});
 
-export default function Page({
-  params,
-}: {
-  params: Usable<{ lectureId: string }>;
-}) {
-  const { lectureId } = use(params);
-  const courseId = "0";
-
+export default async function Page() {
+  const session = await getSession();
+  if (session?.role === null) {
+    return <div></div>
+  }
   return (
-    <div className={styles.container}>
-      <Header
-        lectureName="한식강의"
-        courseName={`강의 ID: ${lectureId}`}
-        startTime={new Date("2025-08-02T14:00:00+09:00")}
-        onLeave={() => {
-          console.log("강의 떠나기");
-        }}
-      />
-
-      <div className={styles.main}>
-        <div className={styles.videoSection}>
-          {/* 여기 */}
-          <VideoChatTestPage></VideoChatTestPage>
-        </div>
-        <div className={styles.checklistSection}>
-          <TodoListCard />
-        </div>
-      </div>
-    </div>
-  );
+    <>
+      {session?.role === 'ROLE_STUDENT' ? <StudentPage /> : <InstructorPage />}
+    </>
+  )
 }

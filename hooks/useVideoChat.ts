@@ -33,6 +33,7 @@ export const useVideoChat = () => {
     'Participant' + Math.floor(Math.random() * 100)
   );
   const [roomName, setRoomName] = useState('Test Room');
+  const [roomId, setRoomId] = useState<string | null>(null);
 
   const joinRoom = async (courseId: string, lectureId: string) => {
     const newRoom = new Room();
@@ -68,23 +69,23 @@ export const useVideoChat = () => {
 
     try {
       await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      console.log(0)
+      // console.log(0)
       const token = await getToken(courseId, lectureId);
-      console.log(1)
+      // console.log(1)
       await newRoom.connect(LIVEKIT_URL, token);
-      console.log(2)
+      // console.log(2)
       await newRoom.localParticipant.enableCameraAndMicrophone();
-      console.log(3)
+      // console.log(3)
       setLocalTrack(
         newRoom.localParticipant.videoTrackPublications.values().next().value
           .videoTrack
       );
-      console.log(4)
+      // console.log(4)
     } catch (error) {
-      console.log(
-        'There was an error connecting to the room:',
-        (error as Error).message
-      );
+      // console.log(
+      //   'There was an error connecting to the room:',
+      //   (error as Error).message
+      // );
       await leaveRoom();
     }
   };
@@ -120,26 +121,28 @@ export const useVideoChat = () => {
 
     }
 
-    console.log(100)
+    // console.log(100)
     const res = await restClient.post<ApiResponse<RoomInfo>>(`/livekit/${type}/token`, { lectureId: lectureId, courseId: courseId }, { requireAuth: true });
 
 
 
-    // console.log(`res.data : ${res.json().data}`)
+    // console.log(`res.data : ${JSON.stringify(data)}`)
     if (res.data.status !== 'success') {
-      console.log(`2222222222222222222222`)
+      // console.log(`2222222222222222222222`)
       const error = res.data.message;
       throw new Error(`Failed to get token: ${error}`);
     }
-    console.log(`11111111111111111111111`)
+    // console.log(`11111111111111111111111`)
 
     const data = res.data.data;
-    console.log(`token:${res.data.data}`)
+    setRoomId(data.roomId)
+    // console.log(`token:${JSON.stringify(data)}`)
     return data.token;
   };
 
   return {
     room,
+    roomId,
     localTrack,
     remoteTracks,
     participantName,

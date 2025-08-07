@@ -1,15 +1,13 @@
-export interface ChecklistItem {
-  label: string;
-  duration: string;
-  note?: string;
-  checked?: boolean;
+export interface TodoItem {
+  title: string;
+  type: 'NORMAL' | 'TIMER';
+  seconds: number | null;
+  sequence: number;
 }
 
 export interface CookingChapter {
-  step: number;
-  title: string;
-  status: 'completed' | 'active' | 'pending';
-  statusText: string;
-  time: string;
-  checklist: ChecklistItem[];
+  chapterId: number;
+  chapterNumber: number;
+  numOfTodos: number;
+  todos: TodoItem[];
 }
