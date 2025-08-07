@@ -97,8 +97,6 @@ public class AuthController {
     ) {
         if(!authService.isValidEmail(email))
             throw new IllegalEmailFormatException("잘못된 이메일 형식입니다.");
-        if(userQueryService.isDuplicatedEmail(email))
-            throw new IllegalArgumentException("이미 등록된 이메일 입니다.");
 
         authService.sendOtpEmail(email);
 
@@ -135,8 +133,6 @@ public class AuthController {
     ) {
         if(!authService.isValidEmail(email))
             throw new IllegalEmailFormatException("잘못된 이메일 형식입니다.");
-        if(userQueryService.isDuplicatedEmail(email))
-            throw new IllegalArgumentException("이미 등록된 이메일 입니다.");
 
         authService.verifyEmailOtp(email, otp);
         String signupToken = authService.issuePasswordToken(email);

@@ -87,7 +87,7 @@ class AuthServiceImplTest {
         tokenRepository.save(new Token(null, refreshToken, false, "REFRESH", null, testUser.getEmail()));
 
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setCookies(new Cookie("refresh-token", refreshToken));
+        request.addHeader("Refresh-Token", refreshToken);
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         // when
@@ -109,13 +109,12 @@ class AuthServiceImplTest {
     void refresh_fail_no_token() {
         // given
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setCookies(new Cookie("some-cookie", "some-value"));
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         // when & then
         assertThatThrownBy(() -> authService.refresh(request, response))
                 .isInstanceOf(JWTTokenExpiredException.class)
-                .hasMessage("쿠키에 토큰이 없거나 만료 혹은 거부되었습니다.");
+                .hasMessage("헤더에 토큰이 없거나 만료 혹은 거부되었습니다.");
     }
 
     @Test

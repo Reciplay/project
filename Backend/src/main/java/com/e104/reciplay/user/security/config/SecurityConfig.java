@@ -112,7 +112,8 @@ public class SecurityConfig {
                         "/swagger-ui/**", // swagger-ui 관련 모든 경로 허용
                         "/api-docs/json/**",  // openapi v3 문서 경로 허용
                         "/swagger-resources/**",
-                        URL_PREFIX + "/livekit/**").permitAll()
+                        URL_PREFIX + "/livekit/**",
+                        "/api/test/course/courses/lectures").permitAll()
                 .requestMatchers(HttpMethod.GET,
                         URL_PREFIX + "/user/auth/email",
                         URL_PREFIX + "/user/auth/mail-otp",

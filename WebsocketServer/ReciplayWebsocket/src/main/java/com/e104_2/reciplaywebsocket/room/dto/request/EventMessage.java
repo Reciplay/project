@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 public class EventMessage {
     private String type;
-    private String sender;
+    private String issuer;
     private String receiver;
     private String nickname;
     private Long lectureId;

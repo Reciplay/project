@@ -44,7 +44,7 @@ class S3ControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("파일 업로드에 성공하였습니다."));
 
-        verify(s3Service).uploadFile(any(), eq(123L));
+        verify(s3Service).uploadFile(any(), eq(FileCategory.IMAGES), eq(RelatedType.USER_PROFILE), eq(123L), eq(1));
     }
 
     @Test

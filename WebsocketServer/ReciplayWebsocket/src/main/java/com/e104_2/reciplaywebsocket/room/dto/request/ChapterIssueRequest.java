@@ -13,6 +13,7 @@ public class ChapterIssueRequest {
     private String type;
     private String roomId;
     private String issuer;
+    private String chapterName;
     private Integer chapterSequence;
     private Long lectureId;
 }

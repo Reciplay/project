@@ -51,7 +51,7 @@ public class LiveController {
 
     /*
             private String type;
-            private String sender;
+            private String issuer;
             private String receiver;
             private String nickname;
             private Long lectureId;
@@ -72,9 +72,9 @@ public class LiveController {
         System.out.println(message);
         if(!message.getType().equals("join")) return;
 
-        LiveControlRequest controlRequest = new LiveControlRequest(message.getRoomId(), message.getSender(), message.getLectureId());
+        LiveControlRequest controlRequest = new LiveControlRequest(message.getRoomId(), message.getIssuer(), message.getLectureId());
         // 강제 퇴장이나 블랙리스트, 강의 참여 여부 검사하여 쫓아내기.
-        if(!liveControlService.checkParticipationPrivilege(message.getSender(), controlRequest)) {
+        if(!liveControlService.checkParticipationPrivilege(message.getIssuer(), controlRequest)) {
             return;
         }
         // 아니라면, 참여 메시지 브로드캐스팅.
@@ -89,14 +89,14 @@ public class LiveController {
 
     @MessageMapping("/quit")
     public void quitEvent(@Payload EventMessage message) {
-        LiveControlRequest controlRequest = new LiveControlRequest(message.getRoomId(), message.getSender(), message.getLectureId());
+        LiveControlRequest controlRequest = new LiveControlRequest(message.getRoomId(), message.getIssuer(), message.getLectureId());
         if(!message.getType().equals("quit")) return;
         // 강제 퇴장이나 블랙리스트, 강의 참여 여부 검사하여 쫓아내기.
-        if(!liveControlService.checkParticipationPrivilege(message.getSender(), controlRequest)) {
+        if(!liveControlService.checkParticipationPrivilege(message.getIssuer(), controlRequest)) {
             return;
         } else {
             // 존재하는 라이브 참여 이력에서 제거한다.
-            liveControlService.quitFromLiveRoom(message.getSender(), message.getLectureId());
+            liveControlService.quitFromLiveRoom(message.getIssuer(), message.getLectureId());
         }
         System.out.println(message);
         messagingTemplate.convertAndSend(URL_PREFIX + "/topic/room/" + message.getRoomId(), message);
@@ -125,7 +125,7 @@ public class LiveController {
     public void issueNextChapter(@Payload ChapterIssueRequest message,
                                  Principal principal
     ) {
-        if(!message.getType().equals("todo-check")) return;
+        if(!message.getType().equals("chapter-issue")) return;
         Integer sequence = message.getChapterSequence();
         Long lectureId = message.getLectureId();
 
@@ -136,8 +136,8 @@ public class LiveController {
             messagingTemplate.convertAndSendToUser(message.getIssuer(), URL_PREFIX+"/queue/"+message.getRoomId(), Map.of("status", "refused", "message", "라이브룸 강사 권한이 없습니다."));
             return;
         }
-        ChapterTodoResponse response = todoQueryService.queryTodoOfChapter(lectureId, sequence);
 
+        ChapterTodoResponse response = todoQueryService.queryTodoOfChapter(lectureId, sequence);
         messagingTemplate.convertAndSend(URL_PREFIX+"/topic/room/"+message.getRoomId(), response);
     }
 

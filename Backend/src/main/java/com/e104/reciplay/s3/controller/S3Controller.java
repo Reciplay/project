@@ -25,7 +25,7 @@ public class S3Controller {
             @RequestParam("file") MultipartFile file,
             @RequestParam("relatedId") Long relatedId
     ) throws IOException {
-        s3Service.uploadFile(file, relatedId);
+        s3Service.uploadFile(file, FileCategory.IMAGES, RelatedType.USER_PROFILE, relatedId, 1);
         return CommonResponseBuilder.success("파일 업로드에 성공하였습니다.", null);
     }
 

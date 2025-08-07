@@ -1,4 +1,4 @@
-package com.e104.reciplay.s3.dto.response;
+package com.e104.reciplay.course.courses.dto.request.item;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,11 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class ResponseFileInfo {
-    private String presigedUrl;
-    private String name;
+public class TodoItem {
     private Integer sequence;
+    private String title;
+    private String type;
+    private Integer seconds;
 }

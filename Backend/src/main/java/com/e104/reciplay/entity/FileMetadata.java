@@ -4,8 +4,10 @@ import com.e104.reciplay.s3.enums.FileCategory;
 import com.e104.reciplay.s3.enums.RelatedType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -42,7 +44,14 @@ public class FileMetadata {
 
     private String name;
 
-
+    public FileMetadata(MultipartFile file, FileCategory category, RelatedType relatedType, Long relatedId, Integer sequence) {
+        this.name = file.getOriginalFilename();
+        this.category = category;
+        this.relatedType = relatedType;
+        this.relatedId = relatedId;
+        this.sequence = sequence;
+        this.resourceType = FilenameUtils.getExtension(file.getOriginalFilename());
+    }
 
 }
 

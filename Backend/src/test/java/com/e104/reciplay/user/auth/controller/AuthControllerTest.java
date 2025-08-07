@@ -154,20 +154,6 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.message").value("이메일로 인증번호를 발송했습니다."));
     }
 
-    @Test
-    @DisplayName("이메일 OTP 발송 실패 - 이미 등록된 이메일")
-    void sendEmailOTP_Fail_DuplicatedEmail() throws Exception {
-        // given
-        String email = "test@test.com";
-        given(authService.isValidEmail(email)).willReturn(true);
-        given(userQueryService.isDuplicatedEmail(email)).willReturn(true);
-
-        // when & then
-        mockMvc.perform(get("/api/v1/user/auth/mail-otp")
-                        .param("email", email))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> result.getResolvedException().getClass().isAssignableFrom(IllegalArgumentException.class));
-    }
 
     @Test
     @DisplayName("회원가입용 이메일 인증 성공")
