@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ResponseFileInfo {
-    private String presigedUrl;
+    private String presignedUrl;
     private String name;
     private Integer sequence;
 }

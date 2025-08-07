@@ -2,6 +2,7 @@ package com.e104.reciplay.course.courses.dto.response;
 
 import com.e104.reciplay.course.lecture.dto.response.LectureSummary;
 import com.e104.reciplay.entity.Course;
+import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,9 +18,8 @@ import java.util.List;
 @Builder
 public class CourseDetail {
 
-    //private Map<Integer,String> courseImageMap;
-    private List<CourseImageInfo> courseImageInfos;
-    private String courseCoverUrl;
+    private List<ResponseFileInfo> thumbnailFileInfos;
+    private ResponseFileInfo courseCoverFileInfo;
 
     private String title;
     private LocalDate courseStartDate;
@@ -44,7 +44,19 @@ public class CourseDetail {
     private List<LectureSummary> lectureSummaryList;
 
     public CourseDetail(Course course) {
-        this.title = course.getTitle();
+        this.title = course.getTitle();//
+        this.courseStartDate = course.getCourseStartDate();//
+        this.courseEndDate = course.getCourseEndDate();//
+        this.courseId = course.getId();//
+        this.enrollmentStartDate = course.getEnrollmentStartDate();
+        this.enrollmentEndDate = course.getEnrollmentEndDate();
+        this.summary = course.getSummary();
+        this.maxEnrollments = course.getMaxEnrollments();
+        this.description = course.getDescription();
+        this.level = course.getLevel();
+        this.announcement = course.getAnnouncement();
+        this.isLive = course.getIsLive();
+        //this.categoryId = course.getCategoryId();
 
     }
 
