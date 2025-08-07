@@ -6,6 +6,7 @@ import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import com.e104.reciplay.s3.enums.FileCategory;
 import com.e104.reciplay.s3.enums.RelatedType;
 import com.e104.reciplay.s3.repository.FileMetadataRepository;
+import com.e104.reciplay.s3.util.CustomFileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -35,6 +36,7 @@ public class S3ServiceImpl implements S3Service {
 
     private final S3Client s3Client;
     private final FileMetadataRepository repository;
+    private final FileMetadataManagementService fileMetadataManagementService;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -121,6 +123,15 @@ public class S3ServiceImpl implements S3Service {
 
         s3Client.putObject(request, RequestBody.fromBytes(file.getBytes()));
 
+    }
+
+    @Override
+    public void uploadFile(MultipartFile file, FileCategory category, RelatedType relatedType, Long relatedId, Integer sequence) throws IOException {
+        CustomFileUtil.validateFile(file, category, relatedType); // 파일 유효성 검사.
+        FileMetadata fileMetadata = new FileMetadata(file, category, relatedType, relatedId, sequence); // 파일 개체 생성
+        fileMetadataManagementService.writeFile(fileMetadata);
+        String path = formPath(fileMetadata);
+        writeObjectOnStorage(path, file);
     }
 
     @Override
@@ -269,4 +280,24 @@ public class S3ServiceImpl implements S3Service {
         repository.deleteById(metadata.getId());
     }
 
+    // 2. S3 경로 구성
+    private String formPath(FileMetadata metadata) {
+        return String.format("%s/%s/%d.%s",
+                metadata.getCategory().name().toLowerCase(),
+                metadata.getRelatedType().name().toLowerCase(),
+                metadata.getId(),
+                metadata.getResourceType()
+        );
+    }
+
+    // S3에 파일을 쓰는 작업.
+    private void writeObjectOnStorage(String path, MultipartFile file) throws IOException {
+        PutObjectRequest request = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(path)
+                .contentType(file.getContentType())
+                .build();
+
+        s3Client.putObject(request, RequestBody.fromBytes(file.getBytes()));
+    }
 }

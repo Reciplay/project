@@ -14,6 +14,7 @@ public interface S3Service {
      * 파일을 업로드하고 S3 경로를 반환한다.
      */
     void uploadFile(MultipartFile file, Long relatedId) throws IOException;
+    void uploadFile(MultipartFile file, FileCategory category, RelatedType relatedType, Long relatedId, Integer sequence) throws IOException;
 
     /**
      * Presigned URL을 반환한다.

@@ -13,8 +13,10 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class ChapterTodoResponse {
+    private String type;
     private Long chapterId;
-    private Integer chapterNumber;
+    private String chapterName;
+    private Integer chapterSequence;
     private Integer numOfTodos;
     private List<TodoSummary> todos;
 }

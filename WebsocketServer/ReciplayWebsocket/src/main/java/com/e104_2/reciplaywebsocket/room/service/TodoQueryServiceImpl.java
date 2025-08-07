@@ -23,10 +23,13 @@ public class TodoQueryServiceImpl implements TodoQueryService{
         List<Todo> todos = todoRepository.findByChapterId(chapter.getId());
 
         ChapterTodoResponse response = new ChapterTodoResponse();
+        response.setChapterName(chapter.getTitle());
         response.setChapterId(chapter.getId());
         response.setNumOfTodos(todos.size());
-        response.setChapterNumber(chapter.getSequence());
+        response.setChapterSequence(chapter.getSequence());
         response.setTodos(todos.stream().map(TodoSummary::new).toList());
+
+        response.setType("chapter-issue");
         return response;
     }
 }

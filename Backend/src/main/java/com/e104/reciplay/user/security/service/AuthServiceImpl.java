@@ -168,7 +168,7 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public void verifySignupHash(String email, String hash) {
         String original = authRedisService.getAuthToken("signup", email);
-        if(!original.equals(hash)) throw new InvalidOtpHashException("패스워드 변경용 해시 값이 유효하지 않습니다.");
+        if(!original.equals(hash)) throw new InvalidOtpHashException("회원가입용 해시 값이 유효하지 않습니다.");
     }
 
     @Override

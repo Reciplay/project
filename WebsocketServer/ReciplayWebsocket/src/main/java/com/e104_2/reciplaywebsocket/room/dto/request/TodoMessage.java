@@ -14,7 +14,7 @@ public class TodoMessage {
     private String type;
     private String issuer;
     private Integer chapter;
-    private Integer todoNumber;
+    private Integer todoSequence;
     private Long lectureId;
     private String roomId;
 }

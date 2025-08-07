@@ -9,13 +9,17 @@ import com.e104.reciplay.livekit.exception.CanNotOpenLiveRoomException;
 import com.e104.reciplay.livekit.exception.CanNotParticipateInLiveRoomException;
 import com.e104.reciplay.livekit.exception.EmptyPropertyException;
 import com.e104.reciplay.livekit.exception.RoomIdExpiredException;
+import com.e104.reciplay.s3.exception.IllegalFileTypeException;
+import com.e104.reciplay.s3.exception.TooBigFileSizeException;
 import com.e104.reciplay.user.auth.exception.EmailAuthFailureException;
 import com.e104.reciplay.user.auth.exception.IllegalEmailFormatException;
 import com.e104.reciplay.user.security.exception.EmailNotFoundException;
 import io.swagger.v3.oas.annotations.Hidden;
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import retrofit2.Response;
 
 @Hidden
 @RestControllerAdvice
@@ -67,6 +71,16 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(EmailNotFoundException.class)
     public ResponseEntity<?> emailNotFoundException(EmailNotFoundException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(IllegalFileTypeException.class)
+    public ResponseEntity<?> illeagalFileTypeExceptionHandler(IllegalFileTypeException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(TooBigFileSizeException.class)
+    public ResponseEntity<?> tooBigFileSizeExceptionExceptionHandler(TooBigFileSizeException e) {
         return CommonResponseBuilder.badRequest(e.getMessage());
     }
 }
