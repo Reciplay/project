@@ -15,6 +15,7 @@ public interface S3Service {
      */
     void uploadFile(MultipartFile file, FileCategory category, RelatedType relatedType, Long relatedId, Integer sequence) throws IOException;
 
+
     String generatePresignedUrl(String path);
     /**
      * Presigned URL을 반환한다.

@@ -1,6 +1,7 @@
 package com.e104.reciplay.user.profile.dto.response;
 
 import com.e104.reciplay.common.types.FoodCategory;
+import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import com.e104.reciplay.user.profile.dto.response.item.LevelSummary;
 import com.e104.reciplay.user.security.domain.User;
 import lombok.AllArgsConstructor;
@@ -23,7 +24,7 @@ public class ProfileInformation {
     private LocalDateTime createdAt;
     private String email;
     private Integer gender;
-    private String imgUrl;
+    private ResponseFileInfo profileImage;
     private String job;
     private String name;
     private String nickname;
