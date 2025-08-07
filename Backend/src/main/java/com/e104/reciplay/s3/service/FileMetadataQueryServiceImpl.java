@@ -15,7 +15,7 @@ public class FileMetadataQueryServiceImpl implements FileMetadataQueryService{
 
     @Override
     public FileMetadata queryUserProfilePhoto(Long userId) {
-        return fileMetadataRepository.findMetadata(FileCategory.IMAGES, RelatedType.USER_PROFILE, userId, 0)
+        return fileMetadataRepository.findMetadata(FileCategory.IMAGES, RelatedType.USER_PROFILE, userId, 1)
                 .orElseThrow(()-> new FileMetadataNotFoundException("프로필 이미지가 존재하지 않습니다."));
     }
 

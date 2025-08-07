@@ -1,7 +1,11 @@
 package com.e104.reciplay.user.profile.service;
 
 import com.e104.reciplay.common.types.FoodCategory;
+import com.e104.reciplay.entity.FileMetadata;
 import com.e104.reciplay.entity.Level;
+import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
+import com.e104.reciplay.s3.service.FileMetadataQueryService;
+import com.e104.reciplay.s3.service.S3Service;
 import com.e104.reciplay.user.profile.dto.response.ProfileInformation;
 import com.e104.reciplay.user.profile.dto.response.item.LevelSummary;
 import com.e104.reciplay.user.security.domain.User;
@@ -20,6 +24,8 @@ public class MyProfileQueryServiceImpl implements MyProfileQueryService{
     private final UserQueryService userQueryService;
     private final LevelQueryService levelQueryService;
     private final CategoryQueryService categoryQueryService;
+    private final FileMetadataQueryService fileMetadataQueryService;
+    private final S3Service s3Service;
 
     @Override
     public ProfileInformation queryProfileInformation(String email) {
@@ -38,6 +44,10 @@ public class MyProfileQueryServiceImpl implements MyProfileQueryService{
 
         profile.setLevels(levelSummaries);
 
+        // 이미지 url을 기록.
+        FileMetadata metadata = fileMetadataQueryService.queryUserProfilePhoto(user.getId());
+        ResponseFileInfo profileImage = s3Service.getResponseFileInfo(metadata);
+        profile.setProfileImage(profileImage);
         return profile;
     }
 }
