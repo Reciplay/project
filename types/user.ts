@@ -4,11 +4,17 @@ export interface User {
   createdAt: string;
   email: string;
   gender: number;
-  imgUrl: string;
+  profileImage: ProfileImage;
   job: string;
   name: string;
   nickname: string;
   levels: Record<string, number>;
+}
+
+export interface ProfileImage {
+  name: string;
+  presignedUrl: string;
+  sequence: number;
 }
 
 export interface UserSummary {

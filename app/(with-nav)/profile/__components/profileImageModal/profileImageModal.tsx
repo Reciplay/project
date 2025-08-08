@@ -1,50 +1,42 @@
 "use client";
 
+import CustomModal from "@/components/modal/customModal";
+import { User } from "@/types/user";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { RefObject } from "react";
 import styles from "./profileImageModal.module.scss";
 
-interface Props {
-  isOpen: boolean;
-  onClose: () => void;
-  profileUrl: string;
-  onFileChange: (file: File) => void;
+interface ProfileImageModalProps {
+  isModalOpen: boolean;
+  setIsModalOpen: (val: boolean) => void;
+  previewUrl: string | null;
+  fileInputRef: RefObject<HTMLInputElement>;
+  handleFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  uploadProfileImage: () => void;
+  selectedFile: File | null;
+  userData: User;
 }
 
 export default function ProfileImageModal({
-  isOpen,
-  onClose,
-  profileUrl,
-  onFileChange,
-}: Props) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-    }
-  };
-
-  const handleUploadClick = () => {
-    if (selectedFile) {
-      onFileChange(selectedFile);
-    }
-  };
-
-  if (!isOpen) return null;
-
+  isModalOpen,
+  setIsModalOpen,
+  previewUrl,
+  fileInputRef,
+  handleFileSelect,
+  uploadProfileImage,
+  selectedFile,
+  userData,
+}: ProfileImageModalProps) {
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <button className={styles.closeButton} onClick={onClose}>
-          ×
-        </button>
-
+    <CustomModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <div className={styles.modalContent}>
         <div className={styles.imageWrapper}>
           <Image
-            src={profileUrl}
+            src={
+              previewUrl ||
+              userData?.profileImage?.presignedUrl ||
+              "/images/default_profile.jpg"
+            }
             alt="profile preview"
             fill
             className={styles.profileImage}
@@ -69,12 +61,12 @@ export default function ProfileImageModal({
 
         <button
           className={styles.confirmButton}
-          onClick={handleUploadClick}
+          onClick={uploadProfileImage}
           disabled={!selectedFile}
         >
           프로필 이미지 변경
         </button>
       </div>
-    </div>
+    </CustomModal>
   );
 }
