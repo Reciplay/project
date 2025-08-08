@@ -92,15 +92,15 @@ public class CourseApiController {
     @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")
     @ApiResponse(responseCode = "403", description = "해당 강사가 아닌 사용자 접근")
     @Operation(summary = "강좌 정보 수정 API", description = "강좌 정보 수정")
-    public ResponseEntity<ResponseRoot<Object>> updateCourse(
+    public ResponseEntity<ResponseRoot<CourseIdResponse>> updateCourse(
             @RequestPart RequestCourseInfo requestCourseInfo,
             @RequestPart List<MultipartFile> thumbnailImages,
             @RequestPart MultipartFile courseCoverImage
 
     ){
-        courseManagementService.updateCourseByCourseId(requestCourseInfo, thumbnailImages, courseCoverImage);
+        Long courseId = courseManagementService.updateCourseByCourseId(requestCourseInfo, thumbnailImages, courseCoverImage);
 
-        return CommonResponseBuilder.success("강좌 정보 수정에 성공하였습니다.", null);
+        return CommonResponseBuilder.success("강좌 정보 수정에 성공하였습니다.", new CourseIdResponse(courseId));
     }
 
     @PostMapping("")
@@ -108,7 +108,7 @@ public class CourseApiController {
     @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")
     @ApiResponse(responseCode = "403", description = "해당 강사가 아닌 사용자 접근")
     @Operation(summary = "강좌 등록 API", description = "강좌 등록 수정")
-    public ResponseEntity<ResponseRoot<Object>> createCourse(
+    public ResponseEntity<ResponseRoot<CourseIdResponse>> createCourse(
             @RequestPart RequestCourseInfo requestCourseInfo,
             @RequestPart List<MultipartFile> thumbnailImages,
             @RequestPart MultipartFile courseCoverImage
@@ -116,10 +116,10 @@ public class CourseApiController {
         String email = AuthenticationUtil.getSessionUsername();
         Long instructorId = instructorQueryService.queryInstructorIdByEmail(email);
 
-        courseManagementService.createCourseByInstructorId(instructorId,
+        Long courseId = courseManagementService.createCourseByInstructorId(instructorId,
                 requestCourseInfo, thumbnailImages, courseCoverImage);
 
-        return CommonResponseBuilder.success("강좌 등록에 성공하였습니다.", null);
+        return CommonResponseBuilder.success("강좌 등록에 성공하였습니다.", new CourseIdResponse(courseId));
     }
-
+    record CourseIdResponse(Long courseId) {}
 }

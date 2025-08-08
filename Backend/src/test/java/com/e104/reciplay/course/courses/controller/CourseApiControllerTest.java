@@ -55,7 +55,7 @@ class CourseApiControllerTest {
 
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
-                .setCustomArgumentResolvers(pageableResolver) // ★ 추가
+                .setCustomArgumentResolvers(pageableResolver) // Pageable 처리
                 .build();
     }
 
@@ -64,13 +64,13 @@ class CourseApiControllerTest {
     void getCourseCardsPage_ok() throws Exception {
         mockMvc.perform(
                         get("/api/v1/course/courses/cards")
-                                .param("requestCategory", "special") // 필요 시 조건 파라미터
+                                .param("requestCategory", "special")
                                 .param("page", "0")
                                 .param("size", "10")
                 )
                 .andExpect(status().isOk());
 
-        // 현재 컨트롤러는 내부에서 서비스 호출 없음 → 호출되지 않았음을 확인(안전망)
+        // 현재 컨트롤러는 서비스 호출 없음
         verifyNoInteractions(courseCommandService, instructorQueryService, courseQueryService, courseManagementService);
     }
 
@@ -80,7 +80,6 @@ class CourseApiControllerTest {
         String email = "test@example.com";
         Long instructorId = 77L;
 
-        // static 메서드 mocking
         try (MockedStatic<AuthenticationUtil> mocked = mockStatic(AuthenticationUtil.class)) {
             mocked.when(AuthenticationUtil::getSessionUsername).thenReturn(email);
             when(instructorQueryService.queryInstructorIdByEmail(email)).thenReturn(instructorId);
@@ -105,7 +104,7 @@ class CourseApiControllerTest {
     }
 
     @Test
-    @DisplayName("POST '' - 강좌 등록 multipart 요청 성공")
+    @DisplayName("POST '' - 강좌 등록 multipart 요청 성공 (CourseIdResponse 반환)")
     void createCourse_ok() throws Exception {
         String email = "ins@example.com";
         Long instructorId = 9L;
@@ -144,6 +143,9 @@ class CourseApiControllerTest {
         try (MockedStatic<AuthenticationUtil> mocked = mockStatic(AuthenticationUtil.class)) {
             mocked.when(AuthenticationUtil::getSessionUsername).thenReturn(email);
             when(instructorQueryService.queryInstructorIdByEmail(email)).thenReturn(instructorId);
+            // ★ 서비스가 Long 반환
+            when(courseManagementService.createCourseByInstructorId(anyLong(), any(RequestCourseInfo.class), anyList(), any()))
+                    .thenReturn(100L);
 
             mockMvc.perform(
                             multipart("/api/v1/course/courses")
@@ -156,13 +158,10 @@ class CourseApiControllerTest {
                     )
                     .andExpect(status().isOk());
 
-            // createCourseByInstructorId 호출 여부 및 파라미터 검증 (DTO는 캡처로 일부 필드 확인)
+            // DTO 매핑 검증
             ArgumentCaptor<RequestCourseInfo> infoCaptor = ArgumentCaptor.forClass(RequestCourseInfo.class);
             verify(courseManagementService).createCourseByInstructorId(eq(instructorId), infoCaptor.capture(), anyList(), any());
             RequestCourseInfo parsed = infoCaptor.getValue();
-            // 최소한 필드 몇개 점검
-            // (LocalDateTime 파싱은 스프링 컨버터가 하므로, 값이 들어왔는지만 확인)
-            // 필요하면 assertEquals로 더 세밀하게 체크 가능
             org.junit.jupiter.api.Assertions.assertEquals("테스트 강좌", parsed.getTitle());
             org.junit.jupiter.api.Assertions.assertEquals(10L, parsed.getCategoryId());
             org.junit.jupiter.api.Assertions.assertEquals(2, parsed.getCanLearns().size());
@@ -170,7 +169,7 @@ class CourseApiControllerTest {
     }
 
     @Test
-    @DisplayName("PUT '' - 강좌 수정 multipart 요청 성공")
+    @DisplayName("PUT '' - 강좌 수정 multipart 요청 성공 (CourseIdResponse 반환)")
     void updateCourse_ok() throws Exception {
         // JSON 파트 (RequestCourseInfo) — courseId 포함
         String json = """
@@ -210,6 +209,10 @@ class CourseApiControllerTest {
                         .characterEncoding("UTF-8")
                         .with(req -> { req.setMethod("PUT"); return req; });
 
+        // ★ 서비스가 Long 반환
+        when(courseManagementService.updateCourseByCourseId(any(RequestCourseInfo.class), anyList(), any()))
+                .thenReturn(123L);
+
         mockMvc.perform(putMultipart)
                 .andExpect(status().isOk());
 
@@ -221,6 +224,3 @@ class CourseApiControllerTest {
         org.junit.jupiter.api.Assertions.assertEquals(3, parsed.getCanLearns().size());
     }
 }
-
-
-

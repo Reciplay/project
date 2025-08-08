@@ -123,7 +123,8 @@ public class LiveController {
 
     @MessageMapping("/chapter-issue")
     public void issueNextChapter(@Payload ChapterIssueRequest message,
-                                 Principal principal
+                                 Principal principal,
+                                 @AuthenticationPrincipal CustomUserDetails userDetail
     ) {
         if(!message.getType().equals("chapter-issue")) return;
         Integer sequence = message.getChapterSequence();
