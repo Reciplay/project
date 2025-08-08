@@ -23,4 +23,9 @@ public class SubFileMetaDataQueryServiceImpl implements SubFileMetadataQueryServ
     public FileMetadata queryMetadataByCondition(Long relatedId, String relatedType) {
         return fileMetadataRepository.findByRelatedIdAndRelatedType(relatedId, relatedType);
     }
+
+    @Override
+    public void deleteMetadataByEntitiy(FileMetadata fileMetadata) {
+         fileMetadataRepository.delete(fileMetadata);
+    }
 }

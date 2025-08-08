@@ -9,5 +9,7 @@ public interface SubFileMetadataQueryService {
 
     FileMetadata queryMetadataByCondition(Long relatedId, String relatedType);
 
+    void deleteMetadataByEntitiy(FileMetadata fileMetadata);
+
 
 }
