@@ -1,23 +1,18 @@
 "use client";
 
 import styles from "./instructorPage.module.scss";
-import dynamic from 'next/dynamic';
 import Header from "../common/header/header";
 import useLiveSocket from "@/hooks/live/useLiveSocket";
 import { useParams } from "next/navigation";
 import TodoListCard from "../common/todoList/todoListCard";
 import VideoView from "./__component/videoView/videoView";
 
-const VideoChatTestPage = dynamic(() => import('@/app/videoChatTest/page'), {
-  ssr: false,
-});
-
 export default function InstructorPage() {
-  const role = 'instructor';
+  const role = "instructor";
   const params = useParams();
   const courseId = params.courseId as string; // ✅ courseId 가져오기
   const lectureId = params.lectureId as string;
-  const { roomId, socket } = useLiveSocket(courseId, lectureId, 'instructor');
+  const { roomId, socket } = useLiveSocket(courseId, lectureId, "instructor");
 
   return (
     <div className={styles.container}>

@@ -6,7 +6,7 @@ import "../styles/calendar.scss";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import type { Metadata } from "next";
 import React from "react";
-import SessionProviderWrapper from "../components/SessionProviderWrapper";
+import SessionProviderWrapper from "../components/gate/sessionProviderWrapper";
 import RedirectGate from "@/components/gate/redirectGate";
 
 export const metadata: Metadata = {
