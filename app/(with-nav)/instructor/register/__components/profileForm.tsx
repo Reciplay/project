@@ -8,7 +8,8 @@ import { useInstructorStore } from '@/stores/instructorStore';
 import { Upload } from 'antd';
 import type { GetProp, UploadFile, UploadProps } from 'antd';
 import ImgCrop from 'antd-img-crop';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { openJusoPopup } from './addressPopUp/openAddressPopup';
 
 interface ProfileFormProps {
   value: {
@@ -47,6 +48,18 @@ export default function ProfileForm({ value }: ProfileFormProps) {
     const imgWindow = window.open(src);
     imgWindow?.document.write(image.outerHTML);
   };
+
+  // 팝업 콜백 등록
+  useEffect(() => {
+    (window as any).jusoCallBack = (
+      roadFullAddr: string,
+      roadAddrPart1: string,
+      addrDetail: string
+      // 필요한 다른 파라미터 있으면 추가
+    ) => {
+      setProfile({ ...profile, address: roadFullAddr });
+    };
+  }, [profile, setProfile]);
 
 
 
@@ -90,9 +103,8 @@ export default function ProfileForm({ value }: ProfileFormProps) {
           title={profile.address}
           editable={true}
           value={profile.address}
-          onChange={(v: string) => setProfile({ ...profile, address: v })}
+          onClick={openJusoPopup} // <-- 버튼 클릭 시 팝업 열림
         />
-
         <ImgCrop rotationSlider>
           <Upload
             // 나중에 백엔드가 제공하는 진짜 API 주소로 바꿔야함 이미지 저장하는 저장소 api

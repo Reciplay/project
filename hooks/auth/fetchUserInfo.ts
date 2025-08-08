@@ -1,5 +1,7 @@
 import restClient from "@/lib/axios/restClient";
 import { useUserStore } from "@/stores/userStore";
+import { ApiResponse } from "@/types/apiResponse";
+import { User } from "@/types/user";
 import { getSession } from "next-auth/react";
 
 export const fetchUserInfo = async () => {
@@ -12,10 +14,9 @@ export const fetchUserInfo = async () => {
   if (!session?.accessToken) return;
 
   try {
-    const { data } = await restClient.get("/user/profile", {
+    const { data } = await restClient.get<ApiResponse<User>>("/user/profile", {
       requireAuth: true,
     });
-
     const { nickname, job, birthDate, gender } = data.data;
 
     const isFilled = Boolean(nickname && job && birthDate) && gender !== null;

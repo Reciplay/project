@@ -11,6 +11,8 @@ import ProfileForm from "./__components/profileForm"; // 맨 위에 import 추�
 import { useInstructorStore } from "@/stores/instructorStore";
 import { useRouter } from 'next/navigation';
 import restClient from "@/lib/axios/restClient";
+import { ApiResponse } from "@/types/apiResponse";
+import { User } from "@/types/user";
 
 
 export default function page() {
@@ -39,7 +41,6 @@ export default function page() {
 		if (!res.ok) {
 			throw new Error('강사 등록 실패');
 		}
-
 		return res.json();
 	};
 
@@ -70,20 +71,21 @@ export default function page() {
 	// 기본 정보 가져오는 함수 백엔드 api 요청
 	const fetchProfile = async () => {
 		try {
-			const response = await restClient.get(
-				"/user/profile",   // ✅ path만 작성
-			);
+			const { data } = await restClient.get<ApiResponse<User>>("/user/profile", {
+				requireAuth: true,
+			});
 
-			const user = response.data;
+			const { name, job, birthDate, gender, email } = data.data;
+			console.log(data.data)
 
-			const genderText = user.gender === 0 ? "여" : "남";
-			const age = calculateAge(user.birthDate);
+			const genderText = gender === 0 ? "여" : "남";
+			const age = calculateAge(birthDate);
 
 			setProfile({
-				name: user.name,
-				genderBirth: `${genderText} ${formatBirth(user.birthDate)} (${age}세)`,
-				email: user.email,
-				job: user.job,
+				name: name,
+				genderBirth: `${genderText} ${formatBirth(birthDate)} (${age}세)`,
+				email: email,
+				job: job,
 			});
 		} catch (e) {
 			console.error("프로필 불러오기 실패", e);
@@ -110,12 +112,12 @@ export default function page() {
 	};
 
 	/**
- * 생년월일 문자열에서 연도를 추출해 네 자리 숫자로 반환
- * 예: "2000-08-04" → "2000"
- *
- * @param birthDateStr YYYY-MM-DD 형식의 생년월일 문자열
- * @returns 연도 (예: "2000")
- */
+	 * 생년월일 문자열에서 연도를 추출해 네 자리 숫자로 반환
+	 * 예: "2000-08-04" → "2000"
+	 *
+	 * @param birthDateStr YYYY-MM-DD 형식의 생년월일 문자열
+	 * @returns 연도 (예: "2000")
+	 */
 	const formatBirth = (birthDateStr: string): string => {
 		const birth = new Date(birthDateStr);
 		return birth.getFullYear().toString(); // 예: "2000"

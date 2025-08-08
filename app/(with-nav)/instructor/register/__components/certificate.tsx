@@ -12,7 +12,7 @@ import { sampleLicenses } from "@/config/sampleLicenses";
 import { ResponseLicense } from "@/types/license";
 import { useInstructorStore } from "@/stores/instructorStore";
 import { Dayjs } from "dayjs";
-import List from "./license/licenseList";
+import CertificatesTable from "./certificatesTable/certificatesTable";
 
 export default function Certificate() {
   const [showInput, setShowInput] = useState(false);
@@ -24,7 +24,7 @@ export default function Certificate() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [useApi, setUseApi] = useState(true);
 
-  const { addCertificate, certificates } = useInstructorStore();
+  const { addCertificate, certificates, removeCertificate } = useInstructorStore();
 
   useEffect(() => {
     if (!useApi) return;
@@ -178,9 +178,7 @@ export default function Certificate() {
               className={styles.customDatePicker}
             />
           </div>
-          <div>
-            <List></List>
-          </div>
+
 
           <div className={styles.buttonWrapper}>
             <BaseButton
@@ -200,6 +198,9 @@ export default function Certificate() {
               className={styles.wishButton}
               onClick={handleSave}
             />
+          </div>
+          <div style={{ marginTop: 12 }}>
+            <CertificatesTable />
           </div>
         </>
       )}
