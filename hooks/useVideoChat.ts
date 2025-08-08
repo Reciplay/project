@@ -24,21 +24,45 @@ export type TrackInfo = {
   trackPublication: RemoteTrackPublication;
   participantIdentity: string;
 };
+/**
+ * useVideoChat
+ * -----------------------------
+ * LiveKit 기반의 화상 회의 기능을 관리하는 React 커스텀 훅
+ * - 방 입장 / 퇴장
+ * - 로컬 카메라·마이크 활성화
+ * - 원격 참가자의 트랙 구독/해제 관리
+ * - LiveKit 토큰 발급 API 호출
+ * -----------------------------
+ */
 
 export const useVideoChat = () => {
-  const [room, setRoom] = useState<Room | undefined>(undefined);
-  const [localTrack, setLocalTrack] = useState<LocalVideoTrack | undefined>(undefined);
-  const [remoteTracks, setRemoteTracks] = useState<TrackInfo[]>([]);
+  /**
+   * 상태 관리
+   */
+  const [room, setRoom] = useState<Room | undefined>(undefined); // 현재 접속 중인 LiveKit Room 인스턴스
+  const [localTrack, setLocalTrack] = useState<LocalVideoTrack | undefined>(undefined); // 내 로컬 비디오 트랙
+  const [remoteTracks, setRemoteTracks] = useState<TrackInfo[]>([]); // 원격 참가자의 트랙 목록
   const [participantName, setParticipantName] = useState(
-    'Participant' + Math.floor(Math.random() * 100)
+    'Participant' + Math.floor(Math.random() * 100) // 참가자 표시 이름(랜덤)
   );
-  const [roomName, setRoomName] = useState('Test Room');
-  const [roomId, setRoomId] = useState<string | null>(null);
+  const [roomName, setRoomName] = useState('Test Room'); // 방 이름(임시)
+  const [roomId, setRoomId] = useState<string | null>(null); // 서버에서 발급받은 방 ID
 
+  /**
+   * joinRoom
+   * ------------------------------------
+   * 주어진 courseId, lectureId로 LiveKit 방에 연결
+   * - 새로운 Room 인스턴스 생성
+   * - 영상/음성 트랙 구독 → LiveKit 이벤트 기반 (이미 이 훅 안에서 처리)
+   * - 브라우저 카메라/마이크 접근 권한 요청
+   * - 서버에서 토큰 발급받아 방에 연결
+   * - 로컬 카메라/마이크 활성화
+   */
   const joinRoom = async (courseId: string, lectureId: string) => {
     const newRoom = new Room();
     setRoom(newRoom);
 
+    // 원격 트랙 구독 이벤트 (상대방 영상/음성 들어올 때)
     newRoom.on(
       RoomEvent.TrackSubscribed,
       (
@@ -56,6 +80,7 @@ export const useVideoChat = () => {
       }
     );
 
+    // 원격 트랙 해제 이벤트 (상대방 나가거나 트랙 끔)
     newRoom.on(
       RoomEvent.TrackUnsubscribed,
       (_track: RemoteTrack, publication: RemoteTrackPublication) => {
@@ -68,28 +93,34 @@ export const useVideoChat = () => {
     );
 
     try {
+      // 브라우저 권한 요청
       await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      // console.log(0)
+
+      // LiveKit 접속 토큰 발급
       const token = await getToken(courseId, lectureId);
-      // console.log(1)
+
+      // LiveKit 서버에 연결
       await newRoom.connect(LIVEKIT_URL, token);
-      // console.log(2)
+
+      // 로컬 카메라/마이크 켜기
       await newRoom.localParticipant.enableCameraAndMicrophone();
-      // console.log(3)
+
+      // 로컬 비디오 트랙 상태 저장
       setLocalTrack(
         newRoom.localParticipant.videoTrackPublications.values().next().value
           .videoTrack
       );
-      // console.log(4)
     } catch (error) {
-      // console.log(
-      //   'There was an error connecting to the room:',
-      //   (error as Error).message
-      // );
+      // 연결 실패 시 방 나가기 처리
       await leaveRoom();
     }
   };
 
+  /**
+   * leaveRoom
+   * --------------------------
+   * 현재 방 연결 해제 및 상태 초기화
+   */
   const leaveRoom = async () => {
     await room?.disconnect();
     setRoom(undefined);
@@ -97,49 +128,53 @@ export const useVideoChat = () => {
     setRemoteTracks([]);
   };
 
+  /**
+   * getToken
+   * --------------------------------
+   * LiveKit 방 연결용 JWT 토큰 발급 API 호출
+   * - 현재 세션(role)에 따라 instructor/student 토큰 발급
+   * - roomId도 함께 상태에 저장
+   */
   const getToken = async (courseId: string, lectureId: string) => {
-    // const response = await fetch(APPLICATION_SERVER_URL + 'token', {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Indvbmp1bkBtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3NTM4NDAzNTMsImV4cCI6MTc1NDQ0MDM1M30.XdN2T5LtkJsnz1_Mhg7vWuHZgmcWuef-xYXXSh5qFZc"
-    //   },
-    //   body: JSON.stringify({
-    //     courseId: courseId,
-    //     lectureId: lectureId
-    //   })
-    // });
     const session = await getSession();
-    const type = session?.role == "ROLE_STUDENT" ? "student" : "instructor"
+    const type = session?.role == "ROLE_STUDENT" ? "student" : "instructor";
 
     interface RoomInfo {
-      token: string
-      roomId: string
-      nickname: string
-      email: string
-      lectureId: number
-
+      token: string;
+      roomId: string;
+      nickname: string;
+      email: string;
+      lectureId: number;
     }
 
-    // console.log(100)
-    const res = await restClient.post<ApiResponse<RoomInfo>>(`/livekit/${type}/token`, { lectureId: lectureId, courseId: courseId }, { requireAuth: true });
+    const res = await restClient.post<ApiResponse<RoomInfo>>(
+      `/livekit/${type}/token`,
+      { lectureId: lectureId, courseId: courseId },
+      { requireAuth: true }
+    );
 
-
-
-    // console.log(`res.data : ${JSON.stringify(data)}`)
     if (res.data.status !== 'success') {
-      // console.log(`2222222222222222222222`)
       const error = res.data.message;
       throw new Error(`Failed to get token: ${error}`);
     }
-    // console.log(`11111111111111111111111`)
 
     const data = res.data.data;
-    setRoomId(data.roomId)
-    // console.log(`token:${JSON.stringify(data)}`)
-    return data.token;
+    setRoomId(data.roomId); // 방 ID 저장
+    return data.token; // 토큰 반환
   };
 
+  /**
+   * 반환 값
+   * ------------------------------
+   * - room: 현재 Room 인스턴스
+   * - roomId: 서버 발급 방 ID
+   * - localTrack: 내 영상 트랙
+   * - remoteTracks: 원격 참가자 트랙 목록
+   * - participantName / setParticipantName: 참가자 표시 이름 관리
+   * - roomName / setRoomName: 방 이름 관리
+   * - joinRoom: 방 입장 함수
+   * - leaveRoom: 방 퇴장 함수
+   */
   return {
     room,
     roomId,

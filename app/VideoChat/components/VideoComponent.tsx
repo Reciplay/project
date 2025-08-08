@@ -142,7 +142,7 @@ const VideoComponent = memo(function VideoComponent({ track, participantIdentity
             </div>
             <div className="media-wrapper">
                 <video ref={videoElement} id={track.sid}></video>
-                <canvas ref={canvasElement} className="output-canvas"></canvas>
+                <canvas ref={canvasElement} style={{ display: "none" }}></canvas>
             </div>
         </div>
     );

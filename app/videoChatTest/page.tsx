@@ -14,6 +14,7 @@ import { useParams } from "next/navigation";
 import { useTodoStore } from "@/stores/todoStore";
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import useLiveSocket from '@/hooks/live/useLiveSocket';
 
 
 interface Props {
@@ -94,9 +95,9 @@ function VideoChatTestPage() {
         <div id="room">
             <div id="room-header">
                 <h2 id="room-title">{roomName}</h2>
-                <button className="btn btn-danger" id="leave-room-button" onClick={handleLeaveRoom}>
+                {/* <button className="btn btn-danger" id="leave-room-button" onClick={handleLeaveRoom}>
                     Leave Room
-                </button>
+                </button> */}
             </div>
 
             <div style={{ display: "flex", flexDirection: "row" }}>
@@ -129,7 +130,7 @@ function VideoChatTestPage() {
                     )}
                 </div>
 
-                <NodeDisplay nodes={nodes} />
+                {/* <NodeDisplay nodes={nodes} /> */}
             </div>
         </div>
     );

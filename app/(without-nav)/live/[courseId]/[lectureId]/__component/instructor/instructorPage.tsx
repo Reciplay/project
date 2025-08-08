@@ -3,9 +3,10 @@
 import styles from "./instructorPage.module.scss";
 import dynamic from 'next/dynamic';
 import Header from "../common/header/header";
-import TodoListCard from "../common/todoList/todoListCard";
 import useLiveSocket from "@/hooks/live/useLiveSocket";
 import { useParams } from "next/navigation";
+import TodoListCard from "../common/todoList/todoListCard";
+import VideoView from "./__component/videoView/videoView";
 
 const VideoChatTestPage = dynamic(() => import('@/app/videoChatTest/page'), {
   ssr: false,
@@ -32,9 +33,10 @@ export default function InstructorPage() {
       <div className={styles.main}>
         <div className={styles.videoSection}>
           {/* 여기 */}
-          <VideoChatTestPage />
+          <VideoView />
         </div>
         <div className={styles.checklistSection}>
+          123
           <TodoListCard />
         </div>
       </div>
