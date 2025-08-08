@@ -35,9 +35,4 @@ public class CourseCard {
 
     private Long instructorId;
     private String instructorName;
-
-
-
-
-
 }

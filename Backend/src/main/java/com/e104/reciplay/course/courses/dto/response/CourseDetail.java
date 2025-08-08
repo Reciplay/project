@@ -1,6 +1,5 @@
 package com.e104.reciplay.course.courses.dto.response;
 
-import com.e104.reciplay.course.lecture.dto.response.LectureSummary;
 import com.e104.reciplay.entity.Course;
 import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import lombok.AllArgsConstructor;
@@ -41,7 +40,7 @@ public class CourseDetail {
     private String announcement;
     private Boolean isReviwed; // 해당 사용자가 해당 강좌에 리뷰를 작성하였는지
     private List<String> canLearns; //이런걸 배울 수 있어요
-    private List<LectureSummary> lectureSummaryList;
+    //private List<LectureSummary> lectureSummaryList;
 
     public CourseDetail(Course course) {
         this.title = course.getTitle();//

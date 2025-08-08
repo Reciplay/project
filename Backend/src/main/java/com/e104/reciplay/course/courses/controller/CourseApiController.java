@@ -7,7 +7,6 @@ import com.e104.reciplay.course.courses.dto.request.RequestCourseInfo;
 import com.e104.reciplay.course.courses.dto.response.CourseCard;
 import com.e104.reciplay.course.courses.dto.response.CourseDetail;
 import com.e104.reciplay.course.courses.dto.response.PagedResponse;
-import com.e104.reciplay.course.courses.service.CourseCommandService;
 import com.e104.reciplay.livekit.service.depends.CourseManagementService;
 import com.e104.reciplay.livekit.service.depends.CourseQueryService;
 import com.e104.reciplay.livekit.service.depends.InstructorQueryService;
@@ -35,8 +34,6 @@ import java.util.List;
 @RequestMapping("/api/v1/course/courses")
 @Slf4j
 public class CourseApiController {
-    //private final CoursesQueryService courseQueryService;
-    private final CourseCommandService courseCommandService;
     private final InstructorQueryService instructorQueryService;
     private final CourseQueryService courseQueryService;
     private final CourseManagementService courseManagementService;

@@ -11,7 +11,6 @@ import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import com.e104.reciplay.s3.service.S3Service;
 import com.e104.reciplay.user.profile.service.CategoryQueryService;
 import com.e104.reciplay.user.review.service.ReviewQueryService;
-import com.e104.reciplay.user.security.service.UserQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,8 +27,8 @@ public class CourseQueryServiceImpl implements CourseQueryService{
     private final ReviewQueryService reviewQueryService;
     private final CategoryQueryService categoryQueryService;
     private final SubFileMetadataQueryService subFileMetadataQueryService;
-    private final UserQueryService userQueryService;
     private final ZzimQueryService zzimQueryService;
+    private final CourseHistoryQueryService courseHistoryQueryService;
     private final S3Service s3Service;
     @Override
     public Course queryCourseById(Long id) {
@@ -50,12 +49,15 @@ public class CourseQueryServiceImpl implements CourseQueryService{
     public CourseDetail queryCourseDetailByCourseId(Long courseId, Long userId) {
         Course course = courseRepository.findByCourseId(courseId);
         CourseDetail courseDetail = this.collectCourseDetailWithCommonFields(course);
-//        Boolean isZzim = zzimQueryService.
-        //        courseDetail.setIsZzim(isZzim);
-        //        courseDetail.setIsEnrollment(isEnrollment);
-        //        courseDetail.setIsReviwed(isReviewed);
+        Boolean isZzimed = zzimQueryService.isZzimed(courseId, userId);
+        Boolean isEnrolled = courseHistoryQueryService.enrolled(courseId, userId); // 수정 필요
+        Boolean isReviewed = reviewQueryService.isReviewed(courseId, userId);
 
-        return null;
+        courseDetail.setIsZzim(isZzimed);
+        courseDetail.setIsEnrollment(isEnrolled);
+        courseDetail.setIsReviwed(isReviewed);
+
+        return courseDetail;
     }
 
 

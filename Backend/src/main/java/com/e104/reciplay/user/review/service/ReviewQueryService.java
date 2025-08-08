@@ -4,4 +4,6 @@ public interface ReviewQueryService {
     Integer countReviewsByCourseId(Long courseId);
 
     Double avgStarsByCourseId(Long courseId);
+
+    Boolean isReviewed(Long courseId, Long userId);
 }
