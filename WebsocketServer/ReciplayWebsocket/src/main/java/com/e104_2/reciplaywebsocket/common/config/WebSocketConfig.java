@@ -18,6 +18,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Value("${application.url-prefix}")
     private String URI_PREFIX;
     private final StompAuthenticationChannelInterceptor stompAuthenticationChannelInterceptor;
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // /ws 경로로 WebSocket 연결을 허용하고, 모든 도메인에서의 접근을 허용합니다.
