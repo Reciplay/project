@@ -1,35 +1,42 @@
 "use client";
 
-import { useEditProfile } from "@/hooks/profile/useEditProfile";
+import { User } from "@/types/user";
 import styles from "./profileInfo.module.scss";
 
-interface ProfileInfoProps {
+export interface EditForm {
   name: string;
   job: string;
-  email: string;
-  birth: string;
+  birthDate: string;
   gender: number;
-  onUpdate?: (newData: Partial<ProfileInfoProps>) => void;
+}
+interface ProfileInfoProps {
+  userData: User;
+  form: EditForm;
+  isEditing: boolean;
+  error: string;
+  handleChange: (field: string, value: string) => void;
+  toggleEdit: () => void;
+  saveProfile: () => void;
 }
 
 export default function ProfileInfo({
-  name,
-  job,
-  email,
-  birth,
-  gender,
-  onUpdate,
+  userData,
+  form,
+  isEditing,
+  error,
+  handleChange,
+  toggleEdit,
+  saveProfile,
 }: ProfileInfoProps) {
-  const { isEditing, form, error, handleChange, toggleEdit, saveProfile } =
-    useEditProfile(
-      {
-        name,
-        job,
-        birth,
-        gender,
-      },
-      onUpdate
-    );
+  // const {
+  //   userData,
+  //   form,
+  //   isEditing,
+  //   error,
+  //   handleChange,
+  //   saveProfile,
+  //   toggleEdit,
+  // } = useProfile();
 
   return (
     <div className={styles.container}>
@@ -47,7 +54,7 @@ export default function ProfileInfo({
       {/* 내용 영역 */}
       <div className={styles.section}>
         <div className={styles.title}>이메일</div>
-        <div className={styles.value}>{email}</div>
+        <div className={styles.value}>{userData?.email}</div>
       </div>
 
       <div className={styles.section}>
@@ -59,7 +66,7 @@ export default function ProfileInfo({
             onChange={(e) => handleChange("name", e.target.value)}
           />
         ) : (
-          <div className={styles.value}>{name}</div>
+          <div className={styles.value}>{userData?.name}</div>
         )}
       </div>
 
@@ -72,7 +79,7 @@ export default function ProfileInfo({
             onChange={(e) => handleChange("job", e.target.value)}
           />
         ) : (
-          <div className={styles.value}>{job}</div>
+          <div className={styles.value}>{userData?.job}</div>
         )}
       </div>
 
@@ -85,7 +92,7 @@ export default function ProfileInfo({
             onChange={(e) => handleChange("birthDate", e.target.value)}
           />
         ) : (
-          <div className={styles.value}>{birth}</div>
+          <div className={styles.value}>{userData?.birthDate}</div>
         )}
       </div>
 
@@ -100,7 +107,9 @@ export default function ProfileInfo({
             <option value="1">여성</option>
           </select>
         ) : (
-          <div className={styles.value}>{gender === 0 ? "남성" : "여성"}</div>
+          <div className={styles.value}>
+            {userData?.gender === 0 ? "남성" : "여성"}
+          </div>
         )}
       </div>
     </div>

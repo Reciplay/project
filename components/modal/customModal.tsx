@@ -1,5 +1,6 @@
 "use client";
 
+import ReactDOM from "react-dom";
 import styles from "./customModal.module.scss";
 
 interface CustomModalProps {
@@ -13,9 +14,9 @@ export default function CustomModal({
   onClose,
   children,
 }: CustomModalProps) {
-  if (!isOpen) return null;
+  if (typeof window === "undefined" || !isOpen) return null;
 
-  return (
+  const modalContent = (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <button className={styles.closeButton} onClick={onClose}>
@@ -25,4 +26,6 @@ export default function CustomModal({
       </div>
     </div>
   );
+
+  return ReactDOM.createPortal(modalContent, document.body);
 }

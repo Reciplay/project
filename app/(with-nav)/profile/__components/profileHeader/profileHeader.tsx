@@ -1,36 +1,39 @@
 "use client";
 
+import { User } from "@/types/user";
 import Image from "next/image";
-import { useState } from "react";
+import { RefObject } from "react";
 import ProfileImageModal from "../profileImageModal/profileImageModal";
 import styles from "./profileHeader.module.scss";
 
 interface ProfileHeaderProps {
-  profileUrl: string | null;
-  name: string;
-  nickname: string;
-  job: string;
+  userData: User;
+  isModalOpen: boolean;
+  setIsModalOpen: (val: boolean) => void;
+  fileInputRef: RefObject<HTMLInputElement>;
+  handleFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  uploadProfileImage: () => void;
+  previewUrl: string | null;
+  selectedFile: File | null;
 }
 
 export default function ProfileHeader({
-  profileUrl,
-  name,
-  nickname,
-  job,
+  userData,
+  isModalOpen,
+  setIsModalOpen,
+  fileInputRef,
+  handleFileSelect,
+  uploadProfileImage,
+  previewUrl,
+  selectedFile,
 }: ProfileHeaderProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleFileChange = (file: File) => {
-    console.log("선택된 이미지 파일:", file);
-    // TODO: 이미지 업로드 로직 (API 호출 및 상태 갱신 등)
-    setIsModalOpen(false);
-  };
-
   return (
     <div
       className={styles.container}
       style={
-        profileUrl ? { backgroundImage: `url("${profileUrl}")` } : undefined
+        userData?.profileImage?.presignedUrl
+          ? { backgroundImage: `url("${userData.profileImage.presignedUrl}")` }
+          : undefined
       }
     >
       <div className={styles.profileContainer}>
@@ -39,7 +42,10 @@ export default function ProfileHeader({
           onClick={() => setIsModalOpen(true)}
         >
           <Image
-            src={profileUrl || "/images/default_profile.jpg"}
+            src={
+              userData.profileImage?.presignedUrl ||
+              "/images/default_profile.jpg"
+            }
             alt="profile"
             fill
             className={styles.profileImage}
@@ -48,18 +54,22 @@ export default function ProfileHeader({
       </div>
 
       <div className={`${styles.textContainer} ${styles.glassBox}`}>
-        <div className={styles.name}>{nickname}</div>
+        <div className={styles.name}>{userData.nickname}</div>
         <div className={styles.tags}>
-          <span>#{name} </span>
-          <span>#{job}</span>
+          <span>#{userData.name} </span>
+          <span>#{userData.job}</span>
         </div>
       </div>
-      {/* ✅ 모달 컴포넌트 */}
+
       <ProfileImageModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        profileUrl={profileUrl || "/images/default_profile.jpg"}
-        onFileChange={handleFileChange}
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        previewUrl={previewUrl}
+        fileInputRef={fileInputRef}
+        handleFileSelect={handleFileSelect}
+        uploadProfileImage={uploadProfileImage}
+        selectedFile={selectedFile}
+        userData={userData}
       />
     </div>
   );
