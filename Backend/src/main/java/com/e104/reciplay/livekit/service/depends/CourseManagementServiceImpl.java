@@ -2,6 +2,7 @@ package com.e104.reciplay.livekit.service.depends;
 
 import com.e104.reciplay.course.courses.dto.request.RequestCourseInfo;
 import com.e104.reciplay.course.courses.service.CanLearnManagementService;
+import com.e104.reciplay.course.courses.service.SubFileMetadataManagementService;
 import com.e104.reciplay.course.courses.service.SubFileMetadataQueryService;
 import com.e104.reciplay.entity.Course;
 import com.e104.reciplay.entity.FileMetadata;
@@ -27,6 +28,7 @@ public class CourseManagementServiceImpl implements CourseManagementService{
     private final CanLearnManagementService canLearnManagementService;
     private final CourseQueryService courseQueryService;
     private final SubFileMetadataQueryService subFileMetadataQueryService;
+    private final SubFileMetadataManagementService subFileMetadataManagementService;
 
     @Override
     @Transactional
@@ -63,11 +65,11 @@ public class CourseManagementServiceImpl implements CourseManagementService{
         // 해당 강좌의 메타데이터들과 s3 파일들 모두 삭제
         for(FileMetadata data : oldThumbnailImages){
             s3Service.deleteFile(data);
-            subFileMetadataQueryService.deleteMetadataByEntitiy(data);
+            subFileMetadataManagementService.deleteMetadataByEntitiy(data);
         }
         s3Service.deleteFile(oldCourseCoverImages);
+        subFileMetadataManagementService.deleteMetadataByEntitiy(oldCourseCoverImages);
 
-        subFileMetadataQueryService.deleteMetadataByEntitiy(oldCourseCoverImages);
         // 썸네일들과 강좌 커버 이미지 업로드
         uploadImagesWithCourseId(courseId, courseCoverImage,thumbnailImages);
         // 이런걸 배울 수 있어요 저장
