@@ -9,6 +9,7 @@ import com.e104.reciplay.livekit.exception.CanNotOpenLiveRoomException;
 import com.e104.reciplay.livekit.exception.CanNotParticipateInLiveRoomException;
 import com.e104.reciplay.livekit.exception.EmptyPropertyException;
 import com.e104.reciplay.livekit.exception.RoomIdExpiredException;
+import com.e104.reciplay.s3.exception.FileUploadFailureException;
 import com.e104.reciplay.s3.exception.IllegalFileTypeException;
 import com.e104.reciplay.s3.exception.TooBigFileSizeException;
 import com.e104.reciplay.user.auth.exception.EmailAuthFailureException;
@@ -81,6 +82,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TooBigFileSizeException.class)
     public ResponseEntity<?> tooBigFileSizeExceptionExceptionHandler(TooBigFileSizeException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(FileUploadFailureException.class)
+    public ResponseEntity<?> fileUploadFailureExceptionHandler(FileUploadFailureException e) {
         return CommonResponseBuilder.badRequest(e.getMessage());
     }
 }
