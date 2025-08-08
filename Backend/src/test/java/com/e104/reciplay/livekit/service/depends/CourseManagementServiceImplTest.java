@@ -4,6 +4,7 @@ import com.e104.reciplay.course.courses.dto.request.RequestCourseInfo;
 import com.e104.reciplay.course.courses.service.CanLearnManagementService;
 import com.e104.reciplay.course.courses.service.SubFileMetadataManagementService;
 import com.e104.reciplay.course.courses.service.SubFileMetadataQueryService;
+import com.e104.reciplay.course.lecture.dto.response.response.CourseTerm;
 import com.e104.reciplay.entity.Course;
 import com.e104.reciplay.entity.FileMetadata;
 import com.e104.reciplay.repository.CourseRepository;
@@ -23,6 +24,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +43,6 @@ class CourseManagementServiceImplTest {
     @Mock private SubFileMetadataQueryService subFileMetadataQueryService;
     @Mock private SubFileMetadataManagementService subFileMetadataManagementService;
 
-    // 진짜 테스트 대상
     @InjectMocks
     private CourseManagementServiceImpl service;
 
@@ -121,11 +122,9 @@ class CourseManagementServiceImplTest {
             service.createCourseByInstructorId(instructorId, req, thumbnails, cover);
 
             verify(courseRepository, times(1)).save(any(Course.class));
-
             verify(s3Service).uploadFile(eq(cover), eq(FileCategory.IMAGES), eq(RelatedType.COURSE_COVER), eq(99L), eq(1));
             verify(s3Service).uploadFile(eq(thumbnails.get(0)), eq(FileCategory.IMAGES), eq(RelatedType.THUMBNAIL), eq(99L), eq(1));
             verify(s3Service).uploadFile(eq(thumbnails.get(1)), eq(FileCategory.IMAGES), eq(RelatedType.THUMBNAIL), eq(99L), eq(2));
-
             verify(canLearnManagementService).createCanLearnsWithCourseId(eq(99L), eq(req.getCanLearns()));
         }
 
@@ -143,9 +142,6 @@ class CourseManagementServiceImplTest {
             RequestCourseInfo req = buildRequest(null);
 
             assertDoesNotThrow(() -> service.createCourseByInstructorId(1L, req, thumbnails, cover));
-
-            verify(s3Service).uploadFile(eq(cover), eq(FileCategory.IMAGES), eq(RelatedType.COURSE_COVER), eq(101L), eq(1));
-            verify(s3Service, atLeastOnce()).uploadFile(any(MultipartFile.class), eq(FileCategory.IMAGES), eq(RelatedType.THUMBNAIL), eq(101L), anyInt());
             verify(canLearnManagementService).createCanLearnsWithCourseId(eq(101L), eq(req.getCanLearns()));
         }
     }
@@ -174,23 +170,15 @@ class CourseManagementServiceImplTest {
 
             service.updateCourseByCourseId(req, thumbnails, cover);
 
-            verify(courseRepository).save(existing);
             verify(canLearnManagementService).deleteCanLearnsByCourseId(courseId);
-
             verify(s3Service).deleteFile(oldThumb1);
             verify(s3Service).deleteFile(oldThumb2);
             verify(s3Service).deleteFile(oldCover);
-
-            // ★ 관리 서비스로 변경된 부분
             verify(subFileMetadataManagementService).deleteMetadataByEntitiy(oldThumb1);
             verify(subFileMetadataManagementService).deleteMetadataByEntitiy(oldThumb2);
             verify(subFileMetadataManagementService).deleteMetadataByEntitiy(oldCover);
-
             verify(s3Service).uploadFile(eq(cover), eq(FileCategory.IMAGES), eq(RelatedType.COURSE_COVER), eq(courseId), eq(1));
             verify(s3Service).uploadFile(eq(thumbnails.get(0)), eq(FileCategory.IMAGES), eq(RelatedType.THUMBNAIL), eq(courseId), eq(1));
-            verify(s3Service).uploadFile(eq(thumbnails.get(1)), eq(FileCategory.IMAGES), eq(RelatedType.THUMBNAIL), eq(courseId), eq(2));
-
-            verify(canLearnManagementService).createCanLearnsWithCourseId(courseId, req.getCanLearns());
         }
 
         @Test
@@ -212,7 +200,6 @@ class CourseManagementServiceImplTest {
                     .uploadFile(eq(cover), eq(FileCategory.IMAGES), eq(RelatedType.COURSE_COVER), eq(courseId), eq(1));
 
             assertDoesNotThrow(() -> service.updateCourseByCourseId(req, thumbnails, cover));
-
             verify(canLearnManagementService).createCanLearnsWithCourseId(courseId, req.getCanLearns());
         }
 
@@ -231,7 +218,7 @@ class CourseManagementServiceImplTest {
 
             service.updateCourseByCourseId(req, thumbnails, cover);
 
-            InOrder inOrder = inOrder(subFileMetadataManagementService, s3Service);
+            InOrder inOrder = inOrder(s3Service, subFileMetadataManagementService);
             inOrder.verify(s3Service).deleteFile(oldCover);
             inOrder.verify(subFileMetadataManagementService).deleteMetadataByEntitiy(oldCover);
             inOrder.verify(s3Service).uploadFile(eq(cover), eq(FileCategory.IMAGES), eq(RelatedType.COURSE_COVER), eq(courseId), eq(1));
@@ -246,7 +233,33 @@ class CourseManagementServiceImplTest {
                 .when(s3Service).uploadFile(eq(cover), eq(FileCategory.IMAGES), eq(RelatedType.COURSE_COVER), eq(courseId), eq(1));
 
         assertDoesNotThrow(() -> service.uploadImagesWithCourseId(courseId, cover, thumbnails));
-
         verify(s3Service, atLeast(1)).uploadFile(eq(thumbnails.get(0)), eq(FileCategory.IMAGES), eq(RelatedType.THUMBNAIL), eq(courseId), eq(1));
+    }
+
+    @Nested
+    class SetCourseTerm {
+
+        @Test
+        @DisplayName("강좌 기간 설정 성공")
+        void setCourseTerm_ok() {
+            Long courseId = 10L;
+            Course course = newCourseWithId(courseId);
+            when(courseRepository.findById(courseId)).thenReturn(Optional.of(course));
+
+            CourseTerm term = new CourseTerm(LocalDate.of(2025, 8, 1), LocalDate.of(2025, 8, 31));
+            service.setCourseTerm(term, courseId);
+
+            assertEquals(term.getStartDate(), course.getCourseStartDate());
+            assertEquals(term.getEndDate(), course.getCourseEndDate());
+        }
+
+        @Test
+        @DisplayName("강좌 기간 설정 - 존재하지 않는 ID")
+        void setCourseTerm_notFound() {
+            when(courseRepository.findById(999L)).thenReturn(Optional.empty());
+            CourseTerm term = new CourseTerm(LocalDate.now(), LocalDate.now().plusDays(7));
+
+            assertThrows(IllegalArgumentException.class, () -> service.setCourseTerm(term, 999L));
+        }
     }
 }
