@@ -1,6 +1,7 @@
     package com.e104.reciplay.entity;
 
     import com.e104.reciplay.common.types.TodoType;
+    import com.e104.reciplay.course.lecture.dto.response.TodoInfo;
     import jakarta.persistence.*;
     import lombok.AllArgsConstructor;
     import lombok.Builder;
@@ -27,4 +28,12 @@
         private TodoType type;
 
         private Integer seconds;
+
+        public Todo(TodoInfo todoInfo, Long chapterId) {
+            this.sequence = todoInfo.getSequence();
+            this.title = todoInfo.getTitle();
+            this.type = todoInfo.getType();
+            this.seconds = todoInfo.getSeconds();
+            this.chapterId = chapterId;
+        }
     }
