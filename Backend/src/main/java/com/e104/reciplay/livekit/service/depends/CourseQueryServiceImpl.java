@@ -36,8 +36,15 @@ public class CourseQueryServiceImpl implements CourseQueryService{
     }
 
     @Override
-    public List<CourseDetail> queryCourseDetailsByInstructorId(Long instructorId) {
-        List<Course> courses = courseRepository.findAllByInstructorId(instructorId);
+    public List<CourseDetail> queryCourseDetailsByInstructorId(Long instructorId, String courseStatus) {
+//      List<Course> courses = courseRepository.findAllByInstructorId(instructorId);
+        List<Course> courses;
+        switch (courseStatus){
+            case "soon": courses = courseRepository.findSoonCourseByInstructorId(instructorId); break;
+            case "ongoing": courses = courseRepository.findOngoingCourseByInstructorId(instructorId); break;
+            case "end": courses = courseRepository.findEndedCourseByInstructorId(instructorId); break;
+            default: throw new IllegalArgumentException("잘못된 courseStatus 값입니다. (soon / ongoing / end 중 하나여야 함)");
+        }
         List<CourseDetail> courseDetails = new ArrayList<>();
         for(Course c : courses){
             courseDetails.add(this.collectCourseDetailWithCommonFields(c));
@@ -47,14 +54,14 @@ public class CourseQueryServiceImpl implements CourseQueryService{
 
     @Override
     public CourseDetail queryCourseDetailByCourseId(Long courseId, Long userId) {
-        Course course = courseRepository.findByCourseId(courseId);
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강좌 ID 입니다."));
         CourseDetail courseDetail = this.collectCourseDetailWithCommonFields(course);
         Boolean isZzimed = zzimQueryService.isZzimed(courseId, userId);
-        Boolean isEnrolled = courseHistoryQueryService.enrolled(courseId, userId); // 수정 필요
+        Boolean isEnrolled = courseHistoryQueryService.enrolled(courseId, userId);
         Boolean isReviewed = reviewQueryService.isReviewed(courseId, userId);
 
-        courseDetail.setIsZzim(isZzimed);
-        courseDetail.setIsEnrollment(isEnrolled);
+        courseDetail.setIsZzimed(isZzimed);
+        courseDetail.setIsEnrolled(isEnrolled);
         courseDetail.setIsReviwed(isReviewed);
 
         return courseDetail;

@@ -8,7 +8,7 @@ import java.util.List;
 public interface CourseQueryService {
     Course queryCourseById(Long id);
 
-    List<CourseDetail> queryCourseDetailsByInstructorId(Long instructorId);
+    List<CourseDetail> queryCourseDetailsByInstructorId(Long instructorId, String courseStatus);
 
     CourseDetail queryCourseDetailByCourseId(Long courseId, Long userId);
 

@@ -32,10 +32,10 @@ public class CourseDetail {
     private Double averageReviewScore; // 평균 별점
     private String summary;
     private Integer maxEnrollments;
-    private Boolean isEnrollment;
+    private Boolean isEnrolled;
     private String description;
     private Integer level;
-    private Boolean isZzim;
+    private Boolean isZzimed;
     private Boolean isLive;
     private String announcement;
     private Boolean isReviwed; // 해당 사용자가 해당 강좌에 리뷰를 작성하였는지

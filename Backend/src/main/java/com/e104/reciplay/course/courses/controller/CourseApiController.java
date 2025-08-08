@@ -60,10 +60,11 @@ public class CourseApiController {
     @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")
     @Operation(summary = "강사의 강좌 관리 페이지에서의 상세 정보 리스트 조회  API", description = "강사의 강좌 관리 페이지에서의 상세 정보 리스트 조회")
     public ResponseEntity<ResponseRoot<List<CourseDetail>>> getCourseCards(
+            @RequestParam String courseStatus
     ) {
         String email = AuthenticationUtil.getSessionUsername();
         Long instructorId = instructorQueryService.queryInstructorIdByEmail(email);
-        List<CourseDetail> courses = courseQueryService.queryCourseDetailsByInstructorId(instructorId);
+        List<CourseDetail> courses = courseQueryService.queryCourseDetailsByInstructorId(instructorId, courseStatus);
         return CommonResponseBuilder.success("강사의 강좌 상세 정보 리스트 조회에 성공하였습니다.",
                 courses);
     }
