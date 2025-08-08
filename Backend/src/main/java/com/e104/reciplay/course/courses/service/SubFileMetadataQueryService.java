@@ -8,6 +8,4 @@ public interface SubFileMetadataQueryService {
     List<FileMetadata> queryMetadataListByCondition(Long relatedId, String relatedType);
 
     FileMetadata queryMetadataByCondition(Long relatedId, String relatedType);
-
-
 }
