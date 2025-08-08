@@ -41,7 +41,7 @@ public class CourseManagementServiceImpl implements CourseManagementService{
     @Override
     @Transactional
 
-    public void createCourseByInstructorId (Long instructorId, RequestCourseInfo courseRegisterInfo, List<MultipartFile> thumbnailImages, MultipartFile courseCoverImage) {
+    public Long createCourseByInstructorId (Long instructorId, RequestCourseInfo courseRegisterInfo, List<MultipartFile> thumbnailImages, MultipartFile courseCoverImage) {
         Course course = new Course(courseRegisterInfo);
         course.setInstructorId(instructorId);
         courseRepository.save(course);
@@ -49,11 +49,12 @@ public class CourseManagementServiceImpl implements CourseManagementService{
         uploadImagesWithCourseId(course.getId(), courseCoverImage, thumbnailImages);
         // 인런걸 배울 수 있어요 저장
         canLearnManagementService.createCanLearnsWithCourseId(course.getId(), courseRegisterInfo.getCanLearns());
+        return course.getId();
     }
 
     @Override
     @Transactional
-    public void updateCourseByCourseId(RequestCourseInfo requestCourseInfo, List<MultipartFile> thumbnailImages, MultipartFile courseCoverImage) {
+    public Long updateCourseByCourseId(RequestCourseInfo requestCourseInfo, List<MultipartFile> thumbnailImages, MultipartFile courseCoverImage) {
         Long courseId = requestCourseInfo.getCourseId();
         Course course = courseQueryService.queryCourseById(courseId); // 강좌 찾기
         course.updateCourse(requestCourseInfo); // 강좌 수정
@@ -77,7 +78,7 @@ public class CourseManagementServiceImpl implements CourseManagementService{
         // 이런걸 배울 수 있어요 저장
         canLearnManagementService.createCanLearnsWithCourseId(courseId, requestCourseInfo.getCanLearns());
 
-
+        return courseId;
     }
 
     // 여기도 트랜잭셔널 붙여야 하는가?

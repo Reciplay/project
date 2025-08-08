@@ -108,7 +108,7 @@ class CourseManagementServiceImplTest {
     class CreateCourseByInstructorId {
 
         @Test
-        @DisplayName("강좌 생성: save 후 S3 업로드 & CanLearn 생성 호출")
+        @DisplayName("강좌 생성: save 후 S3 업로드 & CanLearn 생성 호출, courseId 반환")
         void create_ok() throws Exception {
             when(courseRepository.save(any(Course.class))).thenAnswer(inv -> {
                 Course c = inv.getArgument(0);
@@ -119,8 +119,9 @@ class CourseManagementServiceImplTest {
             RequestCourseInfo req = buildRequest(null);
             Long instructorId = 777L;
 
-            service.createCourseByInstructorId(instructorId, req, thumbnails, cover);
+            Long returnedId = service.createCourseByInstructorId(instructorId, req, thumbnails, cover);
 
+            assertEquals(99L, returnedId);
             verify(courseRepository, times(1)).save(any(Course.class));
             verify(s3Service).uploadFile(eq(cover), eq(FileCategory.IMAGES), eq(RelatedType.COURSE_COVER), eq(99L), eq(1));
             verify(s3Service).uploadFile(eq(thumbnails.get(0)), eq(FileCategory.IMAGES), eq(RelatedType.THUMBNAIL), eq(99L), eq(1));
@@ -129,7 +130,7 @@ class CourseManagementServiceImplTest {
         }
 
         @Test
-        @DisplayName("S3 업로드 IOException 발생해도 예외 전파 없이 로깅 후 계속 진행")
+        @DisplayName("S3 업로드 IOException 발생해도 예외 전파 없이 진행, courseId 반환")
         void create_uploadIOException() throws Exception {
             when(courseRepository.save(any(Course.class))).thenAnswer(inv -> {
                 Course c = inv.getArgument(0);
@@ -141,7 +142,8 @@ class CourseManagementServiceImplTest {
 
             RequestCourseInfo req = buildRequest(null);
 
-            assertDoesNotThrow(() -> service.createCourseByInstructorId(1L, req, thumbnails, cover));
+            Long returnedId = assertDoesNotThrow(() -> service.createCourseByInstructorId(1L, req, thumbnails, cover));
+            assertEquals(101L, returnedId);
             verify(canLearnManagementService).createCanLearnsWithCourseId(eq(101L), eq(req.getCanLearns()));
         }
     }
@@ -150,7 +152,7 @@ class CourseManagementServiceImplTest {
     class UpdateCourseByCourseId {
 
         @Test
-        @DisplayName("강좌 수정: 기존 CanLearn/이미지 삭제 후 새 이미지 업로드 & CanLearn 재생성")
+        @DisplayName("강좌 수정: 기존 삭제 후 재업로드 & CanLearn 재생성, courseId 반환")
         void update_ok() throws Exception {
             Long courseId = 123L;
             RequestCourseInfo req = buildRequest(courseId);
@@ -168,8 +170,9 @@ class CourseManagementServiceImplTest {
             when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "course_cover"))
                     .thenReturn(oldCover);
 
-            service.updateCourseByCourseId(req, thumbnails, cover);
+            Long returnedId = service.updateCourseByCourseId(req, thumbnails, cover);
 
+            assertEquals(courseId, returnedId);
             verify(canLearnManagementService).deleteCanLearnsByCourseId(courseId);
             verify(s3Service).deleteFile(oldThumb1);
             verify(s3Service).deleteFile(oldThumb2);
@@ -182,7 +185,7 @@ class CourseManagementServiceImplTest {
         }
 
         @Test
-        @DisplayName("업데이트 시 업로드 IOException 발생해도 예외 전파 없이 진행")
+        @DisplayName("업데이트 시 업로드 IOException 발생해도 예외 전파 없이 진행, courseId 반환")
         void update_uploadIOException() throws Exception {
             Long courseId = 321L;
             RequestCourseInfo req = buildRequest(courseId);
@@ -199,7 +202,8 @@ class CourseManagementServiceImplTest {
             doThrow(new IOException("boom")).when(s3Service)
                     .uploadFile(eq(cover), eq(FileCategory.IMAGES), eq(RelatedType.COURSE_COVER), eq(courseId), eq(1));
 
-            assertDoesNotThrow(() -> service.updateCourseByCourseId(req, thumbnails, cover));
+            Long returnedId = assertDoesNotThrow(() -> service.updateCourseByCourseId(req, thumbnails, cover));
+            assertEquals(courseId, returnedId);
             verify(canLearnManagementService).createCanLearnsWithCourseId(courseId, req.getCanLearns());
         }
 
@@ -216,7 +220,8 @@ class CourseManagementServiceImplTest {
             when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "thumbnail")).thenReturn(List.of());
             when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "course_cover")).thenReturn(oldCover);
 
-            service.updateCourseByCourseId(req, thumbnails, cover);
+            Long returnedId = service.updateCourseByCourseId(req, thumbnails, cover);
+            assertEquals(courseId, returnedId);
 
             InOrder inOrder = inOrder(s3Service, subFileMetadataManagementService);
             inOrder.verify(s3Service).deleteFile(oldCover);

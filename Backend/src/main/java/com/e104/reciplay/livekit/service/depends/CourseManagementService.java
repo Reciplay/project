@@ -9,11 +9,11 @@ import java.util.List;
 public interface CourseManagementService {
     void activateLiveState(Long courseId);
 
-    void createCourseByInstructorId(Long instructorId,
+    Long createCourseByInstructorId(Long instructorId,
                                     RequestCourseInfo courseRegisterInfo,
                                     List<MultipartFile> thumbnailImages,
                                     MultipartFile courseCoverImage);
-    void updateCourseByCourseId(RequestCourseInfo requestCourseInfo,
+    Long updateCourseByCourseId(RequestCourseInfo requestCourseInfo,
                                 List<MultipartFile> thumbnailImages,
                                 MultipartFile courseCoverImage);
 
