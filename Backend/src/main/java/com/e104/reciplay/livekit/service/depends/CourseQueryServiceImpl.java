@@ -47,7 +47,7 @@ public class CourseQueryServiceImpl implements CourseQueryService{
     @Override
     public Boolean isClosedCourse(Long courseId) {
         Course course = this.queryCourseById(courseId);
-        return LocalDate.now().isAfter(course.getCourseEndDate());
+        return (LocalDate.now().isBefore(course.getCourseStartDate()) || LocalDate.now().isAfter(course.getCourseEndDate())) && course.getIsApproved();
     }
 
 
