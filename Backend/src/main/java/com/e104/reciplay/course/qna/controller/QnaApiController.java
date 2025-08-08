@@ -77,6 +77,8 @@ public class QnaApiController{
                 null);
     }
 
+
+    //////////// ✅
     @PostMapping("/question")
     @ApiResponse(responseCode = "201", description = "Q&A 질문 등록 성공")
     @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")
@@ -85,11 +87,11 @@ public class QnaApiController{
             @RequestBody QnaRegisterRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
             ){
-        // 해당 강좌 수강생인지 확인한다.
+        log.debug("QnA 등록 요청이 도착함 {} ", request);
+        log.debug("요청자 {}", userDetails.getUsername());
 
-
-        return CommonResponseBuilder.success("Q&A 질문 등록에 성공하였습니다.",
-                null);
+        qnaManagementService.registerNewQna(request, userDetails.getUsername());
+        return CommonResponseBuilder.success("Q&A 질문 등록에 성공하였습니다.", null);
     }
 
     @PutMapping("/answer")

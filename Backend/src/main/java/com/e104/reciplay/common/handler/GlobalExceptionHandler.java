@@ -5,6 +5,7 @@ import com.e104.reciplay.common.exception.InvalidUserRoleException;
 import com.e104.reciplay.common.exception.LectureNotFoundException;
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
+import com.e104.reciplay.course.courses.exception.CourseClosedException;
 import com.e104.reciplay.course.qna.exception.EnrollmentHistoryNotFoundException;
 import com.e104.reciplay.livekit.exception.CanNotOpenLiveRoomException;
 import com.e104.reciplay.livekit.exception.CanNotParticipateInLiveRoomException;
@@ -93,6 +94,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EnrollmentHistoryNotFoundException.class)
     public ResponseEntity<?> enrollmentHistoryNotFoundExceptionHandler(EnrollmentHistoryNotFoundException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(CourseClosedException.class)
+    public ResponseEntity<?> courseClosedExceptionHandler(CourseClosedException e) {
         return CommonResponseBuilder.badRequest(e.getMessage());
     }
 
