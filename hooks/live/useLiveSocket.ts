@@ -6,6 +6,7 @@ import { ApiResponse } from '@/types/apiResponse';
 import SockJS from 'sockjs-client';
 import { getSession } from 'next-auth/react';
 import { Client, IMessage, StompSubscription } from '@stomp/stompjs';
+import { useLiveStore, ChapterTodoResponse } from '@/stores/liveStore';
 
 interface RoomInfo {
   token: string;
@@ -40,6 +41,7 @@ export default function useLiveSocket(
       }
 
       const info = res.data.data;
+      console.log('roomInfo raw:', info);
       console.log('roomId:', info.roomId);
       setRoomInfo(info);
       setRoomId(info.roomId);
@@ -74,6 +76,9 @@ export default function useLiveSocket(
     },
     [roomInfo, lectureId]
   );
+
+  // 1) 구독 콜백에서 chapter-issue 응답을 스토어에 저장
+  const { setChapter } = useLiveStore.getState(); // selector 안 쓰고 직접 호출: 훅 안이라 렌더 영향 최소화
 
   /** 3. SockJS + STOMP 연결 */
   const connectSocket = useCallback(
@@ -111,6 +116,37 @@ export default function useLiveSocket(
         const sub = client.subscribe(`/ws/v1/topic/room/${id}`, (message: IMessage) => {
           try {
             const data = JSON.parse(message.body);
+            console.log('📦 받은 데이터 구조:', data);
+            console.log('🔍 타입 추론 결과:', typeof data, Array.isArray(data) ? '배열' : '객체');
+            console.dir(data, { depth: null }); // 중첩 구조까지 전부 출력
+            // 서버가 보낼 수 있는 형태:
+            // 1) { type: 'chapter-issue', chapterId, chapterSequence, chapterName, numOfTodos, todos: [...] }
+            // 2) { chapterId, chapterSequence, chapterName, numOfTodos, todos: [...] }  (type 없이)
+            const isChapterIssue = (data: any): data is ChapterTodoResponse => {
+              return (
+                (data?.type === 'chapter-issue' || data?.chapterId) &&
+                typeof data?.chapterId === 'number' &&
+                typeof data?.chapterSequence === 'number' &&
+                typeof data?.numOfTodos === 'number' &&
+                Array.isArray(data?.todos)
+              );
+            };
+            if (isChapterIssue(data)) {
+              // ✅ 도착 로그(받았다)
+              console.log('⬅️ Received ChapterTodoResponse:', data);
+              setChapter({
+                type: data.type ?? 'chapter-issue',
+                chapterId: data.chapterId,
+                chapterSequence: data.chapterSequence,
+                chapterName: data.chapterName,
+                numOfTodos: data.numOfTodos,
+                todos: data.todos,
+              });
+              console.log('📝 ChapterTodoResponse 저장:', data);
+              return;
+            }
+
+            // 그 외 다른 이벤트들은 기존처럼 로그
             console.log(`📩 메시지 수신 [room/${id}]`, data);
           } catch (e) {
             console.error('❌ 메시지 파싱 실패:', e, message.body);
@@ -120,6 +156,15 @@ export default function useLiveSocket(
         setSubscription(sub);
 
         sendJoin(client, id);
+        if (roomInfo) {
+          sendChapterIssue(client, {
+            issuer: roomInfo.email,
+            lectureId: roomInfo.lectureId,
+            roomId: id,
+            chapterSequence: 1,
+            chapterName: '테스트 챕터',
+          });
+        }
       };
 
       client.onStompError = (frame) => {
@@ -130,6 +175,33 @@ export default function useLiveSocket(
     },
     [sendJoin]
   );
+
+  // 2) 강사용: chapter-issue 보내기 함수
+  type SendChapterIssueArgs = {
+    issuer: string;           // instructor email
+    lectureId: number | string;
+    roomId: string;
+    chapterSequence: number;
+    chapterName?: string;     // 서버가 필요 없으면 생략 가능
+  };
+
+  const sendChapterIssue = useCallback((client: Client, args: SendChapterIssueArgs) => {
+    const payload = {
+      type: 'chapter-issue',
+      roomId: args.roomId,
+      issuer: args.issuer,
+      chapterSequence: Number(args.chapterSequence),
+      lectureId: Number(args.lectureId),
+      ...(args.chapterName ? { chapterName: args.chapterName } : {}),
+    };
+
+    client.publish({
+      destination: '/ws/v1/app/chapter-issue',
+      body: JSON.stringify(payload),
+    });
+    // ✅ 출발 로그(보냈다)
+    console.log('➡️ Sent /ws/v1/app/chapter-issue:', payload);
+  }, []);
 
   /** 4. cleanup */
   const cleanupConnection = useCallback(() => {
@@ -160,5 +232,5 @@ export default function useLiveSocket(
     return () => cleanupConnection();
   }, [roomId]);
 
-  return { roomId, socket, stompClient };
+  return { roomId, socket, stompClient, sendChapterIssue };
 }
