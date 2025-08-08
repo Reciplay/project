@@ -3,8 +3,10 @@ package com.e104.reciplay.course.courses.controller;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.course.courses.dto.request.LectureRequest;
 import com.e104.reciplay.course.lecture.dto.response.request.LectureRegisterRequest;
+import com.e104.reciplay.course.lecture.dto.response.response.CourseTerm;
 import com.e104.reciplay.course.lecture.service.LectureManagementService;
 import com.e104.reciplay.course.lecture.service.LectureQueryService;
+import com.e104.reciplay.livekit.service.depends.CourseManagementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,11 +22,12 @@ import java.util.List;
 
 @Tag(name = "강좌의 강의 등록 컨트롤러", description = "강좌 등록에서 분리됨.")
 @RestController
-@RequestMapping("/api/test/course/courses")
+@RequestMapping("/api/v1/course/courses")
 @RequiredArgsConstructor
 @Slf4j
 public class CourseSubApiController {
     private final LectureManagementService lectureManagementService;
+    private final CourseManagementService courseManagementService;
 
     @PostMapping("/lectures")
     @Operation(summary = "강의 정보 업로드", description = """
@@ -33,7 +36,7 @@ public class CourseSubApiController {
             material/번호 로 전송합니다.
             번호는 0번부터 시작합니다.
             
-            lecture들은 모두 동일하게 lecture를 part name으로 전송합니다.
+            lecture들은 모두 하나의 json 배열에 담아서 lecture라는 part name으로 전송합니다.
             """)
     @ApiResponse(responseCode = "200", description = "강의 등록 성공")
     @ApiResponse(responseCode = "400", description = "강의 등록 실패")
@@ -45,7 +48,9 @@ public class CourseSubApiController {
         log.info("lectureRequests: {}", lectureRequests);
         // 우선, 파일과 강의 정보를 묶어야 한다.
         List<LectureRegisterRequest> requests = lectureManagementService.groupLectureAndMaterial(lectureRequests, multipartRequest);
+        CourseTerm term = lectureManagementService.registerLectures(requests, courseId);
+        courseManagementService.setCourseTerm(term, courseId);
 
-        return CommonResponseBuilder.success("", null);
+        return CommonResponseBuilder.success("강의 등록에 성공했습니다.", null);
     }
 }
