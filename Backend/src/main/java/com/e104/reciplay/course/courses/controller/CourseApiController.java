@@ -11,6 +11,7 @@ import com.e104.reciplay.course.courses.service.CourseCommandService;
 import com.e104.reciplay.livekit.service.depends.CourseManagementService;
 import com.e104.reciplay.livekit.service.depends.CourseQueryService;
 import com.e104.reciplay.livekit.service.depends.InstructorQueryService;
+import com.e104.reciplay.user.security.service.UserQueryService;
 import com.e104.reciplay.user.security.util.AuthenticationUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,14 +35,14 @@ import java.util.List;
 @RequestMapping("/api/v1/course/courses")
 @Slf4j
 public class CourseApiController {
-
     //private final CoursesQueryService courseQueryService;
     private final CourseCommandService courseCommandService;
     private final InstructorQueryService instructorQueryService;
     private final CourseQueryService courseQueryService;
     private final CourseManagementService courseManagementService;
-    // 분홍색 통합 API
-    // 페이징한 결과와 페이징 하지 않은 결과를 조건문으로 두개의 결과 선택지를 줘야함
+    private final UserQueryService userQueryService;
+
+    // 페이징한 결과와 페이징 하지 않은 결과를 조건문으로 두개의 결과 선택지를 줘야함(분홍색 통합 API)
     @GetMapping("/cards")
     @ApiResponse(responseCode = "200", description = "강좌 카드 정보 리스트 페이지 조회 성공")
     @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")
@@ -65,9 +66,7 @@ public class CourseApiController {
     ) {
         String email = AuthenticationUtil.getSessionUsername();
         Long instructorId = instructorQueryService.queryInstructorIdByEmail(email);
-
         List<CourseDetail> courses = courseQueryService.queryCourseDetailsByInstructorId(instructorId);
-
         return CommonResponseBuilder.success("강사의 강좌 상세 정보 리스트 조회에 성공하였습니다.",
                 courses);
     }
@@ -82,9 +81,10 @@ public class CourseApiController {
             @RequestParam Long courseId
 
     ){
-
-        //CourseDetail courseDetail = courseQueryService.queryCourseByCourseId(courseId);
-        return CommonResponseBuilder.success("강좌 상세 정보 조회에 성공하였습니다.", null);
+        String email = AuthenticationUtil.getSessionUsername();
+        Long userId = userQueryService.queryUserByEmail(email).getId();
+        CourseDetail courseDetail = courseQueryService.queryCourseDetailByCourseId(courseId, userId);
+        return CommonResponseBuilder.success("강좌 상세 정보 조회에 성공하였습니다.", courseDetail);
     }
 
     @PutMapping("")

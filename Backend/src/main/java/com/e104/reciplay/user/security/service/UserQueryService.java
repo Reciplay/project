@@ -13,4 +13,6 @@ public interface UserQueryService {
     Boolean isDuplicatedNickname(String nickname);
 
     List<String> queryEmailsByNameAndBirthDay(String name, LocalDate birthDay);
+
+
 }

@@ -10,5 +10,7 @@ public interface CourseQueryService {
 
     List<CourseDetail> queryCourseDetailsByInstructorId(Long instructorId);
 
+    CourseDetail queryCourseDetailByCourseId(Long courseId, Long userId);
+
 
 }

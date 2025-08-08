@@ -3,6 +3,7 @@ package com.e104.reciplay.livekit.service.depends;
 import com.e104.reciplay.course.courses.dto.response.CourseDetail;
 import com.e104.reciplay.course.courses.service.CanLearnQueryService;
 import com.e104.reciplay.course.courses.service.SubFileMetadataQueryService;
+import com.e104.reciplay.course.courses.service.ZzimQueryService;
 import com.e104.reciplay.entity.Course;
 import com.e104.reciplay.entity.FileMetadata;
 import com.e104.reciplay.repository.CourseRepository;
@@ -10,6 +11,7 @@ import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import com.e104.reciplay.s3.service.S3Service;
 import com.e104.reciplay.user.profile.service.CategoryQueryService;
 import com.e104.reciplay.user.review.service.ReviewQueryService;
+import com.e104.reciplay.user.security.service.UserQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,10 +25,11 @@ import java.util.List;
 public class CourseQueryServiceImpl implements CourseQueryService{
     private final CourseRepository courseRepository;
     private final CanLearnQueryService canLearnQueryService;
-    //private final LectureSummaryQueryService lectureSummaryQueryService;
     private final ReviewQueryService reviewQueryService;
     private final CategoryQueryService categoryQueryService;
     private final SubFileMetadataQueryService subFileMetadataQueryService;
+    private final UserQueryService userQueryService;
+    private final ZzimQueryService zzimQueryService;
     private final S3Service s3Service;
     @Override
     public Course queryCourseById(Long id) {
@@ -43,12 +46,23 @@ public class CourseQueryServiceImpl implements CourseQueryService{
         return courseDetails;
     }
 
+    @Override
+    public CourseDetail queryCourseDetailByCourseId(Long courseId, Long userId) {
+        Course course = courseRepository.findByCourseId(courseId);
+        CourseDetail courseDetail = this.collectCourseDetailWithCommonFields(course);
+//        Boolean isZzim = zzimQueryService.
+        //        courseDetail.setIsZzim(isZzim);
+        //        courseDetail.setIsEnrollment(isEnrollment);
+        //        courseDetail.setIsReviwed(isReviewed);
+
+        return null;
+    }
+
 
     private CourseDetail collectCourseDetailWithCommonFields(Course course) {
         Long courseId = course.getId();
         CourseDetail courseDetail = new CourseDetail(course);
         List<String> canLearns = canLearnQueryService.queryContentsByCourseId(courseId);
-        //List<LectureSummary> lectureSummaries = lectureSummaryQueryService.queryLectureSummariesByCourseId(courseId);
         Integer reviewCount = reviewQueryService.countReviewsByCourseId(courseId);
         Double avgStars = reviewQueryService.avgStarsByCourseId(courseId);
         String category = categoryQueryService.queryNameByCourseId(courseId);
@@ -63,8 +77,6 @@ public class CourseQueryServiceImpl implements CourseQueryService{
         }
         ResponseFileInfo courseCoverFileInfo = s3Service.getResponseFileInfo(courseCover);
 
-
-        //courseDetail.setLectureSummaryList(lectureSummaries);
         courseDetail.setCanLearns(canLearns);
         courseDetail.setReviewCount(reviewCount);
         courseDetail.setAverageReviewScore(avgStars);
