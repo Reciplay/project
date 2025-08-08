@@ -1,5 +1,6 @@
 package com.e104.reciplay.course.courses.dto.request.item;
 
+import com.e104.reciplay.course.lecture.dto.response.TodoInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,5 +15,5 @@ import java.util.List;
 public class ChapterItem {
     private Integer sequence;
     private String title;
-    private List<TodoItem> todoList;
+    private List<TodoInfo> todoList;
 }

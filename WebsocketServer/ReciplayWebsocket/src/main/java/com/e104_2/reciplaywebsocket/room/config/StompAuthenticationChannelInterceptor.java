@@ -32,7 +32,14 @@ public class StompAuthenticationChannelInterceptor implements ChannelInterceptor
             String auth =  accessor.getFirstNativeHeader("Authorization");
             if(!auth.startsWith("Bearer")) throw new InvalidTokenFormatException("유효하지 않은 토큰 길이/Prefix");
             String token = auth.split(" ")[1];
-            if(tokenQueryService.isInvalidToken(token) || jwtUtil.isExpired(token)) throw new InvalidTokenException("만료된 토큰 입니다.");
+
+            if(tokenQueryService.isInvalidToken(token)) {
+                throw new InvalidTokenException("만료된 토큰 입니다.");
+            }
+
+            if(jwtUtil.isExpired(token)) {
+                throw new InvalidTokenException("만료된 토큰 입니다.");
+            }
 
             CustomUserDetails userDetails = new CustomUserDetails();
             userDetails.setUsername(jwtUtil.getUsername(token));

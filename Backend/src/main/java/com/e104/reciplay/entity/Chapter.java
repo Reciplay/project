@@ -1,5 +1,6 @@
 package com.e104.reciplay.entity;
 
+import com.e104.reciplay.course.courses.dto.request.item.ChapterItem;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,4 +22,10 @@ public class Chapter {
 
     private Integer sequence;
     private String title;
+
+    public Chapter(ChapterItem chapterItem, Long lectureId) {
+        this.sequence = chapterItem.getSequence();
+        this.title = chapterItem.getTitle();
+        this.lectureId = lectureId;
+    }
 }

@@ -15,7 +15,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class LectureQueryRepositoryImpl implements  LectureQueryRepository{
+public class CustomLectureRepositoryImpl implements CustomLectureRepository {
     private final JPAQueryFactory queryFactory;
     @Override
     public List<LectureSummary> findLectureSummariesByCourseId(Long courseId) {
