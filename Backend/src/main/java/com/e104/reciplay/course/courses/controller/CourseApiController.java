@@ -3,11 +3,12 @@ package com.e104.reciplay.course.courses.controller;
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.course.courses.dto.request.CourseCardCondition;
-import com.e104.reciplay.course.courses.dto.request.CourseRegisterInfo;
+import com.e104.reciplay.course.courses.dto.request.RequestCourseInfo;
 import com.e104.reciplay.course.courses.dto.response.CourseCard;
 import com.e104.reciplay.course.courses.dto.response.CourseDetail;
 import com.e104.reciplay.course.courses.dto.response.PagedResponse;
 import com.e104.reciplay.course.courses.service.CourseCommandService;
+import com.e104.reciplay.livekit.service.depends.CourseManagementService;
 import com.e104.reciplay.livekit.service.depends.CourseQueryService;
 import com.e104.reciplay.livekit.service.depends.InstructorQueryService;
 import com.e104.reciplay.user.security.util.AuthenticationUtil;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -37,6 +39,7 @@ public class CourseApiController {
     private final CourseCommandService courseCommandService;
     private final InstructorQueryService instructorQueryService;
     private final CourseQueryService courseQueryService;
+    private final CourseManagementService courseManagementService;
     // 분홍색 통합 API
     // 페이징한 결과와 페이징 하지 않은 결과를 조건문으로 두개의 결과 선택지를 줘야함
     @GetMapping("/cards")
@@ -89,11 +92,15 @@ public class CourseApiController {
     @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")
     @ApiResponse(responseCode = "403", description = "해당 강사가 아닌 사용자 접근")
     @Operation(summary = "강좌 정보 수정 API", description = "강좌 정보 수정")
-    public ResponseEntity<ResponseRoot<Object>> updateCourse(
-            @RequestBody CourseDetail courseDetail
+    public ResponseEntity<ResponseRoot<CourseIdResponse>> updateCourse(
+            @RequestPart RequestCourseInfo requestCourseInfo,
+            @RequestPart List<MultipartFile> thumbnailImages,
+            @RequestPart MultipartFile courseCoverImage
 
     ){
-        return CommonResponseBuilder.success("강좌 정보 수정에 성공하였습니다.", null);
+        Long courseId = courseManagementService.updateCourseByCourseId(requestCourseInfo, thumbnailImages, courseCoverImage);
+
+        return CommonResponseBuilder.success("강좌 정보 수정에 성공하였습니다.", new CourseIdResponse(courseId));
     }
 
     @PostMapping("")
@@ -101,16 +108,18 @@ public class CourseApiController {
     @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")
     @ApiResponse(responseCode = "403", description = "해당 강사가 아닌 사용자 접근")
     @Operation(summary = "강좌 등록 API", description = "강좌 등록 수정")
-    public ResponseEntity<ResponseRoot<Object>> createCourse(
-            @RequestBody CourseRegisterInfo courseRegisterInfo
-
+    public ResponseEntity<ResponseRoot<CourseIdResponse>> createCourse(
+            @RequestPart RequestCourseInfo requestCourseInfo,
+            @RequestPart List<MultipartFile> thumbnailImages,
+            @RequestPart MultipartFile courseCoverImage
     ){
-        return CommonResponseBuilder.success("강좌 등록에 성공하였습니다.", null);
+        String email = AuthenticationUtil.getSessionUsername();
+        Long instructorId = instructorQueryService.queryInstructorIdByEmail(email);
+
+        Long courseId = courseManagementService.createCourseByInstructorId(instructorId,
+                requestCourseInfo, thumbnailImages, courseCoverImage);
+
+        return CommonResponseBuilder.success("강좌 등록에 성공하였습니다.", new CourseIdResponse(courseId));
     }
-
-
-
-
-
-
+    record CourseIdResponse(Long courseId) {}
 }

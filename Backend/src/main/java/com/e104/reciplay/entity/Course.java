@@ -1,12 +1,11 @@
 package com.e104.reciplay.entity;
 
-import ch.qos.logback.core.rolling.helper.IntegerTokenConverter;
+import com.e104.reciplay.course.courses.dto.request.RequestCourseInfo;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -67,4 +66,34 @@ public class Course {
     private LocalDateTime registeredAt;
 
     private String announcement;
+
+    public Course(RequestCourseInfo info) {
+        this.title = info.getTitle();
+        this.enrollmentStartDate = info.getEnrollmentStartDate();
+        this.enrollmentEndDate = info.getEnrollmentEndDate();
+        this.categoryId = info.getCategoryId();
+        this.maxEnrollments = info.getMaxEnrollments();
+        this.description = info.getDescription();
+        this.level = info.getLevel();
+        this.announcement = info.getAnnouncement();
+        this.summary = info.getSummary();
+
+        this.isLive = false;
+        this.isApproved = false;
+        this.isDeleted = false;
+        this.currentEnrollments = 0;
+        this.registeredAt = LocalDateTime.now();
+    }
+
+    public void updateCourse(RequestCourseInfo info){
+        this.title = info.getTitle();
+        this.enrollmentStartDate = info.getEnrollmentStartDate();
+        this.enrollmentEndDate = info.getEnrollmentEndDate();
+        this.categoryId = info.getCategoryId();
+        this.maxEnrollments = info.getMaxEnrollments();
+        this.description = info.getDescription();
+        this.level = info.getLevel();
+        this.announcement = info.getAnnouncement();
+        this.summary = info.getSummary();
+    }
 }

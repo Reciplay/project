@@ -4,4 +4,6 @@ import java.util.List;
 
 public interface CustomCanLearnRepository {
     List<String> findContentsByCourseId(Long courseId);
+
+    void insertCanLearnsWithCourseId(Long courseId, List<String> canLearns);
 }
