@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import restClient from '@/lib/axios/restClient';
 import { ApiResponse } from '@/types/apiResponse';
-import SockJS from "sockjs-client"
-import { Stomp } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 import { getSession } from 'next-auth/react';
+import { Client, IMessage, StompSubscription } from '@stomp/stompjs';
 
 interface RoomInfo {
   token: string;
@@ -15,56 +15,69 @@ interface RoomInfo {
   lectureId: number;
 }
 
-export function useLiveSocket(courseId: string, lectureId: string, role: 'instructor' | 'student') {
+export default function useLiveSocket(
+  courseId: string,
+  lectureId: string,
+  role: 'instructor' | 'student'
+) {
   const [roomId, setRoomId] = useState<string | null>(null);
-  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [socket, setSocket] = useState<SockJS | null>(null);
+  const [stompClient, setStompClient] = useState<Client | null>(null);
+  const [subscription, setSubscription] = useState<StompSubscription | null>(null);
+  const [roomInfo, setRoomInfo] = useState<RoomInfo | null>(null);
 
-  // 1. roomId 가져오기
-  useEffect(() => {
-    const getRoomId = async () => {
-      try {
-        const res = await restClient.post<ApiResponse<RoomInfo>>(
-          `/livekit/${role}/token`,
-          { lectureId, courseId },
-          { requireAuth: true }
-        );
+  /** 1. roomId & roomInfo 가져오기 */
+  const fetchRoomId = useCallback(async () => {
+    try {
+      const res = await restClient.post<ApiResponse<RoomInfo>>(
+        `/livekit/${role}/token`,
+        { lectureId, courseId },
+        { requireAuth: true }
+      );
 
-        if (res.data.status !== 'success') {
-          throw new Error(`Failed to get token: ${res.data.message}`);
-        }
-
-        const roomId = res.data.data.roomId;
-        console.log('roomId:', roomId);
-        setRoomId(roomId);
-      } catch (e) {
-        console.error('roomId 요청 실패:', e);
+      if (res.data.status !== 'success') {
+        throw new Error(`Failed to get token: ${res.data.message}`);
       }
-    };
 
-    getRoomId();
+      const info = res.data.data;
+      console.log('roomId:', info.roomId);
+      setRoomInfo(info);
+      setRoomId(info.roomId);
+    } catch (e) {
+      console.error('roomId 요청 실패:', e);
+    }
   }, [courseId, lectureId, role]);
 
-  // 2. WebSocket 연결
-  useEffect(() => {
-    if (!roomId) return;
+  /** 2. join 메시지 발송 */
+  const sendJoin = useCallback(
+    (client: Client, id: string) => {
+      if (!roomInfo || !roomInfo.nickname) {
+        console.error('❌ nickname 없음, join 전송 취소');
+        return;
+      }
 
-    // ✅ SockJS 인스턴스 생성
-    const socket = new SockJS('http://i13e104.p.ssafy.io:8081/ws/v1/sub');
+      const message = {
+        type: 'join',
+        issuer: roomInfo.email,
+        receiver: null,
+        nickname: roomInfo.nickname,
+        lectureId: lectureId,
+        roomId: id,
+        state: ['noting'],
+      };
+      // 이 주소(/app/join)로 메시지 보낼게
+      client.publish({
+        destination: '/ws/v1/app/join',
+        body: JSON.stringify(message),
+      });
+      console.log(`➡️ Sent /ws/v1/app/join: ${JSON.stringify(message)}`);
+    },
+    [roomInfo, lectureId]
+  );
 
-    // ✅ STOMP 클라이언트 설정
-    const stompClient = Stomp.over(socket);
-
-    // ✅ 디버깅 로그 비활성화 or 커스텀
-    stompClient.debug = (str) => {
-      console.log('%c[STOMP DEBUG]', 'color: orange;', str);
-    };
-
-    // ✅ 자동 재연결 방지
-    stompClient.reconnectDelay = 0;
-
-    let subscription: any = null;
-
-    const connectStomp = async () => {
+  /** 3. SockJS + STOMP 연결 */
+  const connectSocket = useCallback(
+    async (id: string) => {
       const session = await getSession();
       const token = session?.accessToken;
 
@@ -73,74 +86,79 @@ export function useLiveSocket(courseId: string, lectureId: string, role: 'instru
         return;
       }
 
-      try {
-        stompClient.connect(
-          {
-            Authorization: `Bearer ${token}`,
-          },
-          (frame) => {
-            console.log('✅ STOMP 연결 성공', frame);
+      const sock = new SockJS('http://i13e104.p.ssafy.io:8081/ws/v1/sub');
+      setSocket(sock); // cleanup에서 close 가능
 
-            // ✅ 구독 시작
-            subscription = stompClient.subscribe(`/ws/v1/topic/room/${roomId}`, (msg) => {
-              try {
-                const data = JSON.parse(msg.body);
-                console.log(`📩 메시지 수신 [room/${roomId}]`, data);
+      const client = new Client({
+        webSocketFactory: () => sock,
+        reconnectDelay: 5000,
+        connectHeaders: {
+          Authorization: token.startsWith('Bearer ')
+            ? token
+            : `Bearer ${token}`,
+        },
+        debug: (str) => {
+          console.log('%c[STOMP DEBUG]', 'color: orange;', str);
+        },
+      });
 
-                // 👉 여기서 setState 등 메시지 처리 가능
-              } catch (e) {
-                console.error('❌ 메시지 파싱 실패:', e, msg.body);
-              }
-            });
-          },
-          (error) => {
-            console.error('❌ STOMP 연결 실패', error);
+      client.onConnect = (frame) => {
+        console.log('✅ Connected : ', frame);
+
+        setStompClient(client);
+
+        console.log(`subscribe : /ws/v1/topic/room/${id}`);
+        const sub = client.subscribe(`/ws/v1/topic/room/${id}`, (message: IMessage) => {
+          try {
+            const data = JSON.parse(message.body);
+            console.log(`📩 메시지 수신 [room/${id}]`, data);
+          } catch (e) {
+            console.error('❌ 메시지 파싱 실패:', e, message.body);
           }
-        );
-      } catch (e) {
-        console.error('🔥 STOMP 연결 중 예외 발생:', e);
-      }
-    };
-
-    socket.onopen = () => {
-      console.log('✅ WebSocket 연결 성공');
-      connectStomp();
-    };
-
-    socket.onclose = () => {
-      console.log('🔌 WebSocket 연결 종료');
-    };
-
-    socket.onerror = (e) => {
-      console.error('❌ WebSocket 오류', e);
-    };
-
-    socket.onmessage = (event) => {
-      console.log('🧾 일반 메시지 수신 (raw):', event.data);
-    };
-
-    return () => {
-      console.log('🧹 useLiveSocket cleanup 실행');
-
-      // ✅ 구독 해제
-      if (subscription) {
-        subscription.unsubscribe();
-        console.log('📴 구독 해제 완료');
-      }
-
-      // ✅ STOMP 연결 해제
-      if (stompClient.connected) {
-        stompClient.disconnect(() => {
-          console.log('🛑 STOMP 연결 해제');
         });
-      }
+        console.log(`✅ 구독 성공: /ws/v1/topic/room/${id}`);
+        setSubscription(sub);
 
-      // ✅ WebSocket 연결 종료
-      socket.close();
-    };
+        sendJoin(client, id);
+      };
+
+      client.onStompError = (frame) => {
+        console.error('❌ STOMP 오류', frame.headers['message']);
+      };
+
+      client.activate();
+    },
+    [sendJoin]
+  );
+
+  /** 4. cleanup */
+  const cleanupConnection = useCallback(() => {
+    console.log('🧹 useLiveSocket cleanup 실행');
+
+    if (subscription) {
+      subscription.unsubscribe();
+      console.log('📴 구독 해제 완료');
+    }
+
+    if (stompClient) {
+      stompClient.reconnectDelay = 0; // 재연결 시도 방지
+      stompClient.deactivate();
+      console.log('🛑 STOMP 연결 해제');
+    }
+
+    socket?.close();
+  }, [subscription, stompClient, socket]);
+
+  /** 마운트 시 roomId 요청 */
+  useEffect(() => {
+    fetchRoomId();
+  }, [fetchRoomId]);
+
+  /** roomId 변경 시 소켓 연결 */
+  useEffect(() => {
+    if (roomId) connectSocket(roomId);
+    return () => cleanupConnection();
   }, [roomId]);
 
-
-
-  return { roomId, socket };
+  return { roomId, socket, stompClient };
 }
