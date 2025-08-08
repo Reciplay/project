@@ -4,11 +4,16 @@ import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.course.qna.dto.response.QnaDetail;
 import com.e104.reciplay.course.qna.dto.response.QnaSummary;
+import com.e104.reciplay.course.qna.dto.rquest.QnaRegisterRequest;
+import com.e104.reciplay.course.qna.service.QnaManagementService;
+import com.e104.reciplay.user.security.dto.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,8 +22,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/course/qna")
 @Slf4j
-
+@RequiredArgsConstructor
 public class QnaApiController{
+    private final QnaManagementService qnaManagementService;
 
     @GetMapping("/summaries")
     @ApiResponse(responseCode = "200", description = "Q&A 요약 정보 리스트 조회 성공")
@@ -71,16 +77,21 @@ public class QnaApiController{
                 null);
     }
 
+
+    //////////// ✅
     @PostMapping("/question")
     @ApiResponse(responseCode = "201", description = "Q&A 질문 등록 성공")
     @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")
     @Operation(summary = "Q&A 질문 등록 API", description = "Q&A 질문 등록")
     public ResponseEntity<ResponseRoot<Object>> insertQuestion(
-            @RequestBody QnaDetail qnaDetail
-    ){
+            @RequestBody QnaRegisterRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+            ){
+        log.debug("QnA 등록 요청이 도착함 {} ", request);
+        log.debug("요청자 {}", userDetails.getUsername());
 
-        return CommonResponseBuilder.success("Q&A 질문 등록에 성공하였습니다.",
-                null);
+        qnaManagementService.registerNewQna(request, userDetails.getUsername());
+        return CommonResponseBuilder.success("Q&A 질문 등록에 성공하였습니다.", null);
     }
 
     @PutMapping("/answer")

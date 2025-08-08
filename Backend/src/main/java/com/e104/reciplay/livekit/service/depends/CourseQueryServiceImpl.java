@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +42,12 @@ public class CourseQueryServiceImpl implements CourseQueryService{
             courseDetails.add(this.collectCourseDetailWithCommonFields(c));
         }
         return courseDetails;
+    }
+
+    @Override
+    public Boolean isClosedCourse(Long courseId) {
+        Course course = this.queryCourseById(courseId);
+        return (LocalDate.now().isBefore(course.getCourseStartDate()) || LocalDate.now().isAfter(course.getCourseEndDate())) && course.getIsApproved();
     }
 
 
