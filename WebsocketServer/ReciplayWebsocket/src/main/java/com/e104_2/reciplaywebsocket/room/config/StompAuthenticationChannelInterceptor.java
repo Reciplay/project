@@ -7,12 +7,17 @@ import com.e104_2.reciplaywebsocket.security.dto.CustomUserDetails;
 import com.e104_2.reciplaywebsocket.security.jwt.JWTUtil;
 import com.e104_2.reciplaywebsocket.security.service.TokenQueryService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
@@ -20,6 +25,7 @@ import org.springframework.stereotype.Component;
 import java.security.Principal;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class StompAuthenticationChannelInterceptor implements ChannelInterceptor {
     private final JWTUtil jwtUtil;
@@ -27,9 +33,11 @@ public class StompAuthenticationChannelInterceptor implements ChannelInterceptor
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        if(StompCommand.CONNECT.equals(accessor.getCommand())) {
+        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+
+        if(accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
             String auth =  accessor.getFirstNativeHeader("Authorization");
+
             if(!auth.startsWith("Bearer")) throw new InvalidTokenFormatException("유효하지 않은 토큰 길이/Prefix");
             String token = auth.split(" ")[1];
 
@@ -45,8 +53,11 @@ public class StompAuthenticationChannelInterceptor implements ChannelInterceptor
             userDetails.setUsername(jwtUtil.getUsername(token));
             userDetails.setRole(jwtUtil.getRole(token));
 
-            Principal principal = new UsernamePasswordAuthenticationToken(userDetails, null,
+            log.debug("웹 소켓 핸드쉐이크. 유저 정보 입력됨 : {}", userDetails);
+            Authentication principal = new UsernamePasswordAuthenticationToken(userDetails, null,
                     userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(principal);
+
             accessor.setUser(principal);
         }
         return message;
