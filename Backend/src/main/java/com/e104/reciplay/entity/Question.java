@@ -1,17 +1,14 @@
 package com.e104.reciplay.entity;
 
-import com.e104.reciplay.course.qna.dto.rquest.QnaRegisterRequest;
+import com.e104.reciplay.course.qna.dto.request.QnaRegisterRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity(name = "questions")
@@ -35,6 +32,9 @@ public class Question {
 
     @Column(name = "question_content")
     private String questionContent;
+
+    @Column(name = "answer_content")
+    private String answerContent;
 
     @Column(name = "question_at")
     @CreatedDate

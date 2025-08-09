@@ -2,9 +2,10 @@ package com.e104.reciplay.course.qna.controller;
 
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
+import com.e104.reciplay.course.qna.dto.request.QnaAnswerRequest;
 import com.e104.reciplay.course.qna.dto.response.QnaDetail;
 import com.e104.reciplay.course.qna.dto.response.QnaSummary;
-import com.e104.reciplay.course.qna.dto.rquest.QnaRegisterRequest;
+import com.e104.reciplay.course.qna.dto.request.QnaRegisterRequest;
 import com.e104.reciplay.course.qna.service.QnaManagementService;
 import com.e104.reciplay.user.security.dto.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -107,6 +108,8 @@ public class QnaApiController{
                 null);
     }
 
+
+    //////////// ✅  INSTRUCTOR ONLY.
     @PostMapping("/answer")
     @ApiResponse(responseCode = "200", description = "Q&A 답변 등록 성공")
     @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")
@@ -114,9 +117,13 @@ public class QnaApiController{
     @ApiResponse(responseCode = "404", description = "수정할 Q&A를 찾을 수 없음")
     @Operation(summary = "Q&A 답변 등록 API", description = "Q&A 답변 등록")
     public ResponseEntity<ResponseRoot<Object>> insertAnswer(
-            @RequestBody QnaDetail qnaDetail
+            @RequestBody QnaAnswerRequest qnaDetail,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ){
+        log.debug("QnA 답변 등록 API 요청 데이터. {}", qnaDetail);
+        log.debug("QnA 답변 등록 API 요청 사용자. {}", userDetails);
 
+        this.qnaManagementService.registerAnswer(qnaDetail, userDetails.getUsername());
         return CommonResponseBuilder.success("Q&A 답변 등록에 성공하였습니다.",
                 null);
     }
