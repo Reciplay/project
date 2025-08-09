@@ -16,8 +16,12 @@ import com.e104.reciplay.repository.CourseRepository;
 import com.e104.reciplay.repository.QuestionRepository;
 import com.e104.reciplay.user.security.domain.User;
 import com.e104.reciplay.user.security.repository.UserRepository;
+import com.e104.reciplay.user.security.util.AuthenticationUtil;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -45,6 +49,13 @@ class QnaManagementServiceImplTest {
     private QuestionRepository questionRepository;
 
     private User user;
+
+    private MockedStatic<AuthenticationUtil> authenticationUtilMockedStatic;
+
+    @BeforeEach
+    void setUp() {
+        authenticationUtilMockedStatic = Mockito.mockStatic(AuthenticationUtil.class);
+    }
 
     @Test
     public void Qna_등록_성공() {
@@ -236,9 +247,7 @@ class QnaManagementServiceImplTest {
                 .courseId(course.getId()).userId(user.getId()).isEnrolled(true).build();
         courseHistoryRepository.save(history);
 
-        Question question = questionRepository.save(Question.builder()
-                .userId(user.getId()).courseId(course.getId()).title("질문 1").questionContent("질문 내용").build());
-
+        Question question = questionRepository.save(Question.builder().title("질문 1").userId(user.getId()).questionContent("질문 내용").courseId(course.getId()).build());
 
         QnaUpdateRequest updateRequest = new QnaUpdateRequest(course.getId(), question.getId(), "질문 1", "수정된 질문 내용");
 
@@ -275,8 +284,75 @@ class QnaManagementServiceImplTest {
         });
     }
 
+    @Test
+    public void Qna_삭제_성공_학생() {
+        User student = User.builder().email("student@mail.com").build();
+        userRepository.save(student);
+
+        Course course = Course.builder().instructorId(123L)
+                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1))
+                .courseStartDate(LocalDate.now().minusDays(1)).build();
+        courseRepository.save(course);
+
+        CourseHistory history = CourseHistory.builder()
+                .courseId(course.getId()).userId(student.getId()).isEnrolled(true).build();
+        courseHistoryRepository.save(history);
+
+        QnaRegisterRequest registerRequest = new QnaRegisterRequest("질문 1", "질문 내용", course.getId());
+        qnaManagementService.registerNewQna(registerRequest, student.getEmail());
+        Question question = questionRepository.findAll().get(0);
+
+        authenticationUtilMockedStatic.when(AuthenticationUtil::getSessionUserAuthority).thenReturn("ROLE_STUDENT");
+
+        qnaManagementService.deleteQna(question.getId(), course.getId(), student.getEmail());
+
+        assertThat(questionRepository.findById(question.getId())).isEmpty();
+    }
+
+    @Test
+    public void Qna_삭제_성공_강사() {
+        User instructor = User.builder().email("instructor@mail.com").build();
+        userRepository.save(instructor);
+
+        Course course = Course.builder().instructorId(instructor.getId()).isApproved(true)
+                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1))
+                .courseStartDate(LocalDate.now().minusDays(1)).build();
+        courseRepository.save(course);
+
+        Question question = questionRepository.save(Question.builder().title("질문 1").questionContent("질문 내용").courseId(course.getId()).build());
+
+        authenticationUtilMockedStatic.when(AuthenticationUtil::getSessionUserAuthority).thenReturn("ROLE_INSTRUCTOR");
+
+        qnaManagementService.deleteQna(question.getId(), course.getId(), instructor.getEmail());
+
+        assertThat(questionRepository.findById(question.getId())).isEmpty();
+    }
+
+    @Test
+    public void Qna_답변_수정_성공() {
+        User instructor = User.builder().email("instructor@mail.com").build();
+        userRepository.save(instructor);
+
+        Course course = Course.builder().instructorId(instructor.getId()).isApproved(true)
+                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1))
+                .courseStartDate(LocalDate.now().minusDays(1)).build();
+        courseRepository.save(course);
+
+        Question question = questionRepository.save(Question.builder().title("질문 1").questionContent("질문 내용").courseId(course.getId()).build());
+
+        QnaAnswerRequest answerRequest = new QnaAnswerRequest(question.getId(), course.getId(), "최초 답변");
+        qnaManagementService.registerAnswer(answerRequest, instructor.getEmail());
+
+        QnaAnswerRequest updateAnswerRequest = new QnaAnswerRequest(question.getId(), course.getId(), "수정된 답변");
+        qnaManagementService.updateAnswer(updateAnswerRequest, instructor.getEmail());
+
+        Question updatedQuestion = questionRepository.findById(question.getId()).get();
+        assertThat(updatedQuestion.getAnswerContent()).isEqualTo("수정된 답변");
+    }
+
     @AfterEach
     void tearDown() {
+        authenticationUtilMockedStatic.close();
         questionRepository.deleteAllInBatch();
         courseHistoryRepository.deleteAllInBatch();
         courseRepository.deleteAllInBatch();
