@@ -3,6 +3,7 @@ package com.e104.reciplay.course.qna.controller;
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.course.qna.dto.request.QnaAnswerRequest;
+import com.e104.reciplay.course.qna.dto.request.QnaUpdateRequest;
 import com.e104.reciplay.course.qna.dto.response.QnaDetail;
 import com.e104.reciplay.course.qna.dto.response.QnaSummary;
 import com.e104.reciplay.course.qna.dto.request.QnaRegisterRequest;
@@ -53,14 +54,19 @@ public class QnaApiController{
                 new QnaDetail());
     }
 
+    //////////// ✅
     @PutMapping("/question")
     @ApiResponse(responseCode = "200", description = "Q&A 질문 수정 성공")
     @ApiResponse(responseCode = "400", description = "잘못된 형식의 데이터입니다. 요청 데이터를 확인해주세요.")
     @ApiResponse(responseCode = "404", description = "수정할 질문를 찾을 수 없음")
     @Operation(summary = "Q&A 질문 수정 API", description = "Q&A 질문 수정")
     public ResponseEntity<ResponseRoot<Object>> updateQuestion(
-            @RequestBody QnaDetail qnaDetail
+            @RequestBody QnaUpdateRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ){
+        log.debug("QnA 질문 수정 API 요청 데이터. {}", request);
+        log.debug("QnA 질문 수정 API 요청 사용자. {}", userDetails);
+        this.qnaManagementService.updateQuestion(request, userDetails.getUsername());
         return CommonResponseBuilder.success("Q&A 질문 수정에 성공하였습니다.", null);
     }
 
@@ -127,7 +133,5 @@ public class QnaApiController{
         return CommonResponseBuilder.success("Q&A 답변 등록에 성공하였습니다.",
                 null);
     }
-
-
 
 }

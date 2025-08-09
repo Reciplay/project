@@ -1,9 +1,13 @@
 package com.e104.reciplay.course.qna.service;
 
 import com.e104.reciplay.common.exception.InvalidUserRoleException;
+import com.e104.reciplay.course.courses.exception.CourseClosedException;
 import com.e104.reciplay.course.qna.dto.request.QnaAnswerRequest;
 import com.e104.reciplay.course.qna.dto.request.QnaRegisterRequest;
+import com.e104.reciplay.course.qna.dto.request.QnaUpdateRequest;
+import com.e104.reciplay.course.qna.exception.AnswerAlreadyRegisteredException;
 import com.e104.reciplay.course.qna.exception.CanNotAnswerException;
+import com.e104.reciplay.course.qna.exception.EnrollmentHistoryNotFoundException;
 import com.e104.reciplay.entity.Course;
 import com.e104.reciplay.entity.CourseHistory;
 import com.e104.reciplay.entity.Question;
@@ -19,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -52,7 +57,7 @@ class QnaManagementServiceImplTest {
         courseRepository.save(course);
 
         CourseHistory history = CourseHistory.builder()
-                .courseId(course.getId()).userId(user.getId()).isEnrollmented(true).build();
+                .courseId(course.getId()).userId(user.getId()).isEnrolled(true).build();
         courseHistoryRepository.save(history);
 
         QnaRegisterRequest request = new QnaRegisterRequest("질문 1", "질문 내용", course.getId());
@@ -75,7 +80,7 @@ class QnaManagementServiceImplTest {
         courseRepository.save(course);
 
         CourseHistory history = CourseHistory.builder()
-                .courseId(course.getId()).userId(user.getId()).isEnrollmented(true).build();
+                .courseId(course.getId()).userId(user.getId()).isEnrolled(true).build();
         courseHistoryRepository.save(history);
 
         QnaRegisterRequest request = new QnaRegisterRequest("질문 1", "질문 내용", course.getId());
@@ -104,7 +109,7 @@ class QnaManagementServiceImplTest {
         courseRepository.save(course);
 
         CourseHistory history = CourseHistory.builder()
-                .courseId(course.getId()).userId(user2.getId()).isEnrollmented(true).build();
+                .courseId(course.getId()).userId(user2.getId()).isEnrolled(true).build();
         courseHistoryRepository.save(history);
 
         QnaRegisterRequest request = new QnaRegisterRequest("질문 1", "질문 내용", course.getId());
@@ -130,7 +135,7 @@ class QnaManagementServiceImplTest {
         courseRepository.save(course);
 
         CourseHistory history = CourseHistory.builder()
-                .courseId(course.getId()).userId(user.getId()).isEnrollmented(true).build();
+                .courseId(course.getId()).userId(user.getId()).isEnrolled(true).build();
         courseHistoryRepository.save(history);
 
         QnaRegisterRequest request = new QnaRegisterRequest("질문 1", "질문 내용", course.getId());
@@ -161,6 +166,112 @@ class QnaManagementServiceImplTest {
 
         assertThrows(IllegalArgumentException.class, () -> {
             qnaManagementService.registerAnswer(answerRequest, user.getEmail());
+        });
+    }
+
+    @Test
+    public void Qna_수정_성공() {
+        User user = User.builder().email("test@mail.com").build();
+        userRepository.save(user);
+
+        Course course = Course.builder().instructorId(user.getId())
+                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1))
+                .courseStartDate(LocalDate.now().minusDays(1)).build();
+        courseRepository.save(course);
+
+        CourseHistory history = CourseHistory.builder()
+                .courseId(course.getId()).userId(user.getId()).isEnrolled(true).build();
+        courseHistoryRepository.save(history);
+
+        QnaRegisterRequest registerRequest = new QnaRegisterRequest("질문 1", "질문 내용", course.getId());
+        qnaManagementService.registerNewQna(registerRequest, user.getEmail());
+        Question question = questionRepository.findAll().get(0);
+
+        QnaUpdateRequest updateRequest = new QnaUpdateRequest(course.getId(), question.getId(), "질문 1", "수정된 질문 내용");
+        qnaManagementService.updateQuestion(updateRequest, user.getEmail());
+
+        Question updatedQuestion = questionRepository.findById(question.getId()).get();
+        assertThat(updatedQuestion.getQuestionContent()).isEqualTo("수정된 질문 내용");
+        assertThat(updatedQuestion.getQuestionUpdatedAt()).isNotNull();
+    }
+
+    @Test
+    public void Qna_수정_실패_질문_작성자가_아님() {
+        User user = User.builder().email("test@mail.com").build();
+        userRepository.save(user);
+        User otherUser = User.builder().email("other@mail.com").build();
+        userRepository.save(otherUser);
+
+        Course course = Course.builder().instructorId(user.getId())
+                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1))
+                .courseStartDate(LocalDate.now().minusDays(1)).build();
+        courseRepository.save(course);
+
+        CourseHistory history = CourseHistory.builder()
+                .courseId(course.getId()).userId(user.getId()).isEnrolled(true).build();
+        courseHistoryRepository.save(history);
+
+        QnaRegisterRequest registerRequest = new QnaRegisterRequest("질문 1", "질문 내용", course.getId());
+        qnaManagementService.registerNewQna(registerRequest, user.getEmail());
+        Question question = questionRepository.findAll().get(0);
+
+        QnaUpdateRequest updateRequest = new QnaUpdateRequest(course.getId(), question.getId(), "질문 1", "수정된 질문 내용");
+
+        assertThrows(EnrollmentHistoryNotFoundException.class, () -> {
+            qnaManagementService.updateQuestion(updateRequest, otherUser.getEmail());
+        });
+    }
+
+    @Test
+    public void Qna_수정_실패_종료된_강좌() {
+        User user = User.builder().email("test@mail.com").build();
+        userRepository.save(user);
+
+        Course course = Course.builder().instructorId(user.getId()).isApproved(true)
+                .title("강의 1").courseEndDate(LocalDate.now().minusDays(1))
+                .courseStartDate(LocalDate.now().minusDays(2)).build();
+        courseRepository.save(course);
+
+        CourseHistory history = CourseHistory.builder()
+                .courseId(course.getId()).userId(user.getId()).isEnrolled(true).build();
+        courseHistoryRepository.save(history);
+
+        Question question = questionRepository.save(Question.builder()
+                .userId(user.getId()).courseId(course.getId()).title("질문 1").questionContent("질문 내용").build());
+
+
+        QnaUpdateRequest updateRequest = new QnaUpdateRequest(course.getId(), question.getId(), "질문 1", "수정된 질문 내용");
+
+        assertThrows(CourseClosedException.class, () -> {
+            qnaManagementService.updateQuestion(updateRequest, user.getEmail());
+        });
+    }
+
+    @Test
+    public void Qna_수정_실패_이미_답변이_달린_질문() {
+        User user = User.builder().email("test@mail.com").build();
+        userRepository.save(user);
+
+        Course course = Course.builder().instructorId(user.getId())
+                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1))
+                .courseStartDate(LocalDate.now().minusDays(1)).build();
+        courseRepository.save(course);
+
+        CourseHistory history = CourseHistory.builder()
+                .courseId(course.getId()).userId(user.getId()).isEnrolled(true).build();
+        courseHistoryRepository.save(history);
+
+        QnaRegisterRequest registerRequest = new QnaRegisterRequest("질문 1", "질문 내용", course.getId());
+        qnaManagementService.registerNewQna(registerRequest, user.getEmail());
+        Question question = questionRepository.findAll().get(0);
+        question.setAnswerContent("답변 내용");
+        question.setAnswerAt(LocalDateTime.now());
+        questionRepository.save(question);
+
+        QnaUpdateRequest updateRequest = new QnaUpdateRequest(course.getId(), question.getId(), "질문 1", "수정된 질문 내용");
+
+        assertThrows(AnswerAlreadyRegisteredException.class, () -> {
+            qnaManagementService.updateQuestion(updateRequest, user.getEmail());
         });
     }
 
