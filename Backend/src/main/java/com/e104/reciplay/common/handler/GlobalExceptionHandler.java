@@ -5,6 +5,10 @@ import com.e104.reciplay.common.exception.InvalidUserRoleException;
 import com.e104.reciplay.common.exception.LectureNotFoundException;
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
+import com.e104.reciplay.course.courses.exception.CourseClosedException;
+import com.e104.reciplay.course.qna.exception.AnswerAlreadyRegisteredException;
+import com.e104.reciplay.course.qna.exception.CanNotAnswerException;
+import com.e104.reciplay.course.qna.exception.EnrollmentHistoryNotFoundException;
 import com.e104.reciplay.livekit.exception.CanNotOpenLiveRoomException;
 import com.e104.reciplay.livekit.exception.CanNotParticipateInLiveRoomException;
 import com.e104.reciplay.livekit.exception.EmptyPropertyException;
@@ -89,4 +93,28 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> fileUploadFailureExceptionHandler(FileUploadFailureException e) {
         return CommonResponseBuilder.badRequest(e.getMessage());
     }
+
+    @ExceptionHandler(EnrollmentHistoryNotFoundException.class)
+    public ResponseEntity<?> enrollmentHistoryNotFoundExceptionHandler(EnrollmentHistoryNotFoundException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(CourseClosedException.class)
+    public ResponseEntity<?> courseClosedExceptionHandler(CourseClosedException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+
+    @ExceptionHandler(CanNotAnswerException.class)
+    public ResponseEntity<?> canNotAnswerExceptionHandler(CanNotAnswerException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+
+    @ExceptionHandler(AnswerAlreadyRegisteredException.class)
+    public ResponseEntity<?> answerAlreadyRegisteredExceptionHandler(AnswerAlreadyRegisteredException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+
 }

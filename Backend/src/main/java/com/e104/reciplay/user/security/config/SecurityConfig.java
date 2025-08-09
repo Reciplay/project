@@ -123,7 +123,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT,
                         URL_PREFIX + "/user/auth/password").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers(URL_PREFIX+"/livekit/instructor/token").hasRole("INSTRUCTOR")
+                .requestMatchers(URL_PREFIX+"/livekit/instructor/token", URL_PREFIX+"/course/qna/answer/**").hasRole("INSTRUCTOR")
                 .requestMatchers(URL_PREFIX + "/admin").hasRole("ADMIN")
                 .anyRequest().authenticated());
 

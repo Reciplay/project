@@ -19,4 +19,15 @@ public class CustomCanLearnRepositoryImpl implements CustomCanLearnRepository{
                 .where(canLearn.courseId.eq(courseId))
                 .fetch(); // List<String> 반환
     }
+
+    @Override
+    public void insertCanLearnsWithCourseId(Long courseId, List<String> canLearns) {
+        for (String content : canLearns) {
+            queryFactory
+                    .insert(canLearn)
+                    .columns(canLearn.courseId, canLearn.content)
+                    .values(courseId, content)
+                    .execute();
+        }
+    }
 }

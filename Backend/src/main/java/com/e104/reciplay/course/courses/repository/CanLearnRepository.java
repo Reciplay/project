@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 public interface CanLearnRepository extends JpaRepository<CanLearn, Long>, CustomCanLearnRepository {
+    void deleteAllByCourseId(Long courseId);
 }

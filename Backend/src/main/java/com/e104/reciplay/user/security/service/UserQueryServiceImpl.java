@@ -53,4 +53,5 @@ public class UserQueryServiceImpl implements UserQueryService{
     public List<String> queryEmailsByNameAndBirthDay(String name, LocalDate birthDay) {
         return userRepository.findByNameAndBirthDate(name, birthDay).stream().map(User::getEmail).toList();
     }
+
 }

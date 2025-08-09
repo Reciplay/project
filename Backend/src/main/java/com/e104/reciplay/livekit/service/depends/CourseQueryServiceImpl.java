@@ -3,6 +3,7 @@ package com.e104.reciplay.livekit.service.depends;
 import com.e104.reciplay.course.courses.dto.response.CourseDetail;
 import com.e104.reciplay.course.courses.service.CanLearnQueryService;
 import com.e104.reciplay.course.courses.service.SubFileMetadataQueryService;
+import com.e104.reciplay.course.courses.service.ZzimQueryService;
 import com.e104.reciplay.entity.Course;
 import com.e104.reciplay.entity.FileMetadata;
 import com.e104.reciplay.repository.CourseRepository;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,10 +25,11 @@ import java.util.List;
 public class CourseQueryServiceImpl implements CourseQueryService{
     private final CourseRepository courseRepository;
     private final CanLearnQueryService canLearnQueryService;
-    //private final LectureSummaryQueryService lectureSummaryQueryService;
     private final ReviewQueryService reviewQueryService;
     private final CategoryQueryService categoryQueryService;
     private final SubFileMetadataQueryService subFileMetadataQueryService;
+    private final ZzimQueryService zzimQueryService;
+    private final CourseHistoryQueryService courseHistoryQueryService;
     private final S3Service s3Service;
     @Override
     public Course queryCourseById(Long id) {
@@ -34,8 +37,15 @@ public class CourseQueryServiceImpl implements CourseQueryService{
     }
 
     @Override
-    public List<CourseDetail> queryCourseDetailsByInstructorId(Long instructorId) {
-        List<Course> courses = courseRepository.findAllByInstructorId(instructorId);
+    public List<CourseDetail> queryCourseDetailsByInstructorId(Long instructorId, String courseStatus) {
+//      List<Course> courses = courseRepository.findAllByInstructorId(instructorId);
+        List<Course> courses;
+        switch (courseStatus){
+            case "soon": courses = courseRepository.findSoonCourseByInstructorId(instructorId); break;
+            case "ongoing": courses = courseRepository.findOngoingCourseByInstructorId(instructorId); break;
+            case "end": courses = courseRepository.findEndedCourseByInstructorId(instructorId); break;
+            default: throw new IllegalArgumentException("잘못된 courseStatus 값입니다. (soon / ongoing / end 중 하나여야 함)");
+        }
         List<CourseDetail> courseDetails = new ArrayList<>();
         for(Course c : courses){
             courseDetails.add(this.collectCourseDetailWithCommonFields(c));
@@ -43,12 +53,38 @@ public class CourseQueryServiceImpl implements CourseQueryService{
         return courseDetails;
     }
 
+    @Override
+//<<<<<<< HEAD
+    public CourseDetail queryCourseDetailByCourseId(Long courseId, Long userId) {
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강좌 ID 입니다."));
+        CourseDetail courseDetail = this.collectCourseDetailWithCommonFields(course);
+        Boolean isZzimed = zzimQueryService.isZzimed(courseId, userId);
+        Boolean isEnrolled = courseHistoryQueryService.enrolled(courseId, userId);
+        Boolean isReviewed = reviewQueryService.isReviewed(courseId, userId);
+
+        courseDetail.setIsZzimed(isZzimed);
+        courseDetail.setIsEnrolled(isEnrolled);
+        courseDetail.setIsReviwed(isReviewed);
+
+        return courseDetail;
+    }
+//=======
+    public Boolean isClosedCourse(Long courseId) {
+        Course course = this.queryCourseById(courseId);
+        return (LocalDate.now().isBefore(course.getCourseStartDate()) || LocalDate.now().isAfter(course.getCourseEndDate())) && course.getIsApproved();
+    }
+
+    @Override
+    public Boolean isInstructorOf(Long userId, Long courseId) {
+        return this.queryCourseById(courseId).getInstructorId().equals(userId);
+//>>>>>>> dev
+    }
+
 
     private CourseDetail collectCourseDetailWithCommonFields(Course course) {
         Long courseId = course.getId();
         CourseDetail courseDetail = new CourseDetail(course);
         List<String> canLearns = canLearnQueryService.queryContentsByCourseId(courseId);
-        //List<LectureSummary> lectureSummaries = lectureSummaryQueryService.queryLectureSummariesByCourseId(courseId);
         Integer reviewCount = reviewQueryService.countReviewsByCourseId(courseId);
         Double avgStars = reviewQueryService.avgStarsByCourseId(courseId);
         String category = categoryQueryService.queryNameByCourseId(courseId);
@@ -63,8 +99,6 @@ public class CourseQueryServiceImpl implements CourseQueryService{
         }
         ResponseFileInfo courseCoverFileInfo = s3Service.getResponseFileInfo(courseCover);
 
-
-        //courseDetail.setLectureSummaryList(lectureSummaries);
         courseDetail.setCanLearns(canLearns);
         courseDetail.setReviewCount(reviewCount);
         courseDetail.setAverageReviewScore(avgStars);

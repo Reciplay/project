@@ -17,4 +17,9 @@ public class ReviewQueryServiceImpl implements  ReviewQueryService{
     public Double avgStarsByCourseId(Long courseId) {
         return reviewRepository.avgStarsByCourseId(courseId);
     }
+
+    @Override
+    public Boolean isReviewed(Long courseId, Long userId) {
+        return reviewRepository.existsByCourseIdAndUserId(courseId, userId);
+    }
 }
