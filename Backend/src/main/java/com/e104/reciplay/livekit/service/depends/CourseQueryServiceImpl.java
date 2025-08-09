@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,8 +79,27 @@ public class CourseQueryServiceImpl implements CourseQueryService{
 
     }
 
+    @Override
+    public Boolean isStartedCourse(Long courseId) {
+        return queryCourseById(courseId).getCourseStartDate().isBefore(LocalDate.now());
+    }
 
-    private CourseDetail collectCourseDetailWithCommonFields(Course course) {
+    @Override
+    public Boolean isInEnrollmentTerm(Long courseId) {
+        Course course = queryCourseById(courseId);
+        return course.getEnrollmentStartDate().isBefore(LocalDateTime.now())
+                && course.getEnrollmentEndDate().isAfter(LocalDateTime.now());
+    }
+
+    @Override
+    public Boolean isFullyEnrolledCourse(Long courseId) {
+        Course course = queryCourseById(courseId);
+        return course.getMaxEnrollments() <= (courseHistoryQueryService.countEnrollmentsOf(courseId).intValue());
+    }
+
+
+    @Override
+    public CourseDetail collectCourseDetailWithCommonFields(Course course) {
         Long courseId = course.getId();
         CourseDetail courseDetail = new CourseDetail(course);
         List<String> canLearns = canLearnQueryService.queryContentsByCourseId(courseId);
@@ -105,6 +125,5 @@ public class CourseQueryServiceImpl implements CourseQueryService{
         courseDetail.setCourseCoverFileInfo(courseCoverFileInfo);
 
         return courseDetail;
-
     }
 }
