@@ -12,5 +12,7 @@ public interface CourseQueryService {
 
     CourseDetail queryCourseDetailByCourseId(Long courseId, Long userId);
 
+    Boolean isClosedCourse(Long courseId);
 
+    Boolean isInstructorOf(Long userId, Long courseId);
 }
