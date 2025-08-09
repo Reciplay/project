@@ -27,10 +27,10 @@ public class CourseHistory {
     @Column(name = "course_id")
     private Long courseId;
 
-    @Column(name = "enrollmented_at")
+    @Column(name = "enrolled_at")
     @CreatedDate
-    private LocalDateTime enrollmentedAt;
+    private LocalDateTime enrolledAt;
 
-    @Column(name = "is_enrollmented")
-    private Boolean isEnrollmented;
+    @Column(name = "is_enrolled")
+    private Boolean isEnrolled;
 }

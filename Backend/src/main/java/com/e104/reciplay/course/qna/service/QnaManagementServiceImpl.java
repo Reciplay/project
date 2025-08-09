@@ -4,6 +4,8 @@ import com.e104.reciplay.common.exception.InvalidUserRoleException;
 import com.e104.reciplay.course.courses.exception.CourseClosedException;
 import com.e104.reciplay.course.qna.dto.request.QnaAnswerRequest;
 import com.e104.reciplay.course.qna.dto.request.QnaRegisterRequest;
+import com.e104.reciplay.course.qna.dto.request.QnaUpdateRequest;
+import com.e104.reciplay.course.qna.exception.AnswerAlreadyRegisteredException;
 import com.e104.reciplay.course.qna.exception.CanNotAnswerException;
 import com.e104.reciplay.course.qna.exception.EnrollmentHistoryNotFoundException;
 import com.e104.reciplay.entity.Question;
@@ -28,6 +30,8 @@ public class QnaManagementServiceImpl implements QnaManagementService{
     private final CourseHistoryQueryService courseHistoryQueryService;
     private final UserQueryService userQueryService;
     private final CourseQueryService courseQueryService;
+    private final QnaQueryService qnaQueryService;
+
 
     @Override
     @Transactional
@@ -60,5 +64,25 @@ public class QnaManagementServiceImpl implements QnaManagementService{
         question.setAnswerContent(request.getContent());
         question.setAnswerAt(LocalDateTime.now());
         question.setAnswerUpdatedAt(LocalDateTime.now());
+    }
+
+    @Override
+    @Transactional
+    public void updateQuestion(QnaUpdateRequest request, String userEmail) {
+        User user = userQueryService.queryUserByEmail(userEmail);
+
+        if(!qnaQueryService.isQuestioner(user.getId(), request.getQnaId())) {
+            throw new EnrollmentHistoryNotFoundException("질문을 작성한 사람만 질문 수정이 가능합니다.");
+        }
+        if(courseQueryService.isClosedCourse(request.getCourseId())) {
+            throw new CourseClosedException("이미 종료된 강좌에는 질문 수정이 불가합니다.");
+        }
+        if(qnaQueryService.isAnsweredQuestion(request.getQnaId())) {
+            throw new AnswerAlreadyRegisteredException("이미 답변이 달린 질문은 수정할 수 없습니다.");
+        }
+
+        Question question = qnaQueryService.queryQnaById(request.getQnaId());
+        question.setQuestionContent(request.getQuestionContent());
+        question.setQuestionUpdatedAt(LocalDateTime.now());
     }
 }

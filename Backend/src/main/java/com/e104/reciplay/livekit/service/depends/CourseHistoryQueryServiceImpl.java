@@ -13,6 +13,6 @@ public class CourseHistoryQueryServiceImpl implements CourseHistoryQueryService{
 
     @Override
     public boolean enrolled(Long userId, Long courseId) {
-        return courseHistoryRepository.existsByUserIdAndCourseIdAndIsEnrollmented(userId, courseId, true);
+        return courseHistoryRepository.existsByUserIdAndCourseIdAndIsEnrolled(userId, courseId, true);
     }
 }
