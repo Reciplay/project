@@ -1,0 +1,79 @@
+.container {
+  padding: 24px 0;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.count {
+  font-size: 14px;
+  color: #777;
+  font-weight: 400;
+}
+
+.loading,
+.error {
+  padding: 24px 0;
+  text-align: center;
+  color: #666;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  gap: 20px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.navBtn {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.pageList {
+  display: flex;
+  gap: 6px;
+}
+
+.pageBtn {
+  min-width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+
+  &.active {
+    border-color: #333;
+    font-weight: 700;
+  }
+}
+
+.ellipsis {
+  min-width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  color: #999;
+}

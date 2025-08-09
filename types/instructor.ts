@@ -1,5 +1,4 @@
 export interface Instructor {
-  id: string;
   name: string;
   profileImage: string;
   coverImage: string;
@@ -7,14 +6,14 @@ export interface Instructor {
   licenses: License[];
   careers: Career[];
   subscriberCount: number;
-  isSubscribed: true;
+  isSubscribed: boolean;
 }
 export interface License {
   id: number;
   licenseName: string;
   institution: string;
   acquisitionDate: string;
-  grade: string;
+  grade: number;
 }
 
 export interface Career {

@@ -1,35 +1,32 @@
 "use client";
-
-import BaseButton from "@/components/button/baseButton";
-import { RefObject } from "react";
+import classNames from "classnames";
 import styles from "./scrollTabs.module.scss";
 
 interface ScrollTabsProps {
-  sectionRefs: RefObject<HTMLDivElement | null>[];
   tabTitles: string[];
+  activeIdx: number;
+  onClickTab: (index: number) => void;
 }
 
 export default function ScrollTabs({
-  sectionRefs,
   tabTitles,
+  activeIdx,
+  onClickTab,
 }: ScrollTabsProps) {
-  const handleScrollTo = (index: number) => {
-    sectionRefs[index].current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
-
   return (
     <div className={styles.tabContainer}>
       {tabTitles.map((title, idx) => (
-        <BaseButton
-          key={idx}
-          variant="ghost"
-          onClick={() => handleScrollTo(idx)}
-          title={title}
-          size="lg"
-        />
+        <button
+          key={title}
+          type="button"
+          className={classNames(styles.tab, {
+            [styles.active]: activeIdx === idx,
+          })}
+          onClick={() => onClickTab(idx)}
+        >
+          {title}
+          <span className={styles.underline} />
+        </button>
       ))}
     </div>
   );

@@ -1,3 +1,24 @@
+export interface CourseCard {
+  specialBannerUrl: string;
+  thumbnailUrl: string;
+  viewerCount: number;
+  title: string;
+  courseId: number;
+  category: string;
+  averageReviewScore: number;
+  isLive: boolean;
+  courseStartDate: string; // ISO 날짜 문자열
+  courseEndDate: string; // ISO 날짜 문자열
+  level: number;
+  summary: string;
+  description: string;
+  canLearns: string[];
+  isEnrolled: boolean;
+  announcement: string;
+  instructorId: number;
+  instructorName: string;
+}
+
 export interface Course {
   courseId: number;
   courseName: string;

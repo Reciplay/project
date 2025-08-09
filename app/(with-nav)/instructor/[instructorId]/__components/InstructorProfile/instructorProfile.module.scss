@@ -1,0 +1,15 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.content {
+  margin: 2.4rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+
+  > *:not(:last-child) {
+    padding-bottom: 2.4rem; // 간격 유지
+    border-bottom: 1px solid #e0e0e0c8; // 구분선
+  }
+}

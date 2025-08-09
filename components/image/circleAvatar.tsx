@@ -15,13 +15,14 @@ export default function CircleAvatar({
   height = 175,
 }: CircleAvatarProps) {
   return (
-    <div className={styles.imageWrapper}>
+    <div className={styles.avatar} style={{ width, height }}>
       <Image
-        className={styles.image}
-        alt={alt}
         src={src}
-        width={width}
-        height={height}
+        alt={alt}
+        fill
+        sizes="(max-width: 768px) 120px, 175px"
+        className={styles.img}
+        priority={false}
       />
     </div>
   );

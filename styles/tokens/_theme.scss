@@ -1,0 +1,32 @@
+/* styles/tokens/_theme.scss */
+:root {
+  color-scheme: light; /* 브라우저 기본 위젯 톤 */
+}
+
+/* data-theme 수동 전환 */
+[data-theme="light"] {
+  color-scheme: light;
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* 시스템 자동 모드 */
+:root.theme-auto {
+  color-scheme: light;
+}
+:root.theme-auto[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root.theme-auto:not([data-theme]) {
+    color-scheme: dark;
+  }
+}
+
+/* (선택) 스크롤바 톤 정리 */
+* {
+  scrollbar-color: rgba(var(--color-text-rgb), 0.4) transparent;
+  scrollbar-width: thin;
+}
