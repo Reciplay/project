@@ -20,37 +20,28 @@ export default function Certificate() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const [issuer, setIssuer] = useState('');
-  const [licenseOptions, setLicenseOptions] = useState<ResponseLicense[]>([]);
+
+  // 전체 옵션(페이지 로드시 API로 로드) + 필터 결과
+  const [allLicenses, setAllLicenses] = useState<ResponseLicense[]>([]);
+  const [filteredLicenses, setFilteredLicenses] = useState<ResponseLicense[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [useApi, setUseApi] = useState(true);
 
-  const { addCertificate, certificates, removeCertificate } = useInstructorStore();
+  const { addCertificate, certificates } = useInstructorStore();
 
+  // ✅ 페이지 로드 시 한 번만 API 호출
   useEffect(() => {
-    if (!useApi) return;
-
-    const timeout = setTimeout(async () => {
-      if (certificateName.trim().length < 1) {
-        setLicenseOptions([]);
-        setShowDropdown(false);
-        return;
-      }
-
+    const fetchLicenses = async () => {
       try {
-        const res = await restClient.get<ApiResponse<ResponseLicense[]>>(
-          "/user/license/list"
-        );
-        setLicenseOptions(res.data.data);
+        const res = await restClient.get<ApiResponse<ResponseLicense[]>>("/user/license/list", { requireAuth: true });
+        setAllLicenses(res.data.data ?? []);
+        console.log(res.data.data)
       } catch (error) {
         console.warn("API 호출 실패. 더미 데이터 사용", error);
-        setLicenseOptions(sampleLicenses.data);
-      } finally {
-        setShowDropdown(true);
+        setAllLicenses(sampleLicenses.data ?? []);
       }
-    }, 300);
-
-    return () => clearTimeout(timeout);
-  }, [certificateName, useApi]);
+    };
+    fetchLicenses();
+  }, []);
 
   const handleCancel = () => {
     setShowInput(false);
@@ -59,6 +50,7 @@ export default function Certificate() {
     setSelectedId(null);
     setSelectedDate(null);
     setShowDropdown(false);
+    setFilteredLicenses([]);
   };
 
   const handleSave = () => {
@@ -77,17 +69,18 @@ export default function Certificate() {
       grade: 0,
     });
 
-    // 🔥 입력값만 초기화하고 인풋창은 유지
+    // 입력값만 초기화(인풋은 유지)
     setCertificateName('');
     setIssuer('');
     setSelectedId(null);
     setSelectedDate(null);
     setShowDropdown(false);
+    setFilteredLicenses([]);
   };
-
 
   const escapeRegex = (value: string) =>
     value.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+
 
   return (
     <div>
@@ -118,23 +111,20 @@ export default function Certificate() {
                   const value = e.target.value;
                   setCertificateName(value);
                   setSelectedId(null);
-                  setUseApi(false);
 
                   if (!value.trim()) {
-                    setLicenseOptions([]);
                     setShowDropdown(false);
+                    setFilteredLicenses([]);
                     return;
                   }
 
                   try {
                     const regex = new RegExp(escapeRegex(value), 'i');
-                    const filtered = sampleLicenses.data.filter((item) =>
-                      regex.test(item.name)
-                    );
-                    setLicenseOptions(filtered);
+                    const filtered = allLicenses.filter((item) => regex.test(item.name));
+                    setFilteredLicenses(filtered);
                   } catch (err) {
                     console.error("정규식 에러:", err);
-                    setLicenseOptions([]);
+                    setFilteredLicenses([]);
                   } finally {
                     setShowDropdown(true);
                   }
@@ -143,15 +133,14 @@ export default function Certificate() {
 
               {showDropdown && (
                 <ul className={styles.dropdown}>
-                  {licenseOptions.length > 0 ? (
-                    licenseOptions.map((item) => (
+                  {filteredLicenses.length > 0 ? (
+                    filteredLicenses.map((item) => (
                       <li
                         key={item.id}
                         onClick={() => {
                           setCertificateName(item.name);
                           setSelectedId(item.id);
                           setShowDropdown(false);
-                          setUseApi(true);
                         }}
                       >
                         <div className={styles.name}>{item.name}</div>
@@ -199,11 +188,11 @@ export default function Certificate() {
               onClick={handleSave}
             />
           </div>
-          <div style={{ marginTop: 12 }}>
-            <CertificatesTable />
-          </div>
         </>
       )}
+      <div style={{ marginTop: 12 }}>
+        <CertificatesTable />
+      </div>
     </div>
   );
 }

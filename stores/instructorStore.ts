@@ -37,6 +37,9 @@ export interface InstructorState {
 
   addCertificate: (cert: Certificate) => void;
   removeCertificate: (index: number) => void;
+
+  addCareer: (career: Career) => void;
+  removeCareer: (index: number) => void;
 }
 
 export const useInstructorStore = create<InstructorState>((set) => ({
@@ -62,5 +65,12 @@ export const useInstructorStore = create<InstructorState>((set) => ({
   removeCertificate: (index) =>
     set((state) => ({
       certificates: state.certificates.filter((_, i) => i !== index),
+    })),
+
+  addCareer: (career) =>
+    set((state) => ({ careers: [...state.careers, career] })),
+  removeCareer: (index) =>
+    set((state) => ({
+      careers: state.careers.filter((_, i) => i !== index),
     })),
 }));

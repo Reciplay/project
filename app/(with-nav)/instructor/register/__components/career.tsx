@@ -5,28 +5,43 @@ import BaseButton from '@/components/button/baseButton';
 import styles from "./career.module.scss";
 import Image from "next/image";
 import { useState } from 'react';
-import MonthDatePicker from "@/components/calendar/monthDatePicker";
 import { DatePicker } from "antd";
+import { useInstructorStore } from "@/stores/instructorStore";
+import CareersTable from "./careerTable/careerTable";
 
 export default function Career() {
     const [showInput, setShowInput] = useState(false);
-    const [certificateName, setCertificateName] = useState('');
-    const [issuer, setIssuer] = useState('');
     const [certificates, setCertificates] = useState<{ name: string; issuer: string }[]>([]);
+    const [companyName, setCompanyName] = useState('');
+    const [position, setPosition] = useState('');
+    const [jobDescription, setJobDescription] = useState('');
+    const [startDate, setStartDate] = useState<string>('');
+    const [endDate, setEndDate] = useState<string>('');
+
+    const { careers, addCareer, removeCareer } = useInstructorStore();
 
     const handleCancel = () => {
         setShowInput(false);
-        setCertificateName('');
-        setIssuer('');
+        setCompanyName('');
+        setPosition('');
+        setJobDescription('');
+        setStartDate('');
+        setEndDate('');
     };
 
     const handleSave = () => {
-        if (certificateName && issuer) {
-            setCertificates([...certificates, { name: certificateName, issuer: issuer }]);
-            handleCancel(); // Clear inputs and hide them after saving
-        } else {
-            alert('자격증명과 발행처/기관을 모두 입력해주세요.'); // Basic validation
+        if (!companyName || !position || !startDate || !endDate) {
+            alert('회사명, 직책, 시작일, 종료일을 모두 입력해주세요.');
+            return;
         }
+
+        addCareer({
+            companyName,
+            position,
+            jobDescription,
+            startDate,
+            endDate,
+        });
     };
 
     return (
@@ -47,13 +62,6 @@ export default function Career() {
                 </div>
             )}
 
-            {certificates.map((cert, index) => (
-                <div key={index} className={styles.certificateItem}>
-                    <span className={styles.certificateName}>{cert.name}</span>
-                    <span className={styles.certificateIssuer}>{cert.issuer}</span>
-                </div>
-            ))}
-
             {/* Input fields and buttons */}
             {showInput && (
                 <>
@@ -62,29 +70,34 @@ export default function Career() {
                             <BaseInput
                                 placeholder="회사명 *"
                                 type="custom"
-                                value={certificateName}
-                                onChange={(e) => setCertificateName(e.target.value)}
+                                value={companyName}
+                                onChange={(e) => setCompanyName(e.target.value)}
                             />
                             <BaseInput
                                 placeholder="직책"
                                 type="custom"
-                                value={issuer}
-                                onChange={(e) => setIssuer(e.target.value)}
+                                value={position}
+                                onChange={(e) => setPosition(e.target.value)}
                             />
                             <DatePicker
-                                onChange={() => { }}
+                                onChange={(date) => setStartDate(date?.format("YYYY-MM-DD") || '')}
                                 picker="month"
                                 placeholder="입사년월"
                                 className={styles.customDatePicker}
                             />
                             <DatePicker
-                                onChange={() => { }}
+                                onChange={(date) => setEndDate(date?.format("YYYY-MM-DD") || '')}
                                 picker="month"
                                 placeholder="퇴사년월"
                                 className={styles.customDatePicker}
                             />
                         </div>
-                        <textarea className={styles.textarea} placeholder="담당했던 업무에 대해 작성해주세요"></textarea>
+                        <textarea
+                            className={styles.textarea}
+                            placeholder="담당했던 업무에 대해 작성해주세요"
+                            value={jobDescription}
+                            onChange={(e) => setJobDescription(e.target.value)}
+                        />
                     </div>
 
 
@@ -110,6 +123,9 @@ export default function Career() {
                 </>
             )
             }
+            <div style={{ marginTop: 12 }}>
+                <CareersTable />
+            </div>
         </div >
     );
 }

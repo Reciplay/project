@@ -8,8 +8,8 @@ interface IconWithTextProps {
   size?: number;
   editable?: boolean;
   onChange?: (value: string) => void;
-  onClick?: () => void;
-  value?: string; // ✅ react-hook-form Controller 지원용
+  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void; // 수정
+  value?: string;
 }
 
 export default function IconWithText({

@@ -51,8 +51,14 @@ export default function page() {
 			certificates,
 			careers,
 		};
+		await fetch('/api/v1/instructor', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(payload),  // ← 여기로 안전하게 전송
+		});
 
 		console.log('💾 전송할 payload:', payload);
+		console.log('주소:', profile.address);
 
 		try {
 			await postInstructorData(payload);
