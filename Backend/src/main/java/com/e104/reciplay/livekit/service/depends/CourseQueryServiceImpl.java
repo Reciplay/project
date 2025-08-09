@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,6 +81,23 @@ public class CourseQueryServiceImpl implements CourseQueryService{
 //>>>>>>> dev
     }
 
+    @Override
+    public Boolean isStartedCourse(Long courseId) {
+        return queryCourseById(courseId).getCourseStartDate().isBefore(LocalDate.now());
+    }
+
+    @Override
+    public Boolean isInEnrollmentTerm(Long courseId) {
+        Course course = queryCourseById(courseId);
+        return course.getEnrollmentStartDate().isBefore(LocalDateTime.now())
+                && course.getEnrollmentEndDate().isAfter(LocalDateTime.now());
+    }
+
+    @Override
+    public Boolean isFullyEnrolledCourse(Long courseId) {
+        Course course = queryCourseById(courseId);
+        return course.getMaxEnrollments() <= (courseHistoryQueryService.countEnrollmentsOf(courseId).intValue());
+    }
 
 
     private CourseDetail collectCourseDetailWithCommonFields(Course course) {

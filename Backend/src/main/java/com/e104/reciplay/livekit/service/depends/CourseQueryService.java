@@ -16,4 +16,9 @@ public interface CourseQueryService {
 
     Boolean isInstructorOf(Long userId, Long courseId);
 
+    Boolean isStartedCourse(Long courseId);
+
+    Boolean isInEnrollmentTerm(Long courseId);
+
+    Boolean isFullyEnrolledCourse(Long courseId);
 }

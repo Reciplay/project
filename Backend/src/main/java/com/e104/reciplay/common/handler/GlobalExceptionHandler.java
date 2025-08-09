@@ -6,6 +6,7 @@ import com.e104.reciplay.common.exception.LectureNotFoundException;
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.course.courses.exception.CourseClosedException;
+import com.e104.reciplay.course.enrollment.exception.AlreadyEnrolledException;
 import com.e104.reciplay.course.qna.exception.AnswerAlreadyRegisteredException;
 import com.e104.reciplay.course.qna.exception.CanNotAnswerException;
 import com.e104.reciplay.course.qna.exception.EnrollmentHistoryNotFoundException;
@@ -113,6 +114,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AnswerAlreadyRegisteredException.class)
     public ResponseEntity<?> answerAlreadyRegisteredExceptionHandler(AnswerAlreadyRegisteredException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(AlreadyEnrolledException.class)
+    public ResponseEntity<?> alreadyEnrolledExceptionHandler(AlreadyEnrolledException e) {
         return CommonResponseBuilder.badRequest(e.getMessage());
     }
 
