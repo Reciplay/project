@@ -1,4 +1,4 @@
-import { CourseCard, MainCourse } from "@/types/course";
+import { CourseCard, CourseDetail, MainCourse } from "@/types/course";
 
 export const sampleCourse1: MainCourse[] = [
   {
@@ -527,3 +527,81 @@ export const sampleCourseCards: CourseCard[] = [
     instructorName: "최지훈",
   },
 ];
+
+export const sampleCourseDetail: CourseDetail = {
+  thumbnailFileInfos: [
+    {
+      presignedUrl: "/images/food1.jpg",
+      name: "thumb1.jpg",
+      sequence: 0,
+    },
+  ],
+  courseCoverFileInfo: {
+    presignedUrl: "/images/courseDetail.png",
+    name: "cover.jpg",
+    sequence: 0,
+  },
+  title:
+    "이탈리아 현지 미슐랭 요리사에게 배우는 파스타, 뇨끼, 리조또! 프리미 피아띠 정복하기",
+  courseStartDate: "2025-07-23",
+  courseEndDate: "2025-08-31",
+  instructorId: 1,
+  courseId: 101,
+  enrollmentStartDate: "2025-07-01T00:00:00.000Z",
+  enrollmentEndDate: "2025-07-31T23:59:59.000Z",
+  category: "요리 / 양식",
+  reviewCount: 350,
+  averageReviewScore: 5.0,
+  summary:
+    "한국에서 쉽게 구할 수 있는 재료로 완성하는 양식 코스요리. 김밀란 셰프와 함께 파스타, 뇨끼, 리조또를 마스터하세요.",
+  maxEnrollments: 500,
+  isEnrollment: true,
+  description: `안녕하세요, 유튜브 채널을 운영하며 김밀란 파스타, 리조또 2권의 책을 낸
+          요리사 김밀란입니다. 이번 클래스에서는 한국에서 쉽게 구할 수 있는
+          재료를 이용해 하나의 양식 코스요리를 완성해 볼 예정입니다.`,
+
+  level: 2,
+  isZzim: true,
+  isLive: true,
+  announcement: `강의 학습 규정:\n
+- 강의 영상 공개일은 예고 없이 변경될 수 있습니다.\n
+- 일부 이미지는 이해를 돕기 위한 참고 이미지입니다.\n
+- 상황에 따라 조기 마감/연장될 수 있습니다.\n
+- 사전 예약 강의는 공개 일정에 따라 순차적으로 오픈됩니다.`,
+  isReviwed: true,
+  canLearns: [
+    "이탈리아 전통 파스타 제조법",
+    "뇨끼 반죽과 소스 조합",
+    "리조또 완성도 높이는 비법",
+  ],
+  lectureSummaryList: [
+    {
+      sequence: 1,
+      lectureId: 1001,
+      title: "오리엔테이션 및 재료 준비",
+      startedAt: "2025-07-23T10:00:00.000Z",
+      isSkipped: false,
+    },
+    {
+      sequence: 2,
+      lectureId: 1002,
+      title: "파스타 만들기",
+      startedAt: "2025-07-24T10:00:00.000Z",
+      isSkipped: false,
+    },
+    {
+      sequence: 3,
+      lectureId: 1003,
+      title: "뇨끼와1 리조또 완성",
+      startedAt: "2025-07-26T10:00:00.000Z",
+      isSkipped: false,
+    },
+    {
+      sequence: 4,
+      lectureId: 1003,
+      title: "뇨11끼와 리조또 완성",
+      startedAt: "2025-08-26T10:00:00.000Z",
+      isSkipped: false,
+    },
+  ],
+};

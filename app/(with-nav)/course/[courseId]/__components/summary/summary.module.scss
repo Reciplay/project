@@ -3,7 +3,7 @@
   justify-content: flex-start;
   align-items: center;
   gap: 3.6rem;
-  padding: 2rem;
+  margin: 2rem 0;
   border-radius: 0.8rem 0.4rem;
   width: 100%;
   box-sizing: border-box;
@@ -35,29 +35,66 @@
 
 .title {
   font-weight: 700;
-  font-size: 2.4rem;
+  /* 큰 화면에서 과도한 확대 방지 */
+  font-size: clamp(1.8rem, 2.2vw, 2.4rem);
   line-height: 1.33;
+  color: var(--color-text, #111);
+
+  /* 긴 제목 안전 처리 */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 .desc {
   font-weight: 400;
   font-size: 1.8rem;
   line-height: 1.5;
-  color: #858585;
+  color: var(--color-subtext, #858585);
+
+  /* 너무 길면 3줄 말줄임 */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  @media (max-width: 900px) {
+    -webkit-line-clamp: 4;
+  }
 }
 
 .rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
   font-weight: 600;
   font-size: 1.2rem;
   line-height: 1.4;
-  color: #444;
+  color: var(--color-text, #444);
+
+  .starWrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    color: var(--color-text, #111);
+  }
+
+  .meta {
+    color: var(--color-subtext, #6b7280);
+    white-space: nowrap;
+  }
 }
 
 .author {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
   font-weight: 400;
   font-size: 1.2rem;
   line-height: 1.4;
-  color: #777;
+  color: var(--color-subtext, #777);
 }
 
 .right {

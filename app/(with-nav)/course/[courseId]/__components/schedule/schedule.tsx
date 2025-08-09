@@ -1,15 +1,16 @@
-import { forwardRef } from "react";
-import styles from "./schedule.module.scss";
 import Calendar from "@/components/calendar/calendar";
+import { CourseDetail } from "@/types/course";
+import styles from "./schedule.module.scss";
 
-const Schedule = forwardRef<HTMLDivElement>((_, ref) => {
+interface ScheduleProps {
+  courseDetail: CourseDetail;
+}
+
+export default function Schedule({ courseDetail }: ScheduleProps) {
   return (
-    <div className={styles.section} ref={ref}>
+    <div className={styles.section}>
       <h2>강의 시간표</h2>
-      <Calendar />
+      <Calendar lectures={courseDetail.lectureSummaryList} />
     </div>
   );
-});
-
-Schedule.displayName = "Schedule";
-export default Schedule;
+}

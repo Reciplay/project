@@ -1,42 +1,60 @@
-import IconWithText from "@/components/text/iconWithText";
-import styles from "./summary.module.scss";
-import Image from "next/image";
-import CustomCarousel from "@/components/carousel/customCarousel";
 import Star from "@/components/rate/star";
+import IconWithText from "@/components/text/iconWithText";
+import { CourseDetail } from "@/types/course";
+import Image from "next/image";
+import styles from "./summary.module.scss";
 
-export default function Summary() {
+interface SummaryProps {
+  courseDetail: CourseDetail;
+}
+
+export default function Summary({ courseDetail }: SummaryProps) {
+  const thumb =
+    courseDetail.thumbnailFileInfos
+      ?.slice()
+      .sort((a, b) => a.sequence - b.sequence)[0]?.presignedUrl ||
+    courseDetail.courseCoverFileInfo?.presignedUrl ||
+    "/images/default_thumbnail.jpg";
+
+  const rating = Math.max(
+    0,
+    Math.min(5, Number(courseDetail.averageReviewScore ?? 0))
+  );
+  const ratingText = rating.toFixed(1);
+
+  const reviewCount = courseDetail.reviewCount ?? 0;
+  const maxEnroll = courseDetail.maxEnrollments ?? 0;
+
   return (
     <div className={styles.container}>
       <div className={styles.left}>
-        <div className={styles.title}>
-          이탈리아 현지 미슐랭 요리사에게 배우는 파스타, 뇨끼, 리조또! 프리미
-          피아띠 정복하기
-        </div>
-        <div className={styles.desc}>
-          안녕하세요, 유튜브 채널을 운영하며 김밀란 파스타, 리조또 2권의 책을 낸
-          요리사 김밀란입니다. 이번 클래스에서는 한국에서 쉽게 구할 수 있는
-          재료를 이용해 하나의 양식 코스요리를 완성해 볼 예정입니다.
-        </div>
+        <div className={styles.title}>{courseDetail.title}</div>
+        <div className={styles.desc}>{courseDetail.description}</div>
         <div className={styles.rating}>
-          <span>
-            <Star value={5} /> 5.0{" "}
+          <span className={styles.starWrap}>
+            <Star value={rating} /> {ratingText}
           </span>
-          수강평 350개 수강생 465명
+          <span className={styles.meta}>
+            수강평 {reviewCount.toLocaleString()}개 · 정원{" "}
+            {maxEnroll.toLocaleString()}명
+          </span>
         </div>
         <div className={styles.author}>
+          {/* CourseDetail에 instructorName이 없으면 추후 주입 */}
           <IconWithText iconName="user" title="김밀란" />
         </div>
       </div>
       <div className={styles.right}>
-        {/* <CustomCarousel /> */}
-        {/* <div className={styles.imageWrapper}>
+        <div className={styles.imageWrapper}>
           <Image
             className={styles.thumbnail}
-            src="/images/food1.jpg"
+            src={thumb}
             fill
-            alt="thumbnail"
+            alt={`${courseDetail.title} 썸네일`}
+            sizes="(max-width: 768px) 100vw, 560px"
+            priority={false}
           />
-        </div> */}
+        </div>
       </div>
     </div>
   );
