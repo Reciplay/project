@@ -26,20 +26,21 @@ export default function RedirectGate({
     ],
     []
   );
-  // ✅ 로그인 필수 "프리픽스 매칭" 라우트 (동적 경로용)
-  const PROTECTED_PREFIXES: string[] = useMemo(
-    () => [
-      ROUTES.COURSE.ROOT, // /course, /course/123 ...
-      ROUTES.INSTRUCTOR.DASHBOARD, // /instructor, /instructor/...
-    ],
-    []
-  );
 
-  const isProtected = (p: string) =>
-    PROTECTED_ROUTES.includes(p) ||
-    PROTECTED_PREFIXES.some(
-      (prefix) => p === prefix || p.startsWith(`${prefix}/`)
-    );
+  // // ✅ 로그인 필수 "프리픽스 매칭" 라우트 (동적 경로용)
+  // const PROTECTED_PREFIXES: string[] = useMemo(
+  //   () => [
+  //     ROUTES.COURSE.ROOT, // /course, /course/123 ...
+  //     ROUTES.INSTRUCTOR.DASHBOARD, // /instructor, /instructor/...
+  //   ],
+  //   []
+  // );
+
+  const isProtected = (p: string) => PROTECTED_ROUTES.includes(p);
+  // ||
+  //   PROTECTED_PREFIXES.some(
+  //     (prefix) => p === prefix || p.startsWith(`${prefix}/`)
+  //   );
 
   // 0) 로그인 안 되어 있고 보호 라우트면 → 로그인으로
   useEffect(() => {

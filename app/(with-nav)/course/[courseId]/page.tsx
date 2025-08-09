@@ -1,7 +1,8 @@
 "use client";
 
+import BaseButton from "@/components/button/baseButton";
 import ScrollTabs from "@/components/tab/scrollTabs";
-import { useRef } from "react";
+import { useScrollTabs } from "@/hooks/useScrollTabs";
 import Notices from "./__components/notices/notices";
 import Overview from "./__components/overview/overview";
 import QnA from "./__components/qna/qna";
@@ -11,18 +12,15 @@ import Schedule from "./__components/schedule/schedule";
 import Status from "./__components/status/status";
 import Summary from "./__components/summary/summary";
 import styles from "./page.module.scss";
-import BaseButton from "@/components/button/baseButton";
 
 export default function Page() {
-  const sectionRefs = [
-    useRef<HTMLDivElement>(null),
-    useRef<HTMLDivElement>(null),
-    useRef<HTMLDivElement>(null),
-    useRef<HTMLDivElement>(null),
-    useRef<HTMLDivElement>(null),
-  ];
+  const tabTitles = ["강의상세", "강의 시간표", "공지사항", "Q&A", "리뷰"];
+  const { activeIdx, handleScrollTo, sectionRefs } = useScrollTabs(
+    tabTitles.length
+  );
 
-  const tabTitles = ["강의상세", "Q&A", "공지사항", "강의 시간표", "리뷰"];
+  
+
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -30,12 +28,26 @@ export default function Page() {
         <Summary />
         <Review />
         <Status />
-        <ScrollTabs sectionRefs={sectionRefs} tabTitles={tabTitles} />
-        <Overview ref={sectionRefs[0]} />
-        <QnA ref={sectionRefs[1]} />
-        <Notices ref={sectionRefs[2]} />
-        <Schedule ref={sectionRefs[3]} />
-        <Reviews ref={sectionRefs[4]} />
+        <ScrollTabs
+          tabTitles={tabTitles}
+          activeIdx={activeIdx}
+          onClickTab={handleScrollTo}
+        />{" "}
+        <section ref={sectionRefs[0]}>
+          <Overview />
+        </section>
+        <section ref={sectionRefs[1]}>
+          <QnA />
+        </section>
+        <section ref={sectionRefs[2]}>
+          <Notices />
+        </section>
+        <section ref={sectionRefs[3]}>
+          <Schedule />
+        </section>
+        <section ref={sectionRefs[4]}>
+          <Reviews />
+        </section>
       </div>
       <div className={styles.interaction}>
         <div className={styles.box}>

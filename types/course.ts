@@ -108,3 +108,43 @@ export interface MainCourse {
   endDate: string;
   isEnrolled: boolean;
 }
+
+export interface CourseDetail {
+  thumbnailFileInfos: {
+    presignedUrl: string;
+    name: string;
+    sequence: number;
+  }[];
+  courseCoverFileInfo: {
+    presignedUrl: string;
+    name: string;
+    sequence: number;
+  };
+  title: string;
+  courseStartDate: string; // YYYY-MM-DD
+  courseEndDate: string; // YYYY-MM-DD
+  instructorId: number;
+  courseId: number;
+  enrollmentStartDate: string; // ISO datetime
+  enrollmentEndDate: string; // ISO datetime
+  category: string;
+  reviewCount: number;
+  averageReviewScore: number;
+  summary: string;
+  maxEnrollments: number;
+  isEnrollment: boolean;
+  description: string;
+  level: number;
+  isZzim: boolean;
+  isLive: boolean;
+  announcement: string;
+  isReviwed: boolean;
+  canLearns: string[];
+  lectureSummaryList: {
+    sequence: number;
+    lectureId: number;
+    title: string;
+    startedAt: string; // ISO datetime
+    isSkipped: boolean;
+  }[];
+}
