@@ -24,4 +24,9 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
     public Long queryInstructorIdByEmail(String email) {
         return instructorRepository.findIdByemail(email);
     }
+
+    @Override
+    public String queryNameByInstructorId(Long instructorId) {
+        return instructorRepository.findNameById(instructorId);
+    }
 }

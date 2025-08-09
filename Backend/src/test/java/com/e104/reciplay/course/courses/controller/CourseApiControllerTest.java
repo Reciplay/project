@@ -1,14 +1,17 @@
 package com.e104.reciplay.course.courses.controller;
 
+import com.e104.reciplay.course.courses.dto.request.CourseCardCondition;
 import com.e104.reciplay.course.courses.dto.request.RequestCourseInfo;
+import com.e104.reciplay.course.courses.dto.response.CourseCard;
 import com.e104.reciplay.course.courses.dto.response.CourseDetail;
+import com.e104.reciplay.course.courses.dto.response.PagedResponse;
+import com.e104.reciplay.course.courses.service.CourseCardQueryService;
 import com.e104.reciplay.livekit.service.depends.CourseManagementService;
 import com.e104.reciplay.livekit.service.depends.CourseQueryService;
 import com.e104.reciplay.livekit.service.depends.InstructorQueryService;
+import com.e104.reciplay.user.security.domain.User;
 import com.e104.reciplay.user.security.service.UserQueryService;
 import com.e104.reciplay.user.security.util.AuthenticationUtil;
-import com.e104.reciplay.user.security.domain.User;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +30,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,16 +44,20 @@ class CourseApiControllerTest {
     @Mock private CourseQueryService courseQueryService;
     @Mock private CourseManagementService courseManagementService;
     @Mock private UserQueryService userQueryService;
+    // ✅ 추가: /cards에서 사용할 서비스
+    @Mock private CourseCardQueryService courseCardQueryService;
 
     private MockMvc mockMvc;
 
     @BeforeEach
     void setup() {
+        // ✅ 생성자 인자에 courseCardQueryService 추가
         CourseApiController controller = new CourseApiController(
                 instructorQueryService,
                 courseQueryService,
                 courseManagementService,
-                userQueryService
+                userQueryService,
+                courseCardQueryService
         );
 
         PageableHandlerMethodArgumentResolver pageableResolver =
@@ -62,18 +70,49 @@ class CourseApiControllerTest {
     }
 
     @Test
-    @DisplayName("GET /cards - 페이지 카드 조회 성공")
+    @DisplayName("GET /cards - 페이지 카드 조회 성공 (userId 반영, 서비스 호출 검증)")
     void getCourseCardsPage_ok() throws Exception {
-        mockMvc.perform(
-                        get("/api/v1/course/courses/cards")
-                                .param("requestCategory", "special")
-                                .param("page", "0")
-                                .param("size", "10")
-                )
-                .andExpect(status().isOk());
+        String email = "user@example.com";
+        Long userId = 100L;
 
-        // 현재 컨트롤러는 서비스 호출 없음
-        verifyNoInteractions(instructorQueryService, courseQueryService, courseManagementService, userQueryService);
+        User mockUser = mock(User.class);
+        when(mockUser.getId()).thenReturn(userId);
+
+        PagedResponse<CourseCard> fakePage = PagedResponse.<CourseCard>builder()
+                .content(List.of())
+                .page(0)
+                .size(10)
+                .totalPages(0)
+                .totalElements(0L)
+                .hasNext(false)
+                .hasPrevious(false)
+                .build();
+
+        try (MockedStatic<AuthenticationUtil> mocked = mockStatic(AuthenticationUtil.class)) {
+            mocked.when(AuthenticationUtil::getSessionUsername).thenReturn(email);
+            when(userQueryService.queryUserByEmail(email)).thenReturn(mockUser);
+
+            // ✅ 기존 courseQueryService가 아니라 courseCardQueryService로 스텁/검증
+            when(courseCardQueryService.queryCardsByCardCondtion(any(CourseCardCondition.class), any(), eq(userId)))
+                    .thenReturn(fakePage);
+
+            mockMvc.perform(
+                            get("/api/v1/course/courses/cards")
+                                    .param("requestCategory", "special")
+                                    .param("page", "0")
+                                    .param("size", "10")
+                                    .param("sort", "courseStartDate,desc")
+                    )
+                    .andExpect(status().isOk());
+
+            ArgumentCaptor<CourseCardCondition> condCap = ArgumentCaptor.forClass(CourseCardCondition.class);
+            verify(courseCardQueryService).queryCardsByCardCondtion(condCap.capture(), any(), eq(userId));
+            assertEquals("special", condCap.getValue().getRequestCategory());
+
+            verify(userQueryService).queryUserByEmail(email);
+            verifyNoMoreInteractions(userQueryService, courseCardQueryService);
+            verifyNoInteractions(instructorQueryService, courseManagementService, courseQueryService);
+        }
     }
 
     @Test
@@ -96,7 +135,7 @@ class CourseApiControllerTest {
             verify(instructorQueryService).queryInstructorIdByEmail(email);
             verify(courseQueryService).queryCourseDetailsByInstructorId(instructorId, courseStatus);
             verifyNoMoreInteractions(instructorQueryService, courseQueryService);
-            verifyNoInteractions(courseManagementService, userQueryService);
+            verifyNoInteractions(courseManagementService, userQueryService, courseCardQueryService);
         }
     }
 
@@ -110,7 +149,6 @@ class CourseApiControllerTest {
         try (MockedStatic<AuthenticationUtil> mocked = mockStatic(AuthenticationUtil.class)) {
             mocked.when(AuthenticationUtil::getSessionUsername).thenReturn(email);
 
-            // User mock 생성 및 getId 스텁
             User mockUser = mock(User.class);
             when(mockUser.getId()).thenReturn(userId);
             when(userQueryService.queryUserByEmail(email)).thenReturn(mockUser);
@@ -125,7 +163,7 @@ class CourseApiControllerTest {
             verify(userQueryService).queryUserByEmail(email);
             verify(courseQueryService).queryCourseDetailByCourseId(courseId, userId);
             verifyNoMoreInteractions(userQueryService, courseQueryService);
-            verifyNoInteractions(instructorQueryService, courseManagementService);
+            verifyNoInteractions(instructorQueryService, courseManagementService, courseCardQueryService);
         }
     }
 
@@ -135,7 +173,6 @@ class CourseApiControllerTest {
         String email = "ins@example.com";
         Long instructorId = 9L;
 
-        // JSON 파트 (RequestCourseInfo)
         String json = """
                 {
                   "title":"테스트 강좌",
@@ -155,7 +192,6 @@ class CourseApiControllerTest {
                 MediaType.APPLICATION_JSON_VALUE, json.getBytes(StandardCharsets.UTF_8)
         );
 
-        // 파일 파트
         MockMultipartFile cover = new MockMultipartFile(
                 "courseCoverImage", "cover.png", "image/png", "cover".getBytes()
         );
@@ -169,7 +205,6 @@ class CourseApiControllerTest {
         try (MockedStatic<AuthenticationUtil> mocked = mockStatic(AuthenticationUtil.class)) {
             mocked.when(AuthenticationUtil::getSessionUsername).thenReturn(email);
             when(instructorQueryService.queryInstructorIdByEmail(email)).thenReturn(instructorId);
-            // 서비스가 Long 반환
             when(courseManagementService.createCourseByInstructorId(anyLong(), any(RequestCourseInfo.class), anyList(), any()))
                     .thenReturn(100L);
 
@@ -184,20 +219,20 @@ class CourseApiControllerTest {
                     )
                     .andExpect(status().isOk());
 
-            // DTO 매핑 검증
             ArgumentCaptor<RequestCourseInfo> infoCaptor = ArgumentCaptor.forClass(RequestCourseInfo.class);
             verify(courseManagementService).createCourseByInstructorId(eq(instructorId), infoCaptor.capture(), anyList(), any());
             RequestCourseInfo parsed = infoCaptor.getValue();
-            org.junit.jupiter.api.Assertions.assertEquals("테스트 강좌", parsed.getTitle());
-            org.junit.jupiter.api.Assertions.assertEquals(10L, parsed.getCategoryId());
-            org.junit.jupiter.api.Assertions.assertEquals(2, parsed.getCanLearns().size());
+            assertEquals("테스트 강좌", parsed.getTitle());
+            assertEquals(10L, parsed.getCategoryId());
+            assertEquals(2, parsed.getCanLearns().size());
+
+            verifyNoInteractions(courseCardQueryService);
         }
     }
 
     @Test
     @DisplayName("PUT '' - 강좌 수정 multipart 요청 성공 (CourseIdResponse 반환)")
     void updateCourse_ok() throws Exception {
-        // JSON 파트 (RequestCourseInfo) — courseId 포함
         String json = """
                 {
                   "courseId": 123,
@@ -225,7 +260,6 @@ class CourseApiControllerTest {
                 "thumbnailImages", "t1.png", "image/png", "t1".getBytes()
         );
 
-        // MockMvc의 multipart()는 기본 POST이므로 PUT으로 바꿔줘야 함
         MockHttpServletRequestBuilder putMultipart =
                 multipart("/api/v1/course/courses")
                         .file(infoPart)
@@ -235,7 +269,6 @@ class CourseApiControllerTest {
                         .characterEncoding("UTF-8")
                         .with(req -> { req.setMethod("PUT"); return req; });
 
-        // 서비스가 Long 반환
         when(courseManagementService.updateCourseByCourseId(any(RequestCourseInfo.class), anyList(), any()))
                 .thenReturn(123L);
 
@@ -245,8 +278,10 @@ class CourseApiControllerTest {
         ArgumentCaptor<RequestCourseInfo> infoCaptor = ArgumentCaptor.forClass(RequestCourseInfo.class);
         verify(courseManagementService).updateCourseByCourseId(infoCaptor.capture(), anyList(), any());
         RequestCourseInfo parsed = infoCaptor.getValue();
-        org.junit.jupiter.api.Assertions.assertEquals(123L, parsed.getCourseId());
-        org.junit.jupiter.api.Assertions.assertEquals("수정 강좌", parsed.getTitle());
-        org.junit.jupiter.api.Assertions.assertEquals(3, parsed.getCanLearns().size());
+        assertEquals(123L, parsed.getCourseId());
+        assertEquals("수정 강좌", parsed.getTitle());
+        assertEquals(3, parsed.getCanLearns().size());
+
+        verifyNoInteractions(courseCardQueryService);
     }
 }

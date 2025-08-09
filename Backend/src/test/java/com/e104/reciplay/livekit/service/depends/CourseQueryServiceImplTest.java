@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 /**
- * CourseQueryServiceImpl의 모든 public 메서드를 커버하는 단위 테스트
+ * CourseQueryServiceImpl 단위 테스트 (queryCardsByCardCondtion 제거 반영)
  */
 @ExtendWith(MockitoExtension.class)
 class CourseQueryServiceImplTest {
@@ -41,6 +41,7 @@ class CourseQueryServiceImplTest {
     @Mock private ZzimQueryService zzimQueryService;
     @Mock private CourseHistoryQueryService courseHistoryQueryService;
     @Mock private S3Service s3Service;
+    @Mock private InstructorQueryService instructorQueryService;
 
     @InjectMocks
     private CourseQueryServiceImpl service;
@@ -51,15 +52,12 @@ class CourseQueryServiceImplTest {
     @Test
     @DisplayName("queryCourseById - 존재 시 Course 반환")
     void queryCourseById_ok() {
-        // given
         Long id = 100L;
         Course course = buildCourse(id, 9L, "제목");
         when(courseRepository.findById(id)).thenReturn(Optional.of(course));
 
-        // when
         Course result = service.queryCourseById(id);
 
-        // then
         assertThat(result).isSameAs(course);
         verify(courseRepository).findById(id);
         verifyNoMoreInteractions(courseRepository);
@@ -68,11 +66,9 @@ class CourseQueryServiceImplTest {
     @Test
     @DisplayName("queryCourseById - 미존재 시 IllegalArgumentException")
     void queryCourseById_notFound() {
-        // given
         Long id = 999L;
         when(courseRepository.findById(id)).thenReturn(Optional.empty());
 
-        // when & then
         assertThrows(IllegalArgumentException.class, () -> service.queryCourseById(id));
         verify(courseRepository).findById(id);
         verifyNoMoreInteractions(courseRepository);
@@ -152,7 +148,7 @@ class CourseQueryServiceImplTest {
         Long instructorId = 7L;
 
         assertThrows(IllegalArgumentException.class,
-                () -> service.queryCourseDetailsByInstructorId(instructorId, "OPEN")); // 허용값 아님
+                () -> service.queryCourseDetailsByInstructorId(instructorId, "OPEN"));
 
         verifyNoInteractions(courseRepository);
     }
@@ -186,8 +182,6 @@ class CourseQueryServiceImplTest {
         assertThat(detail.getThumbnailFileInfos()).hasSize(1);
         assertThat(detail.getCourseCoverFileInfo()).isNotNull();
 
-        // Boolean 필드들은 접근자 이름이 프로젝트마다 다를 수 있으므로
-        // 일단 상호작용 검증은 필수로 수행
         verify(zzimQueryService).isZzimed(courseId, userId);
         verify(courseHistoryQueryService).enrolled(courseId, userId);
         verify(reviewQueryService).isReviewed(courseId, userId);
@@ -209,10 +203,71 @@ class CourseQueryServiceImplTest {
     }
 
     // =========================
+    // isClosedCourse / isInstructorOf
+    // =========================
+    @Test
+    @DisplayName("isClosedCourse - 시작 전 또는 종료 후이면서 승인된 강좌면 true")
+    void isClosedCourse_true_cases() {
+        Long courseId = 11L;
+        // 오늘 기준 시작 전으로 구성
+        Course beforeStart = buildCourse(courseId, 1L, "강좌");
+        beforeStart.setCourseStartDate(LocalDate.now().plusDays(3));
+        beforeStart.setCourseEndDate(LocalDate.now().plusDays(30));
+        beforeStart.setIsApproved(true);
+        when(courseRepository.findById(courseId)).thenReturn(Optional.of(beforeStart));
+
+        assertThat(service.isClosedCourse(courseId)).isTrue();
+
+        // 종료 후로 구성
+        Course afterEnd = buildCourse(courseId, 1L, "강좌");
+        afterEnd.setCourseStartDate(LocalDate.now().minusDays(30));
+        afterEnd.setCourseEndDate(LocalDate.now().minusDays(1));
+        afterEnd.setIsApproved(true);
+        when(courseRepository.findById(courseId)).thenReturn(Optional.of(afterEnd));
+
+        assertThat(service.isClosedCourse(courseId)).isTrue();
+    }
+
+    @Test
+    @DisplayName("isClosedCourse - 기간 내이거나 미승인 강좌면 false")
+    void isClosedCourse_false_cases() {
+        Long courseId = 12L;
+        // 기간 내 + 승인
+        Course inRange = buildCourse(courseId, 1L, "강좌");
+        inRange.setCourseStartDate(LocalDate.now().minusDays(1));
+        inRange.setCourseEndDate(LocalDate.now().plusDays(1));
+        inRange.setIsApproved(true);
+        when(courseRepository.findById(courseId)).thenReturn(Optional.of(inRange));
+        assertThat(service.isClosedCourse(courseId)).isFalse();
+
+        // 기간 밖이어도 미승인 → false
+        Course notApproved = buildCourse(courseId, 1L, "강좌");
+        notApproved.setCourseStartDate(LocalDate.now().plusDays(3));
+        notApproved.setCourseEndDate(LocalDate.now().plusDays(30));
+        notApproved.setIsApproved(false);
+        when(courseRepository.findById(courseId)).thenReturn(Optional.of(notApproved));
+        assertThat(service.isClosedCourse(courseId)).isFalse();
+    }
+
+    @Test
+    @DisplayName("isInstructorOf - 강좌의 instructorId와 userId가 같으면 true")
+    void isInstructorOf_ok() {
+        Long userId = 33L;
+        Long courseId = 1000L;
+        Course c = buildCourse(courseId, userId, "강좌");
+        when(courseRepository.findById(courseId)).thenReturn(Optional.of(c));
+
+        assertThat(service.isInstructorOf(userId, courseId)).isTrue();
+
+        // 다른 사용자면 false
+        when(courseRepository.findById(courseId)).thenReturn(Optional.of(c));
+        assertThat(service.isInstructorOf(99L, courseId)).isFalse();
+    }
+
+    // =========================
     // Helpers
     // =========================
     private Course buildCourse(Long id, Long instructorId, String title) {
-        // 빌더/필드 명은 프로젝트 엔티티에 맞춰 사용
         return Course.builder()
                 .id(id)
                 .instructorId(instructorId)
@@ -254,7 +309,6 @@ class CourseQueryServiceImplTest {
         when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "course_cover"))
                 .thenReturn(cover);
 
-        // ResponseFileInfo 생성자가 어떻게 생겼는지 확실치 않으니 mock()으로 안전하게 처리
         when(s3Service.getResponseFileInfo(thumb)).thenReturn(mock(ResponseFileInfo.class));
         when(s3Service.getResponseFileInfo(cover)).thenReturn(mock(ResponseFileInfo.class));
     }
