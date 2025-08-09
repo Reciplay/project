@@ -10,19 +10,19 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class CustomLectureHistoryRepositoryImpl implements CustomLectureHistoryRepository {
+public class CustomLectureHistoryRepositoryImpl implements  CustomLectureHistoryRepository{
     private final JPAQueryFactory queryFactory;
     private final QLectureHistory h = QLectureHistory.lectureHistory;
     private final QLecture l = QLecture.lecture;
     private final QCourse c = QCourse.course;
 
-//    @Override
-//    public Long countHistoryOfCourse(Long courseId, Long userId) {
-//        return queryFactory.select(h.count())
-//                .from(h)
-//                .join(l)
-//                .on(h.lecture_id.eq(l.id))
-//                .where(l.courseId.eq(courseId), h.userId.eq(userId))
-//                .fetchFirst();
-//    }
+    @Override
+    public Long countHistoryOfCourse(Long courseId, Long userId) {
+        return queryFactory.select(h.count())
+                .from(h)
+                .join(l)
+                .on(h.lectureId.eq(l.id))
+                .where(l.courseId.eq(courseId), h.userId.eq(userId))
+                .fetchFirst();
+    }
 }

@@ -65,4 +65,9 @@ public class LectureQueryServiceImpl implements LectureQueryService{
     public Lecture queryLectureById(Long id) {
         return lectureRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당하는 ID의 강의(Lecture)가 없습니다."));
     }
+
+    @Override
+    public Long queryCountByCourseId(Long courseId) {
+        return lectureRepository.countByCourseId(courseId);
+    }
 }

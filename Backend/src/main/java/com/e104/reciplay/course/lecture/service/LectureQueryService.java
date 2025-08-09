@@ -12,4 +12,5 @@ public interface LectureQueryService {
     List<LectureDetail> queryLectureDetails(Long courseId);
 
     Lecture queryLectureById(Long id);
+    Long queryCountByCourseId(Long courseId);
 }

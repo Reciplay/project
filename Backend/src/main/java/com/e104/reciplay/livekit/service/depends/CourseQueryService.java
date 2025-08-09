@@ -15,4 +15,5 @@ public interface CourseQueryService {
     Boolean isClosedCourse(Long courseId);
 
     Boolean isInstructorOf(Long userId, Long courseId);
+
 }
