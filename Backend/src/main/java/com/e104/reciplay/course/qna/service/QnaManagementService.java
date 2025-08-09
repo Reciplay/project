@@ -11,4 +11,8 @@ public interface QnaManagementService {
     void registerAnswer(QnaAnswerRequest request, String userEmail);
 
     void updateQuestion(QnaUpdateRequest request, String userEmail);
+
+    void deleteQna(Long qnaId, Long courseId, String userEmail);
+
+    void updateAnswer(QnaAnswerRequest request, String userEmail);
 }
