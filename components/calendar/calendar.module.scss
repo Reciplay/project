@@ -124,3 +124,184 @@
 .fc-highlight {
   margin: 8px;
 }
+:global(.fc-daygrid-day-frame) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100%;
+  padding: 6px 2px; /* 10px → 6px 로 축소 */
+  border-radius: 10px;
+  gap: 2px; /* 4px → 2px */
+}
+
+:global(.fc-daygrid-day-number) {
+  font-size: 14px; /* 16px → 14px */
+  font-weight: 600;
+  color: #111;
+}
+
+:global(.fc-daygrid-day-events) {
+  margin-top: 2px; /* 기본 여백 줄이기 */
+}
+
+:global(.fc-daygrid-event-harness) {
+  gap: 3px; /* 점 간격 살짝 축소 */
+}
+:global(.fc) {
+  font-family: "Pretendard", sans-serif;
+  font-size: 14px;
+  color: #111;
+}
+
+:global(.fc-scrollgrid),
+:global(.fc-col-header-cell),
+:global(.fc-daygrid-day) {
+  border: none !important;
+}
+
+:global(.fc-daygrid-day-frame) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100%;
+  padding: 6px 2px; /* 세로 여백 축소 */
+  border-radius: 10px;
+  gap: 2px;
+}
+
+:global(.fc-daygrid-day:hover .fc-daygrid-day-frame) {
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+:global(.fc-daygrid-day-number) {
+  font-size: 14px; /* 날짜 글자 살짝 축소 */
+  font-weight: 600;
+  color: #111;
+}
+
+:global(.fc-daygrid-day-events) {
+  margin-top: 2px;
+}
+
+:global(.fc-day-today) {
+  background-color: #fff0f3 !important;
+  border-radius: 12px;
+  font-weight: 700;
+  color: #d6336c !important;
+}
+
+:global(.fc-event) {
+  background: none !important;
+  border: none !important;
+  padding: 0;
+  margin: 0;
+}
+
+:global(.fc-daygrid-event-harness) {
+  display: inline-flex;
+  gap: 3px;
+  justify-content: center;
+  margin: 0;
+}
+
+/* 점 표시 */
+.dot {
+  width: 5px;
+  height: 5px;
+  background-color: #2563eb;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.dotSkipped {
+  background-color: #9ca3af;
+}
+
+/* 레이아웃 */
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 16px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sidebar {
+  // position: sticky;
+  // top: var(--sticky-offset, 88px);
+  align-self: start;
+
+  width: 260px;
+  padding: 16px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.03);
+
+  h2 {
+    font-weight: 800;
+    font-size: 1.125rem;
+    margin-bottom: 12px;
+  }
+}
+
+.calendar {
+  flex: 1;
+  padding: 8px;
+}
+
+.eventList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+    margin-bottom: 6px;
+
+    &:hover {
+      background-color: #f0f0f0;
+    }
+  }
+
+  .selected {
+    background-color: #ffeef0;
+    color: #d6336c;
+    font-weight: 600;
+  }
+
+  .skipped {
+    opacity: 0.6;
+    text-decoration: line-through;
+  }
+}
+
+.eventDate {
+  font-weight: 500;
+  margin-right: 6px;
+  color: #6b7280;
+}
+
+.eventTitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #111;
+}
+/* 선택된 날짜 배경/텍스트 컬러 */
+.selectedCell .fc-daygrid-day-frame {
+  background: #ffeef0; /* 탭 톤에 맞춰 밝은 핑크 */
+  border-radius: 12px;
+}
+
+.selectedCell .fc-daygrid-day-number {
+  color: #d6336c; /* 강조색 */
+  font-weight: 700;
+}

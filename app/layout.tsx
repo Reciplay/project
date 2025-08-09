@@ -3,11 +3,11 @@ import "@ant-design/v5-patch-for-react-19";
 import "antd/dist/reset.css";
 import "../styles/calendar.scss";
 
+import RedirectGate from "@/components/gate/redirectGate";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import type { Metadata } from "next";
 import React from "react";
 import SessionProviderWrapper from "../components/gate/sessionProviderWrapper";
-import RedirectGate from "@/components/gate/redirectGate";
 
 export const metadata: Metadata = {
   title: "Reciplay",
