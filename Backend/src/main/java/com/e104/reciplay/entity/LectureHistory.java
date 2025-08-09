@@ -25,7 +25,7 @@ public class LectureHistory {
     private Long userId;
 
     @Column(name = "lecture_id")
-    private Long lecture_id;
+    private Long lectureId;
 
     @Column(name = "attended_at")
     @CreatedDate

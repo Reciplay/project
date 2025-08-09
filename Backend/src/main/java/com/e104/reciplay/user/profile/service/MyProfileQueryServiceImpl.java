@@ -54,4 +54,16 @@ public class MyProfileQueryServiceImpl implements MyProfileQueryService{
         }
         return profile;
     }
+
+    @Override
+    public List<LevelSummary> queryMyLevels(String email) {
+        User user = userQueryService.queryUserByEmail(email);
+
+        return levelQueryService.queryUserLevelsById(user.getId())
+                .stream().map(l -> new LevelSummary(
+                        categoryQueryService.queryCategoryById(l.getCategoryId()).getName(),
+                        l.getCategoryId(),
+                        l.getLevel()
+                )).toList();
+    }
 }

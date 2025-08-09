@@ -78,6 +78,7 @@ public class CourseQueryServiceImpl implements CourseQueryService{
 
     }
 
+
     private CourseDetail collectCourseDetailWithCommonFields(Course course) {
         Long courseId = course.getId();
         CourseDetail courseDetail = new CourseDetail(course);

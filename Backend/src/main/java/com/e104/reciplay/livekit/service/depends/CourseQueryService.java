@@ -16,5 +16,4 @@ public interface CourseQueryService {
 
     Boolean isInstructorOf(Long userId, Long courseId);
 
-    //PagedResponse<CourseCard> queryCardsByCardCondtion(CourseCardCondition condition, Pageable pageable, Long userId);
 }
