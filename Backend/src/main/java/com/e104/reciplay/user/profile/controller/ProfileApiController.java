@@ -2,6 +2,7 @@ package com.e104.reciplay.user.profile.controller;
 
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
+import com.e104.reciplay.user.profile.dto.response.item.LevelSummary;
 import com.e104.reciplay.user.profile.service.MyProfileManagementService;
 import com.e104.reciplay.user.profile.service.MyProfileQueryService;
 import com.e104.reciplay.user.profile.dto.request.ProfileInfoRequest;
@@ -18,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Tag(name = "내 프로필 컨트롤러", description = "내 프로필 API 엔드포인트")
 @RestController
@@ -77,5 +80,17 @@ public class ProfileApiController {
         log.debug("정보 입력 요청자 이메일 : {}", email);
         myProfileManagementService.updateProfileImage(profileImage, email);
         return CommonResponseBuilder.success("사진 등록에 성공했습니다.", null);
+    }
+
+    @GetMapping("/levels")
+    @Operation(summary = "역량 조회하기", description = "회원이 보유한 역량 레벨을 6가지 영역별로 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "조회 성공")
+    public ResponseEntity<ResponseRoot<List<LevelSummary>>> getMyLevels(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        String email = userDetails.getUsername();
+        log.debug("정보 입력 요청자 이메일 : {}", email);
+
+        return CommonResponseBuilder.success("사진 등록에 성공했습니다.", myProfileQueryService.queryMyLevels(email));
     }
 }
