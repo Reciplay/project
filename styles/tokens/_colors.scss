@@ -1,3 +1,6 @@
+@use "sass:color";
+@use "sass:map";
+
 :root {
   --color-text: #111;
   --color-subtext: #555;
@@ -44,7 +47,8 @@ $colors-light: (
   text: #1f2328,
   subtext: #57606a,
   divider: #d0d7de,
-  bg: #f8fafc,
+  // bg: #f8fafc,
+  bg: #ffffff,
   bg-soft: #ffffff,
   bg-hover: #f1f5f9,
   bg-active: #e2e8f0,
@@ -59,7 +63,7 @@ $colors-light: (
   accent: #b04b8c,
 );
 
-$colors-dark: map-merge(
+$colors-dark: map.merge(
   $colors-light,
   (
     text: #e6e8ee,
@@ -82,8 +86,11 @@ $colors-dark: map-merge(
 );
 
 // 2) HEX와 RGB CSS 변수를 모두 노출하는 헬퍼
-@function to-rgb($color) {
-  @return #{red($color)}, #{green($color)}, #{blue($color)};
+
+@function to-rgb($c) {
+  @return #{color.channel($c, "red", $space: rgb)},
+    #{color.channel($c, "green", $space: rgb)},
+    #{color.channel($c, "blue", $space: rgb)};
 }
 
 // 3) CSS 변수 출력

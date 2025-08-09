@@ -1,6 +1,5 @@
 "use client";
 
-import GlassSurface from "@/components/glass/glassSurface";
 import { Banner, sampleBanner } from "@/config/sampleBanner";
 import { Carousel as AntdCarousel } from "antd";
 import Image from "next/image";
@@ -43,28 +42,12 @@ export default function SpecialCarousel() {
                 e.isItemRight ? styles.leftAlign : styles.rightAlign
               }`}
             >
-              <GlassSurface
-                opacity={0.75}
-                blur={32}
-                borderRadius={22}
-                saturation={1.7}
-                brightness={1.02}
-                className={styles.glassTextOverlay}
-                width={400}
-                height={150}
-                style={{
-                  border: "1.5px solid rgba(255,255,255,0.28)",
-                  // boxShadow 옵션도 살짝 더 진하게
-                  boxShadow: "0 10px 32px 0 rgba(40,37,89,0.20)",
-                }}
-              >
-                <div className={styles.title}>{e.title}</div>
-                <div className={styles.desc}>{e.desc}</div>
-                <div className={styles.slogan}>{e.slogan}</div>
-                <a className={styles.ctaButton} href="#">
-                  바로가기
-                </a>
-              </GlassSurface>
+              <div className={styles.title}>{e.title}</div>
+              <div className={styles.desc}>{e.desc}</div>
+              <div className={styles.slogan}>{e.slogan}</div>
+              <a className={styles.ctaButton} href="#">
+                바로가기
+              </a>
             </div>
           </div>
         ))}
