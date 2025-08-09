@@ -7,6 +7,7 @@ import com.e104.reciplay.course.courses.dto.request.RequestCourseInfo;
 import com.e104.reciplay.course.courses.dto.response.CourseCard;
 import com.e104.reciplay.course.courses.dto.response.CourseDetail;
 import com.e104.reciplay.course.courses.dto.response.PagedResponse;
+import com.e104.reciplay.course.courses.service.CourseCardQueryService;
 import com.e104.reciplay.livekit.service.depends.CourseManagementService;
 import com.e104.reciplay.livekit.service.depends.CourseQueryService;
 import com.e104.reciplay.livekit.service.depends.InstructorQueryService;
@@ -17,8 +18,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -38,6 +37,7 @@ public class CourseApiController {
     private final CourseQueryService courseQueryService;
     private final CourseManagementService courseManagementService;
     private final UserQueryService userQueryService;
+    private final CourseCardQueryService courseCardQueryService;
 
     // 페이징한 결과와 페이징 하지 않은 결과를 조건문으로 두개의 결과 선택지를 줘야함(분홍색 통합 API)
     @GetMapping("/cards")
@@ -48,10 +48,11 @@ public class CourseApiController {
             @ModelAttribute CourseCardCondition courseCardCondition,
             @PageableDefault(page = 0, size = 10, sort = "courseStartDate", direction = Sort.Direction.DESC) Pageable pageable
             ) {
-        Page<CourseCard> page = new PageImpl<>(List.of(new CourseCard()));
-
+        String email = AuthenticationUtil.getSessionUsername();
+        Long userId = userQueryService.queryUserByEmail(email).getId();
+        PagedResponse<CourseCard> pagedResponse = courseCardQueryService.queryCardsByCardCondtion(courseCardCondition, pageable, userId);
         return CommonResponseBuilder.success("강좌 카드 정보 리스트 조회에 성공하였습니다.",
-                new PagedResponse<>(page));
+                pagedResponse);
     }
 
     // 강사의 강좌 관리 페이지에서의 강좌 상세 정보 리스트 조회 API

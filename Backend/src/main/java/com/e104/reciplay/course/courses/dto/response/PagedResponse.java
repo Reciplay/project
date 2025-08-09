@@ -19,13 +19,21 @@ public class PagedResponse<T> {
     private int size;
     private int totalPages;
     private long totalElements;
+    private Boolean hasNext;
+    private Boolean hasPrevious;
 
-    public PagedResponse(Page<T> page) {
-        this.content = page.getContent();
-        this.page = page.getNumber();
-        this.size = page.getSize();
-        this.totalPages = page.getTotalPages();
-        this.totalElements = page.getTotalElements();
+
+    public static <T> PagedResponse<T> from(Page<?> meta, List<T> content) {
+        return PagedResponse.<T>builder()
+                .content(content)
+                .page(meta.getNumber())
+                .size(meta.getSize())
+                .totalPages(meta.getTotalPages())
+                .totalElements(meta.getTotalElements())
+                .hasNext(meta.hasNext())
+                .hasPrevious(meta.hasPrevious())
+                .build();
     }
+
 }
 

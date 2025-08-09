@@ -21,4 +21,6 @@ public interface CourseQueryService {
     Boolean isInEnrollmentTerm(Long courseId);
 
     Boolean isFullyEnrolledCourse(Long courseId);
+
+    CourseDetail collectCourseDetailWithCommonFields(Course course);
 }
