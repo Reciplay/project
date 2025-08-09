@@ -7,4 +7,6 @@ public interface InstructorQueryService {
 
     Long queryInstructorIdByEmail(String email);
 
+    String queryNameByInstructorId(Long instructorId);
+
 }

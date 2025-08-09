@@ -24,4 +24,14 @@ public class CustomInstructorRepositoryImpl implements CustomInstructorRepositor
                 .where(user.email.eq(email))
                 .fetchOne();
         }
+
+    @Override
+    public String findNameById(Long id) {
+        return queryFactory
+                .select(user.name)
+                .from(instructor)
+                .join(user).on(instructor.userId.eq(user.id))
+                .where(instructor.id.eq(id))
+                .fetchOne();
+    }
 }
