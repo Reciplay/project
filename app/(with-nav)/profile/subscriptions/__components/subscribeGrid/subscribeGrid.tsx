@@ -1,9 +1,9 @@
 import BaseButton from "@/components/button/baseButton";
 import CircleAvatar from "@/components/image/circleAvatar";
 import { ROUTES } from "@/config/routes";
+import { Instructor } from "@/types/instructor";
 import Link from "next/link";
 import styles from "./subscribeGrid.module.scss";
-import { Instructor } from "@/types/instructor";
 
 interface SubscribeGridProps {
   type: string;
@@ -19,7 +19,7 @@ export default function SubscribeGrid({
       <div className={styles.title}>{type}</div>
       <div className={styles.items}>
         {instructors.map((ins) => (
-          <Link href={ROUTES.INSTRUCTOR_PROFILE(Number(ins.id))} key={ins.id}>
+          <Link href={ROUTES.INSTRUCTOR.PROFILE(Number(1))} key={1}>
             <div className={styles.item}>
               <CircleAvatar alt={ins.name} src={ins.profileImage} />
               <div className={styles.name}>{ins.name}</div>

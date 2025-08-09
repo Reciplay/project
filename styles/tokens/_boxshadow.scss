@@ -1,0 +1,21 @@
+// 그림자(elevation) 토큰 — 다크/라이트 모두에 자연스럽게 어울리도록 텍스트 색상의 RGB를 활용
+:root {
+  /* 없음 */
+  --elevation-0: none;
+
+  /* 아주 약한 표면(버튼, 카드 hover) */
+  --elevation-1: 0 1px 2px rgba(var(--color-text-rgb), 0.05),
+    0 2px 4px rgba(var(--color-text-rgb), 0.06);
+
+  /* 기본 표면 — 요청한 2단 그림자(가장 자주 사용) */
+  --elevation-2: 0 2px 4px rgba(var(--color-text-rgb), 0.06),
+    0 6px 12px rgba(var(--color-text-rgb), 0.08);
+
+  /* 강조 표면(카드/팝오버) */
+  --elevation-3: 0 8px 16px rgba(var(--color-text-rgb), 0.1),
+    0 16px 32px rgba(var(--color-text-rgb), 0.12);
+
+  /* 최상위 표면(모달 등) */
+  --elevation-4: 0 12px 24px rgba(var(--color-text-rgb), 0.14),
+    0 24px 48px rgba(var(--color-text-rgb), 0.16);
+}

@@ -1,5 +1,8 @@
 @use "@/styles/tokens/index" as *;
 
+/* --------------------------------------------------
+   Font faces
+-------------------------------------------------- */
 @font-face {
   font-family: "Pretendard";
   font-style: normal;
@@ -16,13 +19,23 @@
   src: url("/fonts/protest/ProtestGuerrilla-Regular.ttf") format("truetype");
 }
 
+/* --------------------------------------------------
+   Base / Reset
+-------------------------------------------------- */
 html,
 body {
-
+  height: 100%;
   margin: 0;
   padding: 0;
-  font-size: 62.5%;
+  font-size: 62.5%; /* 1rem = 10px 기준 */
   font-family: var(--font-pretendard);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: var(--leading-normal, 1.5);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
 }
 
 *,
@@ -31,24 +44,54 @@ body {
   box-sizing: border-box;
 }
 
+img,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+/* --------------------------------------------------
+   Links
+-------------------------------------------------- */
 a {
-  text-decoration: none;
   color: var(--color-text);
+  text-decoration: none;
+
+  &:visited,
+  &:hover,
+  &:focus,
+  &:active {
+    text-decoration: none;
+  }
 }
 
-a:visited {
-  text-decoration: none;
+/* --------------------------------------------------
+   Accessibility
+-------------------------------------------------- */
+:focus-visible {
+  outline: 2px solid var(--color-primary, currentColor);
+  outline-offset: 2px;
 }
 
-a:hover {
-  text-decoration: none;
-}
-
-a:focus {
-  text-decoration: none;
-}
-
-a:hover,
-a:active {
-  text-decoration: none;
+/* --------------------------------------------------
+   Reduced motion preference
+-------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

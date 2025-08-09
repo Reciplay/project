@@ -1,18 +1,9 @@
 "use client";
 
-import React from "react";
+import { Banner, sampleBanner } from "@/config/sampleBanner";
 import { Carousel as AntdCarousel } from "antd";
-import styles from "./specialCarousel.module.scss";
 import Image from "next/image";
-
-const contentStyle: React.CSSProperties = {
-  margin: 0,
-  height: "300px",
-  color: "#fff",
-  lineHeight: "160px",
-  textAlign: "center",
-  background: "#364d79",
-};
+import styles from "./specialCarousel.module.scss";
 
 export default function SpecialCarousel() {
   const onChange = (currentSlide: number) => {
@@ -21,25 +12,45 @@ export default function SpecialCarousel() {
 
   return (
     <div className={styles.carouselWrapper}>
-      <AntdCarousel afterChange={onChange}>
-        <div className={styles.imageSlide}>
-          <Image
-            src="/images/mainbanner1.png"
-            alt="메인 배너 이미지"
-            fill
-            className={styles.bannerImage}
-            style={{ objectFit: "cover" }}
-          />
-        </div>
-        <div className={styles.imageSlide}>
-          <Image
-            src="/images/mainbanner2.png"
-            alt="메인 배너 이미지2"
-            fill
-            className={styles.bannerImage}
-            style={{ objectFit: "cover" }}
-          />
-        </div>
+      <AntdCarousel afterChange={onChange} effect="fade">
+        {sampleBanner.map((e: Banner) => (
+          <div key={e.id} className={styles.imageSlide}>
+            <Image
+              src={e.background}
+              alt="메인 배너 이미지"
+              fill
+              className={styles.bannerImage}
+              sizes="100vw"
+              priority
+            />
+            <Image
+              src={e.item}
+              alt="위에 올라가는 이미지"
+              fill
+              className={styles.itemImage}
+              // style={{
+              //   transform: e.isItemRight
+              //     ? "translate(-50%, -50%) translateX(clamp(0px, 10vw, 100px))"
+              //     : "translate(-50%, -50%)",
+              // }}
+              sizes="100vw"
+              priority
+            />
+            {/* 텍스트 오버레이 (항상 최상단!) */}
+            <div
+              className={`${styles.textOverlay} ${
+                e.isItemRight ? styles.leftAlign : styles.rightAlign
+              }`}
+            >
+              <div className={styles.title}>{e.title}</div>
+              <div className={styles.desc}>{e.desc}</div>
+              <div className={styles.slogan}>{e.slogan}</div>
+              <a className={styles.ctaButton} href="#">
+                바로가기
+              </a>
+            </div>
+          </div>
+        ))}
       </AntdCarousel>
     </div>
   );

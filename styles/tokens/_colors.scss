@@ -1,3 +1,6 @@
+@use "sass:color";
+@use "sass:map";
+
 :root {
   --color-text: #111;
   --color-subtext: #555;
@@ -13,6 +16,7 @@
   --color-border-soft: #c6c6c6;
   --color-disabled: #999;
   --color-accent: #d6336c;
+  --color-text-rgb: 17, 24, 39;
 }
 
 [data-theme="dark"] {
@@ -30,4 +34,89 @@
   --color-border-soft: #555;
   --color-disabled: #666;
   --color-accent: #f06595;
+}
+
+//
+// 편안하고 눈에 부담이 적은 팔레트
+// - 부드러운 배경색 (순수 흰색/검정색이 아님)
+// - 강하지만 거칠지 않은 텍스트 대비
+// - 차분한 주요 색상 및 강조 색상
+
+// 1) 밝은/어두운 색상 맵 정의
+$colors-light: (
+  text: #1f2328,
+  subtext: #57606a,
+  divider: #d0d7de,
+  // bg: #f8fafc,
+  bg: #ffffff,
+  bg-soft: #ffffff,
+  bg-hover: #f1f5f9,
+  bg-active: #e2e8f0,
+  primary: #3f6fb5,
+  success: #2eaf7d,
+  warning: #f0b429,
+  danger: #e05252,
+  highlight: #fff7f9,
+  border: #e5e7eb,
+  border-soft: #eef2f6,
+  disabled: #9aa3b2,
+  accent: #b04b8c,
+);
+
+$colors-dark: map.merge(
+  $colors-light,
+  (
+    text: #e6e8ee,
+    subtext: #a8b0bb,
+    divider: #2d333b,
+    bg: #0f141a,
+    bg-soft: #141a21,
+    bg-hover: #1b2330,
+    bg-active: #263043,
+    primary: #8fb3ff,
+    success: #56d3a1,
+    warning: #ffd27a,
+    danger: #ff7a7a,
+    highlight: #2a1b22,
+    border: #2a2f37,
+    border-soft: #343b45,
+    disabled: #6b7280,
+    accent: #f09ac1,
+  )
+);
+
+// 2) HEX와 RGB CSS 변수를 모두 노출하는 헬퍼
+
+@function to-rgb($c) {
+  @return #{color.channel($c, "red", $space: rgb)},
+    #{color.channel($c, "green", $space: rgb)},
+    #{color.channel($c, "blue", $space: rgb)};
+}
+
+// 3) CSS 변수 출력
+:root {
+  @each $name, $value in $colors-light {
+    --color-#{$name}: #{$value};
+    --color-#{$name}-rgb: #{to-rgb(
+        $value
+      )}; // e.g. rgb(var(--color-primary-rgb))
+  }
+
+  // 하위 호환 별칭 (이전 이름 -> 새 이름)
+  --color-line: var(--color-divider);
+}
+
+[data-theme="dark"] {
+  @each $name, $value in $colors-dark {
+    --color-#{$name}: #{$value};
+    --color-#{$name}-rgb: #{to-rgb($value)};
+  }
+
+  // 하위 호환 별칭
+  --color-line: var(--color-divider);
+}
+
+// 4) 컴포넌트에서 CSS 변수를 읽기 위한 편의 SCSS 함수
+@function c($name) {
+  @return var(--color-#{$name});
 }

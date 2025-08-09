@@ -1,10 +1,17 @@
 export const ROUTES = {
   HOME: "/",
 
-  COURSE: "/course",
-  PROFILE: "/profile",
-  SUBSCRIBE: "/subscribe",
-  // INSTRUCTOR: "/instructor",
+  COURSE: {
+    ROOT: "/course",
+    DETAIL: (id: string) => `/course/${id}`, // 동적 경로
+  },
+
+  PROFILE: {
+    ROOT: "/profile",
+    SUBSCRIPTIONS: "/profile/subscriptions",
+    HISTORY: "/profile/history",
+  },
+
   SEARCH: "/search",
 
   AUTH: {
@@ -14,11 +21,10 @@ export const ROUTES = {
   },
 
   INSTRUCTOR: {
+    REGISTER: "/instructor/register",
     DASHBOARD: "/instructor",
+    PROFILE: (id: number) => `/instructor/${id}`, // 동적 경로
   },
-  ADMIN: "/admin",
 
-  // 동적 경로 (필요 시)
-  COURSE_DETAIL: (id: string) => `/course/${id}`,
-  INSTRUCTOR_PROFILE: (id: number) => `/instructor/${id}`,
-};
+  ADMIN: "/admin",
+} as const;

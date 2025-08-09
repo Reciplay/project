@@ -1,4 +1,26 @@
 :root {
-  --size-featured-main-height: 300px;
-  --size-featured-thumbnail: 69px;
+  /* 공통 UI 스케일 */
+  --size-icon-sm: 1.6rem;
+  --size-icon-md: 2.4rem;
+  --size-icon-lg: 3.2rem;
+
+  --size-avatar-sm: 3.2rem;
+  --size-avatar-md: 4.8rem;
+  --size-avatar-lg: 6.4rem;
+
+  --size-button-height-sm: 3.2rem;
+  --size-button-height-md: 4rem;
+  --size-button-height-lg: 4.8rem;
+
+  /* 레이아웃 전용 */
+  --size-container-max: 120rem; /* 1200px */
+  --size-sidebar-width: 24rem; /* 240px */
+  --size-header-height: 6.4rem;
+
+  /* 특정 섹션 */
+  --size-featured-main-height: 30rem;
+  --size-featured-thumbnail: 6.9rem;
+
+  --size-popover-max: 36rem;
+  --size-modal-max: 64rem;
 }
