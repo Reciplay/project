@@ -50,6 +50,11 @@ public class CourseQueryServiceImpl implements CourseQueryService{
         return (LocalDate.now().isBefore(course.getCourseStartDate()) || LocalDate.now().isAfter(course.getCourseEndDate())) && course.getIsApproved();
     }
 
+    @Override
+    public Boolean isInstructorOf(Long userId, Long courseId) {
+        return this.queryCourseById(courseId).getInstructorId().equals(userId);
+    }
+
 
     private CourseDetail collectCourseDetailWithCommonFields(Course course) {
         Long courseId = course.getId();

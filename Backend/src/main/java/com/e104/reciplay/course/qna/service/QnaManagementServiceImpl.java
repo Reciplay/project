@@ -1,9 +1,11 @@
 package com.e104.reciplay.course.qna.service;
 
+import com.e104.reciplay.common.exception.InvalidUserRoleException;
 import com.e104.reciplay.course.courses.exception.CourseClosedException;
-import com.e104.reciplay.course.qna.dto.rquest.QnaRegisterRequest;
+import com.e104.reciplay.course.qna.dto.request.QnaAnswerRequest;
+import com.e104.reciplay.course.qna.dto.request.QnaRegisterRequest;
+import com.e104.reciplay.course.qna.exception.CanNotAnswerException;
 import com.e104.reciplay.course.qna.exception.EnrollmentHistoryNotFoundException;
-import com.e104.reciplay.entity.Course;
 import com.e104.reciplay.entity.Question;
 import com.e104.reciplay.livekit.service.depends.CourseHistoryQueryService;
 import com.e104.reciplay.livekit.service.depends.CourseQueryService;
@@ -14,6 +16,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -37,5 +42,23 @@ public class QnaManagementServiceImpl implements QnaManagementService{
 
         Question question = new Question(request, user.getId());
         questionRepository.save(question);
+    }
+
+    @Override
+    @Transactional
+    public void registerAnswer(QnaAnswerRequest request, String userEmail) {
+        User user = userQueryService.queryUserByEmail(userEmail);
+        if(!courseQueryService.isInstructorOf(user.getId(), request.getCourseId())) {
+            throw new InvalidUserRoleException("오직 해당 강의의 강사만 답을 달 수 있습니다.");
+        }
+
+        Question question = questionRepository.findById(request.getQuestionId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 질문 입니다."));
+
+        if(question.getAnswerContent() != null) throw new CanNotAnswerException("이미 답이 존재하는 질문입니다.");
+
+        question.setAnswerContent(request.getContent());
+        question.setAnswerAt(LocalDateTime.now());
+        question.setAnswerUpdatedAt(LocalDateTime.now());
     }
 }

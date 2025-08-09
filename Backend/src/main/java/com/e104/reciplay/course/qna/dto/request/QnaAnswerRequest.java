@@ -1,4 +1,4 @@
-package com.e104.reciplay.course.qna.dto.rquest;
+package com.e104.reciplay.course.qna.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class QnaRegisterRequest {
-    private String title;
-    private String questionContent;
+public class QnaAnswerRequest {
+    private Long questionId;
     private Long courseId;
+    private String content;
 }
