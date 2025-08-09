@@ -2,11 +2,13 @@ package com.e104.reciplay.course.courses.controller;
 
 import com.e104.reciplay.course.courses.dto.request.RequestCourseInfo;
 import com.e104.reciplay.course.courses.dto.response.CourseDetail;
-import com.e104.reciplay.course.courses.service.CourseCommandService;
 import com.e104.reciplay.livekit.service.depends.CourseManagementService;
 import com.e104.reciplay.livekit.service.depends.CourseQueryService;
 import com.e104.reciplay.livekit.service.depends.InstructorQueryService;
+import com.e104.reciplay.user.security.service.UserQueryService;
 import com.e104.reciplay.user.security.util.AuthenticationUtil;
+import com.e104.reciplay.user.security.domain.User;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,20 +36,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 class CourseApiControllerTest {
 
-    @Mock private CourseCommandService courseCommandService;
     @Mock private InstructorQueryService instructorQueryService;
     @Mock private CourseQueryService courseQueryService;
     @Mock private CourseManagementService courseManagementService;
+    @Mock private UserQueryService userQueryService;
 
     private MockMvc mockMvc;
 
     @BeforeEach
     void setup() {
         CourseApiController controller = new CourseApiController(
-                courseCommandService,
                 instructorQueryService,
                 courseQueryService,
-                courseManagementService
+                courseManagementService,
+                userQueryService
         );
 
         PageableHandlerMethodArgumentResolver pageableResolver =
@@ -71,36 +73,60 @@ class CourseApiControllerTest {
                 .andExpect(status().isOk());
 
         // 현재 컨트롤러는 서비스 호출 없음
-        verifyNoInteractions(courseCommandService, instructorQueryService, courseQueryService, courseManagementService);
+        verifyNoInteractions(instructorQueryService, courseQueryService, courseManagementService, userQueryService);
     }
 
     @Test
-    @DisplayName("GET /list - 강사의 강좌 상세 리스트 조회 성공")
+    @DisplayName("GET /list - 강사의 강좌 상세 리스트 조회 성공 (courseStatus 파라미터 포함)")
     void getCourseCards_ok() throws Exception {
         String email = "test@example.com";
         Long instructorId = 77L;
+        String courseStatus = "soon";
 
         try (MockedStatic<AuthenticationUtil> mocked = mockStatic(AuthenticationUtil.class)) {
             mocked.when(AuthenticationUtil::getSessionUsername).thenReturn(email);
             when(instructorQueryService.queryInstructorIdByEmail(email)).thenReturn(instructorId);
-            when(courseQueryService.queryCourseDetailsByInstructorId(instructorId))
+            when(courseQueryService.queryCourseDetailsByInstructorId(instructorId, courseStatus))
                     .thenReturn(List.of(new CourseDetail()));
 
-            mockMvc.perform(get("/api/v1/course/courses/list"))
+            mockMvc.perform(get("/api/v1/course/courses/list")
+                            .param("courseStatus", courseStatus))
                     .andExpect(status().isOk());
 
             verify(instructorQueryService).queryInstructorIdByEmail(email);
-            verify(courseQueryService).queryCourseDetailsByInstructorId(instructorId);
+            verify(courseQueryService).queryCourseDetailsByInstructorId(instructorId, courseStatus);
             verifyNoMoreInteractions(instructorQueryService, courseQueryService);
+            verifyNoInteractions(courseManagementService, userQueryService);
         }
     }
 
     @Test
-    @DisplayName("GET '' - 단건 상세 조회 (임시 구현) 200 반환")
+    @DisplayName("GET '' - 단건 상세 조회 200 반환 (userId 포함 로직 반영)")
     void getCourseDetail_ok() throws Exception {
-        mockMvc.perform(get("/api/v1/course/courses")
-                        .param("courseId", "123"))
-                .andExpect(status().isOk());
+        String email = "user@example.com";
+        Long userId = 999L;
+        Long courseId = 123L;
+
+        try (MockedStatic<AuthenticationUtil> mocked = mockStatic(AuthenticationUtil.class)) {
+            mocked.when(AuthenticationUtil::getSessionUsername).thenReturn(email);
+
+            // User mock 생성 및 getId 스텁
+            User mockUser = mock(User.class);
+            when(mockUser.getId()).thenReturn(userId);
+            when(userQueryService.queryUserByEmail(email)).thenReturn(mockUser);
+
+            when(courseQueryService.queryCourseDetailByCourseId(courseId, userId))
+                    .thenReturn(new CourseDetail());
+
+            mockMvc.perform(get("/api/v1/course/courses")
+                            .param("courseId", String.valueOf(courseId)))
+                    .andExpect(status().isOk());
+
+            verify(userQueryService).queryUserByEmail(email);
+            verify(courseQueryService).queryCourseDetailByCourseId(courseId, userId);
+            verifyNoMoreInteractions(userQueryService, courseQueryService);
+            verifyNoInteractions(instructorQueryService, courseManagementService);
+        }
     }
 
     @Test
@@ -143,7 +169,7 @@ class CourseApiControllerTest {
         try (MockedStatic<AuthenticationUtil> mocked = mockStatic(AuthenticationUtil.class)) {
             mocked.when(AuthenticationUtil::getSessionUsername).thenReturn(email);
             when(instructorQueryService.queryInstructorIdByEmail(email)).thenReturn(instructorId);
-            // ★ 서비스가 Long 반환
+            // 서비스가 Long 반환
             when(courseManagementService.createCourseByInstructorId(anyLong(), any(RequestCourseInfo.class), anyList(), any()))
                     .thenReturn(100L);
 
@@ -209,7 +235,7 @@ class CourseApiControllerTest {
                         .characterEncoding("UTF-8")
                         .with(req -> { req.setMethod("PUT"); return req; });
 
-        // ★ 서비스가 Long 반환
+        // 서비스가 Long 반환
         when(courseManagementService.updateCourseByCourseId(any(RequestCourseInfo.class), anyList(), any()))
                 .thenReturn(123L);
 
