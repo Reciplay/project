@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +39,6 @@ public class CourseQueryServiceImpl implements CourseQueryService{
 
     @Override
     public List<CourseDetail> queryCourseDetailsByInstructorId(Long instructorId, String courseStatus) {
-//      List<Course> courses = courseRepository.findAllByInstructorId(instructorId);
         List<Course> courses;
         switch (courseStatus){
             case "soon": courses = courseRepository.findSoonCourseByInstructorId(instructorId); break;
@@ -54,7 +54,6 @@ public class CourseQueryServiceImpl implements CourseQueryService{
     }
 
     @Override
-//<<<<<<< HEAD
     public CourseDetail queryCourseDetailByCourseId(Long courseId, Long userId) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강좌 ID 입니다."));
         CourseDetail courseDetail = this.collectCourseDetailWithCommonFields(course);
@@ -68,7 +67,7 @@ public class CourseQueryServiceImpl implements CourseQueryService{
 
         return courseDetail;
     }
-//=======
+
     public Boolean isClosedCourse(Long courseId) {
         Course course = this.queryCourseById(courseId);
         return (LocalDate.now().isBefore(course.getCourseStartDate()) || LocalDate.now().isAfter(course.getCourseEndDate())) && course.getIsApproved();
@@ -77,11 +76,30 @@ public class CourseQueryServiceImpl implements CourseQueryService{
     @Override
     public Boolean isInstructorOf(Long userId, Long courseId) {
         return this.queryCourseById(courseId).getInstructorId().equals(userId);
-//>>>>>>> dev
+
+    }
+
+    @Override
+    public Boolean isStartedCourse(Long courseId) {
+        return queryCourseById(courseId).getCourseStartDate().isBefore(LocalDate.now());
+    }
+
+    @Override
+    public Boolean isInEnrollmentTerm(Long courseId) {
+        Course course = queryCourseById(courseId);
+        return course.getEnrollmentStartDate().isBefore(LocalDateTime.now())
+                && course.getEnrollmentEndDate().isAfter(LocalDateTime.now());
+    }
+
+    @Override
+    public Boolean isFullyEnrolledCourse(Long courseId) {
+        Course course = queryCourseById(courseId);
+        return course.getMaxEnrollments() <= (courseHistoryQueryService.countEnrollmentsOf(courseId).intValue());
     }
 
 
-    private CourseDetail collectCourseDetailWithCommonFields(Course course) {
+    @Override
+    public CourseDetail collectCourseDetailWithCommonFields(Course course) {
         Long courseId = course.getId();
         CourseDetail courseDetail = new CourseDetail(course);
         List<String> canLearns = canLearnQueryService.queryContentsByCourseId(courseId);
@@ -107,6 +125,5 @@ public class CourseQueryServiceImpl implements CourseQueryService{
         courseDetail.setCourseCoverFileInfo(courseCoverFileInfo);
 
         return courseDetail;
-
     }
 }

@@ -2,6 +2,7 @@ package com.e104.reciplay.user.review.controller;
 
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
+import com.e104.reciplay.entity.Review;
 import com.e104.reciplay.user.review.dto.request.ReviewRequest;
 import com.e104.reciplay.user.review.dto.response.ReviewSummary;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.print.Pageable;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Tag(name = "강좌에 대한 수강평를 달아주는 API", description = "수강평 달기, 수강평 좋아요, 수강평 수정, 수강평 삭제 제공함.")
@@ -48,7 +51,12 @@ public class ReviewApiController {
             @RequestParam(name = "coursdId") Long courseId,
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
             ) {
-        return CommonResponseBuilder.success("리뷰 조회에 성공했습니다.", List.of(new ReviewSummary()));
+        List<ReviewSummary> list = new ArrayList<>();
+        for(int i = 0; i < 10; i++) {
+            list.add(new ReviewSummary(Long.valueOf(i+""), "test.com", "nickname", "content" + i, LocalDateTime.now(), 5));
+        }
+
+        return CommonResponseBuilder.success("리뷰 조회에 성공했습니다.", list);
     }
 
     @DeleteMapping("/like")
