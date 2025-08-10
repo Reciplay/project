@@ -229,7 +229,7 @@ class CourseQueryServiceImplTest {
     }
 
     @Test
-    @DisplayName("isClosedCourse - 기간 내이거나 미승인 강좌면 false")
+    @DisplayName("isClosedCourse - 기간 내이거나 미승인 강좌면 true")
     void isClosedCourse_false_cases() {
         Long courseId = 12L;
         // 기간 내 + 승인
@@ -246,7 +246,7 @@ class CourseQueryServiceImplTest {
         notApproved.setCourseEndDate(LocalDate.now().plusDays(30));
         notApproved.setIsApproved(false);
         when(courseRepository.findById(courseId)).thenReturn(Optional.of(notApproved));
-        assertThat(service.isClosedCourse(courseId)).isFalse();
+        assertThat(service.isClosedCourse(courseId)).isTrue();
     }
 
     @Test

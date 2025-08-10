@@ -6,6 +6,7 @@ import com.e104.reciplay.course.courses.dto.request.item.ChapterItem;
 import com.e104.reciplay.course.lecture.controller.LectureApiController;
 import com.e104.reciplay.course.lecture.dto.response.TodoInfo;
 import com.e104.reciplay.course.lecture.service.LectureManagementService;
+import com.e104.reciplay.course.lecture.service.LectureQueryService;
 import com.e104.reciplay.livekit.service.depends.CourseManagementService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CourseSubApiControllerTest {
     @MockitoBean
     private LectureManagementService lectureManagementService;
+
+    @MockitoBean
+    private LectureQueryService lectureQueryService;
 
     @MockitoBean
     private CourseManagementService courseManagementService;

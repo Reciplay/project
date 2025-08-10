@@ -63,7 +63,7 @@ class QnaManagementServiceImplTest {
         userRepository.save(user);
 
         Course course = Course.builder().instructorId(user.getId())
-                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1))
+                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1)).isApproved(true)
                 .courseStartDate(LocalDate.now().minusDays(1)).build();
         courseRepository.save(course);
 
@@ -86,7 +86,7 @@ class QnaManagementServiceImplTest {
         userRepository.save(user);
 
         Course course = Course.builder().instructorId(user.getId())
-                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1))
+                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1)).isApproved(true)
                 .courseStartDate(LocalDate.now().minusDays(1)).build();
         courseRepository.save(course);
 
@@ -115,7 +115,7 @@ class QnaManagementServiceImplTest {
         userRepository.save(user2);
 
         Course course = Course.builder().instructorId(user.getId())
-                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1))
+                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1)).isApproved(true)
                 .courseStartDate(LocalDate.now().minusDays(1)).build();
         courseRepository.save(course);
 
@@ -141,7 +141,7 @@ class QnaManagementServiceImplTest {
         userRepository.save(user);
 
         Course course = Course.builder().instructorId(user.getId())
-                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1))
+                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1)).isApproved(true)
                 .courseStartDate(LocalDate.now().minusDays(1)).build();
         courseRepository.save(course);
 
@@ -169,7 +169,7 @@ class QnaManagementServiceImplTest {
         userRepository.save(user);
 
         Course course = Course.builder().instructorId(user.getId())
-                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1))
+                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1)).isApproved(true)
                 .courseStartDate(LocalDate.now().minusDays(1)).build();
         courseRepository.save(course);
 
@@ -186,7 +186,7 @@ class QnaManagementServiceImplTest {
         userRepository.save(user);
 
         Course course = Course.builder().instructorId(user.getId())
-                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1))
+                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1)).isApproved(true)
                 .courseStartDate(LocalDate.now().minusDays(1)).build();
         courseRepository.save(course);
 
@@ -214,7 +214,7 @@ class QnaManagementServiceImplTest {
         userRepository.save(otherUser);
 
         Course course = Course.builder().instructorId(user.getId())
-                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1))
+                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1)).isApproved(true)
                 .courseStartDate(LocalDate.now().minusDays(1)).build();
         courseRepository.save(course);
 
@@ -239,7 +239,7 @@ class QnaManagementServiceImplTest {
         userRepository.save(user);
 
         Course course = Course.builder().instructorId(user.getId()).isApproved(true)
-                .title("강의 1").courseEndDate(LocalDate.now().minusDays(1))
+                .title("강의 1").courseEndDate(LocalDate.now().minusDays(1)).isApproved(true)
                 .courseStartDate(LocalDate.now().minusDays(2)).build();
         courseRepository.save(course);
 
@@ -262,7 +262,7 @@ class QnaManagementServiceImplTest {
         userRepository.save(user);
 
         Course course = Course.builder().instructorId(user.getId())
-                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1))
+                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1)).isApproved(true)
                 .courseStartDate(LocalDate.now().minusDays(1)).build();
         courseRepository.save(course);
 
@@ -290,7 +290,7 @@ class QnaManagementServiceImplTest {
         userRepository.save(student);
 
         Course course = Course.builder().instructorId(123L)
-                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1))
+                .title("강의 1").courseEndDate(LocalDate.now().plusYears(1)).isApproved(true)
                 .courseStartDate(LocalDate.now().minusDays(1)).build();
         courseRepository.save(course);
 
