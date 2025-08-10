@@ -36,6 +36,7 @@
     "date-fns": "^4.1.0",
     "form-data": "^4.0.4",
     "framer-motion": "^12.23.12",
+    "fullpage.js": "^4.0.37",
     "icons-react": "^3.7.1",
     "install": "^0.13.0",
     "json2mq": "^0.2.0",
