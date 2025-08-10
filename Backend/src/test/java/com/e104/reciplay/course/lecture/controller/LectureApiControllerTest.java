@@ -6,12 +6,14 @@ import com.e104.reciplay.course.lecture.repository.CustomChapterRepository;
 import com.e104.reciplay.course.lecture.repository.CustomLectureRepository;
 import com.e104.reciplay.course.lecture.service.LectureManagementService;
 import com.e104.reciplay.course.lecture.service.LectureQueryService;
+import com.e104.reciplay.livekit.service.depends.CourseManagementService;
 import com.e104.reciplay.repository.CourseRepository;
 import com.e104.reciplay.course.lecture.dto.response.LectureDetail;
 import com.e104.reciplay.repository.LectureRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -25,6 +27,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(LectureApiController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class LectureApiControllerTest {
+
+    @MockitoBean
+    private CourseManagementService courseManagementService;
 
     @Autowired
     private MockMvc mockMvc;
