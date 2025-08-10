@@ -5,7 +5,7 @@ import com.e104.reciplay.course.qna.dto.response.QnaDetail;
 import com.e104.reciplay.course.qna.dto.response.QnaSummary;
 import com.e104.reciplay.entity.Question;
 import com.e104.reciplay.repository.QuestionRepository;
-import com.e104.reciplay.user.security.domain.User;
+import com.e104.reciplay.user.instructor.dto.response.item.InstructorQuestion;
 import com.e104.reciplay.user.security.service.UserQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,5 +46,10 @@ public class QnaQueryServiceImpl implements QnaQueryService{
     @Override
     public QnaDetail queryQnaDetail(Long qnaId) {
         return new QnaDetail(this.queryQnaById(qnaId));
+    }
+
+    @Override
+    public List<InstructorQuestion> queryQuestionsByInstructorId(Long instructorId) {
+        return questionRepository.findQuestionsByInstructorId(instructorId);
     }
 }

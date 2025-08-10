@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface InstructorLicenseRepository extends JpaRepository<InstructorLicense, Long> {
     void deleteAllByInstructorId(Long instructorId);
-    List<InstructorLicense> findAllByIdInstrcutorId(Long instructorId);
+    List<InstructorLicense> findAllByInstructorId(Long instructorId);
 }

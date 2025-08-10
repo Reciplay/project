@@ -3,6 +3,7 @@ package com.e104.reciplay.course.qna.service;
 import com.e104.reciplay.course.qna.dto.response.QnaDetail;
 import com.e104.reciplay.course.qna.dto.response.QnaSummary;
 import com.e104.reciplay.entity.Question;
+import com.e104.reciplay.user.instructor.dto.response.item.InstructorQuestion;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface QnaQueryService {
     Question queryQnaById(Long id);
     List<QnaSummary> queryQnas(Long courseId, Pageable pageable);
     QnaDetail queryQnaDetail(Long qnaId);
+
+    List<InstructorQuestion> queryQuestionsByInstructorId(Long instructorId);
 }

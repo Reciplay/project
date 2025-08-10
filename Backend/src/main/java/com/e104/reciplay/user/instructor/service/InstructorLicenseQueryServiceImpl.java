@@ -13,6 +13,6 @@ public class InstructorLicenseQueryServiceImpl implements  InstructorLicenseQuer
     private InstructorLicenseRepository instructorLicenseRepository;
     @Override
     public List<InstructorLicense> queryLicensesByInstructorId(Long instructorId) {
-        return instructorLicenseRepository.findAllByIdInstrcutorId(instructorId);
+        return instructorLicenseRepository.findAllByInstructorId(instructorId);
     }
 }

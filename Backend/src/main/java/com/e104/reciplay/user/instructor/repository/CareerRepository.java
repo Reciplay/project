@@ -10,5 +10,5 @@ import java.util.List;
 public interface CareerRepository extends JpaRepository<Career, Long> {
     void deleteAllById(Long instructorId);
 
-    List<Career> findAllByInstrcutorId(Long instructorId);
+    List<Career> findAllByInstructorId(Long instructorId);
 }

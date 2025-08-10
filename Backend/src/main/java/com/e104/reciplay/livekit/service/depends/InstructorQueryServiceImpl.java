@@ -1,15 +1,19 @@
 package com.e104.reciplay.livekit.service.depends;
 
 import com.e104.reciplay.course.courses.service.SubFileMetadataQueryService;
-import com.e104.reciplay.entity.*;
+import com.e104.reciplay.course.qna.service.QnaQueryService;
+import com.e104.reciplay.entity.Career;
+import com.e104.reciplay.entity.FileMetadata;
+import com.e104.reciplay.entity.Instructor;
+import com.e104.reciplay.entity.InstructorLicense;
 import com.e104.reciplay.repository.InstructorRepository;
 import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import com.e104.reciplay.s3.service.S3Service;
 import com.e104.reciplay.user.instructor.dto.response.InstructorProfile;
 import com.e104.reciplay.user.instructor.dto.response.InstructorStat;
 import com.e104.reciplay.user.instructor.dto.response.item.CareerItem;
+import com.e104.reciplay.user.instructor.dto.response.item.InstructorQuestion;
 import com.e104.reciplay.user.instructor.dto.response.item.LicenseItem;
-import com.e104.reciplay.user.instructor.dto.response.item.QnaDetail;
 import com.e104.reciplay.user.instructor.service.*;
 import com.e104.reciplay.user.security.domain.User;
 import com.e104.reciplay.user.security.exception.EmailNotFoundException;
@@ -34,6 +38,7 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
     private final LicenseQueryService licenseQueryService;
     private final SubscriptionQueryService subscriptionQueryService;
     private final InstructorStatQueryService instructorStatQueryService;
+    private final QnaQueryService qnaQueryService;
     @Override
     public Instructor queryInstructorByEmail(String email) {
         User user = userQueryService.queryUserByEmail(email);
@@ -42,7 +47,7 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
 
     @Override
     public Long queryInstructorIdByEmail(String email) {
-        return instructorRepository.findIdByemail(email);
+        return instructorRepository.findIdByEmail(email);
     }
 
     @Override
@@ -103,14 +108,22 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
 
     @Override
     public InstructorStat queryInstructorStatistic(Long instructorId) {
-        InstructorStat instrutorStat = new InstructorStat();
+        InstructorStat instructorStat = new InstructorStat();
         Integer totalStudents = instructorStatQueryService.queryTotalStudents(instructorId);
         Double averageStars = instructorStatQueryService.queryAvgStars(instructorId);
-        Integer tatalReviewCount;
-        Integer subscriberCount;
-        String profileImageUrl;
-        List<QnaDetail> newQuestions;
+        Integer totalReviewCount = instructorStatQueryService.queryTotalReviewCount(instructorId);
+        Integer subscriberCount = instructorStatQueryService.querySubsciberCount(instructorId);
 
-        return null;
+        FileMetadata profileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructorId, "user_profile");
+        ResponseFileInfo profileFileInfo = s3Service.getResponseFileInfo(profileMetadata);
+
+        List<InstructorQuestion> newQuestions = qnaQueryService.queryQuestionsByInstructorId(instructorId);
+        instructorStat.setAverageStars(averageStars);
+        instructorStat.setSubscriberCount(subscriberCount);
+        instructorStat.setTotalReviewCount(totalReviewCount);
+        instructorStat.setNewQuestions(newQuestions);
+        instructorStat.setProfileFileInfo(profileFileInfo);
+        instructorStat.setTotalStudents(totalStudents);
+        return  instructorStat;
     }
 }

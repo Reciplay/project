@@ -41,4 +41,20 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
 
         return (result != null) ? result : 0.0;
     }
+
+    @Override
+    public Integer countInstructorTotalReviewByInstructorId(Long instructorId) {
+        Long count = queryFactory
+                .select(review.count())
+                .from(review)
+                .join(course).on(course.id.eq(review.courseId))
+                .where(
+                        course.instructorId.eq(instructorId),
+                        course.isDeleted.isFalse(),
+                        course.isApproved.isTrue()
+                )
+                .fetchOne();
+
+        return (count != null) ? count.intValue() : 0;
+    }
 }

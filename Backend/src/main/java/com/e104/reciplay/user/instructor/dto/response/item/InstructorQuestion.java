@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class QnaDetail {
+public class InstructorQuestion {
     private Long id;
     private String title;
     private String content;

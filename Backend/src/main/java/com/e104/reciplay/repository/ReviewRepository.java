@@ -11,4 +11,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, CustomRev
     Double avgStarsByCourseId(Long courseId);
 
     Boolean existsByCourseIdAndUserId(Long courseId,Long userId);
+
 }

@@ -16,7 +16,7 @@ public class CustomInstructorRepositoryImpl implements CustomInstructorRepositor
     private final QUser user = QUser.user;
 
     @Override
-    public Long findIdByemail(String email) {
+    public Long findIdByEmail(String email) {
         return queryFactory
                 .select(instructor.id)
                 .from(instructor)

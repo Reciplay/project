@@ -57,18 +57,6 @@ public class InstructorApiController {
         return CommonResponseBuilder.success("강사 정보 수정에 성공했습니다.", null);
     }
 
-//    @GetMapping("/statistic")
-//    @Operation(summary = "강사 통계 정보 조회 API", description = "강사의 통계 정보를 조회합니다.")
-//    @ApiResponse(responseCode = "200", description = "강사 통계 정보 조회 성공")
-//    @ApiResponse(responseCode = "403", description = "강사가 아닌 사용자가 시도")
-//    public ResponseEntity<ResponseRoot<InstructorStat>> getInstructorStatistic(
-//            @RequestParam("criteris") String subscriberChartCriteria
-//    ) {
-//
-//
-//        return CommonResponseBuilder.success("강사 통계 정보 조회에 성공했습니다.", new InstructorStat());
-//    }
-
     @PostMapping("")
     @Operation(summary = "강사 등록 API", description = "강사 등록을 수행한다. 관리자가 수락하기 전까진 is_approved 값이 false이다.")
     @ApiResponse(responseCode = "201", description = "강사 등록 신청에 성공함.")
@@ -92,8 +80,8 @@ public class InstructorApiController {
     ) {
         String email = AuthenticationUtil.getSessionUsername();
         Long instructorId = instructorQueryService.queryInstructorIdByEmail(email);
-        instructorQueryService.queryInstructorStatistic(instructorId);
-        return CommonResponseBuilder.success("강사 통계 정보 조회에 성공했습니다.", new InstructorStat());
+        InstructorStat instructorStat = instructorQueryService.queryInstructorStatistic(instructorId);
+        return CommonResponseBuilder.success("강사 통계 정보 조회에 성공했습니다.", instructorStat);
     }
 
     //    @GetMapping("/subscription")

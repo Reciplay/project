@@ -13,6 +13,6 @@ public class CarrerQueryServiceImpl implements  CareerQueryService{
     private final CareerRepository careerRepository;
     @Override
     public List<Career> queryCarrersByInstructorId(Long instructorId) {
-        return careerRepository.findAllByInstrcutorId(instructorId);
+        return careerRepository.findAllByInstructorId(instructorId);
     }
 }
