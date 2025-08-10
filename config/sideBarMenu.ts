@@ -41,7 +41,7 @@ export const userSidebarMenus: MenuSection[] = [
       },
       {
         title: "강사 등록",
-        icon: "Chalkboard",
+        icon: "Mood-Edit",
         href: "/instructor/register",
       },
     ],
@@ -94,24 +94,24 @@ export const instructorSideBarMenus: MenuSection[] = [
     children: [
       {
         title: "대시보드",
-        icon: "DeviceDesktop",
+        icon: "Device-Desktop-Analytics",
         href: "/instructor",
       },
       {
         title: "강좌 관리",
-        icon: "DeviceDesktopCog",
+        icon: "Device-Desktop-Cog",
         href: "/instructor/manage",
       },
 
       {
         title: "강좌 등록",
-        icon: "DeviceIpadHorizontalPlus",
+        icon: "Device-Ipad-Horizontal-Plus",
         href: "/instructor/create-course",
       },
       {
         title: "정보 수정",
-        icon: "DeviceDesktop",
-        href: "/instructor",
+        icon: "User-Edit",
+        href: "/instructor/register",
       },
     ],
   },
@@ -163,7 +163,7 @@ export const adminSideBarMenus: MenuSection[] = [
     children: [
       {
         title: "대시보드",
-        icon: "DeviceDesktop",
+        icon: "Device-Desktop-Analytics",
         href: "/admin",
       },
     ],

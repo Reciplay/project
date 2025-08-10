@@ -24,6 +24,7 @@ restClient.interceptors.request.use(
       useCors: config.useCors,
       headers: config.headers,
     });
+
     const requireAuth = config.requireAuth ?? false;
 
     if (requireAuth) {

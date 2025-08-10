@@ -32,6 +32,7 @@
     "antd-img-crop": "^4.25.0",
     "axios": "^1.11.0",
     "chart.js": "^4.5.0",
+    "chartjs-adapter-date-fns": "^3.0.0",
     "classnames": "^2.5.1",
     "date-fns": "^4.1.0",
     "form-data": "^4.0.4",

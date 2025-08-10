@@ -14,7 +14,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import BaseButton from "../button/baseButton";
-import TablerIcon from "../icon/tablerIcon";
+import CustomIcon from "../icon/customIcon";
 import styles from "./sideBar.module.scss";
 interface LinkItemProps {
   href: string;
@@ -43,16 +43,17 @@ function LinkItem({
     >
       {isOpen ? (
         <div className={styles.linkItem}>
-          <TablerIcon
+          <CustomIcon
             name={icon}
             size={20}
             className={styles.icon}
             filled={isActive}
           />
+
           <span className={styles.title}>{title}</span>
         </div>
       ) : (
-        <TablerIcon
+        <CustomIcon
           name={icon}
           size={20}
           className={styles.iconOnly}
@@ -110,7 +111,9 @@ export default function SideBar() {
           {width > 1400 ? (
             <BaseButton title="로그아웃" onClick={logout} />
           ) : (
-            <TablerIcon name="Logout" size={20} className={styles.iconOnly} />
+            <div className={styles.section} onClick={logout}>
+              <CustomIcon name="Logout" className={styles.iconOnly} size={20} />
+            </div>
           )}
         </div>
       )}
