@@ -35,22 +35,24 @@ export default function InstructorProfile({
         }}
       />
 
-      <ScrollTabs
-        tabTitles={tabTitles}
-        activeIdx={activeIdx}
-        onClickTab={handleScrollTo}
-      />
+      <div className={`${styles.tab}`}>
+        <ScrollTabs
+          tabTitles={tabTitles}
+          activeIdx={activeIdx}
+          onClickTab={handleScrollTo}
+        />
+      </div>
 
       <div className={styles.content}>
-        <section ref={sectionRefs[0]}>
+        <section ref={sectionRefs[0]} className={styles.section}>
           <Careers careers={instructor.careers} />
         </section>
 
-        <section ref={sectionRefs[1]}>
+        <section ref={sectionRefs[1]} className={styles.section}>
           <Licenses licenses={instructor.licenses} />
         </section>
 
-        <section ref={sectionRefs[2]}>
+        <section ref={sectionRefs[2]} className={styles.section}>
           <Courses />
         </section>
       </div>

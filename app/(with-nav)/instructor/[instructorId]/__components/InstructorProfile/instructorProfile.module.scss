@@ -2,6 +2,7 @@
   max-width: 1200px;
   margin: 0 auto;
 }
+
 .content {
   margin: 2.4rem 0;
   display: flex;
@@ -12,4 +13,14 @@
     padding-bottom: 2.4rem; // 간격 유지
     border-bottom: 1px solid #e0e0e0c8; // 구분선
   }
+}
+
+.section {
+  scroll-margin-top: var(--sticky-offset, 88px);
+}
+.tab {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fff;
 }

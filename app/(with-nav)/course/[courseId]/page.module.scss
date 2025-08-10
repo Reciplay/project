@@ -30,3 +30,10 @@
 .section {
   scroll-margin-top: var(--sticky-offset, 88px);
 }
+
+.tab {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fff;
+}
