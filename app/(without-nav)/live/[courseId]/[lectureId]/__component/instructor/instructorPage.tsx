@@ -12,7 +12,6 @@ export default function InstructorPage() {
   const params = useParams();
   const courseId = params.courseId as string; // ✅ courseId 가져오기
   const lectureId = params.lectureId as string;
-  const { roomId, socket } = useLiveSocket(courseId, lectureId, "instructor");
 
   return (
     <div className={styles.container}>
