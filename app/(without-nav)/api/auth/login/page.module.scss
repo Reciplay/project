@@ -69,11 +69,51 @@
   flex: 1;
 }
 
-.links button {
-  cursor: pointer;
-  border: none;
-  background-color: inherit;
-  &:hover {
-    color: #888;
+// .links {
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+// }
+
+// .links button {
+//   cursor: pointer;
+//   border: none;
+//   background-color: inherit;
+//   &:hover {
+//     color: #888;
+//   }
+// }
+
+.links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.2rem; // 항목 간격
+
+  /* 모든 자식 사이에 세로줄 넣기 (마지막 제외) */
+  & > *:not(:last-child) {
+    position: relative;
+    padding-right: 1.2rem; // 라인과 간격 확보
+
+    &::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1px;
+      height: 0.8em;
+      background-color: #ccc;
+    }
+  }
+
+  button {
+    cursor: pointer;
+    border: none;
+    background: transparent;
+
+    &:hover {
+      color: #888;
+    }
   }
 }

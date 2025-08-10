@@ -6,6 +6,7 @@ import {
   userSidebarMenus,
 } from "@/config/sideBarMenu";
 import { useLogout } from "@/hooks/auth/useLogout";
+import { useWindowWidth } from "@/hooks/useWindowSize";
 import { useSidebarStore } from "@/stores/sideBarStore";
 import { MenuSection } from "@/types/sideBar";
 import classNames from "classnames";
@@ -66,6 +67,7 @@ export default function SideBar() {
   const { isOpen } = useSidebarStore();
   const { data: session, status } = useSession();
   const { logout } = useLogout();
+  const width = useWindowWidth();
 
   console.log(session);
 
@@ -105,7 +107,11 @@ export default function SideBar() {
 
       {status === "authenticated" && (
         <div>
-          <BaseButton title="로그아웃" onClick={logout} />
+          {width > 1400 ? (
+            <BaseButton title="로그아웃" onClick={logout} />
+          ) : (
+            <TablerIcon name="Logout" size={20} className={styles.iconOnly} />
+          )}
         </div>
       )}
     </aside>

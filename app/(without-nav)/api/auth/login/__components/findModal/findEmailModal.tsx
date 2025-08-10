@@ -1,6 +1,7 @@
 "use client";
 
-import BaseButton from "@/components/button/baseButton";
+import CustomButton from "@/components/button/customButton";
+import CustomDatePicker from "@/components/calendar/customDatePicker";
 import CustomInput from "@/components/input/customInput";
 import { useFindEmail } from "@/hooks/auth/useFindEmail";
 import styles from "./findEmailModal.module.scss";
@@ -30,16 +31,19 @@ export default function FindEmailModal() {
       </div>
 
       <div className={styles.inputWrapper}>
-        <CustomInput
-          type="date"
-          placeholder="생년월일"
+        <CustomDatePicker
           value={birthDate}
-          onChange={(e) => setBirthDate(e.target.value)}
+          onChange={(val) => setBirthDate(val)}
+          placeholder="생년월일"
         />
       </div>
 
       <div className={styles.buttonWrapper}>
-        <BaseButton title="이메일 찾기" onClick={handleFindEmail} size="inf" />
+        <CustomButton
+          title="이메일 찾기"
+          onClick={handleFindEmail}
+          size="inf"
+        />
       </div>
 
       {error && <p className={styles.error}>{error}</p>}
@@ -47,7 +51,9 @@ export default function FindEmailModal() {
       {emails.length > 0 && (
         <ul className={styles.emailList}>
           {emails.map((email, idx) => (
-            <li key={idx}>{email}</li>
+            <li key={idx} className={styles.email}>
+              {email}
+            </li>
           ))}
         </ul>
       )}

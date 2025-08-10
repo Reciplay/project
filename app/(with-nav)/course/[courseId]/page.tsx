@@ -1,7 +1,6 @@
-// app/(with-nav)/course/[courseId]/page.tsx
 "use client";
 
-import BaseButton from "@/components/button/baseButton";
+import CustomButton from "@/components/button/customButton";
 import ScrollTabs from "@/components/tab/scrollTabs";
 import { useCourseInfo } from "@/hooks/course/useCourseInfo";
 import { useScrollTabs } from "@/hooks/useScrollTabs";
@@ -22,7 +21,8 @@ export default function Page() {
   const { activeIdx, handleScrollTo, sectionRefs } = useScrollTabs(
     tabTitles.length
   );
-  const { courseDetail, message, loading } = useCourseInfo(courseId);
+  const { handleEnroll, handleZzim, courseDetail, message, loading } =
+    useCourseInfo(courseId);
 
   if (loading) return <div>로딩중…</div>;
   if (!courseDetail)
@@ -69,7 +69,20 @@ export default function Page() {
 
       <div className={styles.interaction}>
         <div className={styles.box}>
-          <BaseButton title="강의 개설하기" />
+          <CustomButton
+            title="수강 신청"
+            onClick={handleEnroll}
+            size="md"
+            variant="custom"
+            color="green"
+          />
+          <CustomButton
+            title="찜하기"
+            onClick={handleZzim}
+            size="md"
+            variant="custom"
+            color="green"
+          />
         </div>
       </div>
     </div>

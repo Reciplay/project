@@ -20,6 +20,10 @@
   width: 32px;
   height: 32px;
   cursor: pointer;
+
+  @media (max-width: 1400px) {
+    display: none;
+  }
 }
 .logoLink {
   display: flex;

@@ -30,6 +30,26 @@
       margin: 0 auto;
     }
   }
+
+  @media (max-width: 1400px) {
+    width: 72px;
+
+    .sectionTitle {
+      display: none;
+    }
+
+    .linkItem {
+      justify-content: center;
+    }
+
+    .title {
+      display: none;
+    }
+
+    .iconOnly {
+      margin: 0 auto;
+    }
+  }
 }
 
 .section {

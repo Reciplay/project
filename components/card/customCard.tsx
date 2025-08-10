@@ -107,7 +107,7 @@ export default function CustomCard({ data, type, onClick }: CardProps) {
           <span className={styles.ratingLabel}>평균 별점</span>
           <div
             className={styles.stars}
-            style={{ ["--fill" as any]: `${percent}%` }}
+            style={{ "--fill": `${percent}%` } as React.CSSProperties}
             aria-label={`평점 ${data.averageReviewScore} / 5`}
           >
             <span className={styles.a11y}>

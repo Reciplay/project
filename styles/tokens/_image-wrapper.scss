@@ -1,0 +1,17 @@
+%image-wrapper {
+  position: relative;
+  overflow: hidden;
+  background-color: #ddd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 모양 */
+%image-wrapper-rounded {
+  border-radius: 8px;
+}
+
+%image-wrapper-circle {
+  border-radius: 50%;
+}

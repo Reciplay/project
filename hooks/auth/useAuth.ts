@@ -87,8 +87,8 @@ export default function useAuth() {
       if (res.status === 200) {
         alert("추가 정보가 저장되었습니다!");
 
-        setIsExtraFilled(true); // ✅ Hook에서 가져온 함수 사용
         router.push(ROUTES.HOME);
+        setIsExtraFilled(true); // ✅ Hook에서 가져온 함수 사용
       } else {
         alert("추가 정보 저장에 실패했습니다.");
       }

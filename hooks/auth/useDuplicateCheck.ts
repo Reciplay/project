@@ -1,7 +1,7 @@
 import { formData } from "@/config/formData";
 import restClient from "@/lib/axios/restClient";
 import { debounce } from "lodash";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 type CheckResult = {
   ok: boolean;
@@ -11,7 +11,9 @@ type CheckResult = {
 export function useDuplicateCheck(type: "email" | "nickname") {
   const [checkedValue, setCheckedValue] = useState("");
   const [message, setMessage] = useState("");
-  const [ok, setOk] = useState(false); // ✅ 중복 여부 저장
+  const [ok, setOk] = useState(false);
+
+  const latestRef = useRef<string>("");
 
   const checkDuplicate = async (value: string): Promise<CheckResult> => {
     if (!value) {
@@ -68,19 +70,45 @@ export function useDuplicateCheck(type: "email" | "nickname") {
   };
 
   const debouncedCheck = useMemo(() => {
-    return debounce(async (value: string) => {
-      const result = await checkDuplicate(value);
-      setMessage(result.message);
-      setCheckedValue(result.ok ? value : ""); // ok일 때만 저장
-      setOk(result.ok); // ✅ ok 상태 업데이트
-    }, 500);
+    const fn = debounce(
+      async (raw: string) => {
+        const value = raw.trim();
+
+        // 🔒 가드: 빈 값/형식 미달/최소 길이 미만이면 상태 리셋 후 스킵
+        if (!value) {
+          setMessage("");
+          setCheckedValue("");
+          setOk(false);
+          return;
+        }
+
+        latestRef.current = value;
+        const result = await checkDuplicate(value);
+
+        // 🔒 레이스 가드: 최신 입력과 응답의 대상이 같을 때만 업데이트
+        if (latestRef.current !== value) return;
+
+        setMessage(result.message);
+        setCheckedValue(result.ok ? value : "");
+        setOk(result.ok);
+      },
+      500,
+      { trailing: true }
+    );
+
+    // ✅ blur 시 즉시 실행하고 싶을 때 쓰려고 flush 노출
+    fn.flush = fn.flush;
+    fn.cancel = fn.cancel;
+
+    return fn;
   }, [type]);
 
   return {
     checkedValue,
     message,
+    ok,
     debouncedCheck,
-    cancelCheck: debouncedCheck.cancel,
-    ok, // ✅ 추가
+    cancelCheck: debouncedCheck.cancel as () => void,
+    flushCheck: debouncedCheck.flush as () => void, // ⬅️ 추가
   };
 }

@@ -35,7 +35,7 @@ export interface UserExtra {
   name: string;
   job: string;
   birthDate: string;
-  gender: number;
+  gender: Gender;
 }
 
 export interface LoginForm {
@@ -50,3 +50,5 @@ export interface SignupForm {
   confirmPassword: string;
   confirmEmail: string;
 }
+
+export type Gender = 0 | 1;

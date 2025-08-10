@@ -1,0 +1,75 @@
+.group {
+  display: inline-flex;
+  gap: 0; /* 사이 간격 없이 붙여서 토글처럼 */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  outline: none;
+  background: #fff;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 3px rgba(30, 111, 186, 0.25);
+  }
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.option {
+  flex: 1 1 0;
+  padding: 0 14px;
+  background: #fff;
+  color: #222;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  user-select: none;
+
+  /* 버튼 사이 경계선 */
+  &:not(:last-child) {
+    border-right: 1px solid #ccc;
+  }
+
+  &:hover {
+    background: #f6f8fa;
+  }
+  &:active {
+    background: #eef2f7;
+  }
+}
+
+.selected {
+  background: #1e6fba;
+  color: #fff;
+}
+
+.disabled,
+.group:has(.option:disabled) {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sm {
+  .option {
+    height: 36px;
+    font-size: 13px;
+    line-height: 36px;
+  }
+}
+
+.md {
+  .option {
+    height: 44px;
+    font-size: 14px;
+    line-height: 44px;
+  }
+}
+
+.lg {
+  .option {
+    height: 48px;
+    font-size: 16px;
+    line-height: 48px;
+  }
+}

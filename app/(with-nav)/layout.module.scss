@@ -13,4 +13,7 @@
   margin: 24px 40px;
   width: calc(100vw - 260px);
   // overflow: hidden;
+  @media (max-width: 1400px) {
+    width: 100%;
+  }
 }

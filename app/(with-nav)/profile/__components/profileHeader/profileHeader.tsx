@@ -49,6 +49,7 @@ export default function ProfileHeader({
             alt="profile"
             fill
             className={styles.profileImage}
+            priority
           />
         </div>
       </div>

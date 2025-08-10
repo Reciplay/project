@@ -14,6 +14,16 @@
   border-radius: 8px;
   box-sizing: border-box;
   transition: border-color 0.2s ease;
+
+  &::-webkit-input-placeholder {
+    color: #aaaaaa;
+  }
+  &:-ms-input-placeholder {
+    color: #aaaaaa;
+  }
+  &::placeholder {
+    color: #aaaaaa;
+  }
 }
 
 // 커스텀 타입일 경우의 wrapper에 따라 테두리 색 변경
