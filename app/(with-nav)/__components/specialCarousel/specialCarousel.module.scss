@@ -1,6 +1,7 @@
 .imageSlide {
   width: 100%;
-  height: 450px;
+  aspect-ratio: 1150 / 350;
+  /* = 3.2857... */
   position: relative;
   border-radius: 16px;
   overflow: hidden;
@@ -15,12 +16,55 @@
 
 .itemImage {
   position: absolute;
-  top: 50%;
+  top: 30%;
   left: 50%;
   object-fit: contain;
   z-index: 2;
   pointer-events: none;
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.leftAlign {
+  left: 6%;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.rightAlign {
+  right: 6%;
+  align-items: flex-end;
+  text-align: left;
+}
+
+.textOverlay.variantSmallText {
+  position: absolute;
+  z-index: 10;
+  transform: translateY(-50%);
+  align-items: flex-start;
+  /* 부모 flex 컨테이너에서 왼쪽 정렬 */
+  text-align: left;
+  width: 40%;
+  min-width: 16.67vw;
+  max-width: 28.65vw;
+  max-height: 20.83vw;
+  left: 50% !important;
+
+  .title {
+    font-size: 1.5vw;
+    line-height: 1.3;
+    margin-bottom: 1vw;
+    margin-left: 2vw;
+    margin-top: 2vw;
+  }
+
+  .desc {
+    font-size: 1vw;
+    margin-left: 2vw;
+  }
+
+  .slogan {
+    font-size: 1.1vw;
+  }
 }
 
 .textOverlay {
@@ -29,7 +73,8 @@
   transform: translateY(-50%);
   z-index: 10;
   width: 48%;
-  max-width: 500px;
+  max-width: 700px;
+  margin-left: 5%;
   // 기본 중앙 정렬
   display: flex;
   flex-direction: column;
@@ -37,58 +82,93 @@
   // align-items/ text-align은 leftAlign, rightAlign로 분기
 }
 
-.leftAlign {
-  left: 6%;
-  align-items: flex-start;
-  text-align: left;
-}
-.rightAlign {
-  right: 6%;
-  align-items: flex-end;
-  text-align: right;
+.glassOverlay {
+  position: relative;
+  /* ::before 기준 */
+  overflow: hidden;
+  /* 라운드 안으로 블러 잘림 방지 */
 }
 
-// Glass 효과 내부는 glassTextOverlay로 조절
-.glassTextOverlay {
-  width: 100%;
-  padding: 2rem 2.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5em;
+.glassOverlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  /* 옵션: 너무 번지면 투명도/블러 수치 조절 */
+  background: rgba(255, 255, 255, 0.012);
+  backdrop-filter: blur(6px);
+  border-left: 1.5px solid rgba(255, 255, 255, .22);
+  border-top: 1.5px solid rgba(255, 255, 255, .22);
+}
+
+.glassOverlay>* {
+  position: relative;
+  z-index: 1;
+}
+
+.glassSoft {
+  /* 투명도 있는 흰색 */
+
+  border-radius: 20px;
 }
 
 // 텍스트 스타일(그대로 유지)
 .title {
-  font-size: 2.2rem;
-  font-weight: bold;
-  margin-bottom: 0.5em;
+  color: #fff;
+  font-size: 2.2vw;
+  font-weight: 500;
+  // margin-bottom: 0.5em;
   letter-spacing: -0.03em;
+
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+  white-space: pre-line;
+  /* ← 줄바꿈 문자(\n)도 표시 */
 }
+
 .desc {
-  font-size: 1.1rem;
-  margin-bottom: 0.5em;
+  color: #fff;
+  font-size: 1.5vw;
+  margin-bottom: 2em;
+  letter-spacing: -0.03em;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.14);
 }
+
 .slogan {
-  font-size: 0.95rem;
+  font-size: 1.4vw;
   margin-bottom: 1.2em;
-  color: #ffd93b;
+  color: #fff;
   font-weight: 500;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.14);
 }
+
 .ctaButton {
-  display: inline-block;
-  padding: 0.7em 2.1em;
-  background: linear-gradient(90deg, #ff7e5f, #feb47b);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1.2rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   color: #fff;
-  font-weight: 600;
-  border-radius: 2em;
-  font-size: 1.05rem;
   text-decoration: none;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
-  transition: background 0.2s;
-  &:hover {
-    background: linear-gradient(90deg, #feb47b, #ff7e5f);
+  transition: transform .2s ease, background .2s ease;
+  margin-bottom: 2vw;
+  margin-left: 2vw;
+}
+
+.ctaButton:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, .24);
+}
+
+/* 반응형: 모바일에선 폭 넓게, 패딩 줄이기 */
+@media (max-width: 768px) {
+  .textOverlay {
+    left: 50% !important;
+    right: auto !important;
+    transform: translate(-50%, -50%);
+    width: min(92vw, 560px);
+    padding: 1rem 1.25rem;
+
   }
 }

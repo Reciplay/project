@@ -63,34 +63,31 @@ $colors-light: (
   accent: #b04b8c,
 );
 
-$colors-dark: map.merge(
-  $colors-light,
-  (
-    text: #e6e8ee,
-    subtext: #a8b0bb,
-    divider: #2d333b,
-    bg: #0f141a,
-    bg-soft: #141a21,
-    bg-hover: #1b2330,
-    bg-active: #263043,
-    primary: #8fb3ff,
-    success: #56d3a1,
-    warning: #ffd27a,
-    danger: #ff7a7a,
-    highlight: #2a1b22,
-    border: #2a2f37,
-    border-soft: #343b45,
-    disabled: #6b7280,
-    accent: #f09ac1,
-  )
-);
+$colors-dark: map.merge($colors-light,
+    (text: #e6e8ee,
+      subtext: #a8b0bb,
+      divider: #2d333b,
+      bg: #0f141a,
+      bg-soft: #141a21,
+      bg-hover: #1b2330,
+      bg-active: #263043,
+      primary: #8fb3ff,
+      success: #56d3a1,
+      warning: #ffd27a,
+      danger: #ff7a7a,
+      highlight: #2a1b22,
+      border: #2a2f37,
+      border-soft: #343b45,
+      disabled: #6b7280,
+      accent: #f09ac1,
+    ));
 
 // 2) HEX와 RGB CSS 변수를 모두 노출하는 헬퍼
 
 @function to-rgb($c) {
   @return #{color.channel($c, "red", $space: rgb)},
-    #{color.channel($c, "green", $space: rgb)},
-    #{color.channel($c, "blue", $space: rgb)};
+  #{color.channel($c, "green", $space: rgb)},
+  #{color.channel($c, "blue", $space: rgb)};
 }
 
 // 3) CSS 변수 출력
@@ -98,12 +95,14 @@ $colors-dark: map.merge(
   @each $name, $value in $colors-light {
     --color-#{$name}: #{$value};
     --color-#{$name}-rgb: #{to-rgb(
-        $value
-      )}; // e.g. rgb(var(--color-primary-rgb))
+ $value )
   }
 
-  // 하위 호환 별칭 (이전 이름 -> 새 이름)
-  --color-line: var(--color-divider);
+  ; // e.g. rgb(var(--color-primary-rgb))
+}
+
+// 하위 호환 별칭 (이전 이름 -> 새 이름)
+--color-line: var(--color-divider);
 }
 
 [data-theme="dark"] {
