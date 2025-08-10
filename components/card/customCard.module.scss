@@ -25,6 +25,7 @@
     flex: 0 0 220px;
     height: 140px;
   }
+
   .body {
     flex: 1;
   }
@@ -79,7 +80,8 @@
 }
 
 .live {
-  color: var(--accent-live, #e11d48); /* rose-600 */
+  color: var(--accent-live, #e11d48);
+  /* rose-600 */
 }
 
 .viewers {
@@ -102,7 +104,8 @@
   font-size: 1.1rem;
   line-height: 1;
   letter-spacing: 2px;
-  color: var(--star-empty, #d1d5db); /* base (empty) */
+  color: var(--star-empty, #d1d5db);
+  /* base (empty) */
   -webkit-mask-image: linear-gradient(#000, #000);
   mask-image: linear-gradient(#000, #000);
 
@@ -111,12 +114,14 @@
     content: "★★★★★";
     font-weight: 900;
   }
+
   &::after {
     position: absolute;
     left: 0;
     top: 0;
     width: var(--fill, 0%);
-    color: var(--text-strong, #111827); /* filled */
+    color: var(--text-strong, #111827);
+    /* filled */
     overflow: hidden;
     white-space: nowrap;
   }
@@ -161,12 +166,14 @@
   font-weight: 800;
   letter-spacing: 0.2px;
   color: var(--status-fg, #0b1220);
-  background: var(--status-bg, #e5e7eb);
+  background: var(--status-br, #d1d5db);
+  backdrop-filter: blur(6px);
   border: 1px solid var(--status-br, #d1d5db);
 
   strong {
     font-weight: 800;
   }
+
   .dText {
     font-style: normal;
     font-weight: 700;
@@ -176,15 +183,15 @@
 
 .recruiting {
   --status-bg: var(--status-recruiting-bg, #dcfce7);
-  --status-fg: var(--status-recruiting-fg, #065f46);
-  --status-br: var(--status-recruiting-br, #bbf7d0);
+  --status-fg: var(--status-recruiting-fg, #236c49);
+  --status-br: var(--status-recruiting-br, #ffffff92);
   opacity: 0.85;
 }
 
 .ongoing {
   --status-bg: var(--status-ongoing-bg, #fef3c7);
-  --status-fg: var(--status-ongoing-fg, #92400e);
-  --status-br: var(--status-ongoing-br, #fde68a);
+  --status-fg: var(--status-ongoing-fg, #891313);
+  --status-br: var(--status-ongoing-br, #ffffff93);
   opacity: 0.85;
 }
 
