@@ -17,9 +17,9 @@ export const fetchUserInfo = async () => {
     const { data } = await restClient.get<ApiResponse<User>>("/user/profile", {
       requireAuth: true,
     });
-    const { nickname, job, birthDate, gender } = data.data;
+    const { name, job, birthDate, gender } = data.data;
 
-    const isFilled = Boolean(nickname && job && birthDate) && gender !== null;
+    const isFilled = Boolean(name && job && birthDate) && gender !== null;
 
     store.setIsExtraFilled(isFilled);
   } catch (error) {

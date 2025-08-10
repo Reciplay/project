@@ -49,7 +49,7 @@ export default function RedirectGate({
       router.replace(ROUTES.AUTH.LOGIN);
     }
   }, [status, pathname, hasHydrated, router]);
-
+  console.log(isExtraFilled);
   // 1) 사용자 추가정보 로딩
   useEffect(() => {
     if (status === "authenticated" && hasHydrated && isExtraFilled === null) {

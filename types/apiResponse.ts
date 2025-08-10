@@ -3,13 +3,18 @@ export interface ApiResponse<T> {
   message: string;
   data: T;
 }
-
-export interface PaginationData<T> {
+export interface PagePayload<T> {
   content: T[];
-  page: number;
+  page: number; // 0-base
   size: number;
-  totalPages: number;
   totalElements: number;
+  totalPages: number;
+  hasNext?: boolean; // 👈 추가
+  hasPrevious?: boolean; // 👈 추가
 }
 
-export type PaginationResponse<T> = ApiResponse<PaginationData<T>>;
+export interface PaginationResponse<T> {
+  status: string;
+  message: string;
+  data: PagePayload<T>;
+}
