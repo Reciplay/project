@@ -1,6 +1,7 @@
 "use client";
 
 import CustomCard from "@/components/card/customCard";
+import CustomGrid from "@/components/grid/customGrid/customGrid";
 import { useInstructorCourses } from "@/hooks/instructor/useInstructorCourses";
 import { CARDTYPE } from "@/types/card";
 import { useParams, useRouter } from "next/navigation";
@@ -45,6 +46,20 @@ export default function Courses({
 
       {!loading && !err && (
         <>
+          <CustomGrid
+            items={list}
+            minItemWidth="15.709rem" // 251.34px
+            gap="1.25rem" // 20px
+            renderItem={(course) => (
+              <CustomCard
+                key={course.courseId}
+                data={course}
+                type={CARDTYPE.VERTICAL}
+                onClick={() => router.push(`/course/${course.courseId}`)}
+              />
+            )}
+          />
+          {/* 
           <div className={styles.grid}>
             {list.map((course) => (
               <CustomCard
@@ -53,8 +68,8 @@ export default function Courses({
                 type={CARDTYPE.VERTICAL}
                 onClick={() => router.push(`/course/${course.courseId}`)}
               />
-            ))}
-          </div>
+            ))} */}
+          {/* </div> */}
 
           {totalPages > 1 && (
             <nav className={styles.pagination}>

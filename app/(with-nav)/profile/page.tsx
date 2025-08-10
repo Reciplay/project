@@ -7,7 +7,7 @@ import ProfileInfo from "./__components/profileInfo/profileInfo";
 import styles from "./page.module.scss";
 
 export default function Page() {
-  const profile = useProfile(); // ✅ 한 번만 호출
+  const profile = useProfile();
 
   if (!profile.userData) {
     return <div>프로필 정보를 불러오는 중입니다...</div>;

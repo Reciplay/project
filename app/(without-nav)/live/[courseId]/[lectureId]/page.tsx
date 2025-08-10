@@ -10,7 +10,7 @@ export default function Page() {
   if (status === "loading") return null;
   if (!session) return <div>로그인이 필요합니다.</div>;
 
-  const role = (session as any).role ?? (session as any).user?.role;
+  const role = session.role;
 
   return role === "ROLE_STUDENT" ? <StudentPage /> : <InstructorPage />;
 }

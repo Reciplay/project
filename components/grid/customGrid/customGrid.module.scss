@@ -1,0 +1,21 @@
+/* customGrid.module.scss */
+.grid {
+  /* 내부에서 쓸 “안전한” 내부 변수로 치환해 두기 */
+  --_card-w: var(--card-w-px, 25.134rem); /* 기본값 포함 */
+  --_gap: var(--card-gap, 2rem); /* 기본값 포함 */
+
+  display: grid;
+  /* 카드 폭 고정 */
+  grid-template-columns: repeat(auto-fill, var(--_card-w));
+  gap: var(--_gap);
+  align-items: start;
+
+  padding: 1rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--color-text, #111);
+  letter-spacing: -0.01em;
+}

@@ -23,4 +23,10 @@
 
   --size-popover-max: 36rem;
   --size-modal-max: 64rem;
+
+  :root {
+    --card-w-px: 25.134rem; /* 251.34 × 334.8 */
+    --card-h-px: 33.48rem;
+    --card-gap: 2rem; /* = 1.25rem */
+  }
 }

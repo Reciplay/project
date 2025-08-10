@@ -1,0 +1,133 @@
+/* 카드 고정 크기: 251.34 × 334.8
+   간격: --lane-gap (기본 1.25rem)
+   스크롤바 숨김 + 그림자 여유 포함  */
+
+.wrap {
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--color-text, #111);
+  letter-spacing: -0.01em;
+}
+.seeAll {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-primary, #3f51b5);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0.25rem 0;
+  border-radius: 8px;
+
+  &:hover {
+    background: var(--color-bg-hover, #f1f3f5);
+  }
+}
+
+.stage {
+  position: relative;
+  /* 바깥쪽 살짝 여유 (페이드와 충돌 방지) */
+  padding: 0;
+}
+
+.scroller {
+  display: flex;
+  gap: var(--lane-gap, 1.25rem);
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  /* 카드 그림자 여유 */
+  padding: 1rem 1rem 2rem 1rem;
+
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 1rem;
+  -webkit-overflow-scrolling: touch;
+
+  /* 스크롤바 숨김 */
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome/Safari/Edge */
+  }
+}
+
+.item {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+
+  /* 고정 크기 (필요 시 인라인으로 override 가능) */
+  width: var(--card-w-px, 251.34px);
+  height: var(--card-h-px, 334.8px);
+}
+
+/* 페이드(좌/우) — 기본은 숨김, .show가 붙으면 노출 */
+.fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.leftFade {
+  left: 0;
+  background: linear-gradient(90deg, var(--color-bg, #fff) 20%, transparent);
+}
+.rightFade {
+  right: 0;
+  background: linear-gradient(270deg, var(--color-bg, #fff) 20%, transparent);
+}
+.show {
+  opacity: 1;
+}
+
+/* 네비 버튼 */
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 64px;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #111;
+  font-size: 28px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  z-index: 2;
+
+  &.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  &:hover {
+    background: #fff;
+  }
+}
+
+.prev {
+  left: 0.25rem; /* stage padding과 동일하게 */
+}
+.next {
+  right: 0.25rem;
+}
+.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}

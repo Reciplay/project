@@ -33,6 +33,7 @@ export function useProfile() {
         const res = await restClient.get<ApiResponse<User>>("/user/profile", {
           requireAuth: true,
         });
+
         const data = res.data.data;
         setUserData(data);
         setForm({
@@ -44,7 +45,6 @@ export function useProfile() {
         setPreviewUrl(data.profileImage.presignedUrl); // 초기 이미지 설정
       } catch (e) {
         console.error("프로필 불러오기 실패:", e);
-        // setUserData(sampleUser.data);
       }
     };
     fetchProfile();
