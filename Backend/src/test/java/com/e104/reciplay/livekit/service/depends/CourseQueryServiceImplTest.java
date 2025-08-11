@@ -125,6 +125,7 @@ class InstructorQueryServiceImplTest {
     }
 
     @Test
+<<<<<<< HEAD
     @DisplayName("queryInstructorProfile - 프로필/배너/라이선스/커리어/구독정보까지 설정")
     void queryInstructorProfile_ok() {
         Long instructorId = 10L;
@@ -132,6 +133,27 @@ class InstructorQueryServiceImplTest {
 
         Instructor inst = buildInstructor(instructorId, 999L);
         when(instructorRepository.findById(instructorId)).thenReturn(Optional.of(inst));
+=======
+    @DisplayName("isClosedCourse - 기간 내이거나 미승인 강좌면 true")
+    void isClosedCourse_false_cases() {
+        Long courseId = 12L;
+        // 기간 내 + 승인
+        Course inRange = buildCourse(courseId, 1L, "강좌");
+        inRange.setCourseStartDate(LocalDate.now().minusDays(1));
+        inRange.setCourseEndDate(LocalDate.now().plusDays(1));
+        inRange.setIsApproved(true);
+        when(courseRepository.findById(courseId)).thenReturn(Optional.of(inRange));
+        assertThat(service.isClosedCourse(courseId)).isFalse();
+
+        // 기간 밖이어도 미승인 → false
+        Course notApproved = buildCourse(courseId, 1L, "강좌");
+        notApproved.setCourseStartDate(LocalDate.now().plusDays(3));
+        notApproved.setCourseEndDate(LocalDate.now().plusDays(30));
+        notApproved.setIsApproved(false);
+        when(courseRepository.findById(courseId)).thenReturn(Optional.of(notApproved));
+        assertThat(service.isClosedCourse(courseId)).isTrue();
+    }
+>>>>>>> dev
 
         FileMetadata profileMeta = FileMetadata.builder().relatedId(instructorId).sequence(1).build();
         when(subFileMetadataQueryService.queryMetadataByCondition(instructorId, "user_profile"))

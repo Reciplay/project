@@ -3,8 +3,10 @@ package com.e104.reciplay.course.courses.controller;
 import com.e104.reciplay.common.types.TodoType;
 import com.e104.reciplay.course.courses.dto.request.LectureRequest;
 import com.e104.reciplay.course.courses.dto.request.item.ChapterItem;
+import com.e104.reciplay.course.lecture.controller.LectureApiController;
 import com.e104.reciplay.course.lecture.dto.response.TodoInfo;
 import com.e104.reciplay.course.lecture.service.LectureManagementService;
+import com.e104.reciplay.course.lecture.service.LectureQueryService;
 import com.e104.reciplay.livekit.service.depends.CourseManagementService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -25,11 +27,14 @@ import java.util.List;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(CourseSubApiController.class)
+@WebMvcTest(LectureApiController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class CourseSubApiControllerTest {
     @MockitoBean
     private LectureManagementService lectureManagementService;
+
+    @MockitoBean
+    private LectureQueryService lectureQueryService;
 
     @MockitoBean
     private CourseManagementService courseManagementService;
@@ -43,7 +48,7 @@ class CourseSubApiControllerTest {
     @Test
     public void 강의_정보_업로드_API_호출에_성공한다() throws Exception {
         // given
-        String url = "/api/v1/course/courses/lectures";
+        String url = "/api/v1/course/lecture";
         MockMultipartFile file1 = new MockMultipartFile("material/0", "강의1번자료.pdf", "application/pdf", "test".getBytes());
         MockMultipartFile file2 = new MockMultipartFile("material/1", "강의2번자료.pdf", "application/pdf", "test".getBytes());
 

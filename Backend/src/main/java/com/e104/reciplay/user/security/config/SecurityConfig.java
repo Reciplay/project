@@ -104,9 +104,7 @@ public class SecurityConfig {
 
         // 도달시 SecurityContext의 여부와 권한을 검증할지를 설정한다.
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers(URL_PREFIX + "/user/auth/login",
-                        URL_PREFIX + "/user/auth/refresh-token",
-                        URL_PREFIX + "/user/auth/signup",
+                .requestMatchers(URL_PREFIX + "/user/auth/**",
                         "/h2-console/**",
                         "/practice-ui.html",
                         "/swagger-ui/**", // swagger-ui 관련 모든 경로 허용
