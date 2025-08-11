@@ -142,3 +142,69 @@
   background-color: #95a5a6;
   color: #fff;
 }
+
+/* 공통 섹션 블록 */
+.section {
+  margin-top: 12px;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.sectionBody {
+  background: #fff;
+  border: 1px solid #eef0f3;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.paragraph {
+  font-size: 1.5rem;
+  line-height: 1.6;
+  color: #1f2937;
+  white-space: pre-line;
+}
+
+.muted {
+  font-size: 1.4rem;
+  color: #6b7280;
+}
+
+/* 액션 버튼 영역: 모달 하단에 고정되도록 */
+.actions {
+  position: sticky;
+  bottom: 0;
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  background: #fff;
+  padding-top: 12px;
+  border-top: 1px solid #eef0f3;
+}
+
+/* 버튼 스타일 (BaseButton에 클래스 추가 적용) */
+.btnRegister {
+  background-color: #22c55e; /* green-500 */
+  color: #fff;
+}
+.btnReject {
+  background-color: #ef4444; /* red-500 */
+  color: #fff;
+}
+
+/* 반응형 */
+@media (max-width: 640px) {
+  .frame {
+    grid-template-columns: 1fr; /* 세로 스택 */
+  }
+  .imageWrapper {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    margin-top: 8px;
+  }
+}

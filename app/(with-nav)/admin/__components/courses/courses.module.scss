@@ -135,3 +135,64 @@
   background-color: #e74c3c;
   color: #fff;
 }
+
+/* courses.module.scss - 모달 내부 전용 */
+
+.loadingText {
+  text-align: center;
+  padding: 24px 8px;
+  color: #4b5563;
+  font-size: 1.6rem;
+}
+
+.modalTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.modalContent {
+  padding: 4px 2px;
+  max-height: 60vh; /* 필요시 조정 */
+  overflow: auto;
+}
+
+.detailList {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 1.5rem;
+  color: #1f2937;
+}
+.detailList li {
+  display: flex;
+  gap: 8px;
+  line-height: 1.5;
+}
+.detailList strong {
+  min-width: 88px; /* 라벨 정렬 */
+  color: #374151;
+  font-weight: 600;
+}
+
+/* 하단 버튼 영역 (sticky) */
+.actions {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding-top: 12px;
+  margin-top: 12px;
+  background: #fff;
+  border-top: 1px solid #eef0f3;
+}
+
+@media (max-width: 640px) {
+  .detailList strong {
+    min-width: 72px;
+  }
+}
