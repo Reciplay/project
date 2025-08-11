@@ -26,7 +26,7 @@ export default function ProfileForm({ value }: ProfileFormProps) {
   const [addrOpen, setAddrOpen] = useState(false);
   const phoneRegex = /^010-\d{4}-\d{4}$/;
   const [phoneError, setPhoneError] = useState('');
-  const { profile, setProfile } = useInstructorStore();
+  const { profile, setProfile, setCoverImageFile } = useInstructorStore();
   const [fileList, setFileList] = useState<UploadFile[]>([
     {
       uid: '-1',
@@ -35,6 +35,7 @@ export default function ProfileForm({ value }: ProfileFormProps) {
       url: '',
     },
   ]);
+
 
   const onPreview = async (file: UploadFile) => {
     let src = file.url as string;
@@ -106,8 +107,6 @@ export default function ProfileForm({ value }: ProfileFormProps) {
         />
         <ImgCrop rotationSlider>
           <Upload
-            // 나중에 백엔드가 제공하는 진짜 API 주소로 바꿔야함 이미지 저장하는 저장소 api
-            action={undefined}
             // listType="picture-card": 업로드 UI를 썸네일 카드형으로 만듦
             listType="picture-card"
             // maxCount={1}: 최대 1개의 파일만 업로드 가능 (중복 업로드 방지)
@@ -115,18 +114,20 @@ export default function ProfileForm({ value }: ProfileFormProps) {
             // 현재 선택된 파일 리스트 (useState로 관리됨)
             fileList={fileList}
             // 파일이 업로드될 때마다 실행되는 콜백 함수
-            // newList는 현재까지의 전체 파일 목록을 의미
-            onChange={({ fileList: newList }) => {
-              // 가장 마지막에 업로드된 파일 하나만 추출
-              // 만약 여러 개 드래그로 올렸을 경우, 가장 최신 1개만 유지
-              const latest = newList.slice(-1);
-              // 현재 파일 리스트 상태를 마지막 하나로 덮어쓰기
-              setFileList(latest);
-              // 업로드가 완료되면 서버 응답에 포함된 이미지 URL 추출
-              const url = latest[0]?.response?.url;
-              // 추출한 url이 존재하면 기존 profile 객체를 펼친 뒤(...profile), 
-              // coverImage 필드를 새 URL로 덮어서 상태 저장
-              if (url) setProfile({ ...profile, coverImage: url });
+            beforeUpload={(file) => {
+              setCoverImageFile(file);
+              setFileList([{
+                uid: file.uid,
+                name: file.name,
+                status: 'done',
+                url: URL.createObjectURL(file),
+                originFileObj: file,
+              }]);
+              return false;
+            }}
+            onRemove={() => {
+              setCoverImageFile(null);
+              setFileList([]);
             }}
             onPreview={onPreview}
           >

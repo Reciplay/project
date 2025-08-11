@@ -1,71 +1,67 @@
 'use client';
 
 import styles from '../page.module.scss';
-import classNames from 'classnames';
 import IconWithText from '@/components/text/iconWithText';
-import BaseButton from '@/components/button/baseButton';
 import Image from 'next/image';
-import { Controller, useForm } from 'react-hook-form';
-import { useState, useEffect } from 'react';
+import { useInstructorStore } from '@/stores/instructorStore';
+import { Upload } from 'antd';
+import type { GetProp, UploadFile, UploadProps } from 'antd';
+import ImgCrop from 'antd-img-crop';
+import React, { useEffect, useState } from 'react';
+import AddressPicker from '../../register/__components/address/addressPicker';
 
 interface ProfileFormProps {
   value: {
-    address: string;
-    phoneNumber: string;
     name: string;
     genderBirth: string;
     email: string;
     job: string;
   };
-  onChange: (data: FormData) => void;
+  initialCoverImageUrl?: string; // ✅ 추가: 수정 모드 초기 커버 이미지 URL
 }
 
-interface FormData {
-  address: string;
-  phoneNumber: string;
-}
+type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
-export default function ProfileForm({ value, onChange }: ProfileFormProps) {
-  const [isEditMode, setIsEditMode] = useState(false);
+export default function ProfileForm({ value, initialCoverImageUrl }: ProfileFormProps) {
+  const [addrOpen, setAddrOpen] = useState(false);
+  const phoneRegex = /^010-\d{4}-\d{4}$/;
+  const [phoneError, setPhoneError] = useState('');
+  const { profile, setProfile, setCoverImageFile } = useInstructorStore();
+  const [fileList, setFileList] = useState<UploadFile[]>([]); // ✅ 초기 비움
 
-  const { control, handleSubmit, reset } = useForm<FormData>({
-    defaultValues: {
-      address: value.address,
-      phoneNumber: value.phoneNumber,
-    },
-  });
-
-  // 외부 상태가 바뀌면 폼 초기화
+  // ✅ 수정 모드: 서버 URL로 썸네일 프리셋
   useEffect(() => {
-    reset({
-      address: value.address,
-      phoneNumber: value.phoneNumber,
-    });
-  }, [value, reset]);
+    if (initialCoverImageUrl) {
+      setFileList([{
+        uid: '-1',
+        name: 'coverImage',
+        status: 'done',
+        url: initialCoverImageUrl,
+      }]);
+      setCoverImageFile(null); // 새 파일 없음
+    }
+  }, [initialCoverImageUrl, setCoverImageFile]);
 
-  const handleCancel = () => {
-    reset(); // 기본값으로 초기화
-    setIsEditMode(false);
+  const onPreview = async (file: UploadFile) => {
+    let src = file.url as string;
+    if (!src) {
+      src = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file.originFileObj as FileType);
+        reader.onload = () => resolve(reader.result as string);
+      });
+    }
+    const image = document.createElement('img');
+    image.src = src;
+    const imgWindow = window.open(src);
+    imgWindow?.document.write(image.outerHTML);
   };
-
-  const handleSave = (data: FormData) => {
-    // 👉 백엔드에 저장 요청 보내기 (API 호출 위치)
-    // await axios.post('/api/profile/update', data);
-
-    onChange(data); // ✅ 부모 컴포넌트에 변경 알림
-    setIsEditMode(false);
-    console.log(data);
-  };
-
 
   return (
-    <form onSubmit={handleSubmit(handleSave)} className={styles.frame}>
+    <form className={styles.frame} onSubmit={(e) => e.preventDefault()}>
       <div className={styles.textContainer}>
         <div className={styles.nameWrapper}>
           <span className={styles.name}>{value.name}</span>
-          {!isEditMode && (
-            <IconWithText iconName="update" title="" onClick={() => setIsEditMode(true)} />
-          )}
         </div>
 
         <span className={styles.text}>{value.genderBirth}</span>
@@ -74,43 +70,62 @@ export default function ProfileForm({ value, onChange }: ProfileFormProps) {
           <IconWithText iconName="email" title={value.email} />
           <IconWithText iconName="user2" title={value.job} />
 
-          <Controller
-            control={control}
-            name="phoneNumber"
-            render={({ field }) => (
-              <IconWithText
-                iconName="phoneNumber"
-                title={value.phoneNumber}
-                editable={isEditMode}
-                value={field.value}
-                onChange={field.onChange}
-              />
-            )}
+          <IconWithText
+            iconName="phoneNumber"
+            title={profile.phoneNumber}
+            editable={true}
+            value={profile.phoneNumber}
+            onChange={(v: string) => {
+              if (!/^[\d-]*$/.test(v)) return; // 숫자/하이픈만
+              setProfile({ ...profile, phoneNumber: v });
+              setPhoneError(v === '' || phoneRegex.test(v) ? '' : '형식: 010-1234-5678');
+            }}
           />
         </div>
 
-        <Controller
-          control={control}
-          name="address"
-          render={({ field }) => (
-            <IconWithText
-              iconName="address"
-              title={value.address}
-              editable={isEditMode}
-              value={field.value}
-              onChange={field.onChange}
-            />
-          )}
+        <IconWithText
+          iconName="address"
+          title={profile.address}
+          editable={true}
+          value={profile.address}
+          onClick={() => setAddrOpen(true)}
         />
+
+        <AddressPicker
+          open={addrOpen}
+          onClose={() => setAddrOpen(false)}
+          onSelect={(addr) => setProfile({ ...profile, address: addr })}
+        />
+
+        <ImgCrop rotationSlider>
+          <Upload
+            listType="picture-card"
+            maxCount={1}
+            fileList={fileList}
+            beforeUpload={(file) => {
+              setCoverImageFile(file);
+              setFileList([{
+                uid: file.uid,
+                name: file.name,
+                status: 'done',
+                url: URL.createObjectURL(file),
+                originFileObj: file,
+              }]);
+              return false; // 수동 업로드
+            }}
+            onRemove={() => {
+              setCoverImageFile(null);
+              setFileList([]);
+            }}
+            onPreview={onPreview}
+          >
+            {fileList.length < 1 && '+ Upload'}
+          </Upload>
+        </ImgCrop>
       </div>
 
       <div className={styles.imageWrapper}>
-        <Image
-          src="/images/profile2.jpg"
-          fill
-          alt="profile"
-          style={{ objectFit: 'cover' }}
-        />
+        <Image src="/images/profile2.png" fill alt="profile" style={{ objectFit: 'cover' }} />
       </div>
     </form>
   );

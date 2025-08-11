@@ -30,10 +30,13 @@ export interface InstructorState {
   certificates: Certificate[];
   careers: Career[];
 
+  coverImageFile: File | null;
+
   setProfile: (data: Partial<Profile>) => void;
   setIntroduction: (text: string) => void;
   setCertificates: (certs: Certificate[]) => void;
   setCareers: (careers: Career[]) => void;
+  setCoverImageFile: (file: File | null) => void; // ✅ 추가
 
   addCertificate: (cert: Certificate) => void;
   removeCertificate: (index: number) => void;
@@ -52,6 +55,10 @@ export const useInstructorStore = create<InstructorState>((set) => ({
     phoneNumber: '',
     address: '',
   },
+
+  coverImageFile: null,                // ✅ 추가
+  setCoverImageFile: (file) => set({ coverImageFile: file }), // ✅ 추가
+
   setProfile: (data) =>
     set((state) => ({
       profile: { ...state.profile, ...data }, // ✅ 부분 업데이트 가능하도록
