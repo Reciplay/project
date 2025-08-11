@@ -11,7 +11,6 @@ import { useEffect, useMemo } from "react";
 /** 세션에서 role 읽기 (session.user.role 또는 session.role 둘 다 대응) */
 function useRole() {
   const { data: session } = useSession();
-  // NextAuth 콜백에서 평탄화(session.role) 안 했다면 user.role을 사용
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const role = (session as any)?.user?.role ?? (session as any)?.role ?? null;
   return role as "ROLE_ADMIN" | "ROLE_INSTRUCTOR" | "ROLE_STUDENT" | null;
@@ -24,7 +23,7 @@ function useGuards() {
   const isPrefixOf = (prefix: string) =>
     pathname === prefix || pathname.startsWith(`${prefix}/`);
 
-  // 로그인 필요 영역 묶음 (배열 includes -> Set.has로 변경해 TS 유니온 이슈 제거)
+  // 로그인 필요 영역
   const PROFILE_ROUTES = useMemo(
     () =>
       new Set<string>([
@@ -49,9 +48,9 @@ function useGuards() {
   const MATCH = useMemo(() => {
     const isInstructorRoot = pathname === "/instructor";
 
-    // 공개 강사 프로필: /instructor/:id (보호 경로/루트/등록 제외)
+    // ✅ 공개 강사 프로필: /instructor/profile/:id
     const isPublicInstructorProfile =
-      pathname.startsWith("/instructor/") &&
+      pathname.startsWith("/instructor/profile/") &&
       !INSTRUCTOR_PROTECTED_ROUTES.has(pathname) &&
       pathname !== ROUTES.INSTRUCTOR.REGISTER;
 
@@ -64,7 +63,7 @@ function useGuards() {
       isLive: isPrefixOf("/live"),
 
       // 강사 영역
-      isInstructorRoot, // ✅ 루트(/instructor) 가드용
+      isInstructorRoot, // /instructor 루트
       isInstructorRegister: pathname === ROUTES.INSTRUCTOR.REGISTER,
       isInstructorDashboard:
         pathname === ROUTES.INSTRUCTOR.DASHBOARD ||
@@ -95,20 +94,18 @@ export default function RedirectGate({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { status } = useSession(); // "loading" | "authenticated" | "unauthenticated"
+  const { status } = useSession();
   const { isExtraFilled, hasHydrated } = useUserStore();
   const role = useRole();
   const { MATCH } = useGuards();
 
-  /** 공용 replace (같은 경로면 skip) */
   const safeReplace = (to: string) => {
     if (to && to !== pathname) router.replace(to);
   };
 
-  // 초기 로딩 차단 (세션/스토어 수화 전)
   const isLoading = status === "loading" || !hasHydrated;
 
-  // 공개 라우트 (항상 통과)
+  // 공개 라우트
   const isPublicRoute =
     MATCH.isHome ||
     MATCH.isGuide ||
@@ -120,23 +117,19 @@ export default function RedirectGate({
     MATCH.isAuthSignup ||
     MATCH.isAuthExtra;
 
-  // 공통 보호 라우트: 프로필/라이브
+  // 보호 라우트
   const requiresLoginCommon = MATCH.isProfile || MATCH.isLive;
-
-  // 강사 보호 라우트
   const requiresInstructor =
     MATCH.isInstructorDashboard ||
     MATCH.isInstructorCreate ||
     MATCH.isInstructorEdit ||
     MATCH.isInstructorManage;
-
-  // 관리자 보호 라우트
   const requiresAdmin = MATCH.isAdminRoot;
 
   /** B) 로그인 직후 추가정보 로딩 */
   useEffect(() => {
     if (!isLoading && status === "authenticated" && isExtraFilled === null) {
-      fetchUserInfo(); // 비동기: 스토어 업데이트
+      fetchUserInfo();
     }
   }, [isLoading, status, isExtraFilled]);
 
@@ -144,7 +137,6 @@ export default function RedirectGate({
   useEffect(() => {
     if (isLoading) return;
 
-    // 인증 + 추가정보 미입력 -> EXTRA로
     if (
       status === "authenticated" &&
       isExtraFilled === false &&
@@ -154,7 +146,6 @@ export default function RedirectGate({
       return;
     }
 
-    // EXTRA 페이지인데 이미 채워졌음 -> 홈
     if (
       MATCH.isAuthExtra &&
       status === "authenticated" &&
@@ -206,7 +197,6 @@ export default function RedirectGate({
         safeReplace(ROUTES.INSTRUCTOR.REGISTER);
         return;
       }
-      // ROLE_INSTRUCTOR면 통과
     }
   }, [isLoading, requiresInstructor, status, role]);
 
@@ -215,12 +205,10 @@ export default function RedirectGate({
     if (isLoading || !MATCH.isInstructorRoot) return;
 
     if (status === "unauthenticated") {
-      // 비로그인 사용자는 강사 등록 소개로 유도 (공개 페이지)
       safeReplace(ROUTES.INSTRUCTOR.REGISTER);
       return;
     }
 
-    // 로그인 상태
     if (role === "ROLE_ADMIN") {
       safeReplace(ROUTES.ADMIN);
       return;
@@ -229,11 +217,10 @@ export default function RedirectGate({
       safeReplace(ROUTES.INSTRUCTOR.DASHBOARD);
       return;
     }
-    // ROLE_STUDENT
     safeReplace(ROUTES.INSTRUCTOR.REGISTER);
   }, [isLoading, MATCH.isInstructorRoot, status, role]);
 
-  /** I) 최후 수단 가드: 비공개 라우트 + 비로그인 */
+  /** I) 최후 수단 가드 */
   useEffect(() => {
     if (isLoading) return;
 

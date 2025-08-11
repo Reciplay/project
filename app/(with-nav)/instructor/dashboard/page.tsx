@@ -6,7 +6,7 @@ import TableComponent from "@/components/table/table";
 import Image from "next/image";
 import styles from "./page.module.scss";
 import Calendar from "@/components/calendar/calendar";
-import QandAList from "./__components/q&alist/q&aList";
+import QandAList from "../__components/q&alist/q&aList";
 import { useInstructorStats } from "@/hooks/dashboard/useStats";
 import { useProfile } from "@/hooks/profile/useProfile";
 

@@ -18,7 +18,7 @@ export const ROUTES = {
   // ROLE_STUDENT 일 경우 -> INSTRUCTOR.REGISTER 페이지로
   // ROLE_ADMIN 일 경우 -> ADMIN 페이지로
   INSTRUCTOR: {
-    PROFILE: (id: string) => `/instructor/${id}`, // 동적 경로 (얘는 로그인 필요 없고, 강사가 아니어도 됨)
+    PROFILE: (id: string) => `/instructor/profile/${id}`, // 동적 경로 (얘는 로그인 필요 없고, 강사가 아니어도 됨)
     CREATECOURSE: "/instructor/create-course",
     EDIT: "/instructor/edit",
     MANAGE: "/instructor/manage",
