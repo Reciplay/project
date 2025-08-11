@@ -63,8 +63,8 @@ public class ChapterManagementServiceImpl implements ChapterManagementService{
             for(Chapter chapter : chapters) {
                 chapter.update(itemMap.get(chapter.getId()));
             }
+
+            todoManagementService.updateTodos(itemMap);
         }
-
-
     }
 }

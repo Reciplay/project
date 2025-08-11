@@ -100,7 +100,7 @@ public class LectureManagementServiceImpl implements LectureManagementService{
 
         }
 
-
+        chapterManagementService.updateChapterWithTodos(requestMap);
     }
 
     @Override
