@@ -1,10 +1,11 @@
 package com.e104.reciplay.course.lecture.service;
 
-import com.e104.reciplay.course.courses.dto.request.item.ChapterItem;
-import com.e104.reciplay.course.lecture.dto.response.request.LectureRegisterRequest;
+import com.e104.reciplay.course.lecture.dto.request.LectureRequest;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ChapterManagementService {
-    void registChaptersWithTodos(List<LectureRegisterRequest> requests, List<Long> lectureIds);
+    void registChaptersWithTodos(List<LectureRequest> requests, List<Long> lectureIds);
+    void updateChapterWithTodos(Map<Long, LectureRequest> requestMap);
 }

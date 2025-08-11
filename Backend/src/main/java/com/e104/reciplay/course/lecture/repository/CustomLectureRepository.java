@@ -1,7 +1,7 @@
 package com.e104.reciplay.course.lecture.repository;
 
-import com.e104.reciplay.course.lecture.dto.response.LectureDetail;
-import com.e104.reciplay.course.lecture.dto.response.LectureSummary;
+import com.e104.reciplay.course.lecture.dto.LectureDetail;
+import com.e104.reciplay.course.lecture.dto.LectureSummary;
 
 import java.util.List;
 

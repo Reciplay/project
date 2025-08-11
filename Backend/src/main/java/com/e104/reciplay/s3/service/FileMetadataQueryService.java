@@ -7,4 +7,5 @@ import com.e104.reciplay.s3.enums.RelatedType;
 public interface FileMetadataQueryService {
     FileMetadata queryUserProfilePhoto(Long userId);
     FileMetadata queryByMetadata(FileCategory category, RelatedType relatedType, Long relatedId, Integer sequence);
+    FileMetadata queryLectureMaterial(Long lectureId);
 }

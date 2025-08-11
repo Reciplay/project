@@ -1,5 +1,6 @@
 package com.e104.reciplay.entity;
 
+import com.e104.reciplay.user.instructor.dto.response.item.LicenseItem;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class InstructorLicenses {
+public class InstructorLicense {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,4 +31,12 @@ public class InstructorLicenses {
     private LocalDate acquisitionDate;
 
     private String grade;
+
+    public InstructorLicense(LicenseItem item, Long instructorId){
+        this.instructorId = instructorId;
+        this.licenseId = item.getLicneseId();
+        this.institution = item.getInstitution();
+        this.acquisitionDate = item.getAcquisitionDate();
+        this.grade = item.getGrade();
+    }
 }
