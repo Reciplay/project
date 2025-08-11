@@ -4,7 +4,7 @@ import com.e104.reciplay.course.courses.dto.request.RequestCourseInfo;
 import com.e104.reciplay.course.courses.service.CanLearnManagementService;
 import com.e104.reciplay.course.courses.service.SubFileMetadataManagementService;
 import com.e104.reciplay.course.courses.service.SubFileMetadataQueryService;
-import com.e104.reciplay.course.lecture.dto.response.response.CourseTerm;
+import com.e104.reciplay.course.lecture.dto.response.CourseTerm;
 import com.e104.reciplay.entity.Course;
 import com.e104.reciplay.entity.FileMetadata;
 import com.e104.reciplay.repository.CourseRepository;

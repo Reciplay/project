@@ -1,4 +1,4 @@
-package com.e104.reciplay.course.lecture.dto.response;
+package com.e104.reciplay.course.lecture.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.AllArgsConstructor;

@@ -43,4 +43,9 @@ public class CommonResponseBuilder {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).contentType(MediaType.APPLICATION_JSON)
                 .body(ResponseRoot.builder().status(failureMessage).message(message).build());
     }
+
+    public static ResponseEntity serverError(String message) { // 403
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
+                .body(ResponseRoot.builder().status(failureMessage).message(message).build());
+    }
 }

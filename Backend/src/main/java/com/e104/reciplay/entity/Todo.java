@@ -1,7 +1,7 @@
     package com.e104.reciplay.entity;
 
     import com.e104.reciplay.common.types.TodoType;
-    import com.e104.reciplay.course.lecture.dto.response.TodoInfo;
+    import com.e104.reciplay.course.lecture.dto.TodoInfo;
     import jakarta.persistence.*;
     import lombok.AllArgsConstructor;
     import lombok.Builder;
@@ -35,5 +35,11 @@
             this.type = todoInfo.getType();
             this.seconds = todoInfo.getSeconds();
             this.chapterId = chapterId;
+        }
+
+        public void update(TodoInfo info) {
+            if(!this.title.equals(info.getTitle())) this.title = info.getTitle();
+            if(this.type != info.getType()) this.type = info.getType();
+            if(!this.seconds.equals(info.getSeconds())) this.seconds = info.getSeconds();
         }
     }
