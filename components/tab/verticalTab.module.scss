@@ -1,34 +1,59 @@
+.container {
+  display: flex;
+  gap: 24px;
+  align-items: stretch;
+}
+
+/* 좌측 탭 바 너비 고정 */
 :global(.ant-tabs-left .ant-tabs-nav) {
-  width: 160px !important; // 탭 영역 너비
+  width: 180px !important;
 }
 
-:global(.ant-tabs-left .ant-tabs-tab) {
-  white-space: normal !important; // 줄바꿈 허용
-  word-break: keep-all !important; // 단어 단위 줄바꿈
-  font-size: 14px;
-  padding: 8px 12px;
-  line-height: 1.4;
-  height: auto !important; // 높이 자동 확장
+/* 우리가 우측에 직접 렌더하므로 Ant의 기본 컨텐츠는 숨김 */
+:global(.ant-tabs-content-holder) {
+  display: none !important;
 }
 
-// :global(.ant-tabs-left .ant-tabs-tab .ant-tabs-tab-btn) {
-//   white-space: normal !important; // 진짜 텍스트 요소에 강제 적용
-//   display: inline-block;
-//   text-overflow: ellipsis;
-// }
-:global(.ant-tabs-tab .ant-tabs-tab-btn) {
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  display: inline-block;
-  width: 140px; /* 필수! 고정 너비 */
+/* 탭 라벨: 여러 줄 허용 (충돌 제거) */
+:global(.ant-tabs-left .ant-tabs-tab .ant-tabs-tab-btn) {
+  white-space: normal !important;
+  word-break: keep-all !important;
+  display: block !important;
+  /* 필요 시 최대너비로 줄바꿈 제어 */
+  max-width: 160px;
 }
 
-:global(.ant-tabs-tab[aria-selected="true"]),
-:global(.menu-item[aria-selected="true"]),
-:global(.button-tab[aria-selected="true"]) {
+/* 선택 상태 스타일 (과한 빨강 제거) */
+:global(.ant-tabs-tab[aria-selected="true"]) {
   font-weight: 700;
   color: #1677ff;
-  background-color: red;
+  background-color: #f5faff; /* 은은한 강조 */
   border-left: 4px solid #1677ff;
+}
+
+/* 탭 컨테이너 최소너비 */
+.tabContainer {
+  min-width: 180px;
+}
+
+/* 우측 컨텐츠 패널 - 이름을 contentPanel 로 통일 */
+.contentPanel {
+  flex: 1;
+  padding: 12px 24px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  min-height: 240px;
+}
+
+/* 상태 박스들 */
+.loadingWrap,
+.errorWrap,
+.emptyWrap {
+  display: grid;
+  place-items: center;
+  min-height: 240px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #fff;
 }

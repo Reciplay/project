@@ -1,42 +1,58 @@
-import { CreateCourseRequest } from "@/types/course";
+// __components/forms/textForm.tsx
+"use client";
+
+import React from "react";
 import { Input } from "antd";
-import { Controller, useFormContext } from "react-hook-form";
+import { useCreateCourseStore, type FieldKey } from "@/hooks/course/useCreateCourseStore";
 
-// string 값만 뽑아내는 유틸 타입
-export type StringKeys<T> = {
-  [K in keyof T]: T[K] extends string ? K : never;
-}[keyof T];
+type Props = {
+  name: FieldKey;               // 예: "requestCourseInfo.summary"
+  placeholder?: string;
+  label?: string;
+  maxLength?: number;
+  allowClear?: boolean;
+  size?: "small" | "middle" | "large";
+};
 
-// TextFormProps 에 적용
-interface TextFormProps {
-  name: StringKeys<CreateCourseRequest>;
-  placeholder: string;
-}
+export default function TextForm({
+  name,
+  placeholder,
+  label,
+  maxLength,
+  allowClear = true,
+  size = "middle",
+}: Props) {
+  const { values, errors, setField } = useCreateCourseStore();
 
-export default function TextForm({ name, placeholder }: TextFormProps) {
-  const {
-    control,
-    formState: { errors },
-  } = useFormContext<CreateCourseRequest>();
+  // dot-path getter
+  const getByPath = (obj: any, path: string) =>
+    path.split(".").reduce((acc, k) => (acc ? acc[k] : undefined), obj);
+
+  const value = (getByPath(values, name) ?? "") as string;
+
+  const errMsg = (() => {
+    const e = errors?.[name as keyof typeof errors];
+    if (!e) return "";
+    return Array.isArray(e) ? e.join("\n") : String(e);
+  })();
 
   return (
-    <div style={{ marginBottom: 12 }}>
-      {/* <label>{label}</label> */}
-      <Controller
-        name={name}
-        control={control}
-        rules={{ required: placeholder }}
-        render={({ field }) => (
-          <Input
-            {...field}
-            placeholder={placeholder}
-            status={errors[name] ? "error" : ""}
-            variant="underlined"
-          />
-        )}
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      {label && <label style={{ fontWeight: 600 }}>{label}</label>}
+      <Input
+        value={value}
+        onChange={(e) => setField(name, e.target.value)}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        allowClear={allowClear}
+        size={size}
+        status={errMsg ? "error" : ""}
+        showCount={!!maxLength}
       />
-      {errors[name] && (
-        <p style={{ color: "red" }}>{errors[name]?.message as string}</p>
+      {errMsg && (
+        <div style={{ color: "crimson", whiteSpace: "pre-line", fontSize: 12 }}>
+          {errMsg}
+        </div>
       )}
     </div>
   );

@@ -1,53 +1,40 @@
-import { CreateCourseRequest } from "@/types/course";
-import { Radio, RadioChangeEvent } from "antd";
-import { Controller, useFormContext } from "react-hook-form";
-import styles from "./categoryForm.module.scss";
-import { StringKeys } from "./textForm";
+'use client';
+import { Radio } from 'antd';
+import { useCreateCourseStore } from '@/hooks/course/useCreateCourseStore'; // 너가 적은 스토어 경로
+import styles from './categoryForm.module.scss';
 
-interface CategoryFormProps {
-  name: StringKeys<CreateCourseRequest>;
-  label: string;
-}
+const CATEGORIES = [
+  { id: 1, name: '한식' },
+  { id: 2, name: '중식' },
+  { id: 3, name: '일식' },
+  { id: 4, name: '양식' },
+  { id: 5, name: '제과/제빵' },
+  { id: 6, name: '기타' },
+];
 
-export default function CategoryForm({ name, label }: CategoryFormProps) {
-  const {
-    control,
-    formState: { errors },
-  } = useFormContext<CreateCourseRequest>();
+type Props = {
+  name: 'requestCourseInfo.categoryId';
+  label?: string;
+};
+
+export default function CategoryForm({ label }: Props) {
+  const categoryId = useCreateCourseStore(s => s.values.requestCourseInfo.categoryId);
+  const error = useCreateCourseStore(s => s.errors['requestCourseInfo.categoryId']);
+  const setField = useCreateCourseStore(s => s.setField);
 
   return (
     <div style={{ marginBottom: 12 }}>
-      <div className={styles.title}>{label}</div>
-      <div>
-        <Controller
-          name={name}
-          control={control}
-          rules={{ required: `${label}을(를) 선택해주세요` }}
-          render={({ field }) => (
-            <>
-              <Radio.Group
-                {...field}
-                onChange={(e: RadioChangeEvent) =>
-                  field.onChange(e.target.value)
-                }
-                style={{ marginTop: 8 }}
-              >
-                <Radio.Button value="Korean">한식</Radio.Button>
-                <Radio.Button value="Japanese">일식</Radio.Button>
-                <Radio.Button value="Chinese">중식</Radio.Button>
-                <Radio.Button value="Western">양식</Radio.Button>
-                <Radio.Button value="Bakery">제과</Radio.Button>
-                <Radio.Button value="Others">기타</Radio.Button>
-              </Radio.Group>
-              {errors[name] && (
-                <p style={{ color: "red", marginTop: 4 }}>
-                  {errors[name]?.message as string}
-                </p>
-              )}
-            </>
-          )}
-        />
-      </div>
+      {label && <div className={styles.title}>{label}</div>}
+      <Radio.Group
+        value={categoryId ?? undefined}
+        onChange={(e) => setField('requestCourseInfo.categoryId', Number(e.target.value))}
+        style={{ marginTop: 8 }}
+      >
+        {CATEGORIES.map(c => (
+          <Radio.Button key={c.id} value={c.id}>{c.name}</Radio.Button>
+        ))}
+      </Radio.Group>
+      {error && <p style={{ color: 'red', marginTop: 4 }}>{error}</p>}
     </div>
   );
 }
