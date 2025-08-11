@@ -1,16 +1,19 @@
 package com.e104.reciplay.livekit.service.depends;
 
-import com.e104.reciplay.course.courses.dto.response.CourseDetail;
-import com.e104.reciplay.course.courses.service.CanLearnQueryService;
 import com.e104.reciplay.course.courses.service.SubFileMetadataQueryService;
-import com.e104.reciplay.course.courses.service.ZzimQueryService;
-import com.e104.reciplay.entity.Course;
-import com.e104.reciplay.entity.FileMetadata;
-import com.e104.reciplay.repository.CourseRepository;
+import com.e104.reciplay.course.qna.service.QnaQueryService;
+import com.e104.reciplay.entity.*;
+import com.e104.reciplay.repository.InstructorRepository;
 import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import com.e104.reciplay.s3.service.S3Service;
-import com.e104.reciplay.user.profile.service.CategoryQueryService;
-import com.e104.reciplay.user.review.service.ReviewQueryService;
+import com.e104.reciplay.user.instructor.dto.response.InstructorProfile;
+import com.e104.reciplay.user.instructor.dto.response.InstructorStat;
+import com.e104.reciplay.user.instructor.dto.response.item.InstructorQuestion;
+import com.e104.reciplay.user.instructor.service.*;
+import com.e104.reciplay.user.security.domain.User;
+import com.e104.reciplay.user.security.exception.EmailNotFoundException;
+import com.e104.reciplay.user.security.service.UserQueryService;
+import com.e104.reciplay.user.subscription.service.SubscriptionQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,289 +30,221 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-/**
- * CourseQueryServiceImpl 단위 테스트 (queryCardsByCardCondtion 제거 반영)
- */
 @ExtendWith(MockitoExtension.class)
-class CourseQueryServiceImplTest {
+class InstructorQueryServiceImplTest {
 
-    @Mock private CourseRepository courseRepository;
-    @Mock private CanLearnQueryService canLearnQueryService;
-    @Mock private ReviewQueryService reviewQueryService;
-    @Mock private CategoryQueryService categoryQueryService;
+    @Mock private UserQueryService userQueryService;
+    @Mock private InstructorRepository instructorRepository;
     @Mock private SubFileMetadataQueryService subFileMetadataQueryService;
-    @Mock private ZzimQueryService zzimQueryService;
-    @Mock private CourseHistoryQueryService courseHistoryQueryService;
     @Mock private S3Service s3Service;
-    @Mock private InstructorQueryService instructorQueryService;
+    @Mock private InstructorLicenseQueryService instructorLicenseQueryService;
+    @Mock private CareerQueryService careerQueryService;
+    @Mock private LicenseQueryService licenseQueryService;
+    @Mock private SubscriptionQueryService subscriptionQueryService;
+    @Mock private InstructorStatQueryService instructorStatQueryService;
+    @Mock private QnaQueryService qnaQueryService;
 
     @InjectMocks
-    private CourseQueryServiceImpl service;
+    private InstructorQueryServiceImpl service;
 
-    // =========================
-    // queryCourseById
-    // =========================
     @Test
-    @DisplayName("queryCourseById - 존재 시 Course 반환")
-    void queryCourseById_ok() {
-        Long id = 100L;
-        Course course = buildCourse(id, 9L, "제목");
-        when(courseRepository.findById(id)).thenReturn(Optional.of(course));
+    @DisplayName("queryInstructorByEmail - 성공")
+    void queryInstructorByEmail_ok() {
+        String email = "inst@example.com";
+        Long userId = 10L;
+        User mockUser = mock(User.class);
+        when(mockUser.getId()).thenReturn(userId);
+        when(userQueryService.queryUserByEmail(email)).thenReturn(mockUser);
 
-        Course result = service.queryCourseById(id);
+        Instructor inst = buildInstructor(7L, userId);
+        when(instructorRepository.findByUserId(userId)).thenReturn(Optional.of(inst));
 
-        assertThat(result).isSameAs(course);
-        verify(courseRepository).findById(id);
-        verifyNoMoreInteractions(courseRepository);
+        Instructor result = service.queryInstructorByEmail(email);
+
+        assertThat(result).isSameAs(inst);
+        verify(userQueryService).queryUserByEmail(email);
+        verify(instructorRepository).findByUserId(userId);
     }
 
     @Test
-    @DisplayName("queryCourseById - 미존재 시 IllegalArgumentException")
-    void queryCourseById_notFound() {
-        Long id = 999L;
-        when(courseRepository.findById(id)).thenReturn(Optional.empty());
+    @DisplayName("queryInstructorByEmail - 강사 아님 -> IllegalArgumentException")
+    void queryInstructorByEmail_notInstructor() {
+        String email = "noninst@example.com";
+        Long userId = 99L;
+        User mockUser = mock(User.class);
+        when(mockUser.getId()).thenReturn(userId);
+        when(userQueryService.queryUserByEmail(email)).thenReturn(mockUser);
+        when(instructorRepository.findByUserId(userId)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> service.queryCourseById(id));
-        verify(courseRepository).findById(id);
-        verifyNoMoreInteractions(courseRepository);
-    }
-
-    // =========================
-    // queryCourseDetailsByInstructorId
-    // =========================
-    @Test
-    @DisplayName("queryCourseDetailsByInstructorId - soon 상태 리스트 조회 성공")
-    void queryCourseDetailsByInstructorId_soon_ok() {
-        Long instructorId = 1L;
-        Long courseId = 10L;
-        Course c = buildCourse(courseId, instructorId, "soon 강좌");
-
-        when(courseRepository.findSoonCourseByInstructorId(instructorId))
-                .thenReturn(List.of(c));
-        stubCommonAggregates(courseId);
-        stubFileMetaAndS3(courseId);
-
-        List<CourseDetail> details = service.queryCourseDetailsByInstructorId(instructorId, "soon");
-
-        assertThat(details).hasSize(1);
-        var d = details.get(0);
-        assertThat(d.getTitle()).isEqualTo("soon 강좌");
-        assertThat(d.getCanLearns()).containsExactlyInAnyOrder("자바", "스프링");
-        assertThat(d.getReviewCount()).isEqualTo(3);
-        assertThat(d.getAverageReviewScore()).isEqualTo(4.3);
-        assertThat(d.getCategory()).isEqualTo("백엔드");
-        assertThat(d.getThumbnailFileInfos()).hasSize(1);
-        assertThat(d.getCourseCoverFileInfo()).isNotNull();
-
-        verify(courseRepository).findSoonCourseByInstructorId(instructorId);
+        assertThrows(IllegalArgumentException.class, () -> service.queryInstructorByEmail(email));
     }
 
     @Test
-    @DisplayName("queryCourseDetailsByInstructorId - ongoing 상태 리스트 조회 성공")
-    void queryCourseDetailsByInstructorId_ongoing_ok() {
-        Long instructorId = 2L;
-        Long courseId = 20L;
-        Course c = buildCourse(courseId, instructorId, "ongoing 강좌");
+    @DisplayName("queryInstructorIdByEmail - 성공")
+    void queryInstructorIdByEmail_ok() {
+        String email = "inst2@example.com";
+        when(instructorRepository.findIdByEmail(email)).thenReturn(123L);
 
-        when(courseRepository.findOngoingCourseByInstructorId(instructorId))
-                .thenReturn(List.of(c));
-        stubCommonAggregates(courseId);
-        stubFileMetaAndS3(courseId);
+        Long id = service.queryInstructorIdByEmail(email);
 
-        List<CourseDetail> details = service.queryCourseDetailsByInstructorId(instructorId, "ongoing");
-
-        assertThat(details).hasSize(1);
-        assertThat(details.get(0).getTitle()).isEqualTo("ongoing 강좌");
-        verify(courseRepository).findOngoingCourseByInstructorId(instructorId);
+        assertThat(id).isEqualTo(123L);
+        verify(instructorRepository).findIdByEmail(email);
     }
 
     @Test
-    @DisplayName("queryCourseDetailsByInstructorId - end 상태 리스트 조회 성공")
-    void queryCourseDetailsByInstructorId_end_ok() {
-        Long instructorId = 3L;
-        Long courseId = 30L;
-        Course c = buildCourse(courseId, instructorId, "end 강좌");
+    @DisplayName("queryNameByInstructorId - 성공")
+    void queryNameByInstructorId_ok() {
+        Long instructorId = 5L;
+        when(instructorRepository.findNameById(instructorId)).thenReturn("홍길동");
 
-        when(courseRepository.findEndedCourseByInstructorId(instructorId))
-                .thenReturn(List.of(c));
-        stubCommonAggregates(courseId);
-        stubFileMetaAndS3(courseId);
+        String name = service.queryNameByInstructorId(instructorId);
 
-        List<CourseDetail> details = service.queryCourseDetailsByInstructorId(instructorId, "end");
-
-        assertThat(details).hasSize(1);
-        assertThat(details.get(0).getTitle()).isEqualTo("end 강좌");
-        verify(courseRepository).findEndedCourseByInstructorId(instructorId);
+        assertThat(name).isEqualTo("홍길동");
+        verify(instructorRepository).findNameById(instructorId);
     }
 
     @Test
-    @DisplayName("queryCourseDetailsByInstructorId - 잘못된 상태는 IllegalArgumentException")
-    void queryCourseDetailsByInstructorId_invalid_status() {
+    @DisplayName("queryInstructorById - 성공")
+    void queryInstructorById_ok() {
         Long instructorId = 7L;
+        Instructor inst = buildInstructor(instructorId, 1L);
+        when(instructorRepository.findById(instructorId)).thenReturn(Optional.of(inst));
 
-        assertThrows(IllegalArgumentException.class,
-                () -> service.queryCourseDetailsByInstructorId(instructorId, "OPEN"));
+        Instructor result = service.queryInstructorById(instructorId);
 
-        verifyNoInteractions(courseRepository);
-    }
-
-    // =========================
-    // queryCourseDetailByCourseId
-    // =========================
-    @Test
-    @DisplayName("queryCourseDetailByCourseId - 성공 (집계 필드 + zzim/enrolled/reviewed 반영)")
-    void queryCourseDetailByCourseId_ok() {
-        Long courseId = 777L;
-        Long userId = 55L;
-        Course c = buildCourse(courseId, 10L, "상세 강좌");
-
-        when(courseRepository.findById(courseId)).thenReturn(Optional.of(c));
-        stubCommonAggregates(courseId);
-        stubFileMetaAndS3(courseId);
-
-        when(zzimQueryService.isZzimed(courseId, userId)).thenReturn(true);
-        when(courseHistoryQueryService.enrolled(courseId, userId)).thenReturn(false);
-        when(reviewQueryService.isReviewed(courseId, userId)).thenReturn(true);
-
-        CourseDetail detail = service.queryCourseDetailByCourseId(courseId, userId);
-
-        assertThat(detail).isNotNull();
-        assertThat(detail.getTitle()).isEqualTo("상세 강좌");
-        assertThat(detail.getCanLearns()).containsExactlyInAnyOrder("자바", "스프링");
-        assertThat(detail.getReviewCount()).isEqualTo(3);
-        assertThat(detail.getAverageReviewScore()).isEqualTo(4.3);
-        assertThat(detail.getCategory()).isEqualTo("백엔드");
-        assertThat(detail.getThumbnailFileInfos()).hasSize(1);
-        assertThat(detail.getCourseCoverFileInfo()).isNotNull();
-
-        verify(zzimQueryService).isZzimed(courseId, userId);
-        verify(courseHistoryQueryService).enrolled(courseId, userId);
-        verify(reviewQueryService).isReviewed(courseId, userId);
+        assertThat(result).isSameAs(inst);
+        verify(instructorRepository).findById(instructorId);
     }
 
     @Test
-    @DisplayName("queryCourseDetailByCourseId - 미존재 시 IllegalArgumentException")
-    void queryCourseDetailByCourseId_notFound() {
-        Long courseId = 444L;
-        Long userId = 1L;
-        when(courseRepository.findById(courseId)).thenReturn(Optional.empty());
+    @DisplayName("queryInstructorById - 미존재 -> EmailNotFoundException")
+    void queryInstructorById_notFound() {
+        Long instructorId = 404L;
+        when(instructorRepository.findById(instructorId)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class,
-                () -> service.queryCourseDetailByCourseId(courseId, userId));
-
-        verify(courseRepository).findById(courseId);
-        verifyNoMoreInteractions(courseRepository);
-        verifyNoInteractions(zzimQueryService, courseHistoryQueryService);
-    }
-
-    // =========================
-    // isClosedCourse / isInstructorOf
-    // =========================
-    @Test
-    @DisplayName("isClosedCourse - 시작 전 또는 종료 후이면서 승인된 강좌면 true")
-    void isClosedCourse_true_cases() {
-        Long courseId = 11L;
-        // 오늘 기준 시작 전으로 구성
-        Course beforeStart = buildCourse(courseId, 1L, "강좌");
-        beforeStart.setCourseStartDate(LocalDate.now().plusDays(3));
-        beforeStart.setCourseEndDate(LocalDate.now().plusDays(30));
-        beforeStart.setIsApproved(true);
-        when(courseRepository.findById(courseId)).thenReturn(Optional.of(beforeStart));
-
-        assertThat(service.isClosedCourse(courseId)).isTrue();
-
-        // 종료 후로 구성
-        Course afterEnd = buildCourse(courseId, 1L, "강좌");
-        afterEnd.setCourseStartDate(LocalDate.now().minusDays(30));
-        afterEnd.setCourseEndDate(LocalDate.now().minusDays(1));
-        afterEnd.setIsApproved(true);
-        when(courseRepository.findById(courseId)).thenReturn(Optional.of(afterEnd));
-
-        assertThat(service.isClosedCourse(courseId)).isTrue();
+        assertThrows(EmailNotFoundException.class, () -> service.queryInstructorById(instructorId));
     }
 
     @Test
-    @DisplayName("isClosedCourse - 기간 내이거나 미승인 강좌면 true")
-    void isClosedCourse_false_cases() {
-        Long courseId = 12L;
-        // 기간 내 + 승인
-        Course inRange = buildCourse(courseId, 1L, "강좌");
-        inRange.setCourseStartDate(LocalDate.now().minusDays(1));
-        inRange.setCourseEndDate(LocalDate.now().plusDays(1));
-        inRange.setIsApproved(true);
-        when(courseRepository.findById(courseId)).thenReturn(Optional.of(inRange));
-        assertThat(service.isClosedCourse(courseId)).isFalse();
+    @DisplayName("queryInstructorProfile - 프로필/배너/라이선스/커리어/구독정보까지 설정")
+            void queryInstructorProfile_ok() {
+        Long instructorId = 10L;
+        Long userId = 20L;
 
-        // 기간 밖이어도 미승인 → false
-        Course notApproved = buildCourse(courseId, 1L, "강좌");
-        notApproved.setCourseStartDate(LocalDate.now().plusDays(3));
-        notApproved.setCourseEndDate(LocalDate.now().plusDays(30));
-        notApproved.setIsApproved(false);
-        when(courseRepository.findById(courseId)).thenReturn(Optional.of(notApproved));
-        assertThat(service.isClosedCourse(courseId)).isTrue();
-    }
+        Instructor inst = buildInstructor(instructorId, 999L);
+        when(instructorRepository.findById(instructorId)).thenReturn(Optional.of(inst));
 
-    @Test
-    @DisplayName("isInstructorOf - 강좌의 instructorId와 userId가 같으면 true")
-    void isInstructorOf_ok() {
-        Long userId = 33L;
-        Long courseId = 1000L;
-        Course c = buildCourse(courseId, userId, "강좌");
-        when(courseRepository.findById(courseId)).thenReturn(Optional.of(c));
+        FileMetadata profileMeta = FileMetadata.builder().relatedId(instructorId).sequence(1).build();
+        when(subFileMetadataQueryService.queryMetadataByCondition(instructorId, "user_profile"))
+                .thenReturn(profileMeta);
+        ResponseFileInfo profileInfo = mock(ResponseFileInfo.class);
+        when(s3Service.getResponseFileInfo(profileMeta)).thenReturn(profileInfo);
 
-        assertThat(service.isInstructorOf(userId, courseId)).isTrue();
+        FileMetadata bannerMeta = FileMetadata.builder().relatedId(instructorId).sequence(2).build();
+        when(subFileMetadataQueryService.queryMetadataByCondition(instructorId, "instructor_banner"))
+                .thenReturn(bannerMeta);
+        ResponseFileInfo bannerInfo = mock(ResponseFileInfo.class);
+        when(s3Service.getResponseFileInfo(bannerMeta)).thenReturn(bannerInfo);
 
-        // 다른 사용자면 false
-        when(courseRepository.findById(courseId)).thenReturn(Optional.of(c));
-        assertThat(service.isInstructorOf(99L, courseId)).isFalse();
-    }
-
-    // =========================
-    // Helpers
-    // =========================
-    private Course buildCourse(Long id, Long instructorId, String title) {
-        return Course.builder()
-                .id(id)
+        InstructorLicense lic1 = InstructorLicense.builder()
                 .instructorId(instructorId)
-                .title(title)
-                .summary("요약")
-                .description("설명")
-                .level(1)
-                .maxEnrollments(100)
-                .enrollmentStartDate(LocalDateTime.now())
-                .enrollmentEndDate(LocalDateTime.now().plusDays(7))
-                .courseStartDate(LocalDate.now())
-                .courseEndDate(LocalDate.now().plusDays(30))
-                .announcement("공지")
-                .isLive(false)
+                .licenseId(1L)
+                .build();
+        when(instructorLicenseQueryService.queryLicensesByInstructorId(instructorId))
+                .thenReturn(List.of(lic1));
+
+        License licenseEntity = mock(License.class);
+        when(licenseEntity.getName()).thenReturn("조리사 자격증");
+        when(licenseQueryService.queryLicenseById(1L)).thenReturn(licenseEntity);
+
+        Career career = Career.builder()
+                .instructorId(instructorId)
+                .companyName("요리연구소")
+                .position("셰프")
+                .startDate(LocalDate.of(2020,1,1))
+                .endDate(LocalDate.of(2023,12,31))
+                .build();
+        when(careerQueryService.queryCarrersByInstructorId(instructorId))
+                .thenReturn(List.of(career));
+
+        when(subscriptionQueryService.isSubscribedInstructor(instructorId, userId)).thenReturn(true);
+        when(subscriptionQueryService.countSubscribers(instructorId)).thenReturn(321L);
+
+        when(instructorRepository.findNameById(instructorId)).thenReturn("김셰프");
+
+        InstructorProfile profile = service.queryInstructorProfile(instructorId, userId);
+
+        assertThat(profile.getInstructorProfileFileInfo()).isSameAs(profileInfo);
+        assertThat(profile.getInstructorBannerFileInfo()).isSameAs(bannerInfo);
+        assertThat(profile.getIsSubscribed()).isTrue();
+        assertThat(profile.getSubscriberCount()).isEqualTo(321);
+        assertThat(profile.getName()).isEqualTo("김셰프");
+        assertThat(profile.getIntroduction()).isEqualTo(inst.getIntroduction());
+        assertThat(profile.getLicenses()).hasSize(1);
+        assertThat(profile.getCareers()).hasSize(1);
+
+        verify(instructorRepository).findById(instructorId);
+        verify(subFileMetadataQueryService).queryMetadataByCondition(instructorId, "user_profile");
+        verify(subFileMetadataQueryService).queryMetadataByCondition(instructorId, "instructor_banner");
+        verify(s3Service).getResponseFileInfo(profileMeta);
+        verify(s3Service).getResponseFileInfo(bannerMeta);
+        verify(instructorLicenseQueryService).queryLicensesByInstructorId(instructorId);
+        verify(licenseQueryService).queryLicenseById(1L);
+        verify(careerQueryService).queryCarrersByInstructorId(instructorId);
+        verify(subscriptionQueryService).isSubscribedInstructor(instructorId, userId);
+        verify(subscriptionQueryService).countSubscribers(instructorId);
+        verify(instructorRepository).findNameById(instructorId);
+    }
+
+    @Test
+    @DisplayName("queryInstructorStatistic - 총 수강생/평점/리뷰/구독/프로필이미지/새 질문 목록")
+    void queryInstructorStatistic_ok() {
+        Long instructorId = 77L;
+
+        when(instructorStatQueryService.queryTotalStudents(instructorId)).thenReturn(1000);
+        when(instructorStatQueryService.queryAvgStars(instructorId)).thenReturn(4.7);
+        when(instructorStatQueryService.queryTotalReviewCount(instructorId)).thenReturn(222);
+        when(instructorStatQueryService.querySubsciberCount(instructorId)).thenReturn(555);
+
+        FileMetadata profileMeta = FileMetadata.builder().relatedId(instructorId).sequence(1).build();
+        when(subFileMetadataQueryService.queryMetadataByCondition(instructorId, "user_profile"))
+                .thenReturn(profileMeta);
+        ResponseFileInfo fileInfo = mock(ResponseFileInfo.class);
+        when(s3Service.getResponseFileInfo(profileMeta)).thenReturn(fileInfo);
+
+        InstructorQuestion q1 = InstructorQuestion.builder()
+                .id(1L).courseId(10L).courseName("한식A")
+                .title("질문1").questionAt(LocalDateTime.now()).build();
+        when(qnaQueryService.queryQuestionsByInstructorId(instructorId))
+                .thenReturn(List.of(q1));
+
+        InstructorStat stat = service.queryInstructorStatistic(instructorId);
+
+        assertThat(stat.getTotalStudents()).isEqualTo(1000);
+        assertThat(stat.getAverageStars()).isEqualTo(4.7);
+        assertThat(stat.getTotalReviewCount()).isEqualTo(222);
+        assertThat(stat.getSubscriberCount()).isEqualTo(555);
+        assertThat(stat.getProfileFileInfo()).isSameAs(fileInfo);
+        assertThat(stat.getNewQuestions()).hasSize(1);
+
+        verify(instructorStatQueryService).queryTotalStudents(instructorId);
+        verify(instructorStatQueryService).queryAvgStars(instructorId);
+        verify(instructorStatQueryService).queryTotalReviewCount(instructorId);
+        verify(instructorStatQueryService).querySubsciberCount(instructorId);
+        verify(subFileMetadataQueryService).queryMetadataByCondition(instructorId, "user_profile");
+        verify(s3Service).getResponseFileInfo(profileMeta);
+        verify(qnaQueryService).queryQuestionsByInstructorId(instructorId);
+    }
+
+    private Instructor buildInstructor(Long instructorId, Long userId) {
+        return Instructor.builder()
+                .id(instructorId)
+                .userId(userId)
+                .introduction("안녕하세요, 강사 소개입니다.")
                 .isApproved(true)
-                .isDeleted(false)
-                .currentEnrollments(0)
+                .address("서울시 어딘가")
+                .phoneNumber("010-0000-0000")
                 .registeredAt(LocalDateTime.now())
                 .build();
-    }
-
-    private void stubCommonAggregates(Long courseId) {
-        when(canLearnQueryService.queryContentsByCourseId(courseId))
-                .thenReturn(List.of("자바", "스프링"));
-        when(reviewQueryService.countReviewsByCourseId(courseId))
-                .thenReturn(3);
-        when(reviewQueryService.avgStarsByCourseId(courseId))
-                .thenReturn(4.3);
-        when(categoryQueryService.queryNameByCourseId(courseId))
-                .thenReturn("백엔드");
-    }
-
-    private void stubFileMetaAndS3(Long courseId) {
-        FileMetadata thumb = FileMetadata.builder().relatedId(courseId).sequence(1).build();
-        FileMetadata cover = FileMetadata.builder().relatedId(courseId).sequence(99).build();
-
-        when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "thumbnail"))
-                .thenReturn(List.of(thumb));
-        when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "course_cover"))
-                .thenReturn(cover);
-
-        when(s3Service.getResponseFileInfo(thumb)).thenReturn(mock(ResponseFileInfo.class));
-        when(s3Service.getResponseFileInfo(cover)).thenReturn(mock(ResponseFileInfo.class));
     }
 }

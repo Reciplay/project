@@ -1,6 +1,7 @@
 package com.e104.reciplay.user.instructor.dto.response;
 
-import com.e104.reciplay.user.instructor.dto.response.item.QnaDetail;
+import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
+import com.e104.reciplay.user.instructor.dto.response.item.InstructorQuestion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,9 +16,8 @@ import java.util.List;
 public class InstructorStat {
     private Integer totalStudents;
     private Double averageStars;
-    private Integer tatalReviewCount;
+    private Integer totalReviewCount;
     private Integer subscriberCount;
-    private String profileImageUrl;
-//    private List<SubscriberHistory> subscriberHistories;
-    private List<QnaDetail> newQuestions;
+    private ResponseFileInfo profileFileInfo;
+    private List<InstructorQuestion> newQuestions;
 }

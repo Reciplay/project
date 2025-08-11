@@ -1,5 +1,6 @@
 package com.e104.reciplay.entity;
 
+import com.e104.reciplay.user.instructor.dto.response.item.CareerItem;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,4 +35,13 @@ public class Career {
 
     @Column(name = "end_date")
     private LocalDate endDate;
+
+    public Career(CareerItem item, Long instructorId){
+        this.instructorId = instructorId;
+        this.companyName = item.getCompanyName();
+        this.position = item.getPosition();
+        this.jobDescription = item.getJobDescription();
+        this.startDate = item.getStartDate();
+        this.endDate = item.getEndDate();
+    }
 }
