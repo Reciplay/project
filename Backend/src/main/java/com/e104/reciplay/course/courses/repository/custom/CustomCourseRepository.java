@@ -1,5 +1,6 @@
 package com.e104.reciplay.course.courses.repository.custom;
 
+import com.e104.reciplay.admin.dto.response.AdCourseSummary;
 import com.e104.reciplay.entity.Course;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,10 @@ public interface CustomCourseRepository {
     Page<Course> findEnrolledCoursesPage(Long userId,Pageable pageable);
     Page<Course> findZzimCoursesPage(Long userId,Pageable pageable);
     Page<Course> findCompletedCoursesPage(Long userId,Pageable pageable);
+
+    List<AdCourseSummary> findAdCourseSummariesByIsApprove(Boolean isApprove);
+
+    void updateCourseApprovalById(Long courseId);
 
 
 

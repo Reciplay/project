@@ -30,4 +30,14 @@ public class Message {
     @Column(name = "notified_at")
     @CreatedDate
     private LocalDateTime notifiedAt;
+
+    @Column(name ="content")
+    private String content;
+
+    public Message(Long senderId, Long receiverId, String content){
+        this.senderId = senderId;
+        this.receiverId = receiverId;
+        this.content = content;
+        this.notifiedAt = LocalDateTime.now();
+    }
 }

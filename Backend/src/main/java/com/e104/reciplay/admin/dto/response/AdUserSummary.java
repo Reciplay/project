@@ -1,5 +1,6 @@
 package com.e104.reciplay.admin.dto.response;
 
+import com.e104.reciplay.user.security.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,13 +12,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AdminUserDetail {
+public class AdUserSummary {
     private Long userId;
     private String name;
     private String email;
     private LocalDateTime createdAt;
-    private Boolean role;
-    private String job;
-    private String nickname;
-    private String birthDate;
+
+    public AdUserSummary(User user){
+        this.userId = user.getId();
+        this.name = user.getName();
+        this.email = user.getEmail();
+        this.createdAt = user.getCreatedAt();
+    }
 }

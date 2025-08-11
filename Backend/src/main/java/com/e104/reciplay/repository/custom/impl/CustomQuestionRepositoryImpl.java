@@ -42,7 +42,7 @@ public class CustomQuestionRepositoryImpl implements CustomQuestionRepository {
                         q.title,              // String title
                         q.questionContent,    // String content
                         q.questionAt,         // LocalDateTime questionAt
-                        c.title,              // String courseName
+                        c.title,              // String title
                         q.courseId            // Long courseId
                 ))
                 .from(q)
