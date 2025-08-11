@@ -8,7 +8,12 @@ export interface User {
   job: string;
   name: string;
   nickname: string;
-  levels: Record<string, number>;
+  levels: Level[];
+}
+export interface Level {
+  category: string;
+  categoryId: number;
+  level: number;
 }
 
 export interface ProfileImage {
