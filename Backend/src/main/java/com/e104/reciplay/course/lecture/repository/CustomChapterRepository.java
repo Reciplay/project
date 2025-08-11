@@ -1,6 +1,6 @@
 package com.e104.reciplay.course.lecture.repository;
 
-import com.e104.reciplay.course.lecture.dto.response.ChapterInfo;
+import com.e104.reciplay.course.lecture.dto.ChapterInfo;
 
 import java.util.List;
 

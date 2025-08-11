@@ -1,6 +1,7 @@
-package com.e104.reciplay.course.courses.dto.request;
+package com.e104.reciplay.course.lecture.dto.request.item;
 
 import com.e104.reciplay.course.courses.dto.request.item.ChapterItem;
+import com.e104.reciplay.course.lecture.dto.LectureControlRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LectureRequest {
+public class LectureUpdateRequest implements LectureControlRequest {
+    private Long lectureId;
     private String title;
     private String summary; // 요약
     private Integer sequence; // 강의 순서

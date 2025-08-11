@@ -3,6 +3,8 @@ package com.e104.reciplay.admin.service;
 import com.e104.reciplay.admin.dto.response.AdCourseDetail;
 import com.e104.reciplay.admin.dto.response.AdCourseSummary;
 import com.e104.reciplay.course.courses.service.CanLearnQueryService;
+import com.e104.reciplay.course.lecture.dto.LectureDetail;
+import com.e104.reciplay.course.lecture.service.LectureQueryService;
 import com.e104.reciplay.entity.Course;
 import com.e104.reciplay.livekit.service.depends.InstructorQueryService;
 import com.e104.reciplay.repository.CourseRepository;
@@ -20,6 +22,7 @@ public class AdCourseQueryServiceImpl implements  AdCourseQueryService{
     private final CategoryQueryService categoryQueryService;
     private final CanLearnQueryService canLearnQueryService;
     private final InstructorQueryService instructorQueryService;
+    private final LectureQueryService lectureQueryService;
     @Override
     public List<AdCourseSummary> queryAdCourseSummary(Boolean isApprove) {
         if (isApprove == null) {
@@ -35,11 +38,13 @@ public class AdCourseQueryServiceImpl implements  AdCourseQueryService{
         // 따로 가져올 데이터
         List<String> canLearns = canLearnQueryService.queryContentsByCourseId(course.getId()); //이런걸 배울 수 있어요
 
-//        private List<LectureDetail> lectureDetails;
 
+        List<LectureDetail> lectureDetails = lectureQueryService.queryLectureDetails(courseId);
+
+        adCourseDetail.setLectureDetails(lectureDetails);
         adCourseDetail.setCategory(categoryQueryService.queryCategoryById(course.getCategoryId()).getName());
         adCourseDetail.setInstructorName(instructorQueryService.queryNameByInstructorId(course.getInstructorId()));
         adCourseDetail.setCanLearns(canLearns);
-        return null;
+        return adCourseDetail;
     }
 }

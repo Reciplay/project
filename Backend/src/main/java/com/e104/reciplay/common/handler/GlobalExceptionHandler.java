@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import retrofit2.Response;
 
+import java.io.IOException;
+
 @Hidden
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -122,5 +124,8 @@ public class GlobalExceptionHandler {
         return CommonResponseBuilder.badRequest(e.getMessage());
     }
 
-
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<?> iOExceptionHandler(IOException e) {
+        return CommonResponseBuilder.serverError(e.getMessage());
+    }
 }

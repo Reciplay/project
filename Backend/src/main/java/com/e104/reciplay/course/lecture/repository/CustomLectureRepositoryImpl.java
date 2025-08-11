@@ -1,9 +1,9 @@
 package com.e104.reciplay.course.lecture.repository;
 
-import com.e104.reciplay.course.lecture.dto.response.LectureDetail;
-import com.e104.reciplay.course.lecture.dto.response.LectureSummary;
-import com.e104.reciplay.course.lecture.dto.response.QLectureSummary;
-import com.e104.reciplay.course.lecture.dto.response.QLectureDetail;
+import com.e104.reciplay.course.lecture.dto.LectureDetail;
+import com.e104.reciplay.course.lecture.dto.LectureSummary;
+import com.e104.reciplay.course.lecture.dto.QLectureSummary;
+import com.e104.reciplay.course.lecture.dto.QLectureDetail;
 import com.e104.reciplay.entity.QLecture;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -44,9 +44,8 @@ public class CustomLectureRepositoryImpl implements CustomLectureRepository {
                         lecture.summary,
                         lecture.materials,
                         lecture.isSkipped,
-                        lecture.resourceName,
-                        Expressions.dateTemplate(LocalDate.class, "DATE({0})", lecture.startedAt),
-                        Expressions.dateTemplate(LocalDate.class, "DATE({0})", lecture.endedAt)
+                        lecture.startedAt,
+                        lecture.endedAt
                 ))
                 .from(lecture)
                 .where(lecture.id.eq(lectureId))
@@ -64,9 +63,8 @@ public class CustomLectureRepositoryImpl implements CustomLectureRepository {
                         lecture.summary,
                         lecture.materials,
                         lecture.isSkipped,
-                        lecture.resourceName,
-                        Expressions.dateTemplate(LocalDate.class, "DATE({0})", lecture.startedAt),
-                        Expressions.dateTemplate(LocalDate.class, "DATE({0})", lecture.endedAt)
+                        lecture.startedAt,
+                        lecture.endedAt
                 ))
                 .from(lecture)
                 .where(lecture.courseId.eq(courseId))

@@ -28,4 +28,9 @@ public class Chapter {
         this.title = chapterItem.getTitle();
         this.lectureId = lectureId;
     }
+
+    public void update(ChapterItem item) {
+        if(!this.title.equals(item.getTitle())) this.title = item.getTitle();
+        if(!this.sequence.equals(item.getSequence())) this.sequence = item.getSequence();
+    }
 }

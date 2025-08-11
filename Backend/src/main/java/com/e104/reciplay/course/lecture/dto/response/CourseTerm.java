@@ -1,4 +1,4 @@
-package com.e104.reciplay.course.lecture.dto.response.response;
+package com.e104.reciplay.course.lecture.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

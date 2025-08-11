@@ -2,7 +2,7 @@ package com.e104.reciplay.livekit.service.depends;
 
 import com.e104.reciplay.course.courses.dto.request.RequestCourseInfo;
 import org.springframework.web.multipart.MultipartFile;
-import com.e104.reciplay.course.lecture.dto.response.response.CourseTerm;
+import com.e104.reciplay.course.lecture.dto.response.CourseTerm;
 
 import java.util.List;
 

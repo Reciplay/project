@@ -97,8 +97,10 @@ public class AdminApiController{
     public ResponseEntity<ResponseRoot<AdCourseDetail>> getCourseDetail(
             @RequestParam Long courseId
     ){
+
         AdCourseDetail detail = adCourseQueryService.queryCourseDetail(courseId);
         return CommonResponseBuilder.success("강좌 상세 정보 조회에 성공하였습니다.", detail);
+
     }
 
     @PutMapping("/course")

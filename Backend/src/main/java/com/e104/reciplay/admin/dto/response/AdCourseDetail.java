@@ -1,5 +1,6 @@
 package com.e104.reciplay.admin.dto.response;
 
+import com.e104.reciplay.course.lecture.dto.LectureDetail;
 import com.e104.reciplay.entity.Course;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,7 +32,7 @@ public class AdCourseDetail {
     // 따로 가져올 데이터
     private String category;
     private List<String> canLearns; //이런걸 배울 수 있어요
-    private List<AdLectureDetail> lectureDetails;
+    private List<LectureDetail> lectureDetails;
     private String instructorName;
 
     public AdCourseDetail(Course c) {

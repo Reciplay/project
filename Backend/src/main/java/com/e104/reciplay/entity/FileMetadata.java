@@ -53,5 +53,12 @@ public class FileMetadata {
         this.resourceType = FilenameUtils.getExtension(file.getOriginalFilename());
     }
 
+    public boolean isSame(MultipartFile file, FileCategory category, RelatedType relatedType, Long relatedId, Integer sequence) {
+        if(!this.name.equals(file.getOriginalFilename())) return false;
+        if(this.category != category) return false;
+        if(this.relatedType != relatedType) return false;
+        if(!this.relatedId.equals(relatedId)) return false;
+        return this.sequence.equals(sequence);
+    }
 }
 
