@@ -1,6 +1,11 @@
 export const ROUTES = {
   HOME: "/",
 
+  SEARCH: {
+    ROOT: "/search",
+    DETAIL: (query: string) => `/search?query=${query}`
+  },
+
   COURSE: {
     ROOT: "/course",
     DETAIL: (id: string) => `/course/${id}`, // 동적 경로
@@ -11,8 +16,6 @@ export const ROUTES = {
     SUBSCRIPTIONS: "/profile/subscriptions",
     HISTORY: "/profile/history",
   },
-
-  SEARCH: "/search",
 
   AUTH: {
     LOGIN: "/api/auth/login",

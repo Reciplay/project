@@ -65,7 +65,7 @@ export const sampleCourse1: MainCourse[] = [
     summary: "정통 스페인 타파스 요리를 집에서 따라하는 비법을 배워보세요.",
     learningPoints: ["감바스 알 아히요", "스페인 오믈렛", "와인 페어링"],
     ratingAvg: 4.8,
-    isLive: true,
+    isLive: false,
     viewerCount: 42,
     startDate: "2025-08-20",
     endDate: "2025-09-20",
