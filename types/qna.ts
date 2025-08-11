@@ -5,3 +5,11 @@ export interface QnA {
   questionAt: string;
   isAnswered: boolean;
 }
+export type NewQuestion = {
+  id: number;
+  title: string;
+  content: string;
+  questionAt: string; // ISO
+  courseName: string;
+  courseId: number;
+};
