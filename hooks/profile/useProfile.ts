@@ -42,7 +42,9 @@ export function useProfile() {
           birthDate: data.birthDate,
           gender: data.gender,
         });
-        setPreviewUrl(data.profileImage.presignedUrl); // 초기 이미지 설정
+        setPreviewUrl(
+          data.profileImage?.presignedUrl ?? "/images/profile.webp"
+        ); // 초기 이미지 설정
       } catch (e) {
         console.error("프로필 불러오기 실패:", e);
       }
