@@ -15,8 +15,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, CustomRev
 
     Boolean existsByCourseIdAndUserId(Long courseId,Long userId);
 
-<<<<<<< HEAD
-=======
     List<Review> findByCourseId(Long courseId, Pageable pageable);
->>>>>>> dev
 }

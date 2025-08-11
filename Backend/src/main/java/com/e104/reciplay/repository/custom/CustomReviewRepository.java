@@ -7,12 +7,9 @@ import java.util.List;
 
 public interface CustomReviewRepository {
     Double avgStarsByCourseId(Long courseId);
-<<<<<<< HEAD
     Double avgInstructorStarsByInstructorId(Long instructorId);
 
     Integer countInstructorTotalReviewByInstructorId(Long instructorId);
-=======
     List<ReviewSummary> summarizeCourseReviews(Long courseId, Pageable pageable);
 
->>>>>>> dev
 }

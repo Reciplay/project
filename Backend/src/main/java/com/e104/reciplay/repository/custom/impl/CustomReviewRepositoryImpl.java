@@ -19,11 +19,8 @@ import java.util.List;
 public class CustomReviewRepositoryImpl implements CustomReviewRepository {
     private final JPAQueryFactory queryFactory;
     private final QReview review = QReview.review;
-<<<<<<< HEAD
     private final QCourse course = QCourse.course;
-=======
     private final QUser user = QUser.user;
->>>>>>> dev
 
     @Override
     public Double avgStarsByCourseId(Long courseId) {
@@ -37,7 +34,6 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
     }
 
     @Override
-<<<<<<< HEAD
     public Double avgInstructorStarsByInstructorId(Long instructorId) {
         // 강사의 모든 "승인된 & 삭제되지 않은" 강좌에 대한 리뷰 평균
         Double result = queryFactory
@@ -68,7 +64,8 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
                 .fetchOne();
 
         return (count != null) ? count.intValue() : 0;
-=======
+    }
+
     public List<ReviewSummary> summarizeCourseReviews(Long courseId, Pageable pageable) {
         return queryFactory.select(
                         Projections.constructor(ReviewSummary.class, review.id, user.nickname, user.id, review.content, review.createdAt, review.likeCount)
@@ -78,6 +75,5 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
->>>>>>> dev
     }
 }

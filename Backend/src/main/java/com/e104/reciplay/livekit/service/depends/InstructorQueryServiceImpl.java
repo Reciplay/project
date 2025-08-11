@@ -18,6 +18,7 @@ import com.e104.reciplay.user.instructor.service.*;
 import com.e104.reciplay.user.security.domain.User;
 import com.e104.reciplay.user.security.exception.EmailNotFoundException;
 import com.e104.reciplay.user.security.service.UserQueryService;
+import com.e104.reciplay.user.subscription.service.SubscriptionQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -98,8 +99,8 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
         instructorProfile.setInstructorBannerFileInfo(instructorBannerFileInfo);
         instructorProfile.setCareers(careerItems);
         instructorProfile.setLicenses(licenseItems);
-        instructorProfile.setIsSubscribed(subscriptionQueryService.queryIsSubscription(userId, instructorId));
-        instructorProfile.setSubscriberCount(subscriptionQueryService.countSubscriberByInstructorId(instructorId));
+        instructorProfile.setIsSubscribed(subscriptionQueryService.isSubscribedInstructor(instructorId, userId));
+        instructorProfile.setSubscriberCount(subscriptionQueryService.countSubscribers(instructorId).intValue());
         instructorProfile.setName(instructorRepository.findNameById(instructorId));
         instructorProfile.setIntroduction(instructor.getIntroduction());
 

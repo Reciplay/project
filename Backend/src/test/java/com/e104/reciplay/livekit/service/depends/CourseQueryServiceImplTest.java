@@ -13,6 +13,7 @@ import com.e104.reciplay.user.instructor.service.*;
 import com.e104.reciplay.user.security.domain.User;
 import com.e104.reciplay.user.security.exception.EmailNotFoundException;
 import com.e104.reciplay.user.security.service.UserQueryService;
+import com.e104.reciplay.user.subscription.service.SubscriptionQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -125,35 +126,13 @@ class InstructorQueryServiceImplTest {
     }
 
     @Test
-<<<<<<< HEAD
     @DisplayName("queryInstructorProfile - 프로필/배너/라이선스/커리어/구독정보까지 설정")
-    void queryInstructorProfile_ok() {
+            void queryInstructorProfile_ok() {
         Long instructorId = 10L;
         Long userId = 20L;
 
         Instructor inst = buildInstructor(instructorId, 999L);
         when(instructorRepository.findById(instructorId)).thenReturn(Optional.of(inst));
-=======
-    @DisplayName("isClosedCourse - 기간 내이거나 미승인 강좌면 true")
-    void isClosedCourse_false_cases() {
-        Long courseId = 12L;
-        // 기간 내 + 승인
-        Course inRange = buildCourse(courseId, 1L, "강좌");
-        inRange.setCourseStartDate(LocalDate.now().minusDays(1));
-        inRange.setCourseEndDate(LocalDate.now().plusDays(1));
-        inRange.setIsApproved(true);
-        when(courseRepository.findById(courseId)).thenReturn(Optional.of(inRange));
-        assertThat(service.isClosedCourse(courseId)).isFalse();
-
-        // 기간 밖이어도 미승인 → false
-        Course notApproved = buildCourse(courseId, 1L, "강좌");
-        notApproved.setCourseStartDate(LocalDate.now().plusDays(3));
-        notApproved.setCourseEndDate(LocalDate.now().plusDays(30));
-        notApproved.setIsApproved(false);
-        when(courseRepository.findById(courseId)).thenReturn(Optional.of(notApproved));
-        assertThat(service.isClosedCourse(courseId)).isTrue();
-    }
->>>>>>> dev
 
         FileMetadata profileMeta = FileMetadata.builder().relatedId(instructorId).sequence(1).build();
         when(subFileMetadataQueryService.queryMetadataByCondition(instructorId, "user_profile"))
@@ -188,8 +167,8 @@ class InstructorQueryServiceImplTest {
         when(careerQueryService.queryCarrersByInstructorId(instructorId))
                 .thenReturn(List.of(career));
 
-        when(subscriptionQueryService.queryIsSubscription(userId, instructorId)).thenReturn(true);
-        when(subscriptionQueryService.countSubscriberByInstructorId(instructorId)).thenReturn(321);
+        when(subscriptionQueryService.isSubscribedInstructor(instructorId, userId)).thenReturn(true);
+        when(subscriptionQueryService.countSubscribers(instructorId)).thenReturn(321L);
 
         when(instructorRepository.findNameById(instructorId)).thenReturn("김셰프");
 
@@ -212,8 +191,8 @@ class InstructorQueryServiceImplTest {
         verify(instructorLicenseQueryService).queryLicensesByInstructorId(instructorId);
         verify(licenseQueryService).queryLicenseById(1L);
         verify(careerQueryService).queryCarrersByInstructorId(instructorId);
-        verify(subscriptionQueryService).queryIsSubscription(userId, instructorId);
-        verify(subscriptionQueryService).countSubscriberByInstructorId(instructorId);
+        verify(subscriptionQueryService).isSubscribedInstructor(instructorId, userId);
+        verify(subscriptionQueryService).countSubscribers(instructorId);
         verify(instructorRepository).findNameById(instructorId);
     }
 
