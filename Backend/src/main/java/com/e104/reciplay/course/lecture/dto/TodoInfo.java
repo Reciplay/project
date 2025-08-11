@@ -1,18 +1,19 @@
-package com.e104.reciplay.course.lecture.dto.response;
+package com.e104.reciplay.course.lecture.dto;
 
+import com.e104.reciplay.common.types.TodoType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ChapterInfo {
+public class TodoInfo {
+    private Long id;
     private Integer sequence;
     private String title;
-    private List<TodoInfo> todos;
+    private TodoType type;
+    private Integer seconds;
 }

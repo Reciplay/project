@@ -4,7 +4,11 @@ import com.e104.reciplay.admin.dto.request.ApprovalInfo;
 import com.e104.reciplay.admin.dto.response.*;
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
-import com.e104.reciplay.course.lecture.dto.response.LectureDetail;
+import com.e104.reciplay.common.types.TodoType;
+import com.e104.reciplay.course.lecture.dto.ChapterInfo;
+import com.e104.reciplay.course.lecture.dto.LectureDetail;
+import com.e104.reciplay.course.lecture.dto.TodoInfo;
+import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -159,22 +163,24 @@ public class AdminApiController{
                                 1,
                                 "Spring Boot Basics",
                                 "Spring Boot 기본 개념 학습",
-                                "materials1.pdf",
+                                "돼지고기 300g/파 2대/양파 3개/토마토 반개/간장 40cc",
                                 false,
-                                "Lecture 1 Resource",
-                                LocalDate.of(2025, 8, 20),
-                                LocalDate.of(2025, 8, 22)
+                                LocalDateTime.now(),
+                                LocalDateTime.now(),
+                                List.of(new ChapterInfo(1, "챕터1", List.of(new TodoInfo(1L, 1, "투두 1", TodoType.NORMAL, 0)))),
+                                new ResponseFileInfo("test.url", "강의자료1.pdf", 1),true
                         ),
                         new LectureDetail(
                                 2L,
                                 2,
-                                "JPA & QueryDSL",
-                                "JPA와 QueryDSL 심화 학습",
-                                "materials2.pdf",
+                                "Spring Boot Advance",
+                                "Spring Boot 기본 개념 학습",
+                                "돼지고기 300g/파 2대/양파 3개/토마토 반개/간장 40cc",
                                 false,
-                                "Lecture 2 Resource",
-                                LocalDate.of(2025, 8, 23),
-                                LocalDate.of(2025, 8, 25)
+                                LocalDateTime.now(),
+                                LocalDateTime.now(),
+                                List.of(new ChapterInfo(1, "챕터1", List.of(new TodoInfo(2L, 1, "투두 1", TodoType.NORMAL, 0)))),
+                                new ResponseFileInfo("test.url", "강의자료1.pdf", 1),true
                         )
                 )
         );

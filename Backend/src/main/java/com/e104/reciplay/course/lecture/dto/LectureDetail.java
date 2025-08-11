@@ -1,6 +1,6 @@
-package com.e104.reciplay.course.lecture.dto.response;
+package com.e104.reciplay.course.lecture.dto;
 
-import com.e104.reciplay.course.lecture.dto.response.ChapterInfo;
+import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,23 +23,27 @@ public class LectureDetail {
     private String summary;
     private String materials;
     private Boolean isSkipped;
-    private String resourceName;
     private LocalDateTime startedAt;
     private LocalDateTime endedAt;
-    private List<ChapterInfo> chapters;
+
+    ///////////////////////////
+    // 따로 초기화하는 멤버
+    private List<ChapterInfo> chapters; ////
+    private ResponseFileInfo lectureMaterial; ////
+    private boolean isTaken; /////
+
     @QueryProjection
     public LectureDetail(Long lectureId, Integer sequence, String title, String summary,
-                         String materials, Boolean isSkipped, String resourceName,
-                         LocalDate startedAt, LocalDate endedAt) {
+                         String materials, Boolean isSkipped,
+                         LocalDateTime startedAt, LocalDateTime endedAt) {
         this.lectureId = lectureId;
         this.sequence = sequence;
         this.title = title;
         this.summary = summary;
         this.materials = materials;
         this.isSkipped = isSkipped;
-        this.resourceName = resourceName;
-        this.startedAt = startedAt.atStartOfDay();
-        this.endedAt = endedAt.atStartOfDay();
+        this.startedAt = startedAt;
+        this.endedAt = endedAt;
         this.chapters = null; // 따로 set 예정
     }
 

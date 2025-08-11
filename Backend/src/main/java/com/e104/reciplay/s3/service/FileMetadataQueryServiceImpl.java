@@ -24,4 +24,10 @@ public class FileMetadataQueryServiceImpl implements FileMetadataQueryService{
         return fileMetadataRepository.findMetadata(category, relatedType, relatedId, sequence)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 파일이 존재하지 않습니다."));
     }
+
+    @Override
+    public FileMetadata queryLectureMaterial(Long lectureId) {
+        return fileMetadataRepository.findMetadata(FileCategory.MATERIALS, RelatedType.LECTURE, lectureId, 1)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 파일이 존재하지 않습니다."));
+    }
 }

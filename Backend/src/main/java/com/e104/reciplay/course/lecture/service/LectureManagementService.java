@@ -1,18 +1,19 @@
 package com.e104.reciplay.course.lecture.service;
 
-import com.e104.reciplay.course.courses.dto.request.LectureRequest;
-import com.e104.reciplay.course.lecture.dto.response.LectureDetail;
-import com.e104.reciplay.course.lecture.dto.response.request.LectureRegisterRequest;
-import com.e104.reciplay.course.lecture.dto.response.response.CourseTerm;
+import com.e104.reciplay.course.lecture.dto.LectureControlRequest;
+import com.e104.reciplay.course.lecture.dto.request.item.LectureRegisterRequest;
+import com.e104.reciplay.course.lecture.dto.request.LectureRequest;
+import com.e104.reciplay.course.lecture.dto.response.CourseTerm;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface LectureManagementService {
-    void updateSkipStatus(Long lectureId, boolean isSkipped);
-    void updateLecture(LectureDetail lectureDetail);
+    void updateSkipStatus(Long lectureId, boolean isSkipped, String email);
+    void updateLecture(List<LectureRequest> requests, Long courseId, String email) throws IOException;
 
-    List<LectureRegisterRequest> groupLectureAndMaterial(List<LectureRequest> lectureRequestList, MultipartHttpServletRequest multipartHttpServletRequest);
+    List<LectureRequest> groupLectureAndMaterial(List<? extends LectureControlRequest> lectureRequestList, MultipartHttpServletRequest multipartHttpServletRequest);
 
-    CourseTerm registerLectures(List<LectureRegisterRequest> requests, Long courseId);
+    CourseTerm registerLectures(List<LectureRequest> requests, Long courseId, String email);
 }
