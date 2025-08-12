@@ -40,12 +40,13 @@ public class CourseManagementServiceImpl implements CourseManagementService{
 
     @Override
     @Transactional
-
     public Long createCourseByInstructorId (Long instructorId, RequestCourseInfo courseRegisterInfo, List<MultipartFile> thumbnailImages, MultipartFile courseCoverImage) {
+        log.debug("createdCourses 호출.");
         Course course = new Course(courseRegisterInfo);
         course.setInstructorId(instructorId);
         courseRepository.save(course);
         // 강좌 커버 이미지와 썸네일 이미지들 업로드(저장)
+        log.debug("강좌 커버 이미지와 썸네일 업로드");
         uploadImagesWithCourseId(course.getId(), courseCoverImage, thumbnailImages);
         // 인런걸 배울 수 있어요 저장
         canLearnManagementService.createCanLearnsWithCourseId(course.getId(), courseRegisterInfo.getCanLearns());

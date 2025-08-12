@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
@@ -271,9 +272,11 @@ class CourseApiControllerTest {
 
         when(courseManagementService.updateCourseByCourseId(any(RequestCourseInfo.class), anyList(), any()))
                 .thenReturn(123L);
+        try (MockedStatic<AuthenticationUtil> mocked = mockStatic(AuthenticationUtil.class)) {
 
-        mockMvc.perform(putMultipart)
-                .andExpect(status().isOk());
+            mockMvc.perform(putMultipart)
+                    .andExpect(status().isOk());
+        }
 
         ArgumentCaptor<RequestCourseInfo> infoCaptor = ArgumentCaptor.forClass(RequestCourseInfo.class);
         verify(courseManagementService).updateCourseByCourseId(infoCaptor.capture(), anyList(), any());
