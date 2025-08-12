@@ -108,7 +108,7 @@ class CourseCardQueryServiceImplTest {
         when(courseRepository.findSpecialCoursesPage(PAGEABLE)).thenReturn(page);
 
         stubCommon(1L, 77L, "홍길동",
-                List.of("자바", "스프링"), 4.9, true, "백엔드", "course_cover");
+                List.of("자바", "스프링"), 4.9, true, "백엔드", "COURSE_COVER");
 
         CourseCardCondition cond = CourseCardCondition.builder()
                 .requestCategory("special")
@@ -132,7 +132,7 @@ class CourseCardQueryServiceImplTest {
         assertThat(card.getResponseFileInfo()).isNotNull();
 
         // 파일 타입 확인
-        verify(subFileMetadataQueryService).queryMetadataByCondition(1L, "course_cover");
+        verify(subFileMetadataQueryService).queryMetadataByCondition(1L, "COURSE_COVER");
     }
 
     @Test
@@ -144,7 +144,7 @@ class CourseCardQueryServiceImplTest {
         when(courseRepository.findSoonCoursesPage(PAGEABLE)).thenReturn(page);
 
         stubCommon(2L, 88L, "이몽룡",
-                List.of("JS", "React"), 4.2, false, "프론트엔드", "thumbnail");
+                List.of("JS", "React"), 4.2, false, "프론트엔드", "THUMBNAIL");
 
         CourseCardCondition cond = CourseCardCondition.builder()
                 .requestCategory("soon")
@@ -165,7 +165,7 @@ class CourseCardQueryServiceImplTest {
         assertThat(card.getIsEnrolled()).isFalse();
         assertThat(card.getResponseFileInfo()).isNotNull();
 
-        verify(subFileMetadataQueryService).queryMetadataByCondition(2L, "thumbnail");
+        verify(subFileMetadataQueryService).queryMetadataByCondition(2L, "THUMBNAIL");
     }
 
     @Test
@@ -178,7 +178,7 @@ class CourseCardQueryServiceImplTest {
                 .thenReturn(page);
 
         stubCommon(3L, 99L, "성춘향",
-                List.of("자료구조"), 3.8, true, "CS", "thumbnail");
+                List.of("자료구조"), 3.8, true, "CS", "THUMBNAIL");
 
         CourseCardCondition cond = CourseCardCondition.builder()
                 .requestCategory("search")
@@ -190,7 +190,7 @@ class CourseCardQueryServiceImplTest {
 
         verify(courseRepository).findsearchCoursesPage("java", true, userId, PAGEABLE);
         assertThat(resp.getContent()).hasSize(1);
-        verify(subFileMetadataQueryService).queryMetadataByCondition(3L, "thumbnail");
+        verify(subFileMetadataQueryService).queryMetadataByCondition(3L, "THUMBNAIL");
     }
 
     @Test
@@ -203,7 +203,7 @@ class CourseCardQueryServiceImplTest {
         when(courseRepository.findInstructorCoursesPage(eq(instructorId), eq(PAGEABLE))).thenReturn(page);
 
         stubCommon(4L, instructorId, "교수님",
-                List.of("알고리즘"), 4.0, false, "컴퓨터", "thumbnail");
+                List.of("알고리즘"), 4.0, false, "컴퓨터", "THUMBNAIL");
 
         CourseCardCondition cond = CourseCardCondition.builder()
                 .requestCategory("instructor")
@@ -214,7 +214,7 @@ class CourseCardQueryServiceImplTest {
 
         verify(courseRepository).findInstructorCoursesPage(instructorId, PAGEABLE);
         assertThat(resp.getContent()).hasSize(1);
-        verify(subFileMetadataQueryService).queryMetadataByCondition(4L, "thumbnail");
+        verify(subFileMetadataQueryService).queryMetadataByCondition(4L, "THUMBNAIL");
     }
 
     @Test
@@ -225,7 +225,7 @@ class CourseCardQueryServiceImplTest {
         Page<Course> page = new PageImpl<>(List.of(c), PAGEABLE, 1);
         when(courseRepository.findEnrolledCoursesPage(eq(userId), eq(PAGEABLE))).thenReturn(page);
 
-        stubCommon(5L, 1L, "강사", List.of("SQL"), 4.1, true, "DB", "thumbnail");
+        stubCommon(5L, 1L, "강사", List.of("SQL"), 4.1, true, "DB", "THUMBNAIL");
 
         CourseCardCondition cond = CourseCardCondition.builder()
                 .requestCategory("enrolled")
@@ -246,7 +246,7 @@ class CourseCardQueryServiceImplTest {
         Page<Course> page = new PageImpl<>(List.of(c), PAGEABLE, 1);
         when(courseRepository.findZzimCoursesPage(eq(userId), eq(PAGEABLE))).thenReturn(page);
 
-        stubCommon(6L, 2L, "강사", List.of("HTTP"), 3.9, false, "네트워크", "thumbnail");
+        stubCommon(6L, 2L, "강사", List.of("HTTP"), 3.9, false, "네트워크", "THUMBNAIL");
 
         CourseCardCondition cond = CourseCardCondition.builder()
                 .requestCategory("zzim")
@@ -266,7 +266,7 @@ class CourseCardQueryServiceImplTest {
         Page<Course> page = new PageImpl<>(List.of(c), PAGEABLE, 1);
         when(courseRepository.findCompletedCoursesPage(eq(userId), eq(PAGEABLE))).thenReturn(page);
 
-        stubCommon(7L, 3L, "강사", List.of("테스트"), 4.6, false, "QA", "thumbnail");
+        stubCommon(7L, 3L, "강사", List.of("테스트"), 4.6, false, "QA", "THUMBNAIL");
 
         CourseCardCondition cond = CourseCardCondition.builder()
                 .requestCategory("complete")
