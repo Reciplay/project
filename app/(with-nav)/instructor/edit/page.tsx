@@ -43,8 +43,14 @@ export default function EditInstructorPage() {
   const router = useRouter();
   const instructorId = searchParams.get("instructorId");
 
-  const { profile, setProfile, setIntroduction, setCertificates, setCareers, setCoverImageFile } =
-    useInstructorStore();
+  const {
+    profile,
+    setProfile,
+    setIntroduction,
+    setCertificates,
+    setCareers,
+    setCoverImageFile,
+  } = useInstructorStore();
 
   const [basicProfile, setBasicProfile] = useState({
     name: "",
@@ -53,13 +59,18 @@ export default function EditInstructorPage() {
     job: "",
   });
 
-  const [initialCoverImageUrl, setInitialCoverImageUrl] = useState<string | undefined>(undefined);
+  const [initialCoverImageUrl, setInitialCoverImageUrl] = useState<
+    string | undefined
+  >(undefined);
 
   const fetchUserBasic = useCallback(async () => {
     try {
-      const { data } = await restClient.get<ApiResponse<User>>("/user/profile", {
-        requireAuth: true,
-      });
+      const { data } = await restClient.get<ApiResponse<User>>(
+        "/user/profile",
+        {
+          requireAuth: true,
+        },
+      );
       const { name, job, birthDate, gender, email } = data.data;
       const genderText = gender === 0 ? "여" : "남";
       const age = calculateAge(birthDate);
@@ -77,14 +88,13 @@ export default function EditInstructorPage() {
   const fetchInstructorProfile = useCallback(
     async (id: string) => {
       try {
-        const { data } = await restClient.get<ApiResponse<InstructorProfileResponse>>(
-          "/user/instructor/profile",
-          {
-            params: { instructorId: id }, // 필수 파라미터
-            requireAuth: true,
-            headers: { "Content-Type": "application/json;charset=UTF-8" },
-          },
-        );
+        const { data } = await restClient.get<
+          ApiResponse<InstructorProfileResponse>
+        >("/user/instructor/profile", {
+          params: { instructorId: id }, // 필수 파라미터
+          requireAuth: true,
+          headers: { "Content-Type": "application/json;charset=UTF-8" },
+        });
 
         const p = data.data;
 
@@ -176,7 +186,10 @@ export default function EditInstructorPage() {
   return (
     <div className={styles.container}>
       <div className={styles.infoContainer}>
-        <ProfileForm value={basicProfile} initialCoverImageUrl={initialCoverImageUrl} />
+        <ProfileForm
+          value={basicProfile}
+          initialCoverImageUrl={initialCoverImageUrl}
+        />
         <Introduction />
         <Certificate />
         <Career />
