@@ -116,6 +116,11 @@ public class CourseApiController {
             @RequestPart MultipartFile courseCoverImage
 
     ){
+        log.debug("강좌 수정 API 요청됨 ");
+        log.debug("요청 데이터 {}", requestCourseInfo);
+        String email = AuthenticationUtil.getSessionUsername();
+        log.debug("요청 사용자 {}", email);
+        
         Long courseId = courseManagementService.updateCourseByCourseId(requestCourseInfo, thumbnailImages, courseCoverImage);
 
         return CommonResponseBuilder.success("강좌 정보 수정에 성공하였습니다.", new CourseIdResponse(courseId));
@@ -131,7 +136,12 @@ public class CourseApiController {
             @RequestPart List<MultipartFile> thumbnailImages,
             @RequestPart MultipartFile courseCoverImage
     ){
+
+        log.debug("강좌 등록 API 요청됨 ");
+        log.debug("요청 데이터 {}", requestCourseInfo);
         String email = AuthenticationUtil.getSessionUsername();
+        log.debug("요청 사용자 {}", email);
+
         Long instructorId = instructorQueryService.queryInstructorIdByEmail(email);
 
         Long courseId = courseManagementService.createCourseByInstructorId(instructorId,
