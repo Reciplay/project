@@ -15,4 +15,5 @@ public class InstructorLicenseQueryServiceImpl implements  InstructorLicenseQuer
     public List<InstructorLicense> queryLicensesByInstructorId(Long instructorId) {
         return instructorLicenseRepository.findAllByInstructorId(instructorId);
     }
+
 }

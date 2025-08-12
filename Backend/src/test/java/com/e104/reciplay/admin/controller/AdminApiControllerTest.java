@@ -1,101 +1,248 @@
-
 package com.e104.reciplay.admin.controller;
 
 import com.e104.reciplay.admin.dto.request.ApprovalInfo;
+import com.e104.reciplay.admin.dto.response.AdCourseDetail;
+import com.e104.reciplay.admin.dto.response.AdInstructorDetail;
+import com.e104.reciplay.admin.dto.response.AdUserDetail;
+import com.e104.reciplay.admin.service.*;
+import com.e104.reciplay.user.security.domain.User;
+import com.e104.reciplay.user.security.service.UserQueryService;
+import com.e104.reciplay.user.security.util.AuthenticationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(AdminApiController.class)
-@AutoConfigureMockMvc(addFilters = false)
+@ExtendWith(MockitoExtension.class)
 class AdminApiControllerTest {
 
-    @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
     private ObjectMapper objectMapper;
 
-    @Test
-    @DisplayName("강사 요약 정보 리스트 조회")
-    void getInstructorSummaries() throws Exception {
-        mockMvc.perform(get("/api/v1/course/admin/instructor/summaries")
-                        .param("isApprove", "true"))
-                .andExpect(status().isOk());
+    // ===== Controller under test =====
+    @InjectMocks
+    AdminApiController controller;
+
+    // ===== Mock collaborators =====
+    @Mock AdInstructorQueryService adInstructorQueryService;
+    @Mock AdInstructorManagementService adInstructorManagementService;
+    @Mock AdCourseQueryService adCourseQueryService;
+    @Mock AdUserQueryService adUserQueryService;
+    @Mock AdUserManagementService adUserManagementService;
+    @Mock AdCourseManagementService adCourseManagementService;
+    @Mock UserQueryService userQueryService;
+
+    private static final String BASE = "/api/v1/course/admin";
+
+    @BeforeEach
+    void setUp() {
+        objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        mockMvc = MockMvcBuilders
+                .standaloneSetup(controller)
+                .setMessageConverters(new MappingJackson2HttpMessageConverter(objectMapper))
+                .build();
     }
 
-    @Test
-    @DisplayName("강사 상세 정보 조회")
-    void getInstructorDetail() throws Exception {
-        mockMvc.perform(get("/api/v1/course/admin/instructor")
-                        .param("instructorId", "1"))
-                .andExpect(status().isOk());
+    private String instructorApprovalJsonApprove() {
+        // ApprovalInfo의 실제 구조에 맞춰 필드명 사용
+        return """
+               {
+                 "instructorId": 2,
+                 "isApprove": true,
+                 "message": "OK"
+               }
+               """;
     }
 
-    @Test
-    @DisplayName("강사 등록 수락/거절")
-    void handleInstructorRegistration() throws Exception {
-        ApprovalInfo approvalInfo = new ApprovalInfo();
-        mockMvc.perform(put("/api/v1/course/admin/instructor")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(approvalInfo)))
-                .andExpect(status().isOk());
+    private String courseApprovalJsonApprove() {
+        return """
+               {
+                 "courseId": 1,
+                 "instructorId": 2,
+                 "isApprove": true,
+                 "message": "OK"
+               }
+               """;
     }
 
-    @Test
-    @DisplayName("강좌 요약 정보 리스트 조회")
-    void getCourseSummaries() throws Exception {
-        mockMvc.perform(get("/api/v1/course/admin/course/summaries")
-                        .param("isApprove", "true"))
-                .andExpect(status().isOk());
+    @Nested
+    @DisplayName("강사 APIs")
+    class InstructorApis {
+
+        @Test
+        @DisplayName("GET /instructor/summaries - 200 & service 호출 검증")
+        void getInstructorSummaries() throws Exception {
+            given(adInstructorQueryService.queryAdInstructorSummary(true))
+                    .willReturn(List.of());
+
+            mockMvc.perform(get(BASE + "/instructor/summaries")
+                            .param("isApprove", "true"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+
+            verify(adInstructorQueryService, times(1))
+                    .queryAdInstructorSummary(true);
+        }
+
+        @Test
+        @DisplayName("GET /instructor - 200 & service 호출 검증")
+        void getInstructorDetail() throws Exception {
+            AdInstructorDetail detail = Mockito.mock(AdInstructorDetail.class);
+            given(adInstructorQueryService.queryInstructorDetail(10L)).willReturn(detail);
+
+            mockMvc.perform(get(BASE + "/instructor")
+                            .param("instructorId", "10"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+
+            verify(adInstructorQueryService, times(1))
+                    .queryInstructorDetail(10L);
+        }
+
+        @Test
+        @DisplayName("PUT /instructor - 200 & 승인 처리 호출 검증 (정적 인증 유틸 + User 목)")
+        void handleInstructorRegistration() throws Exception {
+            try (MockedStatic<AuthenticationUtil> mockedStatic = Mockito.mockStatic(AuthenticationUtil.class)) {
+                mockedStatic.when(AuthenticationUtil::getSessionUsername)
+                        .thenReturn("admin@example.com");
+
+                User mockedUser = Mockito.mock(User.class);
+                given(mockedUser.getId()).willReturn(99L);
+                given(userQueryService.queryUserByEmail("admin@example.com")).willReturn(mockedUser);
+
+                mockMvc.perform(put(BASE + "/instructor")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .characterEncoding(StandardCharsets.UTF_8)
+                                .content(instructorApprovalJsonApprove()))
+                        .andExpect(status().isOk())
+                        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+
+                verify(userQueryService, times(1)).queryUserByEmail("admin@example.com");
+                verify(adInstructorManagementService, times(1))
+                        .updateInstructorApproval(any(ApprovalInfo.class), Mockito.eq(99L));
+            }
+        }
     }
 
-    @Test
-    @DisplayName("강좌 상세 정보 조회")
-    void getCourseDetail() throws Exception {
-        mockMvc.perform(get("/api/v1/course/admin/course")
-                        .param("courseId", "1"))
-                .andExpect(status().isOk());
+    @Nested
+    @DisplayName("강좌 APIs")
+    class CourseApis {
+
+        @Test
+        @DisplayName("GET /course/summaries - 200 & service 호출 검증")
+        void getCourseSummaries() throws Exception {
+            given(adCourseQueryService.queryAdCourseSummary(false))
+                    .willReturn(List.of());
+
+            mockMvc.perform(get(BASE + "/course/summaries")
+                            .param("isApprove", "false"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+
+            verify(adCourseQueryService, times(1))
+                    .queryAdCourseSummary(false);
+        }
+
+        @Test
+        @DisplayName("GET /course - 200 & service 호출 검증")
+        void getCourseDetail() throws Exception {
+            AdCourseDetail detail = Mockito.mock(AdCourseDetail.class);
+            given(adCourseQueryService.queryCourseDetail(7L)).willReturn(detail);
+
+            mockMvc.perform(get(BASE + "/course")
+                            .param("courseId", "7"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+
+            verify(adCourseQueryService, times(1))
+                    .queryCourseDetail(7L);
+        }
+
+        @Test
+        @DisplayName("PUT /course - 200 & 승인 처리 호출 검증 (정적 인증 유틸 + User 목)")
+        void handleCourseRegistration() throws Exception {
+            try (MockedStatic<AuthenticationUtil> mockedStatic = Mockito.mockStatic(AuthenticationUtil.class)) {
+                mockedStatic.when(AuthenticationUtil::getSessionUsername)
+                        .thenReturn("admin@example.com");
+
+                User mockedUser = Mockito.mock(User.class);
+                given(mockedUser.getId()).willReturn(11L);
+                given(userQueryService.queryUserByEmail("admin@example.com")).willReturn(mockedUser);
+
+                mockMvc.perform(put(BASE + "/course")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(courseApprovalJsonApprove()))
+                        .andExpect(status().isOk())
+                        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+
+                verify(userQueryService, times(1)).queryUserByEmail("admin@example.com");
+                verify(adCourseManagementService, times(1))
+                        .updateCourseApproval(any(ApprovalInfo.class), Mockito.eq(11L));
+            }
+        }
     }
 
-    @Test
-    @DisplayName("강좌 등록 수락/거절")
-    void handleCourseRegistration() throws Exception {
-        ApprovalInfo approvalInfo = new ApprovalInfo();
-        mockMvc.perform(put("/api/v1/course/admin/course")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(approvalInfo)))
-                .andExpect(status().isOk());
-    }
+    @Nested
+    @DisplayName("회원 APIs")
+    class UserApis {
 
-    @Test
-    @DisplayName("일반 회원 요약 정보 리스트 조회")
-    void getUserSummaries() throws Exception {
-        mockMvc.perform(get("/api/v1/course/admin/user/summaries"))
-                .andExpect(status().isOk());
-    }
+        @Test
+        @DisplayName("GET /user/summaries - 200 & service 호출 검증")
+        void getUserSummaries() throws Exception {
+            given(adUserQueryService.queryUserSummaries()).willReturn(List.of());
 
-    @Test
-    @DisplayName("일반 회원 상세 정보 조회")
-    void getUserDetail() throws Exception {
-        mockMvc.perform(get("/api/v1/course/admin/user")
-                        .param("userId", "1"))
-                .andExpect(status().isOk());
-    }
+            mockMvc.perform(get(BASE + "/user/summaries"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-    @Test
-    @DisplayName("회원 탈퇴")
-    void deleteUser() throws Exception {
-        mockMvc.perform(delete("/api/v1/course/admin/user")
-                        .param("userId", "1"))
-                .andExpect(status().isOk());
+            verify(adUserQueryService, times(1)).queryUserSummaries();
+        }
+
+        @Test
+        @DisplayName("GET /user - 200 & service 호출 검증")
+        void getUserDetail() throws Exception {
+            AdUserDetail detail = Mockito.mock(AdUserDetail.class);
+            given(adUserQueryService.queryUserDetail(123L)).willReturn(detail);
+
+            mockMvc.perform(get(BASE + "/user")
+                            .param("userId", "123"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+
+            verify(adUserQueryService, times(1)).queryUserDetail(123L);
+        }
+
+        @Test
+        @DisplayName("DELETE /user - 200 & 삭제 호출 검증")
+        void deleteUser() throws Exception {
+            mockMvc.perform(delete(BASE + "/user")
+                            .param("userId", "77"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+
+            verify(adUserManagementService, times(1)).deleteUser(77L);
+        }
     }
 }

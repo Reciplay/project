@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AdminCourseSummary {
-    private Long courseId;
-    private String instructorName;
-    private String title;
-    private LocalDateTime registeredAt;
+public class AdInstructorSummary {
+    private Long instructorId;
+    private String name;
+    private String email;
+    private LocalDateTime registerdAt;
 }

@@ -8,4 +8,5 @@ import java.util.List;
 public interface LicenseQueryService {
     List<LicenseSummary> queryLicenseList();
     License queryLicenseById(Long id);
+
 }

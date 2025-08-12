@@ -7,12 +7,10 @@ import com.e104.reciplay.user.instructor.dto.request.InstructorApplicationReques
 import com.e104.reciplay.user.instructor.dto.request.InstructorProfileUpdateRequest;
 import com.e104.reciplay.user.instructor.dto.response.InstructorProfile;
 import com.e104.reciplay.user.instructor.dto.response.InstructorStat;
+import com.e104.reciplay.user.instructor.dto.response.item.SubscriberHistory;
 import com.e104.reciplay.user.instructor.service.InstructorManagementService;
 import com.e104.reciplay.user.security.service.UserQueryService;
 import com.e104.reciplay.user.security.util.AuthenticationUtil;
-import com.e104.reciplay.user.instructor.dto.response.item.CareerItem;
-import com.e104.reciplay.user.instructor.dto.response.item.LicenseItem;
-import com.e104.reciplay.user.instructor.dto.response.item.SubscriberHistory;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Tag(name = "강사 관련 API", description = "강사에 대한 데이터를 조회하거나 강사 데이터 수정을 위한 API를 제공합니다.")

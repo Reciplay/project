@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AdminInstructorDetail {
+public class AdInstructorDetail {
     private Long instructorId;
     private String name;
     private String email;
@@ -24,8 +24,7 @@ public class AdminInstructorDetail {
     private String introduction;
     private String address;
     private String phoneNumber;
-    private List<LicenseInfo> licenses;
-    private List<Careerinfo> careers;
-
+    private List<AdLicenseInfo> licenses;
+    private List<AdCareerinfo> careers;
 
 }
