@@ -8,9 +8,11 @@ import com.e104.reciplay.livekit.service.depends.InstructorQueryService;
 import com.e104.reciplay.repository.CourseRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AdCourseManagementServiceImpl implements AdCourseManagementService{
     private final InstructorQueryService instructorQueryService;
@@ -30,8 +32,12 @@ public class AdCourseManagementServiceImpl implements AdCourseManagementService{
         }
 
         String content;
-        Instructor instructor = instructorQueryService.queryInstructorById(approvalInfo.getInstructorId());
-        Long instructorUserId = instructor.getUserId();
+        Long instructorUserId = null;
+        try {
+            Instructor instructor = instructorQueryService.queryInstructorById(approvalInfo.getInstructorId());
+        } catch(Exception e) {
+            log.debug("강좌 수락/거절에서 강사 조회에 실패함. 강사 아이디가 없음 {}", e.getMessage());
+        }
 
         if(approvalInfo.getIsApprove()) {
             courseRepository.updateCourseApprovalById(approvalInfo.getCourseId());
