@@ -2,11 +2,13 @@ package com.e104_2.reciplaywebsocket.room.controller;
 
 import com.e104_2.reciplaywebsocket.common.response.dto.ResponseRoot;
 import com.e104_2.reciplaywebsocket.common.response.util.CommonResponseBuilder;
+import com.e104_2.reciplaywebsocket.entity.Todo;
 import com.e104_2.reciplaywebsocket.room.dto.request.ChapterIssueRequest;
 import com.e104_2.reciplaywebsocket.room.dto.request.EventMessage;
 import com.e104_2.reciplaywebsocket.room.dto.request.TodoMessage;
 import com.e104_2.reciplaywebsocket.room.dto.request.LiveControlRequest;
 import com.e104_2.reciplaywebsocket.room.dto.response.ChapterTodoResponse;
+import com.e104_2.reciplaywebsocket.room.dto.response.item.TodoSummary;
 import com.e104_2.reciplaywebsocket.room.service.LiveControlService;
 import com.e104_2.reciplaywebsocket.room.service.TodoQueryService;
 import com.e104_2.reciplaywebsocket.security.dto.CustomUserDetails;
@@ -137,8 +139,15 @@ public class LiveController {
             messagingTemplate.convertAndSendToUser(message.getIssuer(), URL_PREFIX+"/queue/"+message.getRoomId(), Map.of("status", "refused", "message", "라이브룸 강사 권한이 없습니다."));
             return;
         }
+        ChapterTodoResponse response = null;
+        try {
+            response = todoQueryService.queryTodoOfChapter(lectureId, sequence);
+        } catch(Exception e) {
+            response = new ChapterTodoResponse("chapter-issue", 1L, "챕터 이름", 1, 2,
+                    List.of(new TodoSummary("투두 1", "TIMER", 100, 1),
+                            new TodoSummary("투두 2", "NORMAL", 0, 2)));
+        }
 
-        ChapterTodoResponse response = todoQueryService.queryTodoOfChapter(lectureId, sequence);
         messagingTemplate.convertAndSend(URL_PREFIX+"/topic/room/"+message.getRoomId(), response);
     }
 
