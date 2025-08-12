@@ -1,0 +1,78 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+
+  .title {
+    font-size: 2.4rem;
+    font-weight: 700;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    gap: 1.6rem;
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06), 0 6px 12px rgba(0, 0, 0, 0.08);
+      transition: transform 0.2s ease;
+
+      &:hover {
+        transform: translateY(-4px);
+      }
+
+      /* 제목(회사명/자격증명) */
+      .company,
+      .licenseName {
+        font-weight: 600;
+        font-size: 2rem;
+        margin-bottom: 1.6rem;
+      }
+
+      /* 서브(직책/발급기관) */
+      .position,
+      .institution {
+        font-size: 1.6rem;
+        color: #555;
+        margin-bottom: 0.8rem;
+      }
+
+      /* 공통 메타(날짜) */
+      .date {
+        font-size: 1.2rem;
+        color: #999;
+        margin-bottom: 0.8rem;
+
+        &::before {
+          content: "📅";
+          margin-right: 0.8rem;
+          font-size: 1.4rem;
+        }
+      }
+
+      /* 본문(경력 설명/자격 등급) */
+      .description,
+      .grade {
+        font-size: 1.4rem;
+        line-height: 1.4;
+        color: #444;
+      }
+      .grade::before {
+        content: "🏅";
+        margin-right: 0.8rem;
+        font-size: 1.4rem;
+      }
+    }
+  }
+}
+
+/* 선택: 카테고리별 포인트 컬러를 주고 싶다면 */
+.section.career .title {
+  color: #111;
+}
+.section.license .title {
+  color: #0f6;
+} /* 취향에 맞게 조정 */

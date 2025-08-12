@@ -49,13 +49,6 @@ export interface CourseSummary {
   registeredAt: string;
 }
 
-export interface Todo {
-  sequence: number;
-  title: string;
-  type: number;
-  seconds: number;
-}
-
 export interface Chapter {
   sequence: number;
   title: string;
@@ -153,3 +146,90 @@ export interface CourseDetail {
     isSkipped: boolean;
   }[];
 }
+
+export interface CreateCourseRequestFinal {
+  requestCourseInfo: {
+    title: string;
+    enrollmentStartDate: string; // ISO 8601 (e.g. "2025-08-11T02:41:46.090Z")
+    enrollmentEndDate: string; // ISO 8601
+    categoryId: number;
+    summary: string;
+    maxEnrollments: number;
+    description: string; // 설명
+    level: number; // 난이도
+    announcement: string; // 공지사항
+    canLearns: string[]; // 이런걸 배울 수 있어요
+  };
+  thumbnailImages: string[]; // 썸네일 이미지 URL 목록
+  courseCoverImage: string; // 커버 이미지 URL
+}
+
+export interface LecturePayload {
+  lecture: Lecture[];
+}
+
+export interface Lecture {
+  title: string;
+  summary: string;
+  sequence: number;
+  materials: string;
+  startedAt: string; // ISO date string
+  endedAt: string; // ISO date string
+  chapterList: Chapter[];
+}
+
+export interface Chapter {
+  sequence: number;
+  title: string;
+  todoList: Todo[];
+}
+
+export interface Todo {
+  sequence: number;
+  title: string;
+  type: "NORMAL" | "TIMER";
+  seconds: number;
+}
+
+export type CourseManage = {
+  thumbnailFileInfos?: {
+    presignedUrl: string;
+    name: string;
+    sequence: number;
+  }[];
+  courseCoverFileInfo?: {
+    presignedUrl: string;
+    name: string;
+    sequence: number;
+  } | null;
+  title: string;
+  courseStartDate: string; // "YYYY-MM-DD"
+  courseEndDate: string; // "YYYY-MM-DD"
+  instructorId: number;
+  courseId: number;
+  enrollmentStartDate: string; // ISO
+  enrollmentEndDate: string; // ISO
+  category: string;
+  reviewCount: number;
+  averageReviewScore: number;
+  summary: string;
+  maxEnrollments: number;
+  isEnrolled: boolean;
+  description: string;
+  level: number;
+  isZzimed: boolean;
+  isLive: boolean;
+  announcement: string;
+  isReviwed: boolean;
+  canLearns: string[];
+};
+
+export type RequestCategory =
+  | "special"
+  | "enrolled"
+  | "soon"
+  | "search"
+  | "zzim"
+  | "complete"
+  | "instructor";
+export type CourseStatus = "soon" | "ongoing" | "end";

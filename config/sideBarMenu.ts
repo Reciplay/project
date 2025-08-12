@@ -10,11 +10,6 @@ export const userSidebarMenus: MenuSection[] = [
         href: "/",
       },
       {
-        title: "카테고리",
-        icon: "Category",
-        href: "/course/category",
-      },
-      {
         title: "검색하기",
         icon: "Search",
         href: "/search",
@@ -56,11 +51,6 @@ export const instructorSideBarMenus: MenuSection[] = [
         title: "전체 강좌",
         icon: "Book",
         href: "/",
-      },
-      {
-        title: "카테고리",
-        icon: "Category",
-        href: "/course/category",
       },
       {
         title: "검색하기",
@@ -125,11 +115,6 @@ export const adminSideBarMenus: MenuSection[] = [
         title: "전체 강좌",
         icon: "Book",
         href: "/",
-      },
-      {
-        title: "카테고리",
-        icon: "Category",
-        href: "/course/category",
       },
       {
         title: "검색하기",

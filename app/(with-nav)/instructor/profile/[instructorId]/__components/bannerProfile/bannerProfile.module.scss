@@ -1,0 +1,21 @@
+.container {
+  margin: var(--spacing-xl) 0;
+  display: flex;
+  gap: 24px;
+}
+
+.textBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.name {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.job {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-regular);
+}

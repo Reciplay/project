@@ -3,16 +3,16 @@
 
 import React from "react";
 import styles from "./page.module.scss";
-import InstructorRegisterList from "./__components/instructorRegisterList/instructorRegisterList";
-import CourseList from "./__components/courseList/courseList";
-import MemberList from "./__components/memberList/memberList";
+import Instructors from "./__components/instructors/instructors";
+import Courses from "./__components/courses/courses";
+import Members from "./__components/members/members";
 
 export default function AdminPage() {
   return (
     <div className={styles.container}>
-      <InstructorRegisterList />
-      <CourseList />
-      <MemberList />
+      <Instructors />
+      <Courses />
+      <Members />
     </div>
   );
 }

@@ -4,7 +4,6 @@ import styles from "./page.module.scss";
 import Introduction from "./__components/introduction";
 import Certificate from "./__components/certificate";
 import Career from "./__components/career";
-import classNames from "classnames";
 import { useEffect, useState } from 'react';
 import BaseButton from "@/components/button/baseButton";
 import ProfileForm from "./__components/profileForm"; // 맨 위에 import 추가
@@ -28,47 +27,60 @@ export default function page() {
 		email: 'ssafyfavorait@example.com',
 		job: '양식 강사',
 	});
-	const { profile, introduction, certificates, careers } = useInstructorStore();
+	const { profile, introduction, certificates, careers, coverImageFile, } = useInstructorStore();
 	const router = useRouter();
 
-	const postInstructorData = async (data: any) => {
-		const res = await fetch('/api/v1/instructor', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(data),
-		});
-
-		if (!res.ok) {
-			throw new Error('강사 등록 실패');
-		}
-		return res.json();
-	};
-
 	const handleSave = async () => {
-		const payload = {
-			...profile,
-			introduction,
-			certificates,
-			careers,
-		};
-		await fetch('/api/v1/instructor', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(payload),  // ← 여기로 안전하게 전송
-		});
-
-		console.log('💾 전송할 payload:', payload);
-		console.log('주소:', profile.address);
-
 		try {
-			await postInstructorData(payload);
-			alert('등록 완료!');
-			router.push('/instructor/edit');
+			if (!coverImageFile) {
+				alert('커버 이미지를 선택해주세요.');
+				return;
+			}
+
+			// 백엔드 DTO에 맞춰 키 매핑 (certificates -> licenses)
+			const instructorProfilePayload = {
+				address: profile.address,
+				phoneNumber: profile.phoneNumber,
+				introduction: introduction ?? '',
+				licenses: (certificates ?? []).map(c => ({
+					id: c.id,
+					licenseName: c.licenseName,
+					institution: c.institution,
+					acquisitionDate: c.acquisitionDate, // YYYY-MM-DD
+					grade: c.grade,
+				})),
+				careers: (careers ?? []).map(k => ({
+					id: k.id,
+					companyName: k.companyName,
+					position: k.position,
+					jobDescription: k.jobDescription,
+					startDate: k.startDate, // YYYY-MM-DD
+					endDate: k.endDate,     // YYYY-MM-DD
+				})),
+			}
+
+			const fd = new FormData();
+			// 파일 파트 이름은 @RequestPart("coverImage")와 동일해야 함
+			fd.append("coverImage", coverImageFile);
+			// json 파트도 @RequestPart('instructorProfile')와 동일
+			fd.append(
+				"instructorProfile",
+				new Blob([JSON.stringify(instructorProfilePayload)], { type: "application/json" })
+			)
+			// ✅ 실제 백엔드 경로로 교체 (예: /api/v1/instructor)
+			// restClient가 axios 래퍼라면, FormData 전달 시 boundary 헤더는 자동으로 붙습니다.
+			await restClient.post('/user/instructor', fd, {
+				requireAuth: true,
+				headers: { "Content-Type": "multipart/form-data" },
+			});
+
+			alert("등록 완료");
+			router.push("/instructor/edit");
 		} catch (e) {
 			console.error(e);
 			alert('등록 실패');
 		}
-	};
+	}
 
 	useEffect(() => {
 		fetchProfile();
