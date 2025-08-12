@@ -50,7 +50,7 @@ function toISOIfNeeded(s: string) {
     (m || 1) - 1,
     d || 1,
     hh || 0,
-    mm || 0
+    mm || 0,
   ).toISOString();
 }
 
@@ -130,12 +130,12 @@ type AxiosLikeError = {
 // 1) 코스 생성 multipart
 function buildCourseCreateFormData(
   info: RequestCourseInfo,
-  images: CourseImagesRaw
+  images: CourseImagesRaw,
 ) {
   const fd = new FormData();
   fd.append(
     "requestCourseInfo",
-    new Blob([JSON.stringify(info)], { type: "application/json" })
+    new Blob([JSON.stringify(info)], { type: "application/json" }),
   );
   for (const t of images.thumbnails) {
     if (typeof t === "string") fd.append("thumbnailImages", t);
@@ -155,7 +155,7 @@ function buildLectureFormData(lectures: LectureDTO[]) {
   const payload = normalizeLecturesForApi(lectures);
   fd.append(
     "lecture",
-    new Blob([JSON.stringify(payload)], { type: "application/json" })
+    new Blob([JSON.stringify(payload)], { type: "application/json" }),
   );
 
   lectures.forEach((lec, idx) => {
@@ -182,7 +182,7 @@ function buildLectureFormData(lectures: LectureDTO[]) {
 /* ========= API 호출 ========= */
 async function createCourse(
   info: RequestCourseInfo,
-  images: CourseImagesRaw
+  images: CourseImagesRaw,
 ): Promise<{ courseId: number | null; message?: string }> {
   const fd = buildCourseCreateFormData(info, images);
   logFormData(fd, "createCourse");
@@ -225,7 +225,7 @@ async function uploadLecturesWithRetry(
     initialDelayMs?: number;
     backoff?: number;
     endpoint?: string;
-  } = {}
+  } = {},
 ): Promise<{ ok: boolean; message?: string }> {
   const fd = buildLectureFormData(lectures);
   logFormData(fd, "uploadLectures");
@@ -240,7 +240,7 @@ async function uploadLecturesWithRetry(
         attempt + 1
       } → POST ${endpoint}?courseId=${courseId} (delay=${
         attempt === 0 ? 0 : delay
-      }ms)`
+      }ms)`,
     );
     if (attempt > 0) await sleep(delay);
 
@@ -253,7 +253,7 @@ async function uploadLecturesWithRetry(
         "[uploadLectures] 응답:",
         res.status,
         res.data,
-        `(+${Date.now() - started}ms)`
+        `(+${Date.now() - started}ms)`,
       );
 
       if (res.status === 200) return { ok: true };
@@ -268,7 +268,7 @@ async function uploadLecturesWithRetry(
       console.warn(
         `[uploadLectures] 실패(status=${sc}) attempt #${attempt + 1} message=${
           msg ?? "(없음)"
-        }`
+        }`,
       );
 
       // 컨트롤러 진입·권한·가시성 이슈로 보이는 코드들만 백오프 재시도
@@ -301,7 +301,7 @@ export function useSubmitCourse() {
   const [submitting, setSubmitting] = useState(false);
 
   const submitAll = async (
-    args: SubmitArgs
+    args: SubmitArgs,
   ): Promise<{
     success: boolean;
     courseId?: number;
@@ -319,7 +319,7 @@ export function useSubmitCourse() {
       // 1) 강좌 생성 (커밋 완료 후 ID 반환)
       const { courseId, message: createMsg } = await createCourse(
         args.requestCourseInfo,
-        args.imagesRaw
+        args.imagesRaw,
       );
       if (!courseId) {
         console.error("[submitAll] 코스 생성 실패:", createMsg);
@@ -340,7 +340,7 @@ export function useSubmitCourse() {
             initialDelayMs: 300,
             backoff: 1.8,
             endpoint: "/api/v1/course/lecture", // 실제 서버 라우팅에 맞게
-          }
+          },
         );
         if (!ok) {
           console.error("[submitAll] 강의 업로드 실패:", message);
