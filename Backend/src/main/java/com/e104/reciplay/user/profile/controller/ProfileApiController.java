@@ -91,6 +91,6 @@ public class ProfileApiController {
         String email = userDetails.getUsername();
         log.debug("정보 입력 요청자 이메일 : {}", email);
 
-        return CommonResponseBuilder.success("사진 등록에 성공했습니다.", myProfileQueryService.queryMyLevels(email));
+        return CommonResponseBuilder.success("역량 조회에 성공했습니다.", myProfileQueryService.queryMyLevels(email));
     }
 }
