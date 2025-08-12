@@ -5,6 +5,8 @@ import { getSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { recognizeGesture } from "@/components/live/gestureRecognizer";
 import { useCallback, useEffect, useRef, useState } from "react";
+import useLiveSocket from "@/hooks/live/useLiveSocket";
+
 
 export default function VideoView() {
     const params = useParams();
@@ -41,6 +43,7 @@ export default function VideoView() {
         };
     }, [courseId, lectureId, role]);
 
+
     const [handGesture, setHandGesture] = useState("");
     const lastHandGestureCheck = useRef(0);
 
@@ -70,6 +73,24 @@ export default function VideoView() {
             }
         }
     }, []);
+
+    const { roomId, socket, stompClient ,sendChapterIssue, roomInfo } = useLiveSocket(courseId, lectureId, "instructor");
+    const lastGestureSended = useRef(0)
+    useEffect(() => {
+        const now = Date.now()
+        const issuer = roomInfo?.email
+        if (now - lastGestureSended.current > 2000) {
+            lastGestureSended.current = now
+            if (recognizedPose === 'clap') {
+                sendChapterIssue(stompClient, {
+                    issuer : issuer,
+                    lectureId : lectureId,
+                    roomId : roomId,
+                    chapterSequence : 1
+                })
+            }
+        }
+    }, [handGesture, recognizedPose])
 
     return (
         <main style={{ padding: 24 }}>

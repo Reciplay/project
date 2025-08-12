@@ -232,5 +232,5 @@ export default function useLiveSocket(
     return () => cleanupConnection();
   }, [roomId]);
 
-  return { roomId, socket, stompClient, sendChapterIssue };
+  return { roomId, socket, stompClient, sendChapterIssue, roomInfo };
 }
