@@ -28,6 +28,7 @@ export default function Page() {
   if (!courseDetail)
     return <div>{message ?? "강좌 정보를 불러오지 못했습니다."}</div>;
 
+  console.log(courseDetail);
   return (
     <div className={styles.container}>
       <div className={styles.content}>

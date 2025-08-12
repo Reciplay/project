@@ -70,8 +70,6 @@ export default function SideBar() {
   const { logout } = useLogout();
   const width = useWindowWidth();
 
-  console.log(session);
-
   const role = session?.role || "ROLE_STUDENT";
 
   let sidebarMenu: MenuSection[];

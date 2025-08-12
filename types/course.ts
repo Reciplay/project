@@ -1,22 +1,26 @@
 export interface CourseCard {
-  specialBannerUrl: string;
-  thumbnailUrl: string;
-  viewerCount: number;
+  specialBannerUrl?: string;
   title: string;
   courseId: number;
-  category: string;
-  averageReviewScore: number;
   isLive: boolean;
-  courseStartDate: string; // ISO 날짜 문자열
-  courseEndDate: string; // ISO 날짜 문자열
+  courseStartDate: string;
+  courseEndDate: string;
   level: number;
   summary: string;
   description: string;
-  canLearns: string[];
-  isEnrolled: boolean;
   announcement: string;
+  viewerCount: number;
+  category: string;
+  responseFileInfo: {
+    presignedUrl: string;
+    name: string;
+    sequence: number;
+  };
   instructorId: number;
   instructorName: string;
+  averageReviewScore: number;
+  canLearns: string[];
+  isEnrolled: boolean;
 }
 
 export interface Course {

@@ -57,7 +57,7 @@ export default function CustomCard({ data, type, onClick }: CardProps) {
       {/* 썸네일 */}
       <div className={styles.thumb}>
         <Image
-          src={data.thumbnailUrl}
+          src={data?.responseFileInfo?.presignedUrl ?? "/images/404.jpg"}
           alt={data.title}
           fill
           sizes="(max-width: 768px) 100vw, 320px"
@@ -92,12 +92,12 @@ export default function CustomCard({ data, type, onClick }: CardProps) {
               <span className={styles.live}>Live</span>
               <span className={styles.dot}>•</span>
               <span className={styles.viewers}>
-                {data.viewerCount.toLocaleString()}명 시청 중
+                {data.viewerCount?.toLocaleString() ?? 0}명 시청 중
               </span>
             </>
           ) : (
             <span className={styles.viewers}>
-              {data.viewerCount.toLocaleString()}명 수강
+              {data.viewerCount?.toLocaleString() ?? 0}명 수강
             </span>
           )}
         </div>
