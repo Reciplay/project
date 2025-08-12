@@ -41,7 +41,7 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         if(auth == null || !auth.startsWith("Bearer")) {
-            log.debug("Token error : invalid format -> 403 Forbidden");
+            log.debug("Token warning : 토큰이 포함되지 않음.");
             filterChain.doFilter(request, response);
             return;
         }

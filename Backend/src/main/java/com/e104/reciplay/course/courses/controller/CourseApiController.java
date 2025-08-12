@@ -48,6 +48,9 @@ public class CourseApiController {
             @ModelAttribute CourseCardCondition courseCardCondition,
             @PageableDefault(page = 0, size = 10, sort = "courseStartDate", direction = Sort.Direction.DESC) Pageable pageable
         ) {
+        log.debug("카드 API 요청됨 ");
+        log.debug("요청 데이터 {}", courseCardCondition);
+        log.debug("요청 페이지 {}", pageable);
         String email = AuthenticationUtil.getSessionUsername();
         Long userId = userQueryService.queryUserByEmail(email).getId();
         PagedResponse<CourseCard> pagedResponse = courseCardQueryService.queryCardsByCardCondtion(courseCardCondition, pageable, userId);
