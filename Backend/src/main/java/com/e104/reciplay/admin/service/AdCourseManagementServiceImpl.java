@@ -7,6 +7,7 @@ import com.e104.reciplay.livekit.service.depends.CourseQueryService;
 import com.e104.reciplay.livekit.service.depends.InstructorQueryService;
 import com.e104.reciplay.repository.CourseRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class AdCourseManagementServiceImpl implements AdCourseManagementService{
     private final MessageManagementService messageManagementService;
 
     @Override
+    @Transactional
     public void updateCourseApproval(ApprovalInfo approvalInfo, Long adminUserId) {
         if (approvalInfo.getCourseId() == null || approvalInfo.getIsApprove() == null) {
             throw new IllegalArgumentException("잘못된 approvalInfo 입니다.");
