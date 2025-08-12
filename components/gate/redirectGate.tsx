@@ -75,7 +75,7 @@ function useGuards() {
       // 공개 페이지
       isHome: pathname === ROUTES.HOME,
       isGuide: pathname === ROUTES.GUIDE,
-      isSearch: pathname === ROUTES.SEARCH,
+      isSearch: pathname === ROUTES.SEARCH.ROOT,
       isAuthExtra: pathname === ROUTES.AUTH.EXTRA,
       isAuthLogin: pathname === ROUTES.AUTH.LOGIN,
       isAuthSignup: pathname === ROUTES.AUTH.SIGNUP,
@@ -129,7 +129,7 @@ export default function RedirectGate({
   /** B) 로그인 직후 추가정보 로딩 */
   useEffect(() => {
     if (!hasHydrated) return;
-    if (status === "unauthenticated" && isProtected(pathname)) {
+    if (status === "unauthenticated" && !isPublicRoute) {
       router.replace(ROUTES.AUTH.LOGIN);
     }
   }, [status, pathname, hasHydrated, router]);

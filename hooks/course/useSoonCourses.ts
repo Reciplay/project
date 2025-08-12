@@ -49,7 +49,7 @@ export function useSoonCourses(options?: {
         const params = buildQuery(cond, { ...pageable, page: targetPage });
         const res = await fetchCards(
           params,
-          false,
+          true,
           controllerRef.current.signal
         );
         if (res.status === 200) {

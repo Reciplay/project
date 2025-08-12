@@ -12,7 +12,9 @@ export default function Overview({ courseDetail }: OverviewProps) {
   return (
     <div className={styles.imageWrapper}>
       <Image
-        src={courseDetail.courseCoverFileInfo.presignedUrl}
+        src={
+          courseDetail.courseCoverFileInfo?.presignedUrl ?? "/images/404.jpg"
+        }
         alt={courseDetail.title}
         width={1600} // 원본 가로 크기 (알고 있다면)
         height={900} // 원본 세로 크기 (알고 있다면)

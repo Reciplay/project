@@ -4,7 +4,7 @@ export interface CourseCard {
   courseId: number;
   isLive: boolean;
   courseStartDate: string;
-  courseEndData: string;
+  courseEndDate: string;
   level: number;
   summary: string;
   description: string;
@@ -22,7 +22,6 @@ export interface CourseCard {
   canLearns: string[];
   isEnrolled: boolean;
 }
-
 
 export interface Course {
   courseId: number;

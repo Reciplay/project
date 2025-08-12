@@ -26,12 +26,45 @@ type ApiLecture = Omit<LectureDTO, "chapterList" | "localMaterialFile"> & {
   chapterList: ApiChapter[];
 };
 
-function logFormData(fd: FormData, label: string) {
-  // 업로드 전 실제 FormData 구성 확인
-  console.groupCollapsed(`[${label}] FormData entries`);
-  for (const [k, v] of fd.entries()) {
-    if (v instanceof File) console.log(`  - ${k}`, v);
-    else console.log(`  - ${k}:`, v);
+async function logFormData(fd: FormData, label: string) {
+  console.groupCollapsed(`[${label}] entries (deep)`);
+  for (const [key, value] of fd.entries()) {
+    if (value instanceof File) {
+      // File: 이름/타입/크기 먼저
+      console.log(
+        `- ${key}: File(name="${value.name}", type="${value.type}", size=${value.size}B)`
+      );
+      // 만약 텍스트/JSON 파일이면 내용도 미리보기 (큰 파일 주의)
+      if (value.type.includes("json") || value.type.startsWith("text/")) {
+        try {
+          const txt = await value.text();
+          try {
+            console.log(`  ${key} (parsed JSON):`, JSON.parse(txt));
+          } catch {
+            console.log(`  ${key} (text):`, txt);
+          }
+        } catch {}
+      }
+    } else if (value instanceof Blob) {
+      // Blob: 타입/크기 출력
+      console.log(`- ${key}: Blob(type="${value.type}", size=${value.size}B)`);
+      // JSON Blob이면 내용 파싱
+      if (value.type === "application/json") {
+        try {
+          const txt = await value.text();
+          console.log(`  ${key} (parsed JSON):`, JSON.parse(txt));
+        } catch {
+          // 혹시 파싱 실패 시 원문 출력
+          try {
+            const txt = await value.text();
+            console.log(`  ${key} (text):`, txt);
+          } catch {}
+        }
+      }
+    } else {
+      // 일반 문자열/숫자 등
+      console.log(`- ${key}:`, value);
+    }
   }
   console.groupEnd();
 }
@@ -185,30 +218,32 @@ async function createCourse(
   images: CourseImagesRaw
 ): Promise<{ courseId: number | null; message?: string }> {
   const fd = buildCourseCreateFormData(info, images);
-  logFormData(fd, "createCourse");
+  await logFormData(fd, "createCourse");
   console.log("[createCourse] POST /course/courses");
 
-  const res = await restClient.post("/course/courses", fd, {
-    requireAuth: true,
-  });
-  console.log("[createCourse] 응답:", res.status, res.data);
+  try {
+    console.log(fd);
+    const res = await restClient.post("/course/courses", fd, {
+      requireAuth: true,
+    });
+    console.log("[createCourse] 응답:", res.status, res.data);
 
-  if (res.status !== 200) {
-    return { courseId: null, message: extractServerMessage(res.data) };
+    if (res.status !== 200) {
+      return { courseId: null, message: extractServerMessage(res.data) };
+    }
+
+    const rawId = res.data.data.courseId;
+    const courseId = Number(rawId);
+
+    if (rawId == null)
+      return { courseId: null, message: "courseId를 찾지 못했습니다." };
+
+    console.log("[createCourse] 완료, courseId =", courseId);
+    return { courseId };
+  } catch (e) {
+    console.log(e);
+    return;
   }
-
-  const rawId =
-    res.data?.data?.courseId ??
-    res.data?.data?.id ??
-    res.data?.courseId ??
-    res.data?.id;
-
-  if (rawId == null)
-    return { courseId: null, message: "courseId를 찾지 못했습니다." };
-
-  const courseId = Number(rawId);
-  console.log("[createCourse] 완료, courseId =", courseId);
-  return { courseId };
 }
 
 // 403/404/409 등 재시도 업로더 (커밋/권한/가시성 이슈 케이스)
@@ -219,7 +254,7 @@ async function uploadLecturesWithRetry(
     maxRetries = 5,
     initialDelayMs = 300,
     backoff = 1.8,
-    endpoint = "/api/v1/course/lecture", // 실제 라우팅에 맞게 교체 가능
+    endpoint = "/course/lecture", // 실제 라우팅에 맞게 교체 가능
   }: {
     maxRetries?: number;
     initialDelayMs?: number;
@@ -261,6 +296,7 @@ async function uploadLecturesWithRetry(
       console.log("[uploadLectures] 비정상 status:", res.status, res.data);
       return { ok: false, message: msg };
     } catch (err) {
+      console.log(err);
       const ax = err as AxiosLikeError;
       const sc = ax.response?.status;
       const msg = extractServerMessage(ax.response?.data);
@@ -317,10 +353,13 @@ export function useSubmitCourse() {
       });
 
       // 1) 강좌 생성 (커밋 완료 후 ID 반환)
+      console.log(`args: ${JSON.stringify(args)}`);
       const { courseId, message: createMsg } = await createCourse(
         args.requestCourseInfo,
         args.imagesRaw
       );
+
+      console.log(courseId);
       if (!courseId) {
         console.error("[submitAll] 코스 생성 실패:", createMsg);
         return { success: false, errorMessage: createMsg ?? "코스 생성 실패" };
@@ -339,7 +378,7 @@ export function useSubmitCourse() {
             maxRetries: 5,
             initialDelayMs: 300,
             backoff: 1.8,
-            endpoint: "/api/v1/course/lecture", // 실제 서버 라우팅에 맞게
+            endpoint: "/course/lecture", // 실제 서버 라우팅에 맞게
           }
         );
         if (!ok) {
@@ -364,6 +403,7 @@ export function useSubmitCourse() {
       const sc = ax.response?.status;
       const msg = extractServerMessage(ax.response?.data);
 
+      console.log(err);
       // 에러 상세 콘솔
       console.group("[submitAll] 요청 오류");
       console.log("status:", sc);

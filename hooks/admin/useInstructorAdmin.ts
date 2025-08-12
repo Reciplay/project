@@ -136,12 +136,16 @@ export default function useInstructorAdmin() {
     setDetailLoading(true);
     setDetail(null);
     try {
+      console.log(instructorId);
       const res = await restClient.get<ApiResponse<InstructorDetail>>(
         "/course/admin/instructor",
         { params: { instructorId }, requireAuth: true }
       );
+
+      console.log(res.data.data);
       setDetail(res.data.data);
-    } catch {
+    } catch (e) {
+      console.log(e);
       setDetail(null);
     } finally {
       setDetailLoading(false);
@@ -169,10 +173,11 @@ export default function useInstructorAdmin() {
         );
 
         console.log("승인 처리 결과:", res.status);
-        console.log(123);
+        console.log(res);
         await fetchLists(); // 처리 후 목록 갱신
         setModalOpen(false);
-      } catch {
+      } catch (e) {
+        console.log(e);
         alert("승인 처리에 실패했습니다.");
       }
     },
