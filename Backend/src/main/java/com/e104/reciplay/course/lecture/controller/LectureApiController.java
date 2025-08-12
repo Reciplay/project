@@ -138,10 +138,15 @@ public class LectureApiController {
             MultipartHttpServletRequest multipartRequest,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        log.info("lectureRegisterRequests: {}", lectureRegisterRequests);
+        log.debug("lectureRegisterRequests: {}", lectureRegisterRequests);
         // 우선, 파일과 강의 정보를 묶어야 한다.
         List<LectureRequest> requests = lectureManagementService.groupLectureAndMaterial(lectureRegisterRequests, multipartRequest);
+        log.debug("강의 데이터와 강의 자료를 묶음: {}", requests);
+
         CourseTerm term = lectureManagementService.registerLectures(requests, courseId, userDetails.getUsername());
+
+        log.debug("강의 기간 : {}", term);
+
         courseManagementService.setCourseTerm(term, courseId);
 
         return CommonResponseBuilder.create("강의 등록에 성공했습니다.", null);

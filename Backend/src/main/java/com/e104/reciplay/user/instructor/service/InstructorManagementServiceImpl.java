@@ -35,6 +35,7 @@ public class InstructorManagementServiceImpl implements InstructorManagementServ
     @Override
     @Transactional
     public void registerInstructor(Long userId, InstructorApplicationRequest request, MultipartFile instructorBannerImage) {
+        if(instructorQueryService.queryInstructorByUserId(userId) != null) throw new IllegalArgumentException("강사 등록 신청이 이미 존재합니다.");
         Instructor instructor = new Instructor(request, userId);
         log.debug("입력하게 될 강사 엔티티 {}", instructor);
         instructorRepository.save(instructor);

@@ -140,9 +140,11 @@ public class LectureManagementServiceImpl implements LectureManagementService{
             throw new InvalidUserRoleException("오직 해당 강좌 강사만 강의를 등록할 수 있습니다.");
         }
 
+        log.debug("강의 업로드");
         // 강의 먼저 저장함.
         List<Lecture> lectures = requests.stream().map(r -> new Lecture(r, courseId)).toList();
         lectureRepository.saveAll(lectures);
+        log.debug("강의들을 저장함.");
         List<Long> lectureIds = lectures.stream().map(Lecture::getId).toList();
 
         LocalDate startDate = requests.get(0).getRequest().getStartedAt().toLocalDate();
@@ -164,7 +166,7 @@ public class LectureManagementServiceImpl implements LectureManagementService{
             startDate = (startDate.isAfter(lectureStartDate)) ? lectureStartDate : startDate;
             endDate = (endDate.isBefore(lectureEndDate)) ? lectureEndDate : endDate;
         }
-
+        log.debug("챕터 메니지먼트 호출.");
         chapterManagementService.registChaptersWithTodos(requests, lectureIds);
 
         return new CourseTerm(startDate, endDate);
