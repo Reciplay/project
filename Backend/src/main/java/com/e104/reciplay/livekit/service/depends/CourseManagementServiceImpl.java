@@ -1,16 +1,25 @@
 package com.e104.reciplay.livekit.service.depends;
 
+import com.e104.reciplay.admin.service.MessageManagementService;
+import com.e104.reciplay.common.exception.InvalidUserRoleException;
 import com.e104.reciplay.course.courses.dto.request.RequestCourseInfo;
 import com.e104.reciplay.course.courses.service.CanLearnManagementService;
 import com.e104.reciplay.course.courses.service.SubFileMetadataManagementService;
 import com.e104.reciplay.course.courses.service.SubFileMetadataQueryService;
 import com.e104.reciplay.course.lecture.dto.response.CourseTerm;
+import com.e104.reciplay.entity.Category;
 import com.e104.reciplay.entity.Course;
 import com.e104.reciplay.entity.FileMetadata;
+import com.e104.reciplay.entity.Instructor;
 import com.e104.reciplay.repository.CourseRepository;
 import com.e104.reciplay.s3.enums.FileCategory;
 import com.e104.reciplay.s3.enums.RelatedType;
 import com.e104.reciplay.s3.service.S3Service;
+import com.e104.reciplay.user.profile.service.CategoryQueryService;
+import com.e104.reciplay.user.profile.service.LevelManagementService;
+import com.e104.reciplay.user.profile.service.LevelManagementServiceImpl;
+import com.e104.reciplay.user.security.domain.User;
+import com.e104.reciplay.user.security.service.UserQueryService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -30,6 +40,16 @@ public class CourseManagementServiceImpl implements CourseManagementService{
     private final CourseQueryService courseQueryService;
     private final SubFileMetadataQueryService subFileMetadataQueryService;
     private final SubFileMetadataManagementService subFileMetadataManagementService;
+    private final InstructorQueryService instructorQueryService;
+    private final UserQueryService userQueryService;
+    private final MessageManagementService messageManagementService;
+    private final CategoryQueryService categoryQueryService;
+    private final LevelManagementService levelManagementService;
+
+    private final String COURSE_CLOSE_MESSAGE = """
+            [%s] 강좌가 종료되었습니다.
+            %s 분야 레벨이 %d 향상되었습니다.
+            """;
 
     @Override
     @Transactional
@@ -108,5 +128,35 @@ public class CourseManagementServiceImpl implements CourseManagementService{
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강좌 ID 입니다."));
         course.setCourseStartDate(term.getStartDate());
         course.setCourseEndDate(term.getEndDate());
+    }
+
+    @Override
+    @Transactional
+    public void closeCourse(Long courseId, String email) {
+        log.debug("closeCourse 호출됨.");
+        Course course = courseQueryService.queryCourseById(courseId);
+        Instructor instructor = instructorQueryService.queryInstructorById(course.getInstructorId());
+        User user = userQueryService.queryUserById(instructor.getUserId());
+        log.debug("course, instructor, user 조회.");
+        if(!email.equals(user.getEmail())) {
+            throw new InvalidUserRoleException("오직 강의의 강사만 종료시킬 수 있습니다.");
+        }
+        if(course.getCourseEndDate().isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("아직 종료일이 지나지 않았습니다.");
+        }
+
+        List<User> students = courseQueryService.queryCourseUsers(courseId);
+        for(User student : students) {
+            log.debug("학생 {} 처리 중", student.getEmail());
+            int levelDiff = courseQueryService.calcLevelAmount(courseId, student.getEmail());
+            Category category = categoryQueryService.queryCategoryById(course.getCategoryId());
+            log.debug("      {} 분야 레벨 {} 상승", category.getName(), levelDiff);
+            levelManagementService.increaseLevelOf(category.getId(), student.getId(), levelDiff);
+            log.debug("      메세지 전송함.");
+            // 메세지 보내기
+            messageManagementService.createMessage(instructor.getUserId(), student.getId(), COURSE_CLOSE_MESSAGE.formatted(
+                    course.getTitle(), category.getName(),levelDiff
+            ));
+        }
     }
 }
