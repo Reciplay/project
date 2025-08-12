@@ -1,0 +1,40 @@
+.tabBar {
+  display: flex;
+  gap: 18px;
+  border-bottom: 1px solid #e9ecef;
+  padding: 8px 0;
+  margin-top: 12px;
+}
+
+.tab {
+  position: relative;
+  padding: 10px 6px;
+  color: #868e96;
+  font-weight: 600;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &.active {
+    color: #212529;
+  }
+  &.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -9px;
+    height: 2px;
+    background: #212529;
+  }
+}
+
+.panel {
+  padding-top: 16px;
+}
+.sectionTitle {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 8px 0 12px;
+}

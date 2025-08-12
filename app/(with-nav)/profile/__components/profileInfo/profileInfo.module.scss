@@ -1,0 +1,60 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+  padding: 2rem;
+  position: relative;
+}
+
+/* 상단 제목 + 버튼 */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.heading {
+  font-size: 2.4rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+}
+
+.editButton {
+  font-size: 1.4rem;
+  background-color: #f1f1f1;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  border: 1px solid #ccc;
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  letter-spacing: var(--letter-spacing-tight);
+
+  .title {
+    font-size: 2rem;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .value {
+    font-size: 1.6rem;
+    font-weight: var(--font-weight-regular);
+  }
+
+  input,
+  select {
+    font-size: 1.6rem;
+    padding: 0.6rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: inherit;
+  }
+}

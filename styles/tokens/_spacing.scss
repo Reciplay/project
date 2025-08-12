@@ -1,0 +1,30 @@
+:root {
+  /* 스케일 (0.4rem = 4px ~ 6.4rem = 64px) */
+  --spacing-xxs: 0.4rem;
+  --spacing-xs: 0.8rem;
+  --spacing-sm: 1.2rem;
+  --spacing-md: 1.6rem;
+  --spacing-lg: 2.4rem;
+  --spacing-xl: 3.2rem;
+  --spacing-2xl: 4.8rem;
+  --spacing-3xl: 6.4rem;
+
+  /* 의미 기반 별칭 */
+  --spacing-section-padding: var(--spacing-3xl);
+  --spacing-card-padding: var(--spacing-lg);
+  --spacing-button-padding-x: var(--spacing-md);
+  --spacing-button-padding-y: var(--spacing-sm);
+  --spacing-input-padding-x: var(--spacing-md);
+  --spacing-input-padding-y: var(--spacing-sm);
+
+  --spacing-grid-gap: var(--spacing-lg);
+  --spacing-list-gap: var(--spacing-md);
+}
+
+/* 모바일에서 간격 축소 */
+@media (max-width: 480px) {
+  :root {
+    --spacing-section-padding: var(--spacing-2xl);
+    --spacing-card-padding: var(--spacing-md);
+  }
+}

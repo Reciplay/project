@@ -1,0 +1,46 @@
+.tabContainer {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  border-bottom: 1px solid #e6e6e6;
+  padding: 8px 0;
+  position: sticky; /* 선택: 상단 고정 원하면 */
+  top: 0; /* 헤더가 있으면 값 조정 */
+  background: #fff; /* sticky일 때 배경 필요 */
+  z-index: 5;
+}
+
+.tab {
+  font-size: 2rem;
+  position: relative;
+  padding: 10px 4px;
+  color: #8a8a8a;
+  font-weight: 600;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  .underline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -9px;
+    height: 2px;
+    background: #111;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+
+  &.active {
+    color: #111;
+    .underline {
+      transform: scaleX(1);
+    }
+  }
+
+  &:hover {
+    color: #333;
+  }
+}

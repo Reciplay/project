@@ -1,0 +1,95 @@
+.datePickerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+}
+
+.datePickerInput {
+  width: 30rem;
+  border: 1px #aaaaaa solid !important;
+  border-radius: 8px;
+
+  &::placeholder {
+    font-size: 16px !important;
+    padding: 0;
+  }
+
+
+
+  // .MuiOutlinedInput-root {
+  //   border-radius: 8px;
+  //   background-color: #fff;
+  //   font-size: 16px !important;
+  // }
+}
+
+.calendarIconButton {
+  min-width: unset;
+  padding: 0;
+
+  // .MuiSvgIcon-root {
+  //   // color: #757575;
+  // }
+}
+
+.datePickerPopover {
+  .MuiPaper-root {
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    // padding: 24px;
+    min-width: 300px;
+  }
+}
+
+.popoverContent {
+  display: flex;
+  flex-direction: column;
+  // gap: 16px;
+}
+
+.popoverHeader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // gap: 12px;
+  // font-size: 20px;
+  font-weight: 600;
+  color: #212121;
+}
+
+// :global(.css-1dune0f-MuiInputBase-input-MuiOutlinedInput-input) {
+//   font-size: 16px;
+// }
+
+.monthGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  justify-items: center;
+}
+
+.monthButton {
+  // width: 120px;
+  border-radius: 8px;
+  padding: 12px 0;
+  font-size: 24px;
+  font-weight: 500;
+  color: #333;
+  background-color: transparent;
+  text-transform: none;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #f1f3f5;
+  }
+
+  &.selected {
+    background-color: #3f51b5;
+    color: white;
+
+    &:hover {
+      background-color: #303f9f;
+    }
+  }
+}

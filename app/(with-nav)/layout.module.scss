@@ -1,0 +1,16 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  // height: 100vh;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+}
+
+.main {
+  margin: 24px 40px;
+  width: calc(100vw - 260px);
+  // overflow: hidden;
+}

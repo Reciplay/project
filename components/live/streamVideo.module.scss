@@ -1,0 +1,6 @@
+.invisibleCanvas {
+  display: none; // 또는 visibility: hidden;
+}
+.videoContainer {
+  transform: scaleX(-1);
+}
