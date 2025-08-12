@@ -17,4 +17,5 @@ public interface InstructorQueryService {
 
     InstructorStat queryInstructorStatistic(Long instructorId);
 
+    Instructor queryInstructorByUserId(Long userId);
 }

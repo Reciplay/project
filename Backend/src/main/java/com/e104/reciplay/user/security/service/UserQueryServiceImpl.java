@@ -54,4 +54,9 @@ public class UserQueryServiceImpl implements UserQueryService{
         return userRepository.findByNameAndBirthDate(name, birthDay).stream().map(User::getEmail).toList();
     }
 
+    @Override
+    public User queryUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("존재하지 않는 회원입니다."));
+    }
+
 }

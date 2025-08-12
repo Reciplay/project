@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface InstructorRepository extends JpaRepository<Instructor, Long>, CustomInstructorRepository {
     Optional<Instructor> findByUserId(Long userId);
-    Optional<Instructor> findById(Long id);
+
+    boolean existsByUserId(Long userId);
 
 }
