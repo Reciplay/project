@@ -1,12 +1,12 @@
 
+import { recognizeGesture } from "@/components/live/gestureRecognizer";
 import VideoSection from "@/components/live/videoSection";
 import useLivekitConnection from "@/hooks/live/useLivekitConnection";
+import { RoomInfo, SendChapterIssueArgs } from "@/hooks/live/useLiveSocket";
+import { Client } from "@stomp/stompjs";
 import { getSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { recognizeGesture } from "@/components/live/gestureRecognizer";
 import { useCallback, useEffect, useRef, useState } from "react";
-import useLiveSocket, { RoomInfo, SendChapterIssueArgs } from "@/hooks/live/useLiveSocket";
-import { Client } from "@stomp/stompjs";
 
 type instructorPageProps  = {
     stompClient : Client;
@@ -15,7 +15,7 @@ type instructorPageProps  = {
     roomInfo : RoomInfo,
 }
 
-export default function VideoView(props) {
+export default function VideoView(props:any) {
     const params = useParams();
     const courseId = params.courseId as string;
     const lectureId = params.lectureId as string;

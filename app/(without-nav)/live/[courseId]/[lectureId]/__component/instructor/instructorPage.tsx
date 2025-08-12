@@ -1,67 +1,43 @@
 "use client";
 
-import styles from "./instructorPage.module.scss";
-import Header from "../common/header/header";
-import TodoListCard from "../common/todoList/todoListCard";
-import { useParams } from "next/navigation";
+import { recognizeGesture } from "@/components/live/gestureRecognizer";
 import VideoSection from "@/components/live/videoSection";
 import useLivekitConnection from "@/hooks/live/useLivekitConnection";
-import { getSession } from "next-auth/react";
-import { recognizeGesture } from "@/components/live/gestureRecognizer";
-import { useCallback, useEffect, useRef, useState, useMemo } from "react";
-// import useLiveSocket, { RoomInfo, SendChapterIssueArgs } from "@/hooks/live/useLiveSocket";
-// import { useMemo } from 'react';
-// import TodoListCardTimeline from '@/app/(without-nav)/live/[courseId]/[lectureId]/__component/common/todoList/todoListCard';
-// import useLiveSocket from '@/hooks/useLiveSocket';
-// import type { ChapterCard } from '@/types/yourTypes'; // 실제 경로로 수정
+import useLiveSocket from "@/hooks/live/useLiveSocket";
+import { useSession } from "next-auth/react";
+import { useParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Header from "../common/header/header";
+import type { ChapterCard } from "../common/todoList/todoListCard"; // 실제 경로로 수정
+import TodoListCard from "../common/todoList/todoListCard";
+import styles from "./instructorPage.module.scss";
 
-// type ServerTodoItem = {
-//   title: string;
-//   type: 'NORMAL' | 'TIMER';
-//   seconds: number | null;
-//   sequence: number;
-// };
+type ServerTodoItem = {
+  title: string;
+  type: 'NORMAL' | 'TIMER';
+  seconds: number | null;
+  sequence: number;
+};
 
-// type ChapterTodoResponse = {
-//   type?: 'chapter-issue';
-//   chapterId: number;
-//   chapterSequence: number;
-//   chapterName: string;
-//   numOfTodos: number;
-//   todos: ServerTodoItem[];
-// };
+type ChapterTodoResponse = {
+  type?: 'chapter-issue';
+  chapterId: number;
+  chapterSequence: number;
+  chapterName: string;
+  numOfTodos: number;
+  todos: ServerTodoItem[];
+};
 
-// export default function InstructorPage() {
-//   const { todo /* string */, /* ... */ } = useLiveSocket(courseId, lectureId, 'instructor');
 
-//   // 수정된 부분: 서버 문자열 -> ChapterCard로 파싱해서 메모이즈
-//   const parsedChapterCard = useMemo<ChapterCard | undefined>(() => {
-//     if (!todo) return undefined;
-//     try {
-//       const data = JSON.parse(todo) as ChapterTodoResponse;
-//       return {
-//         chapterId: data.chapterId,
-//         chapterSequence: data.chapterSequence,
-//         chapterName: data.chapterName,
-//         numOfTodos: data.numOfTodos,
-//         todos: data.todos.map((t) => ({
-//           title: t.title,
-//           type: t.type,
-//           seconds: t.seconds ?? null,
-//           sequence: t.sequence,
-//         })),
-//       };
-//     } catch {
-//       return undefined;
-//     }
-//   }, [todo]); // 수정된 부분
 
 
 export default function InstructorPage() {
+  const { data: session } = useSession();
+
   const params = useParams();
   const courseId = params.courseId as string;
   const lectureId = params.lectureId as string;
-  const { roomId, socket, stompClient, sendChapterIssue, roomInfo, todo, setTodo } = useLiveSocket(courseId, lectureId, "instructor");
+  const { roomId, stompClient, sendChapterIssue, roomInfo, todo, setTodo } = useLiveSocket(courseId, lectureId, "instructor");
 
 
   const { joinRoom, leaveRoom, localTrack, remoteTracks } =
@@ -74,9 +50,10 @@ export default function InstructorPage() {
   // 페이지 로드 시 역할 적용
   useEffect(() => {
     const fetchSession = async () => {
-      const session = await getSession();
-      setRole(session?.role);
-      setUserId(session?.user.id);
+      const roleFromSession = session?.role ?? session?.role ?? null;
+      setRole(roleFromSession as string | null);
+      const uid = session?.user?.id ?? "";
+      setUserId(uid); // 수정된 부분
     };
 
     fetchSession();
@@ -91,6 +68,29 @@ export default function InstructorPage() {
       leaveRoom();
     };
   }, [courseId, lectureId, role]);
+
+  
+
+const parsedChapterCard = useMemo<ChapterCard | undefined>(() => {
+    // todo가 객체이며, chapterId 속성을 가지고 있는지 확인
+    if (!todo || typeof todo !== 'object' || !('chapterId' in todo)) {
+        return undefined;
+    }
+
+    const data = todo as ChapterTodoResponse; // todo는 이미 객체이므로 바로 사용
+    return {
+        chapterId: data.chapterId,
+        chapterSequence: data.chapterSequence,
+        chapterName: data.chapterName,
+        numOfTodos: data.numOfTodos,
+        todos: data.todos.map((t) => ({
+            title: t.title,
+            type: t.type,
+            seconds: t.seconds ?? null,
+            sequence: t.sequence,
+        })),
+    };
+}, [todo]);
 
 
   const [handGesture, setHandGesture] = useState("");
@@ -126,15 +126,19 @@ export default function InstructorPage() {
 
 
 
-  const lastGestureSended = useRef(0)
   useEffect(() => {
-    const now = Date.now()
-    const issuer = roomInfo?.email
+    // 수정된 부분: 필요한 값이 전부 준비되지 않았으면 조기 리턴
+    if (!stompClient || !roomInfo?.email || !roomId) {
+      // 아직 연결/세션 정보가 준비되지 않았음
+      return;
+    }
+    // const now = Date.now()
+    const issuer: string = roomInfo?.email ?? "";
     // if (now - lastGestureSended.current > 2000) {
     //   lastGestureSended.current = now
       if (recognizedPose === 'Clap') {
         console.log('박수실행됨==================================')
-        sendChapterIssue(stompClient, {
+        sendChapterIssue(stompClient!, {
           type: "chapter-issue",
           issuer: issuer,
           lectureId: Number(lectureId),
@@ -211,8 +215,14 @@ export default function InstructorPage() {
             </div>
           </div>
         </div>
-        <div className={styles.checklistSection}>
-          <TodoListCard
+        <div className={styles.checklistSection}> 
+        {parsedChapterCard ? (
+        <TodoListCard chapterCard={parsedChapterCard} />
+          ) : (
+          <div>
+            <p>챕터 정보를 기다리고 있습니다...</p>
+          </div>
+          )}  <TodoListCard
             chapterCard={parsedChapterCard}
           />
         </div>

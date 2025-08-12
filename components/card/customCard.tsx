@@ -92,7 +92,7 @@ export default function CustomCard({ data, type, onClick }: CardProps) {
               <span className={styles.live}>Live</span>
               <span className={styles.dot}>•</span>
               <span className={styles.viewers}>
-                {data.viewerCount.toLocaleString()}명 시청 중
+                {data?.viewerCount.toLocaleString()}명 시청 중
               </span>
             </>
           ) : (

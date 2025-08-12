@@ -1,10 +1,10 @@
 "use client";
 
-import { LocalVideoTrack, RemoteVideoTrack } from "livekit-client";
-import { memo, useEffect, useRef, useState } from "react";
-import { Landmark } from "@mediapipe/tasks-vision";
-import styles from "./streamVideo.module.scss";
 import { useVideoUtil } from "@/hooks/live/useVideoUtil";
+import { Landmark } from "@mediapipe/tasks-vision";
+import { LocalVideoTrack, RemoteVideoTrack } from "livekit-client";
+import { memo } from "react";
+import styles from "./streamVideo.module.scss";
 
 interface StreamVideoProps {
   track: LocalVideoTrack | RemoteVideoTrack;
@@ -19,7 +19,7 @@ const StreamVideo = memo(function StreamVideo({
   onNodesDetected,
   setGesture,
 }: StreamVideoProps) {
-  const { videoRef, canvasRef, landmarksData } = useVideoUtil(
+  const { videoRef, canvasRef} = useVideoUtil(
     track,
     onNodesDetected,
     setGesture

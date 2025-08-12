@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { Timeline, Empty, Card } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
-import { useLiveStore } from '@/stores/liveStore';
+import { Card, Empty, Timeline } from 'antd';
 import type { TimelineItemProps } from 'antd/es/timeline/TimelineItem';
+import { useEffect, useMemo } from 'react';
 
 type TodoType = 'NORMAL' | 'TIMER'
 
@@ -15,8 +14,8 @@ type TodoItem = {
   sequence: number;
 };
 
-type ChapterCard = {
-  chapterId: number;           // 서버 응답에 있음
+export type ChapterCard = {
+  chapterId: number;
   chapterSequence: number;
   chapterName: string;
   numOfTodos: number;
@@ -33,7 +32,7 @@ const formatSeconds = (seconds?: number | null) => {
     return m > 0 ? `${m}분 ${s}초` : `${s}초`;
 };
 
-export default function TodoListCardTimeline(props: TodoListCardProps) {
+export default function TodoListCard(props: TodoListCardProps) {
 
     useEffect(() => {
         console.log(props)

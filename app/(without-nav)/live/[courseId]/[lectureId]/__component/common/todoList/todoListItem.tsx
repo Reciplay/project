@@ -1,7 +1,6 @@
 // components/TodoListItem.tsx
-import React from 'react';
-import { Timeline } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
+import { Timeline } from 'antd';
 import styles from './todoListCard.module.scss';
 
 interface TodoListItemProps {
