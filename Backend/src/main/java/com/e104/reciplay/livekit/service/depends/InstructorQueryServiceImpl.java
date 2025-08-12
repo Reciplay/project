@@ -72,7 +72,7 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
         InstructorProfile instructorProfile = new InstructorProfile();
 
         // 강사 프로필 이미지 찾기
-        FileMetadata instructorProfileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructorId, "user_profile");
+        FileMetadata instructorProfileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructor.getUserId(), "user_profile");
         ResponseFileInfo instructorProfileFileInfo = s3Service.getResponseFileInfo(instructorProfileMetadata);
 
         // 강사 배너 이미지 찾기
@@ -160,24 +160,10 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
             log.debug("해당 강사의 이름 조회 후 subscriptionInfo에 대입");
             item.setInstructorName(instructorRepository.findNameById(s.getInstructorId()));
             log.debug("해당 강사의 구독자 수 조회 후 subscriptionInfo에 대입");
-//            item.setSubscriberCount(subscriptionHistoryService.querySubscriberCount(s.getInstructorId()));
+            item.setSubscriberCount(subscriptionHistoryService.querySubscriberCount(s.getInstructorId()));
+
+            subscribedInstructorItems.add(item);
         }
-
-
-//            FileMetadata fileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructorUserId, "user_profile");
-//            log.debug("해당 강사의 responseFIleInfo 생성");
-//            ResponseFileInfo responseFileInfo = s3Service.getResponseFileInfo(fileMetadata);
-//            subscriptionInfo.setInstructorProfileFileInfo(responseFileInfo);
-//
-//            subscriptionInfo.setInstructorId(s.getInstructorId());
-//            log.debug("해당 강사의 이름 조회 후 subscriptionInfo에 대입");
-////            subscriptionInfo.setInstructorName(instructorQueryService.queryNameByInstructorId(s.getInstructorId()));
-//            subscriptionInfo.setInstructorName(instructorRepository.findNameById(s.getInstructorId()));
-//            log.debug("해당 강사의 구독자 수 조회 후 subscriptionInfo에 대입");
-//            subscriptionInfo.setSubscriberCount(subscriptionHistoryQueryService.querySubscriberCount(s.getInstructorId()));
-//
-//            subscriptionInfos.add(subscriptionInfo);
-
-        return null;
+        return subscribedInstructorItems;
     }
 }
