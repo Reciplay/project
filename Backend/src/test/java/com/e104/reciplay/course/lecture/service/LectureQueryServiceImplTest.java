@@ -70,10 +70,10 @@ class LectureQueryServiceImplTest {
     @BeforeEach
     void setUp() {
         // 사용자, 강사, 강좌, 강의, 챕터, 할일, 수강기록, 파일메타데이터 등 테스트 데이터 설정
-        User instructorUser = userRepository.save(User.builder().nickname("강사").email("instructor@test.com").role("ROLE_INSTRUCTOR").build());
-        student = userRepository.save(User.builder().nickname("학생").email("student@test.com").role("ROLE_STUDENT").build());
+        User instructorUser = userRepository.save(User.builder().isActivated(true).nickname("강사").email("instructor@test.com").role("ROLE_INSTRUCTOR").build());
+        student = userRepository.save(User.builder().isActivated(true).nickname("학생").email("student@test.com").role("ROLE_STUDENT").build());
 
-        Instructor instructor = instructorRepository.save(Instructor.builder().userId(instructorUser.getId()).isApproved(true).build());
+        Instructor instructor = instructorRepository.save(Instructor.builder().isApproved(true).userId(instructorUser.getId()).isApproved(true).build());
         course = courseRepository.save(Course.builder().instructorId(instructor.getId()).title("테스트 강좌").build());
 
         lecture1 = lectureRepository.save(Lecture.builder().courseId(course.getId()).title("강의 1").summary("요약 1").sequence(1).build());

@@ -45,8 +45,8 @@ class QnaQueryServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        user = User.builder().email("test@mail.com").nickname("testUser").build();
-        user2 = User.builder().email("test2@mail.com").nickname("testUser2").build();
+        user = User.builder().email("test@mail.com").nickname("testUser").isActivated(true).build();
+        user2 = User.builder().email("test2@mail.com").nickname("testUser2").isActivated(true).build();
         userRepository.saveAll(List.of(user, user2));
 
         course = Course.builder().instructorId(user.getId())
@@ -105,5 +105,12 @@ class QnaQueryServiceImplTest {
         QnaDetail qnaDetail = qnaQueryService.queryQnaDetail(question.getId());
         assertThat(qnaDetail.getTitle()).isEqualTo(question.getTitle());
         assertThat(qnaDetail.getQuestionContent()).isEqualTo(question.getQuestionContent());
+    }
+
+    @AfterEach
+    void cleanUp() {
+        questionRepository.deleteAll();
+        courseRepository.deleteAll();
+        userRepository.deleteAll();
     }
 }

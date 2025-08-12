@@ -64,8 +64,8 @@ class ReviewQueryServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        user1 = User.builder().nickname("user1").email("user1@test.com").password("password").build();
-        user2 = User.builder().nickname("user2").email("user2@test.com").password("password").build();
+        user1 = User.builder().nickname("user1").isActivated(true).email("user1@test.com").password("password").build();
+        user2 = User.builder().nickname("user2").isActivated(true).email("user2@test.com").password("password").build();
         userRepository.saveAll(List.of(user1, user2));
 
         course1 = Course.builder().title("Test Course1")

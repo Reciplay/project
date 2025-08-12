@@ -42,6 +42,7 @@ class ZzimManagementServiceImplTest {
                 .email("test@test.com")
                 .password("password")
                 .nickname("testUser")
+                .isActivated(true)
                 .build();
         userRepository.save(testUser);
 

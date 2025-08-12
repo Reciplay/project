@@ -65,7 +65,7 @@ class QnaManagementServiceImplTest {
 
     @Test
     public void Qna_등록_성공() {
-        user = User.builder().email("test@mail.com").build();
+        user = User.builder().email("test@mail.com").isActivated(true).build();
         userRepository.save(user);
 
         Instructor instructor = instructorRepository.save(
@@ -95,7 +95,7 @@ class QnaManagementServiceImplTest {
 
     @Test
     public void Qna_답변_등록_성공() {
-        User user = User.builder().email("test@mail.com").build();
+        User user = User.builder().isActivated(true).email("test@mail.com").build();
         userRepository.save(user);
         Instructor instructor = instructorRepository.save(
                 Instructor.builder()
@@ -128,7 +128,7 @@ class QnaManagementServiceImplTest {
 
     @Test
     public void Qna_답변_등록_실패_권한없음() {
-        User user = User.builder().email("test@mail.com").build();
+        User user = User.builder().isActivated(true).email("test@mail.com").build();
         userRepository.save(user);
         Instructor instructor1 = instructorRepository.save(
                 Instructor.builder()
@@ -138,7 +138,7 @@ class QnaManagementServiceImplTest {
         );
 
 
-        User user2 = User.builder().email("test2@mail.com").build();
+        User user2 = User.builder().isActivated(true).email("test2@mail.com").build();
         userRepository.save(user2);
 
         Instructor instructor2 = instructorRepository.save(
@@ -171,7 +171,7 @@ class QnaManagementServiceImplTest {
 
     @Test
     public void Qna_답변_등록_실패_이미_답변이_존재함() {
-        User user = User.builder().email("test@mail.com").build();
+        User user = User.builder().isActivated(true).email("test@mail.com").build();
         userRepository.save(user);
 
         Instructor instructor = instructorRepository.save(
@@ -206,7 +206,7 @@ class QnaManagementServiceImplTest {
 
     @Test
     public void Qna_답변_등록_실패_존재하지_않는_질문() {
-        User user = User.builder().email("test@mail.com").build();
+        User user = User.builder().isActivated(true).email("test@mail.com").build();
         userRepository.save(user);
 
         Instructor instructor = instructorRepository.save(
@@ -230,7 +230,7 @@ class QnaManagementServiceImplTest {
 
     @Test
     public void Qna_수정_성공() {
-        User user = User.builder().email("test@mail.com").build();
+        User user = User.builder().isActivated(true).email("test@mail.com").build();
         userRepository.save(user);
 
         Instructor instructor = instructorRepository.save(
@@ -263,9 +263,9 @@ class QnaManagementServiceImplTest {
 
     @Test
     public void Qna_수정_실패_질문_작성자가_아님() {
-        User user = User.builder().email("test@mail.com").build();
+        User user = User.builder().isActivated(true).email("test@mail.com").build();
         userRepository.save(user);
-        User otherUser = User.builder().email("other@mail.com").build();
+        User otherUser = User.builder().isActivated(true).email("other@mail.com").build();
         userRepository.save(otherUser);
 
         Course course = Course.builder().instructorId(user.getId())
@@ -290,7 +290,7 @@ class QnaManagementServiceImplTest {
 
     @Test
     public void Qna_수정_실패_종료된_강좌() {
-        User user = User.builder().email("test@mail.com").build();
+        User user = User.builder().isActivated(true).email("test@mail.com").build();
         userRepository.save(user);
 
         Course course = Course.builder().instructorId(user.getId()).isApproved(true)
@@ -313,7 +313,7 @@ class QnaManagementServiceImplTest {
 
     @Test
     public void Qna_수정_실패_이미_답변이_달린_질문() {
-        User user = User.builder().email("test@mail.com").build();
+        User user = User.builder().isActivated(true).email("test@mail.com").build();
         userRepository.save(user);
 
         Course course = Course.builder().instructorId(user.getId())
@@ -341,7 +341,7 @@ class QnaManagementServiceImplTest {
 
     @Test
     public void Qna_삭제_성공_학생() {
-        User student = User.builder().email("student@mail.com").build();
+        User student = User.builder().isActivated(true).email("student@mail.com").build();
         userRepository.save(student);
 
         Course course = Course.builder().instructorId(123L)
@@ -366,7 +366,7 @@ class QnaManagementServiceImplTest {
 
     @Test
     public void Qna_삭제_성공_강사() {
-        User instUser = User.builder().email("instructor@mail.com").build();
+        User instUser = User.builder().isActivated(true).email("instructor@mail.com").build();
         userRepository.save(instUser);
         Instructor instructor = instructorRepository.save(
                 Instructor.builder()
@@ -391,7 +391,7 @@ class QnaManagementServiceImplTest {
 
     @Test
     public void Qna_답변_수정_성공() {
-        User instUser = User.builder().email("instructor@mail.com").build();
+        User instUser = User.builder().isActivated(true).email("instructor@mail.com").build();
         userRepository.save(instUser);
         Instructor instructor = instructorRepository.save(
                 Instructor.builder()
