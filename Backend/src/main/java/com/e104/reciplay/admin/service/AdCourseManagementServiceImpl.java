@@ -32,12 +32,7 @@ public class AdCourseManagementServiceImpl implements AdCourseManagementService{
         }
 
         String content;
-        Long instructorUserId = null;
-        try {
-            Instructor instructor = instructorQueryService.queryInstructorById(approvalInfo.getInstructorId());
-        } catch(Exception e) {
-            log.debug("강좌 수락/거절에서 강사 조회에 실패함. 강사 아이디가 없음 {}", e.getMessage());
-        }
+        Long instructorUserId = instructorQueryService.queryInstructorById(approvalInfo.getInstructorId()).getUserId();
 
         if(approvalInfo.getIsApprove()) {
             courseRepository.updateCourseApprovalById(approvalInfo.getCourseId());
