@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +26,7 @@ import java.util.List;
 @Tag(name = "강사 관련 API", description = "강사에 대한 데이터를 조회하거나 강사 데이터 수정을 위한 API를 제공합니다.")
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("/api/v1/user/instructor")
 public class InstructorApiController {
 
@@ -69,6 +71,8 @@ public class InstructorApiController {
             @RequestPart("coverImage") MultipartFile instructorBannerImage,
             @RequestPart("instructorProfile") InstructorApplicationRequest request
     ) {
+        log.debug("강사 등록 API 요청 데이터 {}", request);
+        log.debug("요청자 {}", AuthenticationUtil.getSessionUsername());
         String email = AuthenticationUtil.getSessionUsername();
         Long userId = userQueryService.queryUserByEmail(email).getId();
         instructorManagementService.registerInstructor(userId, request, instructorBannerImage);
