@@ -64,7 +64,7 @@ public class InstructorManagementServiceImpl implements InstructorManagementServ
 
         log.debug("자격증 목록 {}", licenseItems);
         for(LicenseItem license : licenseItems){
-            if(license.getLicneseId() == null || licenseQueryService.queryLicenseById(license.getLicneseId()) == null ){
+            if(license.getLicenseId() == null || licenseQueryService.queryLicenseById(license.getLicenseId()) == null ){
                 log.debug("자격증 정보에서 이상이 있습니다. 해당 자격증 등록은 무시됩니다. {}", license);
                 continue; // 다음 for문 진행
             }
