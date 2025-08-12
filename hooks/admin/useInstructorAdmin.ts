@@ -1,11 +1,10 @@
 // hooks/admin/useInstructorAdmin.ts
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
 import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
 import { InstructorDetail, InstructorSummary } from "@/types/instructor";
-import { sample } from "lodash";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export const sampleInstructorSummaries: InstructorSummary[] = [
   {
