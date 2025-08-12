@@ -36,9 +36,9 @@ public class InstructorManagementServiceImpl implements InstructorManagementServ
     @Transactional
     public void registerInstructor(Long userId, InstructorApplicationRequest request, MultipartFile instructorBannerImage) {
         Instructor instructor = new Instructor(request, userId);
+        log.debug("입력하게 될 강사 엔티티 {}", instructor);
         instructorRepository.save(instructor);
         createCommonInstructorInfo(instructor.getId(), instructorBannerImage,request.getCareers(),request.getLicenses());
-
     }
 
     @Override
@@ -62,20 +62,22 @@ public class InstructorManagementServiceImpl implements InstructorManagementServ
             log.warn("S3 업로드 과정에서 문제가 발생했습니다. : {}", e.getMessage());
         }
 
+        log.debug("자격증 목록 {}", licenseItems);
         for(LicenseItem license : licenseItems){
             if(license.getLicneseId() == null || licenseQueryService.queryLicenseById(license.getLicneseId()) == null ){
-                log.warn("자격증 정보에서 이상이 있습니다. 해당 자격증 등록은 무시됩니다.");
+                log.debug("자격증 정보에서 이상이 있습니다. 해당 자격증 등록은 무시됩니다. {}", license);
                 continue; // 다음 for문 진행
             }
             InstructorLicense instructorLicense = new InstructorLicense(license, instructorId);
             instructorLicenseManagementService.saveInstructorLicense(instructorLicense);
         }
 
+        log.debug("경력 목록 {}", careerItems);
         for(CareerItem item : careerItems){
             // companyName이 비어있거나 null인 경우 예외 처리 후 다음 반복
             if (item.getCompanyName() == null || item.getCompanyName().trim().isEmpty()) {
                 // 로그 남기기
-                log.warn("경력 정보에서 companyName이 없습니다. 해당 경력 등록은 무시됩니다.");
+                log.warn("경력 정보에서 companyName이 없습니다. 해당 경력 등록은 무시됩니다. {}", item);
                 continue; // 다음 for문 진행
             }
             Career career = new Career(item, instructorId);
