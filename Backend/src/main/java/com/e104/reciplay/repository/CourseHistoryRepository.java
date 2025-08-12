@@ -4,6 +4,7 @@ import com.e104.reciplay.entity.CourseHistory;
 import com.e104.reciplay.repository.custom.CustomCourseHistoryRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -12,4 +13,6 @@ public interface CourseHistoryRepository extends JpaRepository<CourseHistory, Lo
     Long countByCourseId(Long courseId);
 
     Optional<CourseHistory> findByCourseIdAndUserId(Long courseId, Long userId);
+
+    List<CourseHistory> findByCourseId(Long courseId);
 }

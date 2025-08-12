@@ -5,11 +5,13 @@ import com.e104.reciplay.course.courses.service.CanLearnQueryService;
 import com.e104.reciplay.course.courses.service.SubFileMetadataQueryService;
 import com.e104.reciplay.course.courses.service.ZzimQueryService;
 import com.e104.reciplay.entity.Course;
+import com.e104.reciplay.entity.CourseHistory;
 import com.e104.reciplay.entity.FileMetadata;
 import com.e104.reciplay.entity.Instructor;
 import com.e104.reciplay.repository.CourseRepository;
 import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import com.e104.reciplay.s3.service.S3Service;
+import com.e104.reciplay.user.lecture_history.service.PersonalStatService;
 import com.e104.reciplay.user.profile.service.CategoryQueryService;
 import com.e104.reciplay.user.review.service.ReviewQueryService;
 import com.e104.reciplay.user.security.domain.User;
@@ -37,6 +39,7 @@ public class CourseQueryServiceImpl implements CourseQueryService{
     private final S3Service s3Service;
     private final InstructorQueryService instructorQueryService;
     private final UserQueryService userQueryService;
+    private final PersonalStatService personalStatService;
 
     @Override
     public Course queryCourseById(Long id) {
@@ -155,5 +158,19 @@ public class CourseQueryServiceImpl implements CourseQueryService{
         courseDetail.setCourseCoverFileInfo(courseCoverFileInfo);
 
         return courseDetail;
+    }
+
+    @Override
+    public List<User> queryCourseUsers(Long courseId) {
+        return courseHistoryQueryService.queryCourseHistories(courseId).stream().map(
+                c -> userQueryService.queryUserById(c.getUserId())
+        ).toList();
+    }
+
+    @Override
+    public int calcLevelAmount(Long courseId, String email) {
+        double progress = personalStatService.calcCourseProgress(courseId, email);
+        Course course = this.queryCourseById(courseId);
+        return (int)((course.getLevel() * progress) * 0.1);
     }
 }

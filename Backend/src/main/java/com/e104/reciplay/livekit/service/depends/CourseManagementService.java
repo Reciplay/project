@@ -19,4 +19,6 @@ public interface CourseManagementService {
 
     void setCourseTerm(CourseTerm term, Long courseId);
 
+    void closeCourse(Long courseId, String email);
+
 }

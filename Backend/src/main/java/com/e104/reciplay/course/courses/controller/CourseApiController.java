@@ -11,6 +11,7 @@ import com.e104.reciplay.course.courses.service.CourseCardQueryService;
 import com.e104.reciplay.livekit.service.depends.CourseManagementService;
 import com.e104.reciplay.livekit.service.depends.CourseQueryService;
 import com.e104.reciplay.livekit.service.depends.InstructorQueryService;
+import com.e104.reciplay.user.security.dto.CustomUserDetails;
 import com.e104.reciplay.user.security.service.UserQueryService;
 import com.e104.reciplay.user.security.util.AuthenticationUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -88,7 +90,6 @@ public class CourseApiController {
     @Operation(summary = "강좌 상세 정보 조회  API", description = "강좌 상세 정보 조회")
     public ResponseEntity<ResponseRoot<CourseDetail>> getCourseDetail(
             @RequestParam Long courseId
-
     ){
         log.debug("강좌 상세 API 요청됨 ");
         log.debug("요청 데이터 {}", courseId);
@@ -114,13 +115,12 @@ public class CourseApiController {
             @RequestPart RequestCourseInfo requestCourseInfo,
             @RequestPart List<MultipartFile> thumbnailImages,
             @RequestPart MultipartFile courseCoverImage
-
     ){
         log.debug("강좌 수정 API 요청됨 ");
         log.debug("요청 데이터 {}", requestCourseInfo);
         String email = AuthenticationUtil.getSessionUsername();
         log.debug("요청 사용자 {}", email);
-        
+
         Long courseId = courseManagementService.updateCourseByCourseId(requestCourseInfo, thumbnailImages, courseCoverImage);
 
         return CommonResponseBuilder.success("강좌 정보 수정에 성공하였습니다.", new CourseIdResponse(courseId));
@@ -150,4 +150,18 @@ public class CourseApiController {
         return CommonResponseBuilder.success("강좌 등록에 성공하였습니다.", new CourseIdResponse(courseId));
     }
     record CourseIdResponse(Long courseId) {}
+
+    @DeleteMapping("")
+    @ApiResponse(responseCode = "200", description = "성공적으로 강좌를 종료함.")
+    @ApiResponse(responseCode = "400", description = "강좌가 없거나 아직 종료일이 아님.")
+    public ResponseEntity<ResponseRoot<Object>> closeCourse(
+            @RequestParam(name = "courseId") Long courseId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+            ) {
+        log.debug("강좌 종료 API 호출, 데이터 {}", courseId);
+        log.debug("강좌 종료 API 호출, 사용자 {}", userDetails);
+
+
+        return CommonResponseBuilder.success("강좌 종료에 성공하였습니다.", null);
+    }
 }

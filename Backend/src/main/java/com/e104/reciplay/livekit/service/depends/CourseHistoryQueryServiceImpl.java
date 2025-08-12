@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -26,5 +28,10 @@ public class CourseHistoryQueryServiceImpl implements CourseHistoryQueryService{
     public CourseHistory queryCourseHistory(Long courseId, Long userId) {
         return courseHistoryRepository.findByCourseIdAndUserId(courseId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 수강 이력이 없습니다."));
+    }
+
+    @Override
+    public List<CourseHistory> queryCourseHistories(Long courseId) {
+        return courseHistoryRepository.findByCourseId(courseId);
     }
 }
