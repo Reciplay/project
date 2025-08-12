@@ -67,8 +67,12 @@ public class CourseCardQueryServiceImpl implements CourseCardQueryService{
                 } else {
                     fileMetadata = subFileMetadataQueryService.queryMetadataByCondition(c.getId(), "THUMBNAIL");
                 }
+                try {
+                    card.setResponseFileInfo(s3Service.getResponseFileInfo(fileMetadata));
+                } catch(Exception e) {
+                    log.debug("파일 조회에 오류가 발생. 없는 파일 같아요 {}", e.getMessage());
+                }
 
-                card.setResponseFileInfo(s3Service.getResponseFileInfo(fileMetadata));
                 cards.add(card);
             }
         return PagedResponse.from(page, cards);
