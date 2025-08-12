@@ -127,4 +127,10 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
         instructorStat.setTotalStudents(totalStudents);
         return  instructorStat;
     }
+
+    @Override
+    public Instructor queryInstructorByUserId(Long userId) {
+        return instructorRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("강사로 등록되지 않은 회원입니다."));
+    }
 }

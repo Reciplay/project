@@ -41,6 +41,10 @@ public class CourseDetail {
     private Boolean isReviwed; // 해당 사용자가 해당 강좌에 리뷰를 작성하였는지
     private List<String> canLearns; //이런걸 배울 수 있어요
     //private List<LectureSummary> lectureSummaryList;
+    private String instructorName;
+    private String instructorEmail;
+    private String instructorNickname;
+
 
     public CourseDetail(Course course) {
         this.title = course.getTitle();//

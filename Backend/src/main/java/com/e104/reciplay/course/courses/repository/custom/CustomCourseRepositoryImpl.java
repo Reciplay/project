@@ -1,9 +1,11 @@
 package com.e104.reciplay.course.courses.repository.custom;
 
+import com.e104.reciplay.admin.dto.response.AdCourseSummary;
 import com.e104.reciplay.entity.*;
 import com.e104.reciplay.user.security.domain.QUser;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -281,6 +283,36 @@ public class CustomCourseRepositoryImpl implements CustomCourseRepository{
                 .fetchOne();
 
         return new PageImpl<>(content, pageable, totalL == null ? 0L : totalL);
+    }
+
+    @Override
+    public List<AdCourseSummary> findAdCourseSummariesByIsApprove(Boolean isApproved) {
+        var query = queryFactory
+                .select(Projections.constructor(
+                        AdCourseSummary.class,
+                        course.id,          // courseId
+                        user.name,          // instructorName
+                        course.title,       // title
+                        course.registeredAt // registeredAt
+                ))
+                .from(course)
+                .join(instructor).on(course.instructorId.eq(instructor.id))
+                .join(user).on(instructor.userId.eq(user.id))
+                // 필요 시 삭제된 코스 제외:
+                // .where(course.isDeleted.isFalse())
+                ;
+        return query
+                .orderBy(course.registeredAt.desc()) // 최신 등록순
+                .fetch();
+    }
+
+    @Override
+    public void updateCourseApprovalById(Long courseId) {
+        queryFactory
+                .update(course)
+                .set(course.isApproved, true)
+                .where(course.id.eq(courseId))
+                .execute();
     }
 
     /** 여러 조건 and 결합 (null 무시) */

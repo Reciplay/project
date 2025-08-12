@@ -47,7 +47,7 @@ public class CourseApiController {
     public ResponseEntity<ResponseRoot<PagedResponse<CourseCard>>> getCourseCardsPage(
             @ModelAttribute CourseCardCondition courseCardCondition,
             @PageableDefault(page = 0, size = 10, sort = "courseStartDate", direction = Sort.Direction.DESC) Pageable pageable
-            ) {
+        ) {
         String email = AuthenticationUtil.getSessionUsername();
         Long userId = userQueryService.queryUserByEmail(email).getId();
         PagedResponse<CourseCard> pagedResponse = courseCardQueryService.queryCardsByCardCondtion(courseCardCondition, pageable, userId);

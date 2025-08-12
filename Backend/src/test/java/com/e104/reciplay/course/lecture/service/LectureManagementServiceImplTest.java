@@ -78,7 +78,8 @@ class LectureManagementServiceImplTest {
                 .password("password")
                 .build();
         userRepository.save(otherUser);
-
+        instructorRepository.save(Instructor.builder().userId(otherUser.getId())
+                .isApproved(true).build());
         // 테스트용 강사 생성 및 저장
         instructor = Instructor.builder()
                 .userId(instructorUser.getId())
@@ -88,7 +89,7 @@ class LectureManagementServiceImplTest {
 
         // 테스트용 강좌 생성 및 저장
         course = Course.builder()
-                .instructorId(instructorUser.getId())
+                .instructorId(instructor.getId())
                 .title("테스트 강좌")
                 .isApproved(true)
                 .isDeleted(false)

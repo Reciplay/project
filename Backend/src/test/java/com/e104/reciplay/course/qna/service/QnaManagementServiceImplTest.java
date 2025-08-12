@@ -10,9 +10,11 @@ import com.e104.reciplay.course.qna.exception.CanNotAnswerException;
 import com.e104.reciplay.course.qna.exception.EnrollmentHistoryNotFoundException;
 import com.e104.reciplay.entity.Course;
 import com.e104.reciplay.entity.CourseHistory;
+import com.e104.reciplay.entity.Instructor;
 import com.e104.reciplay.entity.Question;
 import com.e104.reciplay.repository.CourseHistoryRepository;
 import com.e104.reciplay.repository.CourseRepository;
+import com.e104.reciplay.repository.InstructorRepository;
 import com.e104.reciplay.repository.QuestionRepository;
 import com.e104.reciplay.user.security.domain.User;
 import com.e104.reciplay.user.security.repository.UserRepository;
@@ -48,6 +50,10 @@ class QnaManagementServiceImplTest {
     @Autowired
     private QuestionRepository questionRepository;
 
+    @Autowired
+    private InstructorRepository instructorRepository;
+
+
     private User user;
 
     private MockedStatic<AuthenticationUtil> authenticationUtilMockedStatic;
@@ -62,7 +68,14 @@ class QnaManagementServiceImplTest {
         user = User.builder().email("test@mail.com").build();
         userRepository.save(user);
 
-        Course course = Course.builder().instructorId(user.getId())
+        Instructor instructor = instructorRepository.save(
+                Instructor.builder()
+                        .userId(user.getId())
+                        .isApproved(true)
+                        .build()
+        );
+
+        Course course = Course.builder().instructorId(instructor.getId())
                 .title("강의 1").courseEndDate(LocalDate.now().plusYears(1)).isApproved(true)
                 .courseStartDate(LocalDate.now().minusDays(1)).build();
         courseRepository.save(course);
@@ -84,8 +97,15 @@ class QnaManagementServiceImplTest {
     public void Qna_답변_등록_성공() {
         User user = User.builder().email("test@mail.com").build();
         userRepository.save(user);
+        Instructor instructor = instructorRepository.save(
+                Instructor.builder()
+                        .userId(user.getId())
+                        .isApproved(true)
+                        .build()
+        );
 
-        Course course = Course.builder().instructorId(user.getId())
+
+        Course course = Course.builder().instructorId(instructor.getId())
                 .title("강의 1").courseEndDate(LocalDate.now().plusYears(1)).isApproved(true)
                 .courseStartDate(LocalDate.now().minusDays(1)).build();
         courseRepository.save(course);
@@ -110,11 +130,25 @@ class QnaManagementServiceImplTest {
     public void Qna_답변_등록_실패_권한없음() {
         User user = User.builder().email("test@mail.com").build();
         userRepository.save(user);
+        Instructor instructor1 = instructorRepository.save(
+                Instructor.builder()
+                        .userId(user.getId())
+                        .isApproved(true)
+                        .build()
+        );
+
 
         User user2 = User.builder().email("test2@mail.com").build();
         userRepository.save(user2);
 
-        Course course = Course.builder().instructorId(user.getId())
+        Instructor instructor2 = instructorRepository.save(
+                Instructor.builder()
+                        .userId(user2.getId())
+                        .isApproved(true)
+                        .build()
+        );
+
+        Course course = Course.builder().instructorId(instructor1.getId())
                 .title("강의 1").courseEndDate(LocalDate.now().plusYears(1)).isApproved(true)
                 .courseStartDate(LocalDate.now().minusDays(1)).build();
         courseRepository.save(course);
@@ -140,7 +174,14 @@ class QnaManagementServiceImplTest {
         User user = User.builder().email("test@mail.com").build();
         userRepository.save(user);
 
-        Course course = Course.builder().instructorId(user.getId())
+        Instructor instructor = instructorRepository.save(
+                Instructor.builder()
+                        .userId(user.getId())
+                        .isApproved(true)
+                        .build()
+        );
+
+        Course course = Course.builder().instructorId(instructor.getId())
                 .title("강의 1").courseEndDate(LocalDate.now().plusYears(1)).isApproved(true)
                 .courseStartDate(LocalDate.now().minusDays(1)).build();
         courseRepository.save(course);
@@ -168,7 +209,14 @@ class QnaManagementServiceImplTest {
         User user = User.builder().email("test@mail.com").build();
         userRepository.save(user);
 
-        Course course = Course.builder().instructorId(user.getId())
+        Instructor instructor = instructorRepository.save(
+                Instructor.builder()
+                        .userId(user.getId())
+                        .isApproved(true)
+                        .build()
+        );
+
+        Course course = Course.builder().instructorId(instructor.getId())
                 .title("강의 1").courseEndDate(LocalDate.now().plusYears(1)).isApproved(true)
                 .courseStartDate(LocalDate.now().minusDays(1)).build();
         courseRepository.save(course);
@@ -185,7 +233,14 @@ class QnaManagementServiceImplTest {
         User user = User.builder().email("test@mail.com").build();
         userRepository.save(user);
 
-        Course course = Course.builder().instructorId(user.getId())
+        Instructor instructor = instructorRepository.save(
+                Instructor.builder()
+                        .userId(user.getId())
+                        .isApproved(true)
+                        .build()
+        );
+
+        Course course = Course.builder().instructorId(instructor.getId())
                 .title("강의 1").courseEndDate(LocalDate.now().plusYears(1)).isApproved(true)
                 .courseStartDate(LocalDate.now().minusDays(1)).build();
         courseRepository.save(course);
@@ -311,8 +366,14 @@ class QnaManagementServiceImplTest {
 
     @Test
     public void Qna_삭제_성공_강사() {
-        User instructor = User.builder().email("instructor@mail.com").build();
-        userRepository.save(instructor);
+        User instUser = User.builder().email("instructor@mail.com").build();
+        userRepository.save(instUser);
+        Instructor instructor = instructorRepository.save(
+                Instructor.builder()
+                        .userId(instUser.getId())
+                        .isApproved(true)
+                        .build()
+        );
 
         Course course = Course.builder().instructorId(instructor.getId()).isApproved(true)
                 .title("강의 1").courseEndDate(LocalDate.now().plusYears(1))
@@ -323,15 +384,22 @@ class QnaManagementServiceImplTest {
 
         authenticationUtilMockedStatic.when(AuthenticationUtil::getSessionUserAuthority).thenReturn("ROLE_INSTRUCTOR");
 
-        qnaManagementService.deleteQna(question.getId(), course.getId(), instructor.getEmail());
+        qnaManagementService.deleteQna(question.getId(), course.getId(), instUser.getEmail());
 
         assertThat(questionRepository.findById(question.getId())).isEmpty();
     }
 
     @Test
     public void Qna_답변_수정_성공() {
-        User instructor = User.builder().email("instructor@mail.com").build();
-        userRepository.save(instructor);
+        User instUser = User.builder().email("instructor@mail.com").build();
+        userRepository.save(instUser);
+        Instructor instructor = instructorRepository.save(
+                Instructor.builder()
+                        .userId(instUser.getId())
+                        .isApproved(true)
+                        .build()
+        );
+
 
         Course course = Course.builder().instructorId(instructor.getId()).isApproved(true)
                 .title("강의 1").courseEndDate(LocalDate.now().plusYears(1))
@@ -341,10 +409,10 @@ class QnaManagementServiceImplTest {
         Question question = questionRepository.save(Question.builder().title("질문 1").questionContent("질문 내용").courseId(course.getId()).build());
 
         QnaAnswerRequest answerRequest = new QnaAnswerRequest(question.getId(), course.getId(), "최초 답변");
-        qnaManagementService.registerAnswer(answerRequest, instructor.getEmail());
+        qnaManagementService.registerAnswer(answerRequest, instUser.getEmail());
 
         QnaAnswerRequest updateAnswerRequest = new QnaAnswerRequest(question.getId(), course.getId(), "수정된 답변");
-        qnaManagementService.updateAnswer(updateAnswerRequest, instructor.getEmail());
+        qnaManagementService.updateAnswer(updateAnswerRequest, instUser.getEmail());
 
         Question updatedQuestion = questionRepository.findById(question.getId()).get();
         assertThat(updatedQuestion.getAnswerContent()).isEqualTo("수정된 답변");

@@ -6,11 +6,14 @@ import com.e104.reciplay.course.courses.service.SubFileMetadataQueryService;
 import com.e104.reciplay.course.courses.service.ZzimQueryService;
 import com.e104.reciplay.entity.Course;
 import com.e104.reciplay.entity.FileMetadata;
+import com.e104.reciplay.entity.Instructor;
 import com.e104.reciplay.repository.CourseRepository;
 import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import com.e104.reciplay.s3.service.S3Service;
 import com.e104.reciplay.user.profile.service.CategoryQueryService;
 import com.e104.reciplay.user.review.service.ReviewQueryService;
+import com.e104.reciplay.user.security.domain.User;
+import com.e104.reciplay.user.security.service.UserQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,9 @@ public class CourseQueryServiceImpl implements CourseQueryService{
     private final ZzimQueryService zzimQueryService;
     private final CourseHistoryQueryService courseHistoryQueryService;
     private final S3Service s3Service;
+    private final InstructorQueryService instructorQueryService;
+    private final UserQueryService userQueryService;
+
     @Override
     public Course queryCourseById(Long id) {
         return courseRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강좌 ID 입니다."));
@@ -65,6 +71,13 @@ public class CourseQueryServiceImpl implements CourseQueryService{
         courseDetail.setIsEnrolled(isEnrolled);
         courseDetail.setIsReviwed(isReviewed);
 
+        Instructor instructor = instructorQueryService.queryInstructorById(course.getInstructorId());
+        User user = userQueryService.queryUserById(instructor.getUserId());
+        courseDetail.setInstructorEmail(user.getEmail());
+        courseDetail.setInstructorName(user.getName());
+        courseDetail.setInstructorNickname(user.getNickname());
+
+
         return courseDetail;
     }
 
@@ -75,7 +88,10 @@ public class CourseQueryServiceImpl implements CourseQueryService{
 
     @Override
     public Boolean isInstructorOf(Long userId, Long courseId) {
-        return this.queryCourseById(courseId).getInstructorId().equals(userId);
+        Instructor instructor = instructorQueryService.queryInstructorByUserId(userId);
+        return this.queryCourseById(courseId).getInstructorId().equals(
+                instructor.getId()
+        );
 
     }
 

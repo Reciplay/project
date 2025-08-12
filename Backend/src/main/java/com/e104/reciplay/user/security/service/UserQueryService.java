@@ -14,5 +14,7 @@ public interface UserQueryService {
 
     List<String> queryEmailsByNameAndBirthDay(String name, LocalDate birthDay);
 
+    User queryUserById(Long id);
+
 
 }

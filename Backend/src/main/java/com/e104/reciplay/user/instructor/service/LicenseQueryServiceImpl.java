@@ -1,5 +1,6 @@
 package com.e104.reciplay.user.instructor.service;
 
+import com.e104.reciplay.admin.dto.response.AdLicenseInfo;
 import com.e104.reciplay.entity.License;
 import com.e104.reciplay.repository.LicenseRepository;
 import com.e104.reciplay.user.instructor.dto.request.LicenseSummary;
@@ -21,4 +22,5 @@ public class LicenseQueryServiceImpl implements LicenseQueryService {
     public License queryLicenseById(Long id) {
         return licenseRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당하는 자격증 ID가 없습니다."));
     }
+
 }

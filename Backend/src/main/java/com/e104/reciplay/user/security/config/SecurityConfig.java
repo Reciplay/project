@@ -111,6 +111,7 @@ public class SecurityConfig {
                         "/api-docs/json/**",  // openapi v3 문서 경로 허용
                         "/swagger-resources/**",
                         URL_PREFIX + "/livekit/**",
+                        URL_PREFIX + "/v1/course/courses/**",
                         "/api/test/course/courses/lectures").permitAll()
                 .requestMatchers(HttpMethod.GET,
                         URL_PREFIX + "/user/auth/email",
