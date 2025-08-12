@@ -63,13 +63,15 @@ public class CourseQueryServiceImpl implements CourseQueryService{
     public CourseDetail queryCourseDetailByCourseId(Long courseId, Long userId) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강좌 ID 입니다."));
         CourseDetail courseDetail = this.collectCourseDetailWithCommonFields(course);
-        Boolean isZzimed = zzimQueryService.isZzimed(courseId, userId);
-        Boolean isEnrolled = courseHistoryQueryService.enrolled(courseId, userId);
-        Boolean isReviewed = reviewQueryService.isReviewed(courseId, userId);
-
-        courseDetail.setIsZzimed(isZzimed);
-        courseDetail.setIsEnrolled(isEnrolled);
-        courseDetail.setIsReviwed(isReviewed);
+        if(userId != null) {
+            courseDetail.setIsZzimed(zzimQueryService.isZzimed(courseId, userId));
+            courseDetail.setIsEnrolled(courseHistoryQueryService.enrolled(courseId, userId));
+            courseDetail.setIsReviwed(reviewQueryService.isReviewed(courseId, userId));
+        } else {
+            courseDetail.setIsZzimed(false);
+            courseDetail.setIsEnrolled(false);
+            courseDetail.setIsReviwed(false);
+        }
 
         Instructor instructor = instructorQueryService.queryInstructorById(course.getInstructorId());
         User user = userQueryService.queryUserById(instructor.getUserId());
@@ -124,14 +126,27 @@ public class CourseQueryServiceImpl implements CourseQueryService{
         String category = categoryQueryService.queryNameByCourseId(courseId);
 
         //5. 해당 강좌의 섬네일들과 커버이미지 조회
-        List<FileMetadata> thumbnails = subFileMetadataQueryService.queryMetadataListByCondition(courseId, "thumbnail");
-        FileMetadata courseCover = subFileMetadataQueryService.queryMetadataByCondition(courseId, "course_cover");
+        List<FileMetadata> thumbnails = List.of();
+        FileMetadata courseCover = null;
+        try {
+            thumbnails = subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAIL");
+            courseCover = subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER");
+        } catch (Exception e) {
+            log.debug("이미지 파일을 찾지 못했습니다.");
+        }
         // 해당 강좌의 썸네일과 커버이미지 ResponseFileInfo  조회
         List<ResponseFileInfo> thumbnailFileInfos = new ArrayList<>();
         for(FileMetadata data : thumbnails){
             thumbnailFileInfos.add(s3Service.getResponseFileInfo(data));
         }
-        ResponseFileInfo courseCoverFileInfo = s3Service.getResponseFileInfo(courseCover);
+
+        ResponseFileInfo courseCoverFileInfo = null;
+
+        try {
+            courseCoverFileInfo = s3Service.getResponseFileInfo(courseCover);
+        } catch (Exception e) {
+            log.debug("강좌 커버 이미지를 찾지 못했습니다.");
+        }
 
         courseDetail.setCanLearns(canLearns);
         courseDetail.setReviewCount(reviewCount);
