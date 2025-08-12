@@ -300,6 +300,7 @@ public class CustomCourseRepositoryImpl implements CustomCourseRepository{
                 .from(course)
                 .join(instructor).on(course.instructorId.eq(instructor.id))
                 .join(user).on(instructor.userId.eq(user.id))
+                .where(course.isApproved.eq(isApproved))
                 // 필요 시 삭제된 코스 제외:
                 // .where(course.isDeleted.isFalse())
                 ;
