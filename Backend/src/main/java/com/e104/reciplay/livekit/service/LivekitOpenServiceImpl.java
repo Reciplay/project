@@ -1,19 +1,20 @@
 package com.e104.reciplay.livekit.service;
 
+import com.e104.reciplay.common.exception.InvalidUserRoleException;
 import com.e104.reciplay.course.lecture.service.LectureQueryService;
-import com.e104.reciplay.entity.Course;
-import com.e104.reciplay.entity.Instructor;
-import com.e104.reciplay.entity.Lecture;
-import com.e104.reciplay.entity.LiveRoom;
+import com.e104.reciplay.entity.*;
+import com.e104.reciplay.livekit.dto.request.CloseLiveRequest;
 import com.e104.reciplay.livekit.dto.response.LivekitTokenResponse;
 import com.e104.reciplay.livekit.exception.CanNotOpenLiveRoomException;
 import com.e104.reciplay.livekit.exception.CanNotParticipateInLiveRoomException;
 import com.e104.reciplay.livekit.redis.RoomRedisService;
 import com.e104.reciplay.livekit.service.depends.*;
+import com.e104.reciplay.repository.LectureHistoryRepository;
 import com.e104.reciplay.user.security.domain.User;
 import com.e104.reciplay.user.security.service.UserQueryService;
 import com.e104.reciplay.user.security.util.AuthenticationUtil;
 import io.livekit.server.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +39,8 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
     private final BlacklistQueryService blacklistQueryService;
     private final LiveRoomQueryService liveRoomQueryService;
     private final RoomRedisService roomRedisService;
+
+    private final LectureHistoryRepository lectureHistoryRepository;
 
     @Value("${livekit.api.key}")
     private String LIVEKIT_API_KEY;
@@ -167,6 +170,40 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
         }
         User user = userQueryService.queryUserByEmail(AuthenticationUtil.getSessionUsername());
         return new LivekitTokenResponse(token.toJwt(), roomName, user.getNickname(), user.getEmail(), lectureId);
+    }
+
+    @Override
+    @Transactional
+    public void closeLiveRoom(CloseLiveRequest request, String email) {
+        Lecture lecture = lectureQueryService.queryLectureById(request.getLectureId());
+        User user = userQueryService.queryUserByEmail(email);
+        log.debug("lecture, user를 조회함.");
+        try {
+            if (!courseQueryService.isInstructorOf(user.getId(), lecture.getCourseId())) {
+                throw new InvalidUserRoleException("오직 강의의 강사만 라이브를 종료할 수 있습니다.");
+            }
+        } catch (Exception e) {
+            throw new InvalidUserRoleException("오직 강의의 강사만 라이브를 종료할 수 있습니다.");
+        }
+        log.debug("Redis 서비스 호출.");
+        roomRedisService.deleteRoom(lecture.getTitle(), lecture.getId());
+
+        log.debug("데이터 베이스에서 제거");
+        LiveRoom liveRoom = liveRoomQueryService.queryLiveRoomByLectureId(request.getLectureId());
+        List<LiveParticipation> participation = liveRoomManagementService.closeLiveRoom(liveRoom);
+
+        List<LectureHistory> histories = participation.stream().map(
+                p -> {
+                    LectureHistory history = new LectureHistory();
+                    User tu = userQueryService.queryUserByEmail(p.getEmail());
+                    history.setUserId(tu.getId());
+                    history.setLectureId(lecture.getId());
+                    history.setAttendedAt(LocalDateTime.now());
+                    return history;
+                }
+        ).toList();
+        log.debug("참여 이력을 수강 이력 테이블에 저장합니다.");
+        lectureHistoryRepository.saveAll(histories);
     }
 
     public String getRoomIdOf(Long lectureId, boolean instructor) {

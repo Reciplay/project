@@ -1,16 +1,21 @@
 package com.e104.reciplay.livekit.service.depends;
 
+import com.e104.reciplay.admin.service.MessageManagementService;
+import com.e104.reciplay.common.exception.InvalidUserRoleException;
 import com.e104.reciplay.course.courses.dto.request.RequestCourseInfo;
 import com.e104.reciplay.course.courses.service.CanLearnManagementService;
 import com.e104.reciplay.course.courses.service.SubFileMetadataManagementService;
 import com.e104.reciplay.course.courses.service.SubFileMetadataQueryService;
 import com.e104.reciplay.course.lecture.dto.response.CourseTerm;
-import com.e104.reciplay.entity.Course;
-import com.e104.reciplay.entity.FileMetadata;
+import com.e104.reciplay.entity.*;
 import com.e104.reciplay.repository.CourseRepository;
 import com.e104.reciplay.s3.enums.FileCategory;
 import com.e104.reciplay.s3.enums.RelatedType;
 import com.e104.reciplay.s3.service.S3Service;
+import com.e104.reciplay.user.profile.service.CategoryQueryService;
+import com.e104.reciplay.user.profile.service.LevelManagementService;
+import com.e104.reciplay.user.security.domain.User;
+import com.e104.reciplay.user.security.service.UserQueryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -26,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,6 +48,12 @@ class CourseManagementServiceImplTest {
     @Mock private CourseQueryService courseQueryService;
     @Mock private SubFileMetadataQueryService subFileMetadataQueryService;
     @Mock private SubFileMetadataManagementService subFileMetadataManagementService;
+    @Mock private InstructorQueryService instructorQueryService;
+    @Mock private UserQueryService userQueryService;
+    @Mock private MessageManagementService messageManagementService;
+    @Mock private CategoryQueryService categoryQueryService;
+    @Mock private LevelManagementService levelManagementService;
+
 
     @InjectMocks
     private CourseManagementServiceImpl service;
@@ -265,6 +277,111 @@ class CourseManagementServiceImplTest {
             CourseTerm term = new CourseTerm(LocalDate.now(), LocalDate.now().plusDays(7));
 
             assertThrows(IllegalArgumentException.class, () -> service.setCourseTerm(term, 999L));
+        }
+    }
+
+    @Nested
+    class CloseCourse {
+
+        private Course course;
+        private Instructor instructor;
+        private User instructorUser;
+        private final Long courseId = 1L;
+        private final Long instructorId = 10L;
+        private final Long instructorUserId = 100L;
+        private final String instructorEmail = "instructor@test.com";
+
+        @BeforeEach
+        void setUp() {
+            course = new Course();
+            course.setId(courseId);
+            course.setInstructorId(instructorId);
+            course.setCategoryId(5L);
+            course.setTitle("테스트 강좌");
+
+            instructor = new Instructor();
+            instructor.setId(instructorId);
+            instructor.setUserId(instructorUserId);
+
+            instructorUser = User.builder()
+                    .id(instructorUserId)
+                    .email(instructorEmail)
+                    .build();
+        }
+
+        @Test
+        @DisplayName("강좌 종료 성공: 수강생 레벨업 및 메시지 전송")
+        void closeCourse_success() {
+            // given
+            course.setCourseEndDate(LocalDate.now().minusDays(1)); // 종료일 지남
+            User student1 = User.builder().id(201L).email("s1@test.com").build();
+            User student2 = User.builder().id(202L).email("s2@test.com").build();
+            Category category = new Category(5L, "요리");
+
+            when(courseQueryService.queryCourseById(courseId)).thenReturn(course);
+            when(instructorQueryService.queryInstructorById(instructorId)).thenReturn(instructor);
+            when(userQueryService.queryUserById(instructorUserId)).thenReturn(instructorUser);
+            when(courseQueryService.queryCourseUsers(courseId)).thenReturn(List.of(student1, student2));
+            when(courseQueryService.calcLevelAmount(eq(courseId), anyString())).thenReturn(10);
+            when(categoryQueryService.queryCategoryById(5L)).thenReturn(category);
+
+            // when
+            assertDoesNotThrow(() -> service.closeCourse(courseId, instructorEmail));
+
+            // then
+            verify(levelManagementService, times(2)).increaseLevelOf(anyLong(), anyLong(), anyInt());
+            verify(levelManagementService).increaseLevelOf(5L, student1.getId(), 10);
+            verify(levelManagementService).increaseLevelOf(5L, student2.getId(), 10);
+
+            verify(messageManagementService, times(2)).createMessage(anyLong(), anyLong(), anyString());
+            String expectedMessage = "[%s] 강좌가 종료되었습니다.\n%s 분야 레벨이 %d 향상되었습니다.\n".formatted(course.getTitle(), category.getName(), 10);
+            verify(messageManagementService).createMessage(instructorUserId, student1.getId(), expectedMessage);
+            verify(messageManagementService).createMessage(instructorUserId, student2.getId(), expectedMessage);
+        }
+
+        @Test
+        @DisplayName("강좌 종료 실패: 강사가 아닌 사용자가 요청")
+        void closeCourse_fail_notInstructor() {
+            // given
+            when(courseQueryService.queryCourseById(courseId)).thenReturn(course);
+            when(instructorQueryService.queryInstructorById(instructorId)).thenReturn(instructor);
+            when(userQueryService.queryUserById(instructorUserId)).thenReturn(instructorUser);
+
+            // when & then
+            assertThrows(InvalidUserRoleException.class,
+                    () -> service.closeCourse(courseId, "not.instructor@test.com"));
+        }
+
+        @Test
+        @DisplayName("강좌 종료 실패: 종료일이 지나지 않음")
+        void closeCourse_fail_endDateNotPassed() {
+            // given
+            course.setCourseEndDate(LocalDate.now().plusDays(1)); // 종료일 안 지남
+            when(courseQueryService.queryCourseById(courseId)).thenReturn(course);
+            when(instructorQueryService.queryInstructorById(instructorId)).thenReturn(instructor);
+            when(userQueryService.queryUserById(instructorUserId)).thenReturn(instructorUser);
+
+            // when & then
+            assertThrows(IllegalArgumentException.class,
+                    () -> service.closeCourse(courseId, instructorEmail));
+        }
+
+        @Test
+        @DisplayName("강좌 종료 성공: 수강생이 없을 경우")
+        void closeCourse_success_noStudents() {
+            // given
+            course.setCourseEndDate(LocalDate.now().minusDays(1)); // 종료일 지남
+            when(courseQueryService.queryCourseById(courseId)).thenReturn(course);
+            when(instructorQueryService.queryInstructorById(instructorId)).thenReturn(instructor);
+            when(userQueryService.queryUserById(instructorUserId)).thenReturn(instructorUser);
+            when(courseQueryService.queryCourseUsers(courseId)).thenReturn(Collections.emptyList());
+
+            // when
+            assertDoesNotThrow(() -> service.closeCourse(courseId, instructorEmail));
+
+            // then
+            verify(levelManagementService, never()).increaseLevelOf(anyLong(), anyLong(), anyInt());
+            verify(messageManagementService, never()).createMessage(anyLong(), anyLong(), anyString());
         }
     }
 }

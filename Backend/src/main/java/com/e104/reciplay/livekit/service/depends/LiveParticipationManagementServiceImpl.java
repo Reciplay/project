@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -29,5 +31,13 @@ public class LiveParticipationManagementServiceImpl implements LiveParticipation
         liveParticipation.setEmail(email);
         liveParticipation.setLiveRoomId(liveRoom.getId());
         liveParticipationRepository.save(liveParticipation);
+    }
+
+    @Override
+    public List<LiveParticipation> clearRoom(LiveRoom liveRoom) {
+        log.debug("라이브룸 참여이력 제거");
+        List<LiveParticipation> members = liveParticipationRepository.findByLiveRoomId(liveRoom.getId());
+        liveParticipationRepository.deleteByLiveRoomId(liveRoom.getId());
+        return members;
     }
 }
