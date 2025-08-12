@@ -59,6 +59,7 @@ public class CourseDetail {
         this.level = course.getLevel();
         this.announcement = course.getAnnouncement();
         this.isLive = course.getIsLive();
+        this.instructorId = course.getInstructorId();
         //this.categoryId = course.getCategoryId();
 
     }
