@@ -2,18 +2,18 @@ import styles from "./listCard.module.scss";
 import ImageWrapper from "../image/imageWrapper";
 import { IMAGETYPE } from "@/types/image";
 import BaseButton from "../button/baseButton";
-import { Course } from "@/types/course";
+import { Course, CourseCard } from "@/types/course";
 import Image from "next/image";
 
 export type CardVariant = "vertical" | "horizontal";
 
 export interface CourseCardProps {
-  data: Course;
+  data: CourseCard;
   variant?: CardVariant; // optional로 하고 기본값은 vertical
 }
 
 export default function Card({ data, variant = "vertical" }: CourseCardProps) {
-  const filledStars = Math.floor(data.ratingAvg);
+  const filledStars = Math.floor(data.averageReviewScore);
   const emptyStars = 5 - filledStars;
 
   return (
@@ -31,7 +31,7 @@ export default function Card({ data, variant = "vertical" }: CourseCardProps) {
               <div key={idx}>{line}</div>
             ))}
             <br />
-            <span>{data.difficulty}자 시청 추천</span>
+            <span>{data.level}자 시청 추천</span>
           </div>
         </div>
       </div>

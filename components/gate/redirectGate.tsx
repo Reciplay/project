@@ -128,7 +128,14 @@ export default function RedirectGate({
 
   /** B) 로그인 직후 추가정보 로딩 */
   useEffect(() => {
-    if (!isLoading && status === "authenticated" && isExtraFilled === null) {
+    if (!hasHydrated) return;
+    if (status === "unauthenticated" && isProtected(pathname)) {
+      router.replace(ROUTES.AUTH.LOGIN);
+    }
+  }, [status, pathname, hasHydrated, router]);
+  // 1) 사용자 추가정보 로딩
+  useEffect(() => {
+    if (status === "authenticated" && hasHydrated && isExtraFilled === null) {
       fetchUserInfo();
     }
   }, [isLoading, status, isExtraFilled]);
