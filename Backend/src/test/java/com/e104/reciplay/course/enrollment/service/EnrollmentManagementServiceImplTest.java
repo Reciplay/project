@@ -43,6 +43,7 @@ class EnrollmentManagementServiceImplTest {
     @BeforeEach
     void setUp() {
         testUser = User.builder()
+                .isActivated(true)
                 .email("test@test.com")
                 .password("password")
                 .nickname("testUser")

@@ -69,8 +69,8 @@ class ReviewManagementServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        user = User.builder().nickname("testuser").email("test@test.com").password("password").build();
-        otherUser = User.builder().nickname("otheruser").email("other@test.com").password("password").build();
+        user = User.builder().nickname("testuser").isActivated(true).email("test@test.com").password("password").build();
+        otherUser = User.builder().nickname("otheruser").isActivated(true).email("other@test.com").password("password").build();
         userRepository.saveAll(List.of(user, otherUser));
 
         course = Course.builder().title("Test Course")

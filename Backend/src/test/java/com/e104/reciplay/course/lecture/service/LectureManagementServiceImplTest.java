@@ -63,7 +63,7 @@ class LectureManagementServiceImplTest {
     @BeforeEach
     void setUp() {
         // 테스트용 강사 유저 생성 및 저장
-        instructorUser = User.builder()
+        instructorUser = User.builder().isActivated(true)
                 .nickname("testInstructor")
                 .role("ROLE_INSTRUCTOR")
                 .email("instructor@test.com")
@@ -71,7 +71,7 @@ class LectureManagementServiceImplTest {
                 .build();
         userRepository.save(instructorUser);
 
-        otherUser = User.builder()
+        otherUser = User.builder().isActivated(true)
                 .nickname("otherUser")
                 .role("ROLE_INSTRUCTOR")
                 .email("other@test.com")

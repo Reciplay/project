@@ -22,7 +22,7 @@ class UserRepositoryTest {
     @Test
     @Transactional
     public void 유저_삽입에_성공한다() {
-        User user = User.builder().email(TEST_USER_MAIL).password("123").nickname("스폰지밥").build();
+        User user = User.builder().email(TEST_USER_MAIL).password("123").isActivated(true).nickname("스폰지밥").build();
         userRepository.save(user);
 
         assertThat(userRepository.existsByEmail(TEST_USER_MAIL)).isTrue();

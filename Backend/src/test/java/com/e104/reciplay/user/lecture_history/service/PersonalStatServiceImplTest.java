@@ -54,7 +54,7 @@ class PersonalStatServiceImplTest {
         userRepository.deleteAll();
 
         // 테스트 유저 생성
-        testUser = User.builder()
+        testUser = User.builder().isActivated(true)
                 .nickname("testUser")
                 .email("test@example.com")
                 .password("password")
