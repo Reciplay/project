@@ -90,8 +90,17 @@ public class CourseApiController {
             @RequestParam Long courseId
 
     ){
+        log.debug("강좌 상세 API 요청됨 ");
+        log.debug("요청 데이터 {}", courseId);
         String email = AuthenticationUtil.getSessionUsername();
-        Long userId = userQueryService.queryUserByEmail(email).getId();
+        log.debug("요청 사용자 {}", email);
+
+        Long userId = null;
+        try {
+            userId = userQueryService.queryUserByEmail(email).getId();
+        } catch (Exception e) {
+            log.debug("존재하지 않는 이메일 입니다.");
+        }
         CourseDetail courseDetail = courseQueryService.queryCourseDetailByCourseId(courseId, userId);
         return CommonResponseBuilder.success("강좌 상세 정보 조회에 성공하였습니다.", courseDetail);
     }
