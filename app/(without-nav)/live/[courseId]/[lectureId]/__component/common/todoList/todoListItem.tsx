@@ -46,14 +46,14 @@ export default function TodoListItem({ stepNumber, title, status, items }: TodoL
 
                 <div className={styles.timelineContent}>
                     <Timeline
-                        items={items.map((item) => ({
+                        items={items.map((item) => ( {
                             children: item.content,
                             color: item.color,
                             dot: item.isCurrent ? <ClockCircleOutlined className={styles.timelineClockIcon} /> : undefined,
                         }))}
-                    />
+                        />
                 </div>
             </div>
-        </div>
+        </div>  
     );
 }

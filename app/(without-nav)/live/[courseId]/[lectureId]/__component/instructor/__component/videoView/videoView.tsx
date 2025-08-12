@@ -5,12 +5,18 @@ import { getSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { recognizeGesture } from "@/components/live/gestureRecognizer";
 import { useCallback, useEffect, useRef, useState } from "react";
-import useLiveSocket from "@/hooks/live/useLiveSocket";
+import useLiveSocket, { RoomInfo, SendChapterIssueArgs } from "@/hooks/live/useLiveSocket";
+import { Client } from "@stomp/stompjs";
 
+type instructorPageProps  = {
+    stompClient : Client;
+    sendChapterIssue: (client: Client, args: SendChapterIssueArgs) => void,
+    roomId : string,
+    roomInfo : RoomInfo,
+}
 
-export default function VideoView() {
+export default function VideoView(props) {
     const params = useParams();
-
     const courseId = params.courseId as string;
     const lectureId = params.lectureId as string;
 
@@ -69,37 +75,60 @@ export default function VideoView() {
                 if (newGesture) {
                     console.log("Gesture recognized:", newGesture);
                     setPose(newGesture);
+                    console.log(recognizedPose)
                 }
             }
         }
     }, []);
 
-    const { roomId, socket, stompClient ,sendChapterIssue, roomInfo } = useLiveSocket(courseId, lectureId, "instructor");
+   
+
+    //     const payload = {
+    //   type: 'chapter-issue',
+    //   roomId: args.roomId,
+    //   issuer: args.issuer,
+    //   chapterSequence: Number(args.chapterSequence),
+    //   lectureId: Number(args.lectureId),
+    //   ...(args.chapterName ? { chapterName: args.chapterName } : {}),
+    // };
+
     const lastGestureSended = useRef(0)
     useEffect(() => {
         const now = Date.now()
-        const issuer = roomInfo?.email
+        const issuer = props.roomInfo?.email
         if (now - lastGestureSended.current > 2000) {
             lastGestureSended.current = now
-            if (recognizedPose === 'clap') {
-                sendChapterIssue(stompClient, {
+            if (recognizedPose === 'Clap') {
+                console.log('박수실행됨==================================')
+                props.sendChapterIssue(props.stompClient, {
+                    type:"chapter-issue",
                     issuer : issuer,
                     lectureId : lectureId,
-                    roomId : roomId,
+                    roomId : props.roomId,
                     chapterSequence : 1
                 })
             }
+            // if (handGesture === 'Closed_Fist') {
+            //     console.log('Closed_Fist==================================')
+            //     sendHelp(props.stompClient, {
+            //         type:"help",
+            //         issuer : issuer,
+            //         lectureId : lectureId,
+            //         roomId : roomId,
+            //     })
+            // }
+
+
         }
-    }, [handGesture, recognizedPose])
+    }, [recognizedPose, handGesture])
 
     return (
-        <main style={{ padding: 24 }}>
+        <div style={{ padding: 24 }}>
             {/* 로컬 비디오 */}
             {localTrack ? (
                 <VideoSection
                     videoTrack={localTrack}
                     participantIdentity={userId}
-                    todo={todo}
                     onNodesDetected={handleNodesDetected}
                     setGesture={handleHandGesture}
                 />
@@ -134,6 +163,6 @@ export default function VideoView() {
                     );
                 })}
             </div>
-        </main>
+        </div>
     );
 }
