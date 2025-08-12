@@ -19,12 +19,11 @@ export interface requestLicense {
   grade: number;
 }
 
-
 export interface Career {
   id: number;
   companyName: string;
   position: string;
   jobDescription: string;
   startDate: string; // YYYY-MM-DD
-  endDate: string;   // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
 }

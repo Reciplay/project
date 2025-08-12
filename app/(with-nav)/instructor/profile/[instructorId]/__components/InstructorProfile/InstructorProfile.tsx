@@ -19,7 +19,7 @@ export default function InstructorProfile({
 }: InstructorProfileProps) {
   const tabTitles = ["경력", "자격증", "강좌목록"];
   const { activeIdx, handleScrollTo, sectionRefs } = useScrollTabs(
-    tabTitles.length
+    tabTitles.length,
   );
 
   return (

@@ -1,3 +1,4 @@
+import { Landmark } from "@mediapipe/tasks-vision";
 import {
   LocalAudioTrack,
   LocalVideoTrack,
@@ -5,10 +6,9 @@ import {
   RemoteVideoTrack,
 } from "livekit-client";
 import StreamVideo from "./streamVideo";
-import { Landmark } from "@mediapipe/tasks-vision";
 
-import styles from "./videoSection.module.scss";
 import StreamAudio from "./streamAudio";
+import styles from "./videoSection.module.scss";
 
 interface VideoSectionProps {
   videoTrack: LocalVideoTrack | RemoteVideoTrack;

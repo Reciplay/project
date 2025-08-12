@@ -41,8 +41,8 @@ export default function CategoryForm({
     error == null
       ? ""
       : Array.isArray(error)
-      ? error.filter(Boolean).join("\n")
-      : String(error);
+        ? error.filter(Boolean).join("\n")
+        : String(error);
 
   return (
     <div style={{ marginBottom: 12 }}>

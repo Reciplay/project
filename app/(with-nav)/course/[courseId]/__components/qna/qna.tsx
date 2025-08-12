@@ -6,7 +6,7 @@ import styles from "./qna.module.scss";
 export default function QnA({ courseId }: { courseId: string }) {
   const { list, loading, message, hasMore, fetchNextPage } = useQnaSummary(
     courseId,
-    5
+    5,
   );
 
   return (

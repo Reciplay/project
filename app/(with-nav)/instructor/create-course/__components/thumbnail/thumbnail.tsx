@@ -4,6 +4,7 @@
 import { UploadOutlined } from "@ant-design/icons"; // Ant Design 아이콘 임포트
 import { Button, message, Upload } from "antd"; // Ant Design 컴포넌트 임포트
 import type { UploadFile, UploadProps } from "antd/es/upload/interface"; // 타입 임포트
+import Image from "next/image";
 import { useState } from "react";
 import styles from "./thumbnail.module.scss";
 
@@ -91,11 +92,12 @@ export default function ThumbnailUpload() {
           if (imageUrl) {
             return (
               <div key={index} className={styles.thumbnailCard}>
-                <img
+                <Image
                   src={imageUrl}
                   alt={`썸네일 ${index + 1}`}
                   className={styles.thumbnail}
                 />
+                {/* <img /> */}
               </div>
             );
           } else {

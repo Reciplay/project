@@ -6,7 +6,7 @@ import { fetchUserInfo } from "@/hooks/auth/fetchUserInfo";
 import { useUserStore } from "@/stores/userStore";
 import { useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 /** 세션에서 role 읽기 (session.user.role 또는 session.role 둘 다 대응) */
 function useRole() {
@@ -20,8 +20,11 @@ function useRole() {
 function useGuards() {
   const pathname = usePathname();
 
-  const isPrefixOf = (prefix: string) =>
-    pathname === prefix || pathname.startsWith(`${prefix}/`);
+  const isPrefixOf = useCallback(
+    (prefix: string) =>
+      pathname === prefix || pathname.startsWith(`${prefix}/`),
+    [pathname],
+  );
 
   // 로그인 필요 영역
   const PROFILE_ROUTES = useMemo(
@@ -30,8 +33,9 @@ function useGuards() {
         ROUTES.PROFILE.ROOT,
         ROUTES.PROFILE.SUBSCRIPTIONS,
         ROUTES.PROFILE.HISTORY,
+        ROUTES.INSTRUCTOR.REGISTER,
       ]),
-    []
+    [],
   );
 
   const INSTRUCTOR_PROTECTED_ROUTES = useMemo(
@@ -42,7 +46,7 @@ function useGuards() {
         ROUTES.INSTRUCTOR.EDIT,
         ROUTES.INSTRUCTOR.MANAGE,
       ]),
-    []
+    [],
   );
 
   const MATCH = useMemo(() => {
@@ -82,7 +86,7 @@ function useGuards() {
       isPublicInstructorProfile,
       isCourseDetail: pathname.startsWith("/course/"),
     };
-  }, [pathname, PROFILE_ROUTES, INSTRUCTOR_PROTECTED_ROUTES]);
+  }, [pathname, PROFILE_ROUTES, INSTRUCTOR_PROTECTED_ROUTES, isPrefixOf]);
 
   return { MATCH, pathname };
 }
@@ -99,9 +103,13 @@ export default function RedirectGate({
   const role = useRole();
   const { MATCH } = useGuards();
 
-  const safeReplace = (to: string) => {
-    if (to && to !== pathname) router.replace(to);
-  };
+  // ✅ 안정화
+  const safeReplace = useCallback(
+    (to: string) => {
+      if (to && to !== pathname) router.replace(to);
+    },
+    [pathname, router],
+  );
 
   const isLoading = status === "loading" || !hasHydrated;
 
@@ -132,13 +140,14 @@ export default function RedirectGate({
     if (status === "unauthenticated" && !isPublicRoute) {
       router.replace(ROUTES.AUTH.LOGIN);
     }
-  }, [status, pathname, hasHydrated, router]);
+  }, [status, hasHydrated, isPublicRoute, router]);
+
   // 1) 사용자 추가정보 로딩
   useEffect(() => {
     if (status === "authenticated" && hasHydrated && isExtraFilled === null) {
       fetchUserInfo();
     }
-  }, [isLoading, status, isExtraFilled]);
+  }, [status, hasHydrated, isExtraFilled]);
 
   /** C) 추가정보(EXTRA) 강제 분기 */
   useEffect(() => {
@@ -161,7 +170,7 @@ export default function RedirectGate({
       safeReplace(ROUTES.HOME);
       return;
     }
-  }, [isLoading, status, isExtraFilled, MATCH.isAuthExtra]);
+  }, [isLoading, status, isExtraFilled, MATCH.isAuthExtra, safeReplace]);
 
   /** D) 공통 보호 라우트 */
   useEffect(() => {
@@ -171,7 +180,7 @@ export default function RedirectGate({
       safeReplace(ROUTES.AUTH.LOGIN);
       return;
     }
-  }, [isLoading, requiresLoginCommon, status]);
+  }, [isLoading, requiresLoginCommon, status, safeReplace]);
 
   /** E) 관리자 라우트 */
   useEffect(() => {
@@ -185,7 +194,7 @@ export default function RedirectGate({
       safeReplace(ROUTES.HOME);
       return;
     }
-  }, [isLoading, requiresAdmin, status, role]);
+  }, [isLoading, requiresAdmin, status, role, safeReplace]);
 
   /** F) 강사 라우트 */
   useEffect(() => {
@@ -205,7 +214,7 @@ export default function RedirectGate({
         return;
       }
     }
-  }, [isLoading, requiresInstructor, status, role]);
+  }, [isLoading, requiresInstructor, status, role, safeReplace]);
 
   /** F-1) /instructor 루트 접근 규칙 */
   useEffect(() => {
@@ -225,7 +234,7 @@ export default function RedirectGate({
       return;
     }
     safeReplace(ROUTES.INSTRUCTOR.REGISTER);
-  }, [isLoading, MATCH.isInstructorRoot, status, role]);
+  }, [isLoading, MATCH.isInstructorRoot, status, role, safeReplace]);
 
   /** I) 최후 수단 가드 */
   useEffect(() => {
@@ -235,7 +244,7 @@ export default function RedirectGate({
       safeReplace(ROUTES.AUTH.LOGIN);
       return;
     }
-  }, [isLoading, isPublicRoute, status]);
+  }, [isLoading, isPublicRoute, status, safeReplace]);
 
   if (isLoading) return null;
   return <>{children}</>;

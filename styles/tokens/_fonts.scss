@@ -6,8 +6,9 @@
   /* 역할 기반 폰트 패밀리 (컴포넌트에서 직접 사용하기 쉬움) */
   --font-family-base: var(--font-pretendard);
   --font-family-heading: var(--font-protest);
-  --font-family-mono: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco,
-    Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-family-mono:
+    "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
 
   /* 글꼴 크기 (1rem = 10px 기준 고정 스케일) */
   --font-size-xs: 1rem; /* 10px */

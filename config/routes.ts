@@ -13,7 +13,7 @@ export const ROUTES = {
 
   SEARCH: {
     ROOT: "/search",
-    DETAIL: (query: string) => `/search?query=${query}`
+    DETAIL: (query: string) => `/search?query=${query}`,
   },
 
   COURSE: {

@@ -47,8 +47,8 @@ export default function TextForm({
     error == null
       ? ""
       : Array.isArray(error)
-      ? error.filter(Boolean).join("\n")
-      : String(error);
+        ? error.filter(Boolean).join("\n")
+        : String(error);
 
   // status 우선순위: 명시된 status > 에러 존재 시 "error" > 기본 ""
   const computedStatus = status ?? (errMsg ? "error" : "");

@@ -21,16 +21,9 @@ interface LinkItemProps {
   icon: string;
   title: string;
   isOpen: boolean;
-  isButton?: boolean;
 }
 
-function LinkItem({
-  href,
-  icon,
-  title,
-  isOpen,
-  isButton = false,
-}: LinkItemProps) {
+function LinkItem({ href, icon, title, isOpen }: LinkItemProps) {
   const pathname = usePathname();
   const isActive = pathname === href;
 

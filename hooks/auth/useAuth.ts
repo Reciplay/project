@@ -53,7 +53,7 @@ export default function useAuth() {
           email: data.email,
           password: data.password,
           hash: data.confirmPassword,
-        }
+        },
       );
 
       if (res.status === 201) {

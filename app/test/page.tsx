@@ -1,9 +1,9 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import restClient from "@/lib/axios/restClient";
-import { useState } from "react";
 import ChatBot from "@/components/chatbot/ChatBot";
+import restClient from "@/lib/axios/restClient";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
 
 export default function TestPage() {
   const { data: session, status, update } = useSession();

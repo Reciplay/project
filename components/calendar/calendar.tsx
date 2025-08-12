@@ -34,9 +34,9 @@ const ScheduleSidebar = ({
   const eventsSorted = useMemo(
     () =>
       [...allEvents].sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
       ),
-    [allEvents]
+    [allEvents],
   );
 
   return (
@@ -94,7 +94,7 @@ export default function Calendar({
         date: toYMD(l.startedAt),
         extendedProps: { lectureId: l.lectureId, isSkipped: l.isSkipped },
       })),
-    [lectures]
+    [lectures],
   );
 
   // 사이드바 선택(하이라이트) 상태

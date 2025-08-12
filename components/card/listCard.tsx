@@ -1,9 +1,9 @@
-import styles from "./listCard.module.scss";
-import ImageWrapper from "../image/imageWrapper";
+import { CourseCard } from "@/types/course";
 import { IMAGETYPE } from "@/types/image";
-import BaseButton from "../button/baseButton";
-import { Course, CourseCard } from "@/types/course";
 import Image from "next/image";
+import BaseButton from "../button/baseButton";
+import ImageWrapper from "../image/imageWrapper";
+import styles from "./listCard.module.scss";
 
 export type CardVariant = "vertical" | "horizontal";
 
@@ -12,7 +12,7 @@ export interface CourseCardProps {
   variant?: CardVariant; // optional로 하고 기본값은 vertical
 }
 
-export default function Card({ data, variant = "vertical" }: CourseCardProps) {
+export default function Card({ data }: CourseCardProps) {
   const filledStars = Math.floor(data.averageReviewScore);
   const emptyStars = 5 - filledStars;
 

@@ -36,7 +36,7 @@ export default function CalendarOnly({
         date: toYMD(l.startedAt),
         extendedProps: { lectureId: l.lectureId, isSkipped: l.isSkipped },
       })),
-    [lectures]
+    [lectures],
   );
 
   const [selectedDate, setSelectedDate] = useState<string | null>(null);

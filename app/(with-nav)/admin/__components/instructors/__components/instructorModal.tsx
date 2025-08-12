@@ -1,15 +1,14 @@
 // components/admin/InstructorModal.tsx
 "use client";
 
-import styles from "../instructors.module.scss";
-import { InstructorDetail } from "@/types/instructor";
-import IconWithText from "@/components/text/iconWithText";
-import Image from "next/image";
-import BaseButton from "@/components/button/baseButton";
-import CustomModal from "@/components/modal/customModal";
-import CertificatesTable from "@/app/(with-nav)/instructor/register/__components/certificatesTable/certificatesTable";
 import CareersTable from "@/app/(with-nav)/instructor/register/__components/careerTable/careerTable";
+import CertificatesTable from "@/app/(with-nav)/instructor/register/__components/certificatesTable/certificatesTable";
 import CustomButton from "@/components/button/customButton";
+import CustomModal from "@/components/modal/customModal";
+import IconWithText from "@/components/text/iconWithText";
+import { InstructorDetail } from "@/types/instructor";
+import Image from "next/image";
+import styles from "../instructors.module.scss";
 
 interface InstructorModalProps {
   isOpen: boolean;
@@ -18,12 +17,12 @@ interface InstructorModalProps {
   onApprove: (
     instructorId: number,
     action: string,
-    isApproved: boolean
+    isApproved: boolean,
   ) => void;
   onReject?: (
     instructorId: number,
     action: string,
-    isApproved: boolean
+    isApproved: boolean,
   ) => void; // 선택
   loading?: boolean;
 }
@@ -111,7 +110,7 @@ export default function InstructorModal({
                 (onReject ?? onApprove)(
                   detail.instructorId,
                   "강사 등록 반려",
-                  false
+                  false,
                 )
               }
             />

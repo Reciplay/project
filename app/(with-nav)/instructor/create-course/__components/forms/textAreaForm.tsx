@@ -1,11 +1,9 @@
 "use client";
 
-import TextArea from "antd/es/input/TextArea";
 import { useCreateCourseStore } from "@/hooks/course/useCreateCourseStore";
+import TextArea from "antd/es/input/TextArea";
 
-type Name =
-  | "requestCourseInfo.description"
-  | "requestCourseInfo.announcement";
+type Name = "requestCourseInfo.description" | "requestCourseInfo.announcement";
 
 interface BaseProps {
   placeholder?: string;
@@ -16,39 +14,45 @@ interface BaseProps {
 }
 
 type TextAreaFormProps =
-  | (BaseProps & { name: Name })              // 스토어 바인딩 모드
-  | (BaseProps & { name?: undefined });       // 독립(TextArea 단독) 모드
+  | (BaseProps & { name: Name }) // 스토어 바인딩 모드
+  | (BaseProps & { name?: undefined }); // 독립(TextArea 단독) 모드
 
-export default function TextAreaForm(props: TextAreaFormProps) {
-  const rows = props.rows ?? 4;
-  const maxLength = props.maxLength ?? 2000;
+// 1) 훅 없는 독립 버전
+function TextAreaStandalone({
+  label,
+  placeholder,
+  rows = 4,
+  maxLength = 2000,
+  onValueChange,
+}: BaseProps) {
+  return (
+    <div style={{ marginBottom: 12 }}>
+      {label && <div style={{ fontWeight: 600, marginBottom: 6 }}>{label}</div>}
+      <TextArea
+        rows={rows}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        onChange={(e) => onValueChange?.(e.target.value)}
+      />
+    </div>
+  );
+}
 
-  // 독립 TextArea 모드 (name 미지정)
-  if (!("name" in props) || !props.name) {
-    const { label, placeholder, onValueChange } = props;
-    return (
-      <div style={{ marginBottom: 12 }}>
-        {label && <div style={{ fontWeight: 600, marginBottom: 6 }}>{label}</div>}
-        <TextArea
-          rows={rows}
-          placeholder={placeholder}
-          maxLength={maxLength}
-          onChange={(e) => onValueChange?.(e.target.value)}
-        />
-      </div>
-    );
-  }
-
-  // 스토어 바인딩 모드 (name 지정)
-  const { name, label, placeholder, onValueChange } = props;
-
+// 2) 훅 사용하는 바인딩 버전
+function TextAreaBound({
+  name,
+  label,
+  placeholder,
+  rows = 4,
+  maxLength = 2000,
+  onValueChange,
+}: BaseProps & { name: Name }) {
   const value = useCreateCourseStore((s) => {
     const info = s.values.requestCourseInfo;
     return name === "requestCourseInfo.description"
       ? info.description
       : info.announcement;
   });
-
   const error = useCreateCourseStore((s) => s.errors[name]);
   const setField = useCreateCourseStore((s) => s.setField);
 
@@ -65,13 +69,18 @@ export default function TextAreaForm(props: TextAreaFormProps) {
         rows={rows}
         placeholder={placeholder}
         maxLength={maxLength}
-        status={error ? "error" : ""}
+        status={error ? "error" : undefined}
       />
-      {error && (
-        <p style={{ color: "red", marginTop: 4 }}>
-          {error}
-        </p>
-      )}
+      {error && <p style={{ color: "red", marginTop: 4 }}>{error}</p>}
     </div>
   );
+}
+
+// 3) 래퍼: 분기만 담당(훅 호출 X)
+export default function TextAreaForm(props: TextAreaFormProps) {
+  if (!("name" in props) || !props.name) {
+    return <TextAreaStandalone {...props} />;
+  }
+  // name이 존재 → 바인딩 버전
+  return <TextAreaBound {...(props as BaseProps & { name: Name })} />;
 }

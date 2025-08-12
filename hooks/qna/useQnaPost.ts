@@ -22,7 +22,7 @@ export function useQnaPost() {
     try {
       const res = await restClient.post<ApiResponse<null>>(
         "/course/qna/answer",
-        { ...payload, requireAuth: true }
+        { ...payload, requireAuth: true },
       );
 
       // 백엔드 응답 구조에 맞게 처리

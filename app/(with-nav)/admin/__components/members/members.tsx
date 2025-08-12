@@ -1,19 +1,16 @@
 // app/admin/MemberList.tsx
 "use client";
 
-import styles from "./members.module.scss";
-import commonStyles from "../../page.module.scss";
-import MemberTable from "./__components/memberTable";
 import useMemberAdmin from "@/hooks/admin/useMemberAdmin";
+import commonStyles from "../../page.module.scss";
 import MemberModal from "./__components/memberModal";
+import MemberTable from "./__components/memberTable";
 
 export default function Members() {
   const {
-    list,
     sorted,
     loading,
     error,
-    refetch,
 
     // 상세/모달
     modalOpen,

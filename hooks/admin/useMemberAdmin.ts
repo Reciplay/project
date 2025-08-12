@@ -46,9 +46,9 @@ export const sampleMemberDetail: UserDetail = {
 
 // hooks/admin/useMembers.ts
 
-import { useCallback, useEffect, useMemo, useState } from "react";
 import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export default function useMemberAdmin() {
   const [list, setList] = useState<UserSummary[]>([]);
@@ -66,7 +66,7 @@ export default function useMemberAdmin() {
       setError("");
       const res = await restClient.get<ApiResponse<UserSummary[]>>(
         "/course/admin/user/summaries",
-        { requireAuth: true }
+        { requireAuth: true },
       );
       setList(res.data.data ?? []);
     } catch (e) {
@@ -85,9 +85,9 @@ export default function useMemberAdmin() {
     () =>
       [...list].sort(
         (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       ),
-    [list]
+    [list],
   );
 
   /** 상세 모달 열기 */
@@ -98,7 +98,7 @@ export default function useMemberAdmin() {
     try {
       const res = await restClient.get<ApiResponse<UserDetail>>(
         "/course/admin/user",
-        { params: { userId }, requireAuth: true }
+        { params: { userId }, requireAuth: true },
       );
       setDetail(res.data.data ?? null);
     } catch {
@@ -128,7 +128,7 @@ export default function useMemberAdmin() {
         alert("회원 탈퇴 처리에 실패했습니다.");
       }
     },
-    [fetchList]
+    [fetchList],
   );
 
   return {

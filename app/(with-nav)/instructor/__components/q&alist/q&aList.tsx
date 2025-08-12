@@ -72,7 +72,7 @@ export default function QandAList({
         ),
       },
     ],
-    []
+    [],
   );
 
   const handleOk = async () => {
@@ -92,7 +92,7 @@ export default function QandAList({
       setIsModalOpen(false);
       setAnswer("");
       setCurrent(null);
-    } catch (e) {
+    } catch {
       message.error("답변 등록에 실패했습니다.");
     } finally {
       setSubmitting(false);

@@ -1,12 +1,14 @@
 // __components/forms/textForm.tsx
 "use client";
 
-import React from "react";
+import {
+  useCreateCourseStore,
+  type FieldKey,
+} from "@/hooks/course/useCreateCourseStore";
 import { Input } from "antd";
-import { useCreateCourseStore, type FieldKey } from "@/hooks/course/useCreateCourseStore";
 
 type Props = {
-  name: FieldKey;               // 예: "requestCourseInfo.summary"
+  name: FieldKey; // 예: "requestCourseInfo.summary"
   placeholder?: string;
   label?: string;
   maxLength?: number;
@@ -25,7 +27,7 @@ export default function TextForm({
   const { values, errors, setField } = useCreateCourseStore();
 
   // dot-path getter
-  const getByPath = (obj: any, path: string) =>
+  const getByPath = (obj, path: string) =>
     path.split(".").reduce((acc, k) => (acc ? acc[k] : undefined), obj);
 
   const value = (getByPath(values, name) ?? "") as string;

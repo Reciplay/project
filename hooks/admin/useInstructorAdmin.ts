@@ -88,11 +88,11 @@ export default function useInstructorAdmin() {
       const [approvedRes, registerRes] = await Promise.all([
         restClient.get<ApiResponse<InstructorSummary[]>>(
           "/course/admin/instructor/summaries",
-          { params: { isApprove: true }, requireAuth: true }
+          { params: { isApprove: true }, requireAuth: true },
         ),
         restClient.get<ApiResponse<InstructorSummary[]>>(
           "/course/admin/instructor/summaries",
-          { params: { isApprove: false }, requireAuth: true }
+          { params: { isApprove: false }, requireAuth: true },
         ),
       ]);
 
@@ -115,9 +115,9 @@ export default function useInstructorAdmin() {
       [...approvedList].sort(
         (a, b) =>
           new Date(b.registeredAt).getTime() -
-          new Date(a.registeredAt).getTime()
+          new Date(a.registeredAt).getTime(),
       ),
-    [approvedList]
+    [approvedList],
   );
 
   const sortedRegister = useMemo(
@@ -125,9 +125,9 @@ export default function useInstructorAdmin() {
       [...registerList].sort(
         (a, b) =>
           new Date(b.registeredAt).getTime() -
-          new Date(a.registeredAt).getTime()
+          new Date(a.registeredAt).getTime(),
       ),
-    [registerList]
+    [registerList],
   );
 
   // ✅ 상세 모달
@@ -139,7 +139,7 @@ export default function useInstructorAdmin() {
       console.log(instructorId);
       const res = await restClient.get<ApiResponse<InstructorDetail>>(
         "/course/admin/instructor",
-        { params: { instructorId }, requireAuth: true }
+        { params: { instructorId }, requireAuth: true },
       );
 
       console.log(res.data.data);
@@ -169,7 +169,7 @@ export default function useInstructorAdmin() {
             message,
             isApprove,
           },
-          { requireAuth: true }
+          { requireAuth: true },
         );
 
         console.log("승인 처리 결과:", res.status);
@@ -181,7 +181,7 @@ export default function useInstructorAdmin() {
         alert("승인 처리에 실패했습니다.");
       }
     },
-    [fetchLists]
+    [fetchLists],
   );
 
   return {

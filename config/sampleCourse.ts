@@ -82,36 +82,6 @@ export const sampleCourse2: CourseManage[] = [
     isReviwed: false,
     canLearns: ["쌀국수 육수", "분짜 소스", "허브 사용법"],
   },
-  {
-    thumbnailFileInfos: [
-      { presignedUrl: "/images/sample1.jpg", name: "sample1.jpg", sequence: 0 },
-    ],
-    courseCoverFileInfo: null,
-    title: "스페인 타파스 마스터클래스",
-    courseStartDate: "2025-09-05",
-    courseEndDate: "2025-10-05",
-    instructorId: 108,
-    courseId: 8,
-    enrollmentStartDate: "",
-    enrollmentEndDate: "",
-    category: "스페인 요리",
-    difficulty: 30,
-    summary: "정통 스페인 타파스 요리를 집에서 따라하는 비법을 배워보세요.",
-    learningPoints: ["감바스 알 아히요", "스페인 오믈렛", "와인 페어링"],
-    ratingAvg: 4.8,
-    isLive: false,
-    viewerCount: 42,
-    startDate: "2025-08-20",
-    endDate: "2025-09-20",
-    isEnrolled: false,
-    description: "",
-    level: 30,
-    isZzimed: false,
-    isLive: true,
-    announcement: "",
-    isReviwed: false,
-    canLearns: ["감바스", "또르띠야", "스페인 소스"],
-  },
 ];
 
 export const sampleCourse3: CourseManage[] = [
@@ -171,7 +141,8 @@ export const sampleCourse3: CourseManage[] = [
 export const sampleCourseCards: CourseCard[] = [
   {
     specialBannerUrl: "/images/banner1.png",
-    thumbnailUrl: "/images/sample1.jpg",
+    responseFileInfo: null,
+
     viewerCount: 1250,
     title: "React 마스터 클래스",
     courseId: 1,
@@ -192,7 +163,7 @@ export const sampleCourseCards: CourseCard[] = [
   },
   {
     specialBannerUrl: "/images/banner2.png",
-    thumbnailUrl: "/images/sample2.jpg",
+    responseFileInfo: null,
     viewerCount: 980,
     title: "Node.js 백엔드 입문",
     courseId: 2,
@@ -213,7 +184,7 @@ export const sampleCourseCards: CourseCard[] = [
   },
   {
     specialBannerUrl: "/images/banner3.png",
-    thumbnailUrl: "/images/sample3.jpg",
+    responseFileInfo: null,
     viewerCount: 2100,
     title: "파이썬 데이터 분석",
     courseId: 3,
@@ -234,7 +205,7 @@ export const sampleCourseCards: CourseCard[] = [
   },
   {
     specialBannerUrl: "/images/banner4.png",
-    thumbnailUrl: "/images/sample4.jpg",
+    responseFileInfo: null,
     viewerCount: 450,
     title: "UI/UX 디자인 기초",
     courseId: 4,
@@ -254,7 +225,7 @@ export const sampleCourseCards: CourseCard[] = [
   },
   {
     specialBannerUrl: "/images/banner5.png",
-    thumbnailUrl: "/images/sample5.jpg",
+    responseFileInfo: null,
     viewerCount: 3200,
     title: "Spring Boot 마이크로서비스",
     courseId: 5,
@@ -275,7 +246,7 @@ export const sampleCourseCards: CourseCard[] = [
   },
   {
     specialBannerUrl: "/images/banner6.png",
-    thumbnailUrl: "/images/sample8.jpg",
+    responseFileInfo: null,
     viewerCount: 870,
     title: "Kotlin 안드로이드 앱 개발",
     courseId: 6,
@@ -295,7 +266,7 @@ export const sampleCourseCards: CourseCard[] = [
   },
   {
     specialBannerUrl: "/images/banner7.png",
-    thumbnailUrl: "/images/sample9.jpg",
+    responseFileInfo: null,
     viewerCount: 1950,
     title: "머신러닝 입문",
     courseId: 7,
@@ -315,7 +286,7 @@ export const sampleCourseCards: CourseCard[] = [
   },
   {
     specialBannerUrl: "/images/banner8.png",
-    thumbnailUrl: "/images/sample10.jpg",
+    responseFileInfo: null,
     viewerCount: 600,
     title: "AWS 클라우드 서비스",
     courseId: 8,
@@ -335,7 +306,7 @@ export const sampleCourseCards: CourseCard[] = [
   },
   {
     specialBannerUrl: "/images/banner9.png",
-    thumbnailUrl: "/images/sample11.jpg",
+    responseFileInfo: null,
     viewerCount: 1320,
     title: "Go 언어 웹 개발",
     courseId: 9,
@@ -355,7 +326,7 @@ export const sampleCourseCards: CourseCard[] = [
   },
   {
     specialBannerUrl: "/images/banner10.png",
-    thumbnailUrl: "/images/sample12.jpg",
+    responseFileInfo: null,
     viewerCount: 500,
     title: "Vue 3 + TypeScript",
     courseId: 10,
@@ -375,7 +346,7 @@ export const sampleCourseCards: CourseCard[] = [
   },
   {
     specialBannerUrl: "/images/banner11.png",
-    thumbnailUrl: "/images/sample13.jpg",
+    responseFileInfo: null,
     viewerCount: 750,
     title: "일본 요리 마스터 클래스",
     courseId: 11,

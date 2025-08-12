@@ -1,8 +1,9 @@
 import { Landmark } from "@mediapipe/tasks-vision";
 
 function calculateAngle(a: Landmark, b: Landmark, c: Landmark): number {
-  const radians = Math.atan2(c.y - b.y, c.x - b.x) - Math.atan2(a.y - b.y, a.x - b.x);
-  let angle = Math.abs(radians * 180.0 / Math.PI);
+  const radians =
+    Math.atan2(c.y - b.y, c.x - b.x) - Math.atan2(a.y - b.y, a.x - b.x);
+  let angle = Math.abs((radians * 180.0) / Math.PI);
 
   if (angle > 180.0) {
     angle = 360 - angle;
@@ -29,12 +30,11 @@ export function recognizeGesture(landmarks: Landmark[]): string {
   const rightArmAngle = calculateAngle(rightShoulder, rightElbow, rightWrist);
 
   // Crossed Arm gesture
-  const areArmsCrossed = leftWrist.x < rightWrist.x
+  const areArmsCrossed = leftWrist.x < rightWrist.x;
 
   if (areArmsCrossed) {
     return "Crossed Arm";
   }
-
 
   // "Hands Up" gesture
   // Check if both wrists are above their respective eyes
@@ -44,9 +44,8 @@ export function recognizeGesture(landmarks: Landmark[]): string {
   }
 
   if (rightWrist.y < rightEye.y) {
-    return "right Hand Up"
+    return "right Hand Up";
   }
-
 
   // "handOnShoulder" gesture
   // Check if wrists are at shoulder height and arms are bent
@@ -58,7 +57,7 @@ export function recognizeGesture(landmarks: Landmark[]): string {
   if (leftHandAtShoulderHeight && rightHandAtShoulderHeight) {
     const wristDistance = Math.sqrt(
       Math.pow(rightWrist.x - leftWrist.x, 2) +
-      Math.pow(rightWrist.y - leftWrist.y, 2),
+        Math.pow(rightWrist.y - leftWrist.y, 2),
     );
 
     if (wristDistance < 0.1) {
@@ -69,7 +68,6 @@ export function recognizeGesture(landmarks: Landmark[]): string {
       return "handOnShoulder";
     }
   }
-
 
   return "";
 }

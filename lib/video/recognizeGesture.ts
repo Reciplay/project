@@ -1,13 +1,13 @@
 import {
-  PoseLandmarker,
   FilesetResolver,
   Landmark,
+  PoseLandmarker,
 } from "@mediapipe/tasks-vision";
 
 let poseLandmarker: PoseLandmarker;
 export const createPoseLandmarker = async () => {
   const vision = await FilesetResolver.forVisionTasks(
-    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.9/wasm"
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.9/wasm",
   );
 
   poseLandmarker = await PoseLandmarker.createFromOptions(vision, {
@@ -25,7 +25,7 @@ export default async function poseRecognition(
   video: HTMLVideoElement,
   canvas: HTMLCanvasElement,
   setLandmarksData: (landmarks: Landmark[][]) => void,
-  onNodesDetected: (nodes: Landmark[][]) => void
+  onNodesDetected: (nodes: Landmark[][]) => void,
 ): Promise<() => void> {
   const canvasCtx = canvas.getContext("2d");
   if (!canvasCtx) {
@@ -44,7 +44,7 @@ export default async function poseRecognition(
       const timeStamp = performance.now();
       const poseLandmarkerResult = poseLandmarker.detectForVideo(
         video,
-        timeStamp
+        timeStamp,
       );
 
       canvasCtx.clearRect(0, 0, canvas.width, canvas.height);

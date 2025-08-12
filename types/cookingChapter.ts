@@ -1,6 +1,6 @@
 export interface TodoItem {
   title: string;
-  type: 'NORMAL' | 'TIMER';
+  type: "NORMAL" | "TIMER";
   seconds: number | null;
   sequence: number;
 }

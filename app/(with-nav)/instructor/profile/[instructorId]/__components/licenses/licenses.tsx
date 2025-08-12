@@ -22,7 +22,7 @@ const Licenses = forwardRef<HTMLDivElement, LicensesProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 Licenses.displayName = "Licenses";

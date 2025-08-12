@@ -1,14 +1,13 @@
 // app/admin/CourseList.tsx
 "use client";
 
-import styles from "./courses.module.scss";
-import commonStyles from "../../page.module.scss";
-import useCourseAdmin from "@/hooks/admin/useCourseAdmin";
 import HorizontalTab from "@/components/tab/horizontalTab";
-import CourseTable from "./__components/courseTable";
+import useCourseAdmin from "@/hooks/admin/useCourseAdmin";
+import commonStyles from "../../page.module.scss";
 import CourseModal from "./__components/courseModal";
+import CourseTable from "./__components/courseTable";
 // 날짜 포맷 함수
-const formatDate = (date: string) => new Date(date).toLocaleDateString();
+// const formatDate = (date: string) => new Date(date).toLocaleDateString();
 
 export default function Courses() {
   const {

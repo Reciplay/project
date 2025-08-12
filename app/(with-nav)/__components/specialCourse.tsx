@@ -1,7 +1,3 @@
-
 export default function SpecialCourse() {
-
-  return (
-    <div></div>
-  );
+  return <div></div>;
 }

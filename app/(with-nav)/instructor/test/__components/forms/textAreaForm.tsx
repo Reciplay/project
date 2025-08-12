@@ -37,8 +37,8 @@ export default function TextAreaForm({
     error == null
       ? ""
       : Array.isArray(error)
-      ? error.filter(Boolean).join("\n")
-      : String(error);
+        ? error.filter(Boolean).join("\n")
+        : String(error);
 
   const computedStatus = status ?? (errMsg ? "error" : "");
 

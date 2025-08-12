@@ -6,12 +6,12 @@ import { useSidebarStore } from "@/stores/sideBarStore";
 import { IMAGETYPE } from "@/types/image";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import TablerIcon from "../icon/tablerIcon";
 import ImageWrapper from "../image/imageWrapper";
 import Logo from "../text/logo";
 import styles from "./navBar.module.scss";
-import { useRouter } from "next/navigation";
 
 export default function NavBar() {
   const { toggle } = useSidebarStore();
@@ -28,16 +28,16 @@ export default function NavBar() {
 
   const [showSearch, setShowSearch] = useState(false);
 
-  const [searchQuery , setSearchQuery] = useState('')
-  const router = useRouter()
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
 
-  const handleSearchSubmit = (e:React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const query = searchQuery.trim()
-    if (!query) return
-    router.push(ROUTES.SEARCH.DETAIL(encodeURIComponent(query)))
-    if (isMobile) setShowSearch(false)
-  }
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const query = searchQuery.trim();
+    if (!query) return;
+    router.push(ROUTES.SEARCH.DETAIL(encodeURIComponent(query)));
+    if (isMobile) setShowSearch(false);
+  };
 
   return (
     <nav className={styles.navbar}>
@@ -58,8 +58,16 @@ export default function NavBar() {
       {/* 가운데 */}
       {!isMobile && (
         <div className={styles.center}>
-          <form role="search" onSubmit={handleSearchSubmit}> 
-          <BaseInput type="search" name="query" placeholder="검색" value={searchQuery} onChange={(e) => {setSearchQuery(e.target.value)}} />
+          <form role="search" onSubmit={handleSearchSubmit}>
+            <BaseInput
+              type="search"
+              name="query"
+              placeholder="검색"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+              }}
+            />
           </form>
         </div>
       )}

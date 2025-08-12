@@ -18,7 +18,7 @@ export function useInstructorStats() {
     try {
       const res = await restClient.get<ApiResponse<InstructorStats>>(
         "/user/instructor/statisic",
-        { requireAuth: true }
+        { requireAuth: true },
       );
       console.log(res.data?.data);
       const body = res.data?.data as InstructorStats;

@@ -58,7 +58,7 @@ export default function useExtraForm(initial?: Partial<ExtraValues>) {
 
   const setField = <K extends keyof ExtraValues>(
     key: K,
-    val: ExtraValues[K]
+    val: ExtraValues[K],
   ) => {
     setValues((prev) => ({ ...prev, [key]: val }));
     // 필요하면 즉시 검증

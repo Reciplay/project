@@ -10,8 +10,7 @@ import AuthImage from "../__components/authImage/authImage";
 import styles from "./page.module.scss";
 
 export default function ExtraPage() {
-  const { values, errors, submitting, canSubmit, setField, handleSubmit } =
-    useExtraForm();
+  const { values, errors, submitting, setField, handleSubmit } = useExtraForm();
 
   return (
     <>

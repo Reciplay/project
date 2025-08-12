@@ -25,5 +25,5 @@ export const sampleLicenses: ApiResponse<ResponseLicense[]> = {
     { id: 18, name: "바리스타 1급" },
     { id: 19, name: "바리스타 2급" },
     { id: 20, name: "조리기능장" },
-  ]
-}
+  ],
+};

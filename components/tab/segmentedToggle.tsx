@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, ReactNode } from "react";
 import { Segmented } from "antd";
+import { ReactNode, useState } from "react";
 
 interface SegmentedToggleProps {
   options: string[];

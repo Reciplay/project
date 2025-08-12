@@ -26,11 +26,11 @@ export function useSpecialCourses(options?: {
 
   const cond: CourseCardCondition = useMemo(
     () => ({ requestCategory: "special" }),
-    []
+    [],
   );
   const pageable: Pageable = useMemo(
     () => ({ page, size, sort }),
-    [page, size, sort]
+    [page, size, sort],
   );
 
   const load = useCallback(async () => {

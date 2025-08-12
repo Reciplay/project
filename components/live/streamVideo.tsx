@@ -1,13 +1,10 @@
 "use client";
 
-import { LocalVideoTrack, RemoteVideoTrack } from "livekit-client";
-import { memo, useEffect, useRef, useState } from "react";
-import { Landmark } from "@mediapipe/tasks-vision";
-import styles from "./streamVideo.module.scss";
-import poseRecognition, {
-  createPoseLandmarker,
-} from "@/lib/video/recognizeGesture";
 import { useVideoUtil } from "@/hooks/live/useVideoUtil";
+import { Landmark } from "@mediapipe/tasks-vision";
+import { LocalVideoTrack, RemoteVideoTrack } from "livekit-client";
+import { memo } from "react";
+import styles from "./streamVideo.module.scss";
 
 interface StreamVideoProps {
   track: LocalVideoTrack | RemoteVideoTrack;
@@ -20,10 +17,7 @@ const StreamVideo = memo(function StreamVideo({
   participantIdentity,
   onNodesDetected,
 }: StreamVideoProps) {
-  const { videoRef, canvasRef, landmarksData } = useVideoUtil(
-    track,
-    onNodesDetected
-  );
+  const { videoRef, canvasRef } = useVideoUtil(track, onNodesDetected);
 
   return (
     <div id={participantIdentity} className={styles.videoContainer}>

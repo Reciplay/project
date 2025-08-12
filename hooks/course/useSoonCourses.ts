@@ -31,11 +31,11 @@ export function useSoonCourses(options?: {
 
   const cond: CourseCardCondition = useMemo(
     () => ({ requestCategory: "soon" }),
-    []
+    [],
   );
   const pageable: Pageable = useMemo(
     () => ({ page, size, sort }),
-    [page, size, sort]
+    [page, size, sort],
   );
 
   const loadPage = useCallback(
@@ -50,7 +50,7 @@ export function useSoonCourses(options?: {
         const res = await fetchCards(
           params,
           true,
-          controllerRef.current.signal
+          controllerRef.current.signal,
         );
         if (res.status === 200) {
           const d = res.data.data;
@@ -58,7 +58,7 @@ export function useSoonCourses(options?: {
 
           // 누적
           setList((prev) =>
-            targetPage === 0 ? content : [...prev, ...content]
+            targetPage === 0 ? content : [...prev, ...content],
           );
           setTotalPages(d.totalPages ?? 1);
           setTotalElements(d.totalElements ?? 0);
@@ -70,13 +70,13 @@ export function useSoonCourses(options?: {
       } catch (e) {
         if (e?.name === "CanceledError" || e?.code === "ERR_CANCELED") return;
         setMessage(
-          e?.response?.data?.message ?? "네트워크 오류가 발생했습니다."
+          e?.response?.data?.message ?? "네트워크 오류가 발생했습니다.",
         );
       } finally {
         setLoading(false);
       }
     },
-    [cond, pageable]
+    [cond, pageable],
   );
 
   useEffect(() => {

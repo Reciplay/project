@@ -41,7 +41,7 @@ export const buildQuery = (cond: CourseCardCondition, pageable: Pageable) => ({
 export async function fetchCards(
   params: Record<string, unknown>,
   authed: boolean,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) {
   return restClient.get<PaginationResponse<CourseCard>>(ENDPOINT, {
     params,

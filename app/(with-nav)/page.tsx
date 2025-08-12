@@ -21,11 +21,11 @@ export default function Page() {
     // sort: ["createdAt,desc"], // 정렬 옵션
   });
 
-  const { list: special } = useCourseCards({
-    initialCondition: { requestCategory: "special" },
-    size: 20, // 한 번에 불러올 개수
-    // sort: ["createdAt,desc"], // 정렬 옵션
-  });
+  // const { list: special } = useCourseCards({
+  //   initialCondition: { requestCategory: "special" },
+  //   size: 20, // 한 번에 불러올 개수
+  //   // sort: ["createdAt,desc"], // 정렬 옵션
+  // });
 
   const { list: enrolled } = useCourseCards({
     initialCondition: { requestCategory: "enrolled" },

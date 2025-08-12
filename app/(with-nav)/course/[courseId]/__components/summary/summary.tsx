@@ -18,7 +18,7 @@ export default function Summary({ courseDetail }: SummaryProps) {
 
   const rating = Math.max(
     0,
-    Math.min(5, Number(courseDetail.averageReviewScore ?? 0))
+    Math.min(5, Number(courseDetail.averageReviewScore ?? 0)),
   );
   const ratingText = rating.toFixed(1);
 

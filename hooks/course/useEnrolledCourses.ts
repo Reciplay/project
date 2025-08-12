@@ -17,7 +17,7 @@ import {
 async function fetchCards(
   params: Record<string, unknown>,
   authed: boolean,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) {
   return restClient.get<PaginationResponse<CourseCard>>(ENDPOINT, {
     params,
@@ -48,11 +48,11 @@ export function useEnrolledCourses(options?: {
 
   const cond: CourseCardCondition = useMemo(
     () => ({ requestCategory: "enrolled" }),
-    []
+    [],
   );
   const pageable: Pageable = useMemo(
     () => ({ page, size, sort }),
-    [page, size, sort]
+    [page, size, sort],
   );
 
   const load = useCallback(async () => {

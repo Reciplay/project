@@ -6,7 +6,7 @@ import { useInstructorStore } from "@/stores/instructorStore";
 import { ApiResponse } from "@/types/apiResponse";
 import { User } from "@/types/user";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Career from "./__components/career";
 import Certificate from "./__components/certificate";
 import Introduction from "./__components/introduction";
@@ -43,14 +43,8 @@ export default function EditInstructorPage() {
   const router = useRouter();
   const instructorId = searchParams.get("instructorId");
 
-  const {
-    profile,
-    setProfile,
-    setIntroduction,
-    setCertificates,
-    setCareers,
-    setCoverImageFile,
-  } = useInstructorStore();
+  const { profile, setProfile, setIntroduction, setCertificates, setCareers, setCoverImageFile } =
+    useInstructorStore();
 
   const [basicProfile, setBasicProfile] = useState({
     name: "",
@@ -59,9 +53,95 @@ export default function EditInstructorPage() {
     job: "",
   });
 
-  const [initialCoverImageUrl, setInitialCoverImageUrl] = useState<
-    string | undefined
-  >(undefined);
+  const [initialCoverImageUrl, setInitialCoverImageUrl] = useState<string | undefined>(undefined);
+
+  const fetchUserBasic = useCallback(async () => {
+    try {
+      const { data } = await restClient.get<ApiResponse<User>>("/user/profile", {
+        requireAuth: true,
+      });
+      const { name, job, birthDate, gender, email } = data.data;
+      const genderText = gender === 0 ? "여" : "남";
+      const age = calculateAge(birthDate);
+      setBasicProfile({
+        name,
+        genderBirth: `${genderText} ${new Date(birthDate).getFullYear()} (${age}세)`,
+        email,
+        job: job ?? "",
+      });
+    } catch (e) {
+      console.error("/user/profile 불러오기 실패", e);
+    }
+  }, []);
+
+  const fetchInstructorProfile = useCallback(
+    async (id: string) => {
+      try {
+        const { data } = await restClient.get<ApiResponse<InstructorProfileResponse>>(
+          "/user/instructor/profile",
+          {
+            params: { instructorId: id }, // 필수 파라미터
+            requireAuth: true,
+            headers: { "Content-Type": "application/json;charset=UTF-8" },
+          },
+        );
+
+        const p = data.data;
+
+        // 스토어 선채움 (주소/전화번호는 응답 스키마에 없으므로 빈 값 유지 혹은 기존값 유지)
+        setProfile({
+          address: profile.address ?? "",
+          phoneNumber: profile.phoneNumber ?? "",
+        });
+
+        setIntroduction(p.introduction ?? "");
+
+        setCertificates(
+          (p.licenses ?? []).map((l) => ({
+            id: l.id,
+            licenseName: l.licenseName,
+            institution: l.institution,
+            acquisitionDate: l.acquisitionDate,
+            grade: l.grade ?? 0,
+          })),
+        );
+
+        setCareers(
+          (p.careers ?? []).map((c) => ({
+            id: c.id,
+            companyName: c.companyName,
+            position: c.position,
+            jobDescription: c.jobDescription,
+            startDate: c.startDate,
+            endDate: c.endDate,
+          })),
+        );
+
+        // 커버 이미지 초기 표시 (Upload fileList preset은 ProfileForm에서 처리)
+        if (p.coverImage) {
+          setCoverImageFile(null); // 새 파일 아직 없음
+          setInitialCoverImageUrl(p.coverImage);
+        }
+
+        // 이름도 응답에 있으니, 기본 프로필 이름이 비어있으면 보조로 채움
+        setBasicProfile((prev) => ({
+          ...prev,
+          name: prev.name || p.name || "",
+        }));
+      } catch (e) {
+        console.error("강사 프로필 불러오기 실패", e);
+      }
+    },
+    [
+      profile.address,
+      profile.phoneNumber,
+      setProfile,
+      setIntroduction,
+      setCertificates,
+      setCareers,
+      setCoverImageFile,
+    ],
+  );
 
   useEffect(() => {
     // 필수 파라미터 체크
@@ -71,85 +151,13 @@ export default function EditInstructorPage() {
     fetchUserBasic();
     // 2) 강사 프로필 조회 → 스토어 선채움
     fetchInstructorProfile(instructorId);
-  }, [instructorId]);
+  }, [instructorId, fetchUserBasic, fetchInstructorProfile]);
 
-  const fetchUserBasic = async () => {
-    try {
-      const { data } = await restClient.get<ApiResponse<User>>(
-        "/user/profile",
-        {
-          requireAuth: true,
-        }
-      );
-      const { name, job, birthDate, gender, email } = data.data;
-      const genderText = gender === 0 ? "여" : "남";
-      const age = calculateAge(birthDate);
-      setBasicProfile({
-        name,
-        genderBirth: `${genderText} ${new Date(
-          birthDate
-        ).getFullYear()} (${age}세)`,
-        email,
-        job: job ?? "",
-      });
-    } catch (e) {
-      console.error("/user/profile 불러오기 실패", e);
-    }
-  };
-
-  const fetchInstructorProfile = async (id: string) => {
-    try {
-      const { data } = await restClient.get<
-        ApiResponse<InstructorProfileResponse>
-      >("/api/v1/user/instructor/profile", {
-        params: { instructorId: id }, // 필수 파라미터
-        requireAuth: true,
-        headers: { "Content-Type": "application/json;charset=UTF-8" },
-      });
-
-      const p = data.data;
-
-      // 스토어 선채움 (주소/전화번호는 응답 스키마에 없으므로 빈 값 유지 혹은 기존값 유지)
-      setProfile({
-        address: profile.address ?? "",
-        phoneNumber: profile.phoneNumber ?? "",
-      });
-
-      setIntroduction(p.introduction ?? "");
-
-      setCertificates(
-        (p.licenses ?? []).map((l) => ({
-          id: l.id,
-          licenseName: l.licenseName,
-          institution: l.institution,
-          acquisitionDate: l.acquisitionDate,
-          grade: l.grade ?? 0,
-        }))
-      );
-
-      setCareers(
-        (p.careers ?? []).map((c) => ({
-          id: c.id,
-          companyName: c.companyName,
-          position: c.position,
-          jobDescription: c.jobDescription,
-          startDate: c.startDate,
-          endDate: c.endDate,
-        }))
-      );
-
-      // 커버 이미지 초기 표시 (Upload fileList preset은 ProfileForm에서 처리)
-      if (p.coverImage) {
-        setCoverImageFile(null); // 새 파일 아직 없음
-        setInitialCoverImageUrl(p.coverImage);
-      }
-
-      // 이름도 응답에 있으니, 기본 프로필 이름이 비어있으면 보조로 채움
-      setBasicProfile((prev) => ({ ...prev, name: prev.name || p.name || "" }));
-    } catch (e) {
-      console.error("강사 프로필 불러오기 실패", e);
-    }
-  };
+  useEffect(() => {
+    if (!instructorId) return;
+    fetchUserBasic();
+    fetchInstructorProfile(instructorId);
+  }, [instructorId, fetchUserBasic, fetchInstructorProfile]);
 
   const calculateAge = (birthDateStr: string): number => {
     const birth = new Date(birthDateStr);
@@ -168,10 +176,7 @@ export default function EditInstructorPage() {
   return (
     <div className={styles.container}>
       <div className={styles.infoContainer}>
-        <ProfileForm
-          value={basicProfile}
-          initialCoverImageUrl={initialCoverImageUrl}
-        />
+        <ProfileForm value={basicProfile} initialCoverImageUrl={initialCoverImageUrl} />
         <Introduction />
         <Certificate />
         <Career />

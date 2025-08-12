@@ -43,7 +43,7 @@ export function useProfile() {
           gender: data.gender,
         });
         setPreviewUrl(
-          data.profileImage?.presignedUrl ?? "/images/profile.webp"
+          data.profileImage?.presignedUrl ?? "/images/profile.webp",
         ); // 초기 이미지 설정
       } catch (e) {
         console.error("프로필 불러오기 실패:", e);
@@ -70,7 +70,7 @@ export function useProfile() {
           birthDate: form.birthDate,
           gender: form.gender,
         },
-        { requireAuth: true }
+        { requireAuth: true },
       );
       alert("프로필이 수정되었습니다.");
       setUserData((prev) =>
@@ -82,7 +82,7 @@ export function useProfile() {
               birthDate: form.birthDate,
               gender: form.gender,
             }
-          : prev
+          : prev,
       );
       setIsEditing(false);
     } catch (err) {
@@ -125,7 +125,7 @@ export function useProfile() {
                 presignedUrl: previewUrl,
               },
             }
-          : prev
+          : prev,
       );
     } catch (err) {
       console.error("❌ 이미지 업로드 실패:", err);

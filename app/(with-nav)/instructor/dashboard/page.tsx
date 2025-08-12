@@ -10,19 +10,8 @@ import QandAList from "../__components/q&alist/q&aList";
 import styles from "./page.module.scss";
 
 export default function Page() {
-  const {
-    data,
-    loading,
-    error,
-    refresh,
-    totalStudents,
-    averageStars,
-    totalReviewCount,
-    subscriberCount,
-    profileImageUrl,
-    newQuestions,
-  } = useInstructorStats();
-  const { postAnswer, loading: qnaLoading } = useQnaPost();
+  const { data, newQuestions } = useInstructorStats();
+  const { postAnswer } = useQnaPost();
 
   const handleSubmitAnswer = async ({
     questionId,

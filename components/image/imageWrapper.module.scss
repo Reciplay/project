@@ -36,8 +36,8 @@ varient - featured_thumbnail
   width: var(--size-featured-thumbnail);
 }
 
-.featured_main>.image,
-.featured_thumbnail>.image {
+.featured_main > .image,
+.featured_thumbnail > .image {
   border-radius: var(--radius-lg);
 }
 

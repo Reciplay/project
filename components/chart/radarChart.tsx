@@ -22,7 +22,7 @@ ChartJS.register(
   LineElement,
   Filler,
   Tooltip,
-  Legend
+  Legend,
 );
 
 interface RadarChartProps {
@@ -62,7 +62,7 @@ export default function RadarChart({
         },
       ],
     }),
-    [labels, values, title]
+    [labels, values, title],
   );
 
   const options: ChartOptions<"radar"> = useMemo(
@@ -94,7 +94,7 @@ export default function RadarChart({
         },
       },
     }),
-    [suggestedMax]
+    [suggestedMax],
   );
 
   // 데이터가 없을 때 가드

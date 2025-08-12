@@ -23,7 +23,9 @@
   color: #222;
   border: none;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
   user-select: none;
 
   /* 버튼 사이 경계선 */

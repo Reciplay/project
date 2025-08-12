@@ -60,7 +60,7 @@ export function useCourseCards(options?: {
   const [totalElements, setTotalElements] = useState(0);
   const hasNext = useMemo(
     () => pageable.page + 1 < totalPages,
-    [pageable.page, totalPages]
+    [pageable.page, totalPages],
   );
 
   const controllerRef = useRef<AbortController | null>(null);
@@ -90,7 +90,7 @@ export function useCourseCards(options?: {
               size: pageable.size,
               sort: pageable.sort,
             },
-          }
+          },
         );
 
         console.log(res);
@@ -99,22 +99,22 @@ export function useCourseCards(options?: {
         setTotalPages(pageData.totalPages);
         setTotalElements(pageData.totalElements);
         setList((prev) =>
-          reset ? pageData.content : [...prev, ...pageData.content]
+          reset ? pageData.content : [...prev, ...pageData.content],
         );
-      } catch (e: any) {
+      } catch (e) {
         console.log(e);
         if (e.name !== "CanceledError" && e.code !== "ERR_CANCELED") {
           setError(
             e?.response?.data?.message ||
               e?.message ||
-              "강좌 목록 조회에 실패했습니다."
+              "강좌 목록 조회에 실패했습니다.",
           );
         }
       } finally {
         setLoading(false);
       }
     },
-    [debouncedCond, pageable.page, pageable.size, pageable.sort, requireAuth]
+    [debouncedCond, pageable.page, pageable.size, pageable.sort, requireAuth],
   );
 
   useEffect(() => {
@@ -179,7 +179,7 @@ export function useCourseCards(options?: {
 
 function useDebouncedCondition(
   cond: CourseCardCondition,
-  delay: number
+  delay: number,
 ): CourseCardCondition {
   const [debounced, setDebounced] = useState(cond);
 

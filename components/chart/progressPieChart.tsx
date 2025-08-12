@@ -1,12 +1,12 @@
 // components/AnimatedProgress.tsx
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   CircularProgressbarWithChildren,
   buildStyles,
 } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { useEffect, useState } from "react";
 
 export default function ProgressPieChart({ pathColor = "FFD700", value = 75 }) {
   const [progress, setProgress] = useState(0);

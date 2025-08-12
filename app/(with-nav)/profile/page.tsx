@@ -6,7 +6,7 @@ import { Level } from "@/types/user";
 import ProfileHeader from "./__components/profileHeader/profileHeader";
 import ProfileInfo from "./__components/profileInfo/profileInfo";
 import styles from "./page.module.scss";
-export const sampleLevels: Level[] = [
+const sampleLevels: Level[] = [
   { category: "한식", categoryId: 1, level: 80 },
   { category: "중식", categoryId: 2, level: 60 },
   { category: "일식", categoryId: 3, level: 75 },

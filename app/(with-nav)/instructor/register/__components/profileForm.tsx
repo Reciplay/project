@@ -1,15 +1,14 @@
-'use client';
+"use client";
 
-import styles from '../page.module.scss';
-import classNames from 'classnames';
-import IconWithText from '@/components/text/iconWithText';
-import Image from 'next/image';
-import { useInstructorStore } from '@/stores/instructorStore';
-import { Upload } from 'antd';
-import type { GetProp, UploadFile, UploadProps } from 'antd';
-import ImgCrop from 'antd-img-crop';
-import React, { useEffect, useState } from 'react';
-import AddressPicker from './address/addressPicker';
+import IconWithText from "@/components/text/iconWithText";
+import { useInstructorStore } from "@/stores/instructorStore";
+import type { GetProp, UploadFile, UploadProps } from "antd";
+import { Upload } from "antd";
+import ImgCrop from "antd-img-crop";
+import Image from "next/image";
+import { useState } from "react";
+import styles from "../page.module.scss";
+import AddressPicker from "./address/addressPicker";
 
 interface ProfileFormProps {
   value: {
@@ -19,23 +18,21 @@ interface ProfileFormProps {
     job: string;
   };
 }
-type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
+type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
 export default function ProfileForm({ value }: ProfileFormProps) {
-
   const [addrOpen, setAddrOpen] = useState(false);
   const phoneRegex = /^010-\d{4}-\d{4}$/;
-  const [phoneError, setPhoneError] = useState('');
+  const [, setPhoneError] = useState("");
   const { profile, setProfile, setCoverImageFile } = useInstructorStore();
   const [fileList, setFileList] = useState<UploadFile[]>([
     {
-      uid: '-1',
-      name: 'upload',
-      status: 'done',
-      url: '',
+      uid: "-1",
+      name: "upload",
+      status: "done",
+      url: "",
     },
   ]);
-
 
   const onPreview = async (file: UploadFile) => {
     let src = file.url as string;
@@ -46,21 +43,17 @@ export default function ProfileForm({ value }: ProfileFormProps) {
         reader.onload = () => resolve(reader.result as string);
       });
     }
-    const image = document.createElement('img');
+    const image = document.createElement("img");
     image.src = src;
     const imgWindow = window.open(src);
     imgWindow?.document.write(image.outerHTML);
   };
-
-
-
 
   return (
     <form className={styles.frame} onSubmit={(e) => e.preventDefault()}>
       <div className={styles.textContainer}>
         <div className={styles.nameWrapper}>
           <span className={styles.name}>{value.name}</span>
-
         </div>
 
         <span className={styles.text}>{value.genderBirth}</span>
@@ -81,10 +74,10 @@ export default function ProfileForm({ value }: ProfileFormProps) {
               setProfile({ ...profile, phoneNumber: v });
 
               // 포맷 검사 후 에러 메시지 설정
-              if (v === '' || phoneRegex.test(v)) {
-                setPhoneError('');
+              if (v === "" || phoneRegex.test(v)) {
+                setPhoneError("");
               } else {
-                setPhoneError('형식: 010-1234-5678');
+                setPhoneError("형식: 010-1234-5678");
               }
             }}
           />
@@ -101,7 +94,7 @@ export default function ProfileForm({ value }: ProfileFormProps) {
         <AddressPicker
           open={addrOpen}
           onClose={() => setAddrOpen(false)}
-          onSelect={(addr, zonecode) => {
+          onSelect={(addr) => {
             setProfile({ ...profile, address: addr });
           }}
         />
@@ -116,13 +109,15 @@ export default function ProfileForm({ value }: ProfileFormProps) {
             // 파일이 업로드될 때마다 실행되는 콜백 함수
             beforeUpload={(file) => {
               setCoverImageFile(file);
-              setFileList([{
-                uid: file.uid,
-                name: file.name,
-                status: 'done',
-                url: URL.createObjectURL(file),
-                originFileObj: file,
-              }]);
+              setFileList([
+                {
+                  uid: file.uid,
+                  name: file.name,
+                  status: "done",
+                  url: URL.createObjectURL(file),
+                  originFileObj: file,
+                },
+              ]);
               return false;
             }}
             onRemove={() => {
@@ -131,7 +126,7 @@ export default function ProfileForm({ value }: ProfileFormProps) {
             }}
             onPreview={onPreview}
           >
-            {fileList.length < 1 && '+ Upload'}
+            {fileList.length < 1 && "+ Upload"}
           </Upload>
         </ImgCrop>
       </div>
@@ -141,7 +136,7 @@ export default function ProfileForm({ value }: ProfileFormProps) {
           src="/images/profile2.png"
           fill
           alt="profile"
-          style={{ objectFit: 'cover' }}
+          style={{ objectFit: "cover" }}
         />
       </div>
     </form>

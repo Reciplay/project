@@ -25,11 +25,11 @@ export default function useCourseAdmin() {
       const [approvedRes, registerRes] = await Promise.all([
         restClient.get<ApiResponse<CourseSummary[]>>(
           "/course/admin/course/summaries",
-          { params: { isApprove: true }, requireAuth: true }
+          { params: { isApprove: true }, requireAuth: true },
         ),
         restClient.get<ApiResponse<CourseSummary[]>>(
           "/course/admin/course/summaries",
-          { params: { isApprove: false }, requireAuth: true }
+          { params: { isApprove: false }, requireAuth: true },
         ),
       ]);
 
@@ -52,9 +52,9 @@ export default function useCourseAdmin() {
       [...approvedList].sort(
         (a, b) =>
           new Date(b.registeredAt).getTime() -
-          new Date(a.registeredAt).getTime()
+          new Date(a.registeredAt).getTime(),
       ),
-    [approvedList]
+    [approvedList],
   );
 
   const sortedRegister = useMemo(
@@ -62,9 +62,9 @@ export default function useCourseAdmin() {
       [...registerList].sort(
         (a, b) =>
           new Date(b.registeredAt).getTime() -
-          new Date(a.registeredAt).getTime()
+          new Date(a.registeredAt).getTime(),
       ),
-    [registerList]
+    [registerList],
   );
 
   // ✅ 상세 모달
@@ -75,7 +75,7 @@ export default function useCourseAdmin() {
     try {
       const res = await restClient.get<ApiResponse<Course>>(
         "/course/admin/course",
-        { params: { courseId }, requireAuth: true }
+        { params: { courseId }, requireAuth: true },
       );
 
       console.log(res.data.data.instructorId);
@@ -102,7 +102,7 @@ export default function useCourseAdmin() {
         const res = await restClient.put(
           "/course/admin/course",
           { instructorId, courseId, message, isApprove },
-          { requireAuth: true }
+          { requireAuth: true },
         );
         await fetchLists();
         setModalOpen(false);
@@ -111,7 +111,7 @@ export default function useCourseAdmin() {
         alert("강좌 승인 처리에 실패했습니다.");
       }
     },
-    [fetchLists, instructorId]
+    [fetchLists, instructorId],
   );
 
   return {

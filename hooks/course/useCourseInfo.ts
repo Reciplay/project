@@ -36,7 +36,7 @@ export function useCourseInfo(courseId?: string) {
             params: { courseId: cid },
             requireAuth: true,
             validateStatus: () => true,
-          }
+          },
         );
 
         if (res.status >= 200 && res.status < 300) {
@@ -81,7 +81,7 @@ export function useCourseInfo(courseId?: string) {
             params: { courseId: cid },
             requireAuth: true,
             validateStatus: () => true,
-          }
+          },
         );
 
         if (res.status >= 200 && res.status < 300) {
@@ -97,7 +97,7 @@ export function useCourseInfo(courseId?: string) {
             params: { courseId: cid },
             requireAuth: true,
             validateStatus: () => true,
-          }
+          },
         );
 
         if (res.status >= 200 && res.status < 300) {
@@ -132,7 +132,7 @@ export function useCourseInfo(courseId?: string) {
             params: { courseId: cid },
             requireAuth: true,
             validateStatus: () => true,
-          }
+          },
         );
 
         if (!alive) return;

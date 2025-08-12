@@ -1,6 +1,5 @@
-import { InstructorSummary } from "@/types/instructor";
-import commonStyles from "../../../page.module.scss";
 import { UserSummary } from "@/types/user";
+import commonStyles from "../../../page.module.scss";
 interface MemberTableProps {
   list: UserSummary[];
   onRowClick: (MemberId: number) => void;

@@ -52,14 +52,14 @@ export function useCreateCourse() {
   const setField = useCallback(
     <K extends keyof RequestCourseInfo>(
       key: K,
-      value: RequestCourseInfo[K]
+      value: RequestCourseInfo[K],
     ) => {
       setState((prev) => ({
         ...prev,
         requestCourseInfo: { ...prev.requestCourseInfo, [key]: value },
       }));
     },
-    []
+    [],
   );
 
   // 날짜를 Date → ISO로 저장하고 싶을 때
@@ -71,7 +71,7 @@ export function useCreateCourse() {
           : date.toISOString();
       setField(key, iso as RequestCourseInfo[typeof key]);
     },
-    [setField]
+    [setField],
   );
 
   // canLearns 배열 조작
@@ -99,7 +99,7 @@ export function useCreateCourse() {
   const removeCanLearn = useCallback((index: number) => {
     setState((prev) => {
       const next = prev.requestCourseInfo.canLearns.filter(
-        (_, i) => i !== index
+        (_, i) => i !== index,
       );
       return {
         ...prev,
@@ -221,12 +221,12 @@ export function useCreateCourse() {
   // 미리보기용 URL
   const thumbnailPreviews = useMemo(
     () => state.thumbnailImages.map((f) => URL.createObjectURL(f)),
-    [state.thumbnailImages]
+    [state.thumbnailImages],
   );
   const coverPreview = useMemo(
     () =>
       state.courseCoverImage ? URL.createObjectURL(state.courseCoverImage) : "",
-    [state.courseCoverImage]
+    [state.courseCoverImage],
   );
 
   return {

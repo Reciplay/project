@@ -1,7 +1,6 @@
 import { Instructor } from "@/types/instructor";
 
 export const sampleInstructor: Instructor = {
-  id: 0,
   name: "이지언",
   profileImage: "/images/profile.jpg",
   coverImage: "/images/instructor-banner.png",

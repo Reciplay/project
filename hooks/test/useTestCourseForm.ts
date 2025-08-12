@@ -52,12 +52,12 @@ export function useCourseForm() {
       level: 0,
       announcement: "",
       canLearns: [],
-    }
+    },
   );
 
   /** 2) 이미지 상태 (URL|string 또는 RcFile) */
   const [thumbnailImages, setThumbnailImages] = useState<(string | RcFile)[]>(
-    []
+    [],
   );
   const [courseCoverImage, setCourseCoverImage] = useState<
     string | RcFile | null
@@ -70,11 +70,11 @@ export function useCourseForm() {
   const setCourseField = useCallback(
     <K extends keyof RequestCourseInfo>(
       key: K,
-      value: RequestCourseInfo[K]
+      value: RequestCourseInfo[K],
     ) => {
       setRequestCourseInfo((prev) => ({ ...prev, [key]: value }));
     },
-    []
+    [],
   );
 
   /** 깊은 path 업데이트 (예: "requestCourseInfo.title") */
@@ -129,10 +129,10 @@ export function useCourseForm() {
   const updateLecture = useCallback(
     (index: number, patch: Partial<LectureDTO>) => {
       setLectures((prev) =>
-        prev.map((lec, i) => (i === index ? { ...lec, ...patch } : lec))
+        prev.map((lec, i) => (i === index ? { ...lec, ...patch } : lec)),
       );
     },
-    []
+    [],
   );
 
   /** 강의: 파일 세팅 (로컬 전용 필드만 갱신, 서버 JSON의 materials에는 파일명 같은 문자열을 넣고 싶으면 동시 업데이트 가능) */
@@ -150,11 +150,11 @@ export function useCourseForm() {
                     : lec.materials
                   : lec.materials,
               }
-            : lec
-        )
+            : lec,
+        ),
       );
     },
-    []
+    [],
   );
 
   /** 강의: 삭제(시퀀스 재정렬) */
@@ -162,21 +162,21 @@ export function useCourseForm() {
     setLectures((prev) =>
       prev
         .filter((_, i) => i !== index)
-        .map((lec, i) => ({ ...lec, sequence: i }))
+        .map((lec, i) => ({ ...lec, sequence: i })),
     );
   }, []);
 
   /** 제출 시 넘길 데이터 조립자 */
   const getRequestCourseInfo = useCallback(
     () => requestCourseInfo,
-    [requestCourseInfo]
+    [requestCourseInfo],
   );
   const getImagesRaw = useCallback(
     (): CourseImagesRaw => ({
       thumbnails: thumbnailImages,
       cover: courseCoverImage,
     }),
-    [thumbnailImages, courseCoverImage]
+    [thumbnailImages, courseCoverImage],
   );
   const getLectures = useCallback(() => lectures, [lectures]);
 
@@ -243,6 +243,6 @@ export function useCourseForm() {
       getImagesRaw,
       getLectures,
       reset,
-    ]
+    ],
   );
 }

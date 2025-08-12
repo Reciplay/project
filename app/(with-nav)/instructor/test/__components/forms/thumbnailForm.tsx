@@ -9,6 +9,7 @@ import type {
   UploadFile,
   UploadProps,
 } from "antd/es/upload/interface";
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./thumbnailForm.module.scss";
 
@@ -48,7 +49,7 @@ export default function ThumbNailForm({
 
   const toUploadFiles = (
     items: (string | RcFile)[],
-    type: "thumb" | "cover"
+    type: "thumb" | "cover",
   ): UploadFile[] => {
     return items.map((it, idx) => {
       if (typeof it === "string") {
@@ -88,7 +89,7 @@ export default function ThumbNailForm({
   const previewThumbUrls = useMemo(
     () =>
       thumbList.slice(0, previewCount).map((f) => f.thumbUrl || f.url || ""),
-    [thumbList, previewCount]
+    [thumbList, previewCount],
   );
   const previewCoverUrl = useMemo(() => {
     const f = coverList[0];
@@ -98,11 +99,12 @@ export default function ThumbNailForm({
   const beforeUpload: UploadProps["beforeUpload"] = (file) => {
     const isImg = /^image\/(png|jpeg|jpg|webp)$/.test(file.type);
     if (!isImg)
-      return message.error("PNG/JPG/WEBP만 가능합니다."), Upload.LIST_IGNORE;
+      return (message.error("PNG/JPG/WEBP만 가능합니다."), Upload.LIST_IGNORE);
     const isLt = file.size / 1024 / 1024 < maxSizeMB;
     if (!isLt)
       return (
-        message.error(`이미지 크기는 ${maxSizeMB}MB 이하`), Upload.LIST_IGNORE
+        message.error(`이미지 크기는 ${maxSizeMB}MB 이하`),
+        Upload.LIST_IGNORE
       );
     return false; // 실제 업로드 X (제출 시 multipart)
   };
@@ -122,7 +124,7 @@ export default function ThumbNailForm({
       .map((f) =>
         f.originFileObj
           ? (f.originFileObj as RcFile)
-          : f.url ?? f.thumbUrl ?? ""
+          : (f.url ?? f.thumbUrl ?? ""),
       )
       .filter(Boolean);
 
@@ -156,12 +158,14 @@ export default function ThumbNailForm({
             }`}
           >
             {previewThumbUrls[i] ? (
-              <img
+              <Image
                 src={previewThumbUrls[i]}
                 alt={`썸네일 ${i + 1}`}
                 className={styles.thumbnail}
               />
             ) : (
+              // <img
+              // />
               <span>썸네일 업로드</span>
             )}
           </div>
@@ -172,12 +176,14 @@ export default function ThumbNailForm({
           }`}
         >
           {previewCoverUrl ? (
-            <img
+            <Image
               src={previewCoverUrl}
               alt="커버 이미지"
               className={styles.thumbnail}
             />
           ) : (
+            // <img
+            // />
             <span>커버 업로드</span>
           )}
         </div>

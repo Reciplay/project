@@ -67,7 +67,9 @@
   -webkit-backdrop-filter: blur(14px);
 
   /* 깊이감 */
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 12px 24px rgba(0, 0, 0, 0.1),
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.08),
+    0 12px 24px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.25);
 
   /* 그라디언트 보더(1px) */
@@ -86,7 +88,9 @@
     rgba(255, 255, 255, 0.55),
     rgba(255, 255, 255, 0.15)
   );
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
@@ -95,8 +99,12 @@
 /* 호버 시 살짝 부상 */
 .box:hover {
   transform: translateY(-1px);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1), 0 18px 36px rgba(0, 0, 0, 0.12),
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.1),
+    0 18px 36px rgba(0, 0, 0, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 

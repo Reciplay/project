@@ -5,15 +5,14 @@ import restClient from "@/lib/axios/restClient";
 import { useInstructorStore } from "@/stores/instructorStore";
 import { ApiResponse } from "@/types/apiResponse";
 import { User } from "@/types/user";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Career from "./__components/career";
 import Certificate from "./__components/certificate";
 import Introduction from "./__components/introduction";
 import ProfileForm from "./__components/profileForm"; // 맨 위에 import 추가
 import styles from "./page.module.scss";
 
-export default function page() {
+export default function Page() {
   const [basicProfile, setProfile] = useState<{
     name: string;
     genderBirth: string;
@@ -27,7 +26,6 @@ export default function page() {
   });
   const { profile, introduction, certificates, careers, coverImageFile } =
     useInstructorStore();
-  const router = useRouter();
 
   const handleSave = async () => {
     try {
@@ -67,7 +65,7 @@ export default function page() {
         "instructorProfile",
         new Blob([JSON.stringify(instructorProfilePayload)], {
           type: "application/json",
-        })
+        }),
       );
       // ✅ 실제 백엔드 경로로 교체 (예: /api/v1/instructor)
       // restClient가 axios 래퍼라면, FormData 전달 시 boundary 헤더는 자동으로 붙습니다.
@@ -87,35 +85,28 @@ export default function page() {
     }
   };
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
   // 기본 정보 가져오는 함수 백엔드 api 요청
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       const { data } = await restClient.get<ApiResponse<User>>(
         "/user/profile",
         {
           requireAuth: true,
-        }
+        },
       );
 
       const { name, job, birthDate, gender, email } = data.data;
-      console.log(data.data);
-
       const genderText = gender === 0 ? "여" : "남";
       const age = calculateAge(birthDate);
 
       setProfile({
-        name: name,
+        name,
         genderBirth: `${genderText} ${formatBirth(birthDate)} (${age}세)`,
-        email: email,
-        job: job,
+        email,
+        job,
       });
     } catch (e) {
       console.error("프로필 불러오기 실패", e);
-
       setProfile({
         name: "이지언",
         genderBirth: "여 2000 (25세)",
@@ -123,7 +114,11 @@ export default function page() {
         job: "양식 강사",
       });
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
 
   // 만나이 계산 함수
   const calculateAge = (birthDateStr: string): number => {

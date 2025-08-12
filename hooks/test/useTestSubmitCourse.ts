@@ -28,13 +28,13 @@ type ApiLecture = Omit<LectureDTO, "chapterList" | "localMaterialFile"> & {
 
 async function logFormData(fd: FormData, label: string) {
   console.groupCollapsed(`[${label}] entries (deep)`);
-  for (const [key, value] of fd.entries()) {
+  for (const [key, rawValue] of fd.entries()) {
+    const value = rawValue as unknown; // 👈 타입 단언 추가
+
     if (value instanceof File) {
-      // File: 이름/타입/크기 먼저
       console.log(
         `- ${key}: File(name="${value.name}", type="${value.type}", size=${value.size}B)`,
       );
-      // 만약 텍스트/JSON 파일이면 내용도 미리보기 (큰 파일 주의)
       if (value.type.includes("json") || value.type.startsWith("text/")) {
         try {
           const txt = await value.text();
@@ -46,15 +46,12 @@ async function logFormData(fd: FormData, label: string) {
         } catch {}
       }
     } else if (value instanceof Blob) {
-      // Blob: 타입/크기 출력
       console.log(`- ${key}: Blob(type="${value.type}", size=${value.size}B)`);
-      // JSON Blob이면 내용 파싱
       if (value.type === "application/json") {
         try {
           const txt = await value.text();
           console.log(`  ${key} (parsed JSON):`, JSON.parse(txt));
         } catch {
-          // 혹시 파싱 실패 시 원문 출력
           try {
             const txt = await value.text();
             console.log(`  ${key} (text):`, txt);
@@ -62,7 +59,6 @@ async function logFormData(fd: FormData, label: string) {
         }
       }
     } else {
-      // 일반 문자열/숫자 등
       console.log(`- ${key}:`, value);
     }
   }

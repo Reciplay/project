@@ -20,7 +20,7 @@ ChartJS.register(
   PointElement,
   LineElement,
   Tooltip,
-  Filler
+  Filler,
 );
 
 export default function DailySmoothLineChart() {

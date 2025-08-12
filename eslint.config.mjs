@@ -14,7 +14,7 @@ const eslintConfig = [
   ...compat.extends(
     "next/core-web-vitals",
     "next/typescript",
-    "plugin:prettier/recommended" // ★ Prettier 규칙 ESLint에 통합
+    "plugin:prettier/recommended", // ★ Prettier 규칙 ESLint에 통합
   ),
   {
     rules: {
