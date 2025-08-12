@@ -79,7 +79,6 @@ public class CourseQueryServiceImpl implements CourseQueryService{
         courseDetail.setInstructorName(user.getName());
         courseDetail.setInstructorNickname(user.getNickname());
 
-
         return courseDetail;
     }
 
