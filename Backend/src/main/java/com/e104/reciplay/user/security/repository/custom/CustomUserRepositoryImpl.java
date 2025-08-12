@@ -16,7 +16,7 @@ public class CustomUserRepositoryImpl implements  CustomUserRepository{
     public void updateUserRoleToInstructorById(Long userId) {
         queryFactory
                 .update(user)
-                .set(user.role, "instructor")
+                .set(user.role, "ROLE_INSTRUCTOR")
                 .where(user.id.eq(userId))
                 .execute();
     }
