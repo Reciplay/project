@@ -15,6 +15,7 @@ interface VideoSectionProps {
   audioTrack?: LocalAudioTrack | RemoteAudioTrack;
   participantIdentity: string;
   onNodesDetected?: (nodes: Landmark[][]) => void;
+  setGesture?: (gesture: string) => void;
   todo?: string;
 }
 
@@ -23,6 +24,7 @@ export default function VideoSection({
   audioTrack,
   participantIdentity,
   onNodesDetected,
+  setGesture,
   todo,
 }: VideoSectionProps) {
   return (
@@ -31,6 +33,7 @@ export default function VideoSection({
         track={videoTrack}
         participantIdentity={participantIdentity}
         onNodesDetected={onNodesDetected}
+        setGesture={setGesture}
       />
 
       {/* 닉네임 오버레이 */}

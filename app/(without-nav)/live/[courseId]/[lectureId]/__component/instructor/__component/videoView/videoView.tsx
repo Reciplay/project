@@ -1,11 +1,12 @@
 
 import VideoSection from "@/components/live/videoSection";
 import useLivekitConnection from "@/hooks/live/useLivekitConnection";
-import { recognizeGesture } from "@/components/live/gestureRecognizer";
-import { RemoteVideoTrack } from "livekit-client";
 import { getSession } from "next-auth/react";
 import { useParams } from "next/navigation";
+import { recognizeGesture } from "@/components/live/gestureRecognizer";
 import { useCallback, useEffect, useRef, useState } from "react";
+import useLiveSocket from "@/hooks/live/useLiveSocket";
+
 
 export default function VideoView() {
     const params = useParams();
@@ -42,8 +43,23 @@ export default function VideoView() {
         };
     }, [courseId, lectureId, role]);
 
+
+    const [handGesture, setHandGesture] = useState("");
+    const lastHandGestureCheck = useRef(0);
+
+    const handleHandGesture = useCallback((value: string) => {
+        const now = Date.now();
+        if (now - lastHandGestureCheck.current > 1000) {
+            lastHandGestureCheck.current = now;
+            setHandGesture(prev => (prev === value ? prev : value));
+            if (value && value !== "None") {
+                console.log("Hand Gesture recognized:", value);
+            }
+        }
+    }, []);
+
     const lastGestureCheck = useRef(0);
-    const [gesture, setGesture] = useState("");
+    const [recognizedPose, setPose] = useState("");
     const handleNodesDetected = useCallback((nodes) => {
         const now = Date.now();
         if (now - lastGestureCheck.current > 1000) {
@@ -51,12 +67,31 @@ export default function VideoView() {
             if (nodes && nodes.length > 0) {
                 const newGesture = recognizeGesture(nodes[0]);
                 if (newGesture) {
-                    setGesture(newGesture);
-                    console.log("Recognized gesture:", newGesture);
+                    console.log("Gesture recognized:", newGesture);
+                    setPose(newGesture);
                 }
             }
         }
     }, []);
+
+    const { roomId, socket, stompClient ,sendChapterIssue, roomInfo } = useLiveSocket(courseId, lectureId, "instructor");
+    const lastGestureSended = useRef(0)
+    useEffect(() => {
+        const now = Date.now()
+        const issuer = roomInfo?.email
+        if (now - lastGestureSended.current > 2000) {
+            lastGestureSended.current = now
+            if (recognizedPose === 'clap') {
+                sendChapterIssue(stompClient, {
+                    issuer : issuer,
+                    lectureId : lectureId,
+                    roomId : roomId,
+                    chapterSequence : 1
+                })
+            }
+        }
+    }, [handGesture, recognizedPose])
+
     return (
         <main style={{ padding: 24 }}>
             {/* 로컬 비디오 */}
@@ -66,6 +101,7 @@ export default function VideoView() {
                     participantIdentity={userId}
                     todo={todo}
                     onNodesDetected={handleNodesDetected}
+                    setGesture={handleHandGesture}
                 />
             ) : (
                 <p>비디오 연결 중...</p>
@@ -101,6 +137,3 @@ export default function VideoView() {
         </main>
     );
 }
-
-
-

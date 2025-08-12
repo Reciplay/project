@@ -4,25 +4,25 @@ import { LocalVideoTrack, RemoteVideoTrack } from "livekit-client";
 import { memo, useEffect, useRef, useState } from "react";
 import { Landmark } from "@mediapipe/tasks-vision";
 import styles from "./streamVideo.module.scss";
-import poseRecognition, {
-  createPoseLandmarker,
-} from "@/lib/video/recognizeGesture";
 import { useVideoUtil } from "@/hooks/live/useVideoUtil";
 
 interface StreamVideoProps {
   track: LocalVideoTrack | RemoteVideoTrack;
   participantIdentity: string;
   onNodesDetected?: (nodes: Landmark[][]) => void;
+  setGesture?: (gesture: string) => void;
 }
 
 const StreamVideo = memo(function StreamVideo({
   track,
   participantIdentity,
   onNodesDetected,
+  setGesture,
 }: StreamVideoProps) {
   const { videoRef, canvasRef, landmarksData } = useVideoUtil(
     track,
-    onNodesDetected
+    onNodesDetected,
+    setGesture
   );
 
   return (
