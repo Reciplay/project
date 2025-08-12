@@ -138,14 +138,14 @@ public class CustomCourseRepositoryImpl implements CustomCourseRepository{
 
         // 2) 수강여부 조건
         BooleanExpression enrolledCond = null;
-        if (Boolean.TRUE.equals(isEnrolled)) {
+        if (userId != null && Boolean.TRUE.equals(isEnrolled)) {
             // 해당 유저가 수강한 강좌만
             enrolledCond = JPAExpressions.selectOne()
                     .from(courseHistory)
                     .where(courseHistory.courseId.eq(course.id)
                             .and(courseHistory.userId.eq(userId)))
                     .exists();
-        } else if (Boolean.FALSE.equals(isEnrolled)) {
+        } else if (userId != null && Boolean.FALSE.equals(isEnrolled)) {
             // 해당 유저가 수강하지 않은 강좌만
             enrolledCond = JPAExpressions.selectOne()
                     .from(courseHistory)
@@ -210,6 +210,8 @@ public class CustomCourseRepositoryImpl implements CustomCourseRepository{
                 .where(courseHistory.courseId.eq(course.id)
                         .and(courseHistory.userId.eq(userId)))
                 .exists();
+
+
 
         BooleanExpression where = enrolledExists.and(course.courseEndDate.goe(now.toLocalDate()));
 

@@ -52,7 +52,12 @@ public class CourseApiController {
         log.debug("요청 데이터 {}", courseCardCondition);
         log.debug("요청 페이지 {}", pageable);
         String email = AuthenticationUtil.getSessionUsername();
-        Long userId = userQueryService.queryUserByEmail(email).getId();
+        Long userId = null;
+        try {
+            userId = userQueryService.queryUserByEmail(email).getId();
+        } catch (Exception e) {
+            log.debug("존재하지 않는 이메일 입니다.");
+        }
         PagedResponse<CourseCard> pagedResponse = courseCardQueryService.queryCardsByCardCondtion(courseCardCondition, pageable, userId);
         return CommonResponseBuilder.success("강좌 카드 정보 리스트 조회에 성공하였습니다.",
                 pagedResponse);
