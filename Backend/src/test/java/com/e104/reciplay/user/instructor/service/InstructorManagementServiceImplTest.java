@@ -52,7 +52,7 @@ class InstructorManagementServiceImplTest {
     private LicenseItem licItem(Long id, String institution, LocalDate acq, String grade) {
         // 서비스 코드가 getLicneseId(오타)를 호출하므로 주의!
         LicenseItem item = mock(LicenseItem.class);
-        when(item.getLicneseId()).thenReturn(id);
+        when(item.getLicenseId()).thenReturn(id);
 
         // 경로에 따라 안 쓰일 수 있는 스텁 → lenient 처리
         lenient().when(item.getInstitution()).thenReturn(institution);

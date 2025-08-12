@@ -13,14 +13,14 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class LicenseItem {
-    private Long licneseId;
+    private Long licenseId;
     private String licenseName;
     private String institution;
     private LocalDate acquisitionDate;
     private String grade;
 
     public LicenseItem(InstructorLicense license){
-        this.licneseId = license.getLicenseId();
+        this.licenseId = license.getLicenseId();
         this.institution = license.getInstitution();
         this.acquisitionDate = license.getAcquisitionDate();
         this.grade = license.getGrade();

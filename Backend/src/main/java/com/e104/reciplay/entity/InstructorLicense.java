@@ -34,7 +34,7 @@ public class InstructorLicense {
 
     public InstructorLicense(LicenseItem item, Long instructorId){
         this.instructorId = instructorId;
-        this.licenseId = item.getLicneseId();
+        this.licenseId = item.getLicenseId();
         this.institution = item.getInstitution();
         this.acquisitionDate = item.getAcquisitionDate();
         this.grade = item.getGrade();
