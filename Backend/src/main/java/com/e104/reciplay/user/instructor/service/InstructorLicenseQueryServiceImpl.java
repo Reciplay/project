@@ -10,7 +10,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class InstructorLicenseQueryServiceImpl implements  InstructorLicenseQueryService{
-    private InstructorLicenseRepository instructorLicenseRepository;
+    private final InstructorLicenseRepository instructorLicenseRepository;
+
     @Override
     public List<InstructorLicense> queryLicensesByInstructorId(Long instructorId) {
         return instructorLicenseRepository.findAllByInstructorId(instructorId);
