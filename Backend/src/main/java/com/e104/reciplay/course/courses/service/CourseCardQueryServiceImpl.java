@@ -12,6 +12,7 @@ import com.e104.reciplay.s3.service.S3Service;
 import com.e104.reciplay.user.profile.service.CategoryQueryService;
 import com.e104.reciplay.user.review.service.ReviewQueryService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CourseCardQueryServiceImpl implements CourseCardQueryService{
     private final CourseRepository courseRepository;
     private final CanLearnQueryService canLearnQueryService;
@@ -59,12 +61,13 @@ public class CourseCardQueryServiceImpl implements CourseCardQueryService{
                 card.setAverageReviewScore(reviewQueryService.avgStarsByCourseId(c.getId()));
                 card.setIsEnrolled(courseHistoryQueryService.enrolled(userId, c.getId()));
 
-                FileMetadata fileMetadata ;
-                if(cat.equals("special")){
-                    fileMetadata = subFileMetadataQueryService.queryMetadataByCondition(c.getId(),"course_cover");
-                }else{
-                    fileMetadata = subFileMetadataQueryService.queryMetadataByCondition(c.getId(), "thumbnail");
-                }
+                FileMetadata fileMetadata = null;
+                if (cat.equals("special")) {
+                        fileMetadata = subFileMetadataQueryService.queryMetadataByCondition(c.getId(), "COURSE_COVER");
+                    } else {
+                        fileMetadata = subFileMetadataQueryService.queryMetadataByCondition(c.getId(), "THUMBNAIL");
+                    }
+
                 card.setResponseFileInfo(s3Service.getResponseFileInfo(fileMetadata));
                 cards.add(card);
             }

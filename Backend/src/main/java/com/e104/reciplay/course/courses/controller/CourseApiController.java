@@ -52,6 +52,8 @@ public class CourseApiController {
         log.debug("요청 데이터 {}", courseCardCondition);
         log.debug("요청 페이지 {}", pageable);
         String email = AuthenticationUtil.getSessionUsername();
+        log.debug("요청 사용자 {}", email);
+
         Long userId = null;
         try {
             userId = userQueryService.queryUserByEmail(email).getId();
