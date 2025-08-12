@@ -152,6 +152,7 @@ public class CourseApiController {
     record CourseIdResponse(Long courseId) {}
 
     @DeleteMapping("")
+    @Operation(summary = "강좌를 종료할 때 호출하는 API", description = "강좌 종료하면서 수강자들 역량을 업데이트해줌.")
     @ApiResponse(responseCode = "200", description = "성공적으로 강좌를 종료함.")
     @ApiResponse(responseCode = "400", description = "강좌가 없거나 아직 종료일이 아님.")
     public ResponseEntity<ResponseRoot<Object>> closeCourse(
@@ -161,7 +162,7 @@ public class CourseApiController {
         log.debug("강좌 종료 API 호출, 데이터 {}", courseId);
         log.debug("강좌 종료 API 호출, 사용자 {}", userDetails);
 
-
+        courseManagementService.closeCourse(courseId, userDetails.getUsername());
         return CommonResponseBuilder.success("강좌 종료에 성공하였습니다.", null);
     }
 }

@@ -9,6 +9,8 @@ import com.e104.reciplay.livekit.exception.CanNotOpenLiveRoomException;
 import com.e104.reciplay.livekit.exception.CanNotParticipateInLiveRoomException;
 import com.e104.reciplay.livekit.service.LivekitOpenService;
 import com.e104.reciplay.user.security.dto.CustomUserDetails;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -53,13 +55,16 @@ public class LivekitController {
     }
 
     @DeleteMapping("/lecture")
+    @Operation(summary = "라이브 강의를 종료할 때 호출하는 API", description = "라이브 종료하면서 수강자들 참여 이력을 업데이트해줌.")
+    @ApiResponse(responseCode = "200", description = "성공적으로 라이브 종료함.")
+    @ApiResponse(responseCode = "400", description = "라이브 종료 실패.")
     public ResponseEntity<ResponseRoot<Object>> closeLiveRoom(
             @ModelAttribute CloseLiveRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
             ) {
         log.debug("라이브 강의 종료 API 호출, 데이터 {}", request);
         log.debug("라이브 강의 종료 API 호출, 사용자 {}", userDetails);
-
+        livekitOpenService.closeLiveRoom(request, userDetails.getPassword());
         return CommonResponseBuilder.success("라이브 종료에 성공했습니다.", null);
     }
 }
