@@ -61,7 +61,6 @@ class AuthServiceImplTest {
     @BeforeEach
     void setUp() {
         userRepository.deleteAll();
-        tokenRepository.deleteAll();
         testUser = User.builder().email("test@email.com")
                                 .job("개발자")
                                 .gender(1)
@@ -74,7 +73,6 @@ class AuthServiceImplTest {
     @AfterEach
     void tearDown() {
         userRepository.deleteAll();
-        tokenRepository.deleteAll();
     }
 
 
@@ -100,8 +98,8 @@ class AuthServiceImplTest {
         assertThat(jwtUtil.isExpired(token)).isFalse();
         assertThat(jwtUtil.getUsername(token)).isEqualTo(testUser.getEmail());
 
-        List<Token> tokens = tokenRepository.findByUsernameAndIsExpired(testUser.getEmail(), false);
-        assertThat(tokens).hasSize(2); // New Access Token, Refresh Token
+        Token savedToken = tokenRepository.findValidTokenByPlainAndUsername("", testUser.getEmail(), "ACCESS");
+        assertThat(savedToken.getIsExpired()).isFalse(); // New Access Token, Refresh Token
     }
 
     @Test
@@ -128,8 +126,8 @@ class AuthServiceImplTest {
         authService.invalidateAllTokens(testUser.getEmail());
 
         // then
-        List<Token> tokens = tokenRepository.findByUsernameAndIsExpired(testUser.getEmail(), false);
-        assertThat(tokens).isEmpty();
+        assertThat(tokenRepository.findValidTokenByPlainAndUsername("", testUser.getEmail(), "ACCESS")).isNotNull();
+        assertThat(tokenRepository.findValidTokenByPlainAndUsername("", testUser.getEmail(), "REFRESH")).isNotNull();
     }
 
     @Test

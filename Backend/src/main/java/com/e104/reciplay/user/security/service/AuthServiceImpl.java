@@ -55,8 +55,7 @@ public class AuthServiceImpl implements AuthService {
                 String newToken = jwtUtil.createJwt(jwtUtil.getUsername(token), null, ACCESS_TOKEN_EXPIRATION);
                 response.setHeader("Authorization", "Bearer " + newToken);
                 // 기존에 존재하던 액세스 토큰을 무효화한다.
-                List<Token> preTokens = tokenRepository.findByUsernameAndIsExpiredAndType(username, false, "ACCESS");
-                for (Token preToken : preTokens) preToken.setIsExpired(true);
+                this.invalidateToken(null, username, "ACCESS");
                 // 새로 발급된 토큰을 저장한다.
                 tokenRepository.save(new Token(null, newToken, false, "ACCESS", null, username));
                 return;
@@ -70,17 +69,14 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void invalidateAllTokens(String username) {
-        List<Token> tokens = tokenRepository.findByUsernameAndIsExpired(username, false);
-        for (Token token : tokens) {
-            token.setIsExpired(true);
-        }
+        tokenRepository.deleteTokens(username, "ACCESS");
+        tokenRepository.deleteTokens(username, "REFRESH");
     }
 
     @Override
     @Transactional
     public void invalidateToken(String plain, String username, String type) {
-        Token token = tokenRepository.findValidTokenByPlainAndUsername(plain, username, type);
-        token.setIsExpired(true);
+        tokenRepository.deleteTokens(username, type);
     }
 
     @Override
@@ -88,6 +84,11 @@ public class AuthServiceImpl implements AuthService {
     public void issueNewToken(String plain, String username, String type) {
         Token token = new Token(null, plain, false, type, null, username);
         tokenRepository.save(token);
+    }
+
+    @Override
+    public boolean validateToken(String plain, String username, String type) {
+        return tokenRepository.isValidToken(plain, username, type);
     }
 
     @Override
