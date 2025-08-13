@@ -97,9 +97,7 @@ export default function ThumbnailUpload() {
                   alt={`썸네일 ${index + 1}`}
                   className={styles.thumbnail}
                 />
-
-                {/* <img
-                /> */}
+                {/* <img /> */}
               </div>
             );
           } else {

@@ -1,22 +1,7 @@
 "use client";
 
 import { LectureDTO } from "@/types/lecture";
-import type { RcFile } from "antd/es/upload/interface";
 import { useCallback, useMemo, useState } from "react";
-
-// /** ====== 서버 스펙에 맞춘 DTO들 ====== */
-// export type LectureDTO = {
-//   title: string;
-//   summary: string;
-//   sequence: number; // 0부터
-//   materials: string; // 서버 JSON에는 문자열만 전송(파일명/URL 등)
-//   startedAt: string; // ISO
-//   endedAt: string; // ISO
-//   chapterList: Chapter[];
-
-//   /** ⬇ 클라이언트 전용 로컬 파일(서버 전송은 FormData로 별도) */
-//   localMaterialFile?: File | RcFile | null;
-// };
 
 export type RequestCourseInfo = {
   courseId?: number;
@@ -34,18 +19,19 @@ export type RequestCourseInfo = {
 
 /** 화면 상태의 원본 이미지들 (아직 URL 아님) */
 export type CourseImagesRaw = {
-  thumbnails: (string | RcFile)[]; // 여러 개: URL 문자열 또는 RcFile
-  cover: string | RcFile | null; // 단일: URL 문자열 또는 RcFile
+  thumbnails: (string | File)[]; // 여러 개: URL 문자열 또는 File
+  cover: string | File | null; // 단일: URL 문자열 또는 File
 };
 
 export function useCourseForm() {
   /** 1) 기본 정보 */
   const [requestCourseInfo, setRequestCourseInfo] = useState<RequestCourseInfo>(
     {
+      courseId: 0,
       title: "",
       enrollmentStartDate: "",
       enrollmentEndDate: "",
-      categoryId: undefined,
+      categoryId: 0,
       summary: "",
       maxEnrollments: 0,
       description: "",
@@ -55,12 +41,10 @@ export function useCourseForm() {
     },
   );
 
-  /** 2) 이미지 상태 (URL|string 또는 RcFile) */
-  const [thumbnailImages, setThumbnailImages] = useState<(string | RcFile)[]>(
-    [],
-  );
+  /** 2) 이미지 상태 (URL|string 또는 File) */
+  const [thumbnailImages, setThumbnailImages] = useState<(string | File)[]>([]);
   const [courseCoverImage, setCourseCoverImage] = useState<
-    string | RcFile | null
+    string | File | null
   >(null);
 
   /** 3) 강의 배열 */
@@ -97,12 +81,12 @@ export function useCourseForm() {
     }
 
     if (keys[0] === "thumbnailImages") {
-      setThumbnailImages(value as (string | RcFile)[]);
+      setThumbnailImages(value as (string | File)[]);
       return;
     }
 
     if (keys[0] === "courseCoverImage") {
-      setCourseCoverImage(value as string | RcFile | null);
+      setCourseCoverImage(value as string | File | null);
       return;
     }
   }, []);
@@ -136,26 +120,23 @@ export function useCourseForm() {
   );
 
   /** 강의: 파일 세팅 (로컬 전용 필드만 갱신, 서버 JSON의 materials에는 파일명 같은 문자열을 넣고 싶으면 동시 업데이트 가능) */
-  const setLectureFile = useCallback(
-    (index: number, file: File | RcFile | null) => {
-      setLectures((prev) =>
-        prev.map((lec, i) =>
-          i === index
-            ? {
-                ...lec,
-                localMaterialFile: file,
-                materials: file
-                  ? "name" in file
-                    ? file.name
-                    : lec.materials
-                  : lec.materials,
-              }
-            : lec,
-        ),
-      );
-    },
-    [],
-  );
+  const setLectureFile = useCallback((index: number, file: File | null) => {
+    setLectures((prev) =>
+      prev.map((lec, i) =>
+        i === index
+          ? {
+              ...lec,
+              localMaterialFile: file,
+              materials: file
+                ? "name" in file
+                  ? file.name
+                  : lec.materials
+                : lec.materials,
+            }
+          : lec,
+      ),
+    );
+  }, []);
 
   /** 강의: 삭제(시퀀스 재정렬) */
   const removeLecture = useCallback((index: number) => {

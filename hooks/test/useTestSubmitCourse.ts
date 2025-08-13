@@ -120,7 +120,7 @@ function normalizeLecturesForApi(lectures: LectureDTO[]): ApiLecture[] {
   });
 }
 
-// File/RcFile/Blob 확인(브라우저 내)
+// File/Blob 확인(브라우저 내)
 function isBlobLike(v: unknown): v is Blob {
   return (
     isRecord(v) &&
@@ -154,26 +154,72 @@ type AxiosLikeError = {
   config?: { method?: string; url?: string; headers?: unknown };
   request?: unknown;
 };
+function guessFilenameFromUrl(url: string, fallback: string) {
+  try {
+    const u = new URL(url);
+    const name = u.pathname.split("/").pop() || "";
+    return name || fallback;
+  } catch {
+    return fallback;
+  }
+}
 
+// URL(string) -> Blob 변환
+async function toBlobFromUrl(url: string): Promise<Blob> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Fail to fetch image: ${url}`);
+  return await res.blob();
+}
+
+// Blob을 File로 감싸 파일명/타입 부여(선택)
+function toFile(blob: Blob, filename: string): File {
+  return new File([blob], filename, {
+    type: blob.type || "application/octet-stream",
+  });
+}
 /* ========= FormData 빌더 ========= */
 // 1) 코스 생성 multipart
-function buildCourseCreateFormData(
+export async function buildCourseCreateFormData(
   info: RequestCourseInfo,
-  images: CourseImagesRaw,
+  images: CourseImagesRaw, // { thumbnails: (string|File)[], cover: string|File|null }
 ) {
   const fd = new FormData();
+
+  // JSON 파트 (Postman에서 Text + application/json)
   fd.append(
     "requestCourseInfo",
     new Blob([JSON.stringify(info)], { type: "application/json" }),
   );
-  for (const t of images.thumbnails) {
-    if (typeof t === "string") fd.append("thumbnailImages", t);
-    else if (t) fd.append("thumbnailImages", t as Blob);
+
+  // 썸네일들: 모두 File/Blob로 보장해서 append
+  for (let i = 0; i < images.thumbnails.length; i++) {
+    const t = images.thumbnails[i];
+    if (!t) continue;
+
+    if (typeof t === "string") {
+      // URL이면 Blob으로 다운 → File로 감싸서 파일명 세팅
+      const blob = await toBlobFromUrl(t);
+      const file = toFile(blob, guessFilenameFromUrl(t, `thumbnail_${i}.jpg`));
+      fd.append("thumbnailImages", file, file.name);
+    } else {
+      // 이미 File이면 그대로
+      fd.append("thumbnailImages", t, t.name || `thumbnail_${i}.jpg`);
+    }
   }
+
+  // 커버 이미지
   const c = images.cover;
-  if (typeof c === "string") fd.append("courseCoverImage", c);
-  else if (c) fd.append("courseCoverImage", c as Blob);
-  else fd.append("courseCoverImage", "");
+  if (c) {
+    if (typeof c === "string") {
+      const blob = await toBlobFromUrl(c);
+      const file = toFile(blob, guessFilenameFromUrl(c, "courseCover.jpg"));
+      fd.append("courseCoverImage", file, file.name);
+    } else {
+      fd.append("courseCoverImage", c, c.name || "courseCover.jpg");
+    }
+  }
+  // ❌ else fd.append("courseCoverImage", "") 하지 마세요 (텍스트 파트가 되어버림)
+
   return fd;
 }
 
@@ -213,12 +259,14 @@ async function createCourse(
   info: RequestCourseInfo,
   images: CourseImagesRaw,
 ): Promise<{ courseId: number | null; message?: string }> {
-  const fd = buildCourseCreateFormData(info, images);
+  const fd = await buildCourseCreateFormData(info, images);
   await logFormData(fd, "createCourse");
   console.log("[createCourse] POST /course/courses");
 
   try {
-    console.log(fd);
+    console.log(
+      "ㄴ마ㅓㅗㅇㄴ러ㅣㅇㄴ랴ㅓㅣㅏ라ㅓㅗㄴㄹㄷ아ㅓㅗㄴㅇ라ㅓㅗㅇㄴㄹ",
+    );
     const res = await restClient.post("/course/courses", fd, {
       requireAuth: true,
     });
@@ -238,7 +286,10 @@ async function createCourse(
     return { courseId };
   } catch (e) {
     console.log(e);
-    return;
+    const message =
+      extractServerMessage((e as AxiosLikeError)?.response?.data) ||
+      (e as Error).message;
+    return { courseId: null, message };
   }
 }
 

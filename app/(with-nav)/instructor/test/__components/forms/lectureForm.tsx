@@ -1,33 +1,3 @@
-// import BaseButton from "@/components/button/baseButton";
-// import LectureRegisterDatePicker from "@/components/calendar/lectureRegisterDatePicker";
-// import { Flex, Input } from "antd";
-// import styles from "./lectureForm.module.scss";
-
-// export default function LectureForm() {
-//   const { TextArea } = Input;
-//   return (
-//     <>
-//       <div className={styles.container}>
-//         <Flex vertical gap={12}>
-//           <Input placeholder="강의명을 입력해주세요" variant="underlined" />
-//         </Flex>
-//         <LectureRegisterDatePicker></LectureRegisterDatePicker>
-//         <TextArea
-//           rows={4}
-//           placeholder="강의를 소개해 주세요 필수내용 - 강의별 내용(커리큘럼) 준비물"
-//           maxLength={6}
-//         />
-//         <BaseButton title="생성하기" variant="custom"></BaseButton>
-//         <TextArea
-//           rows={4}
-//           placeholder="TodoList를 생성해주세요"
-//           maxLength={6}
-//         />
-//         <span>강의 자료 업로드 인풋 버튼 만들기</span>
-//       </div>
-//     </>
-//   );
-// }
 "use client";
 
 import BaseButton from "@/components/button/baseButton";
@@ -35,7 +5,6 @@ import LectureRegisterDatePicker from "@/components/calendar/customLectureDatePi
 import { LectureDTO } from "@/types/lecture";
 import { Flex, Input, Upload, message } from "antd";
 import type {
-  RcFile,
   UploadChangeParam,
   UploadFile,
   UploadProps,
@@ -66,7 +35,7 @@ const { TextArea } = Input;
 //     }[];
 //   }[];
 //   /** ⬇ 제출 시 material/{index}로 보낼 로컬 파일(폼 내부 보관) */
-//   localMaterialFile?: File | RcFile | null;
+//   localMaterialFile?: File | null;
 // };
 
 type Props = {
@@ -94,7 +63,7 @@ export default function LectureForm({
   const [endedAt, setEndedAt] = useState<string>("");
   const [todoText, setTodoText] = useState(""); // 줄바꿈 기준
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [localFile, setLocalFile] = useState<RcFile | null>(null);
+  const [localFile, setLocalFile] = useState<File | null>(null);
 
   /** 파일 제한 */
   const beforeUpload: UploadProps["beforeUpload"] = (file) => {
@@ -117,7 +86,7 @@ export default function LectureForm({
   const onChangeUpload = (info: UploadChangeParam<UploadFile>) => {
     const last = info.fileList.slice(-1);
     setFileList(last);
-    const f = last[0]?.originFileObj as RcFile | undefined;
+    const f = last[0]?.originFileObj as File | undefined;
     setLocalFile(f ?? null);
   };
 

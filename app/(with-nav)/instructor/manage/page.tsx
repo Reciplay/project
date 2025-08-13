@@ -12,15 +12,15 @@ import {
   sampleCourse2,
   sampleCourse3,
 } from "@/config/sampleCourse"; // 이 파일이 CourseManage[]를 내보내도록 보장
-import CanLearnsForm from "../create-course/__components/forms/canLearnsForm";
-import CategoryForm from "../create-course/__components/forms/categoryForm";
-import LectureList from "../create-course/__components/forms/lectureList";
-import NumberForm from "../create-course/__components/forms/numberForm";
-import Summary from "../create-course/__components/forms/summary";
-import TextAreaForm from "../create-course/__components/forms/textAreaForm";
-import TextForm from "../create-course/__components/forms/textForm";
-import ThumbNailForm from "../create-course/__components/forms/thumbnailForm";
-import LectureForm from "../create-course/__components/lectureform/lectureForm";
+import CanLearnsForm from "../create-course1/__components/forms/canLearnsForm";
+import CategoryForm from "../create-course1/__components/forms/categoryForm";
+import LectureList from "../create-course1/__components/forms/lectureList";
+import NumberForm from "../create-course1/__components/forms/numberForm";
+import Summary from "../create-course1/__components/forms/summary";
+import TextAreaForm from "../create-course1/__components/forms/textAreaForm";
+import TextForm from "../create-course1/__components/forms/textForm";
+import ThumbNailForm from "../create-course1/__components/forms/thumbnailForm";
+import LectureForm from "../create-course1/__components/lectureform/lectureForm";
 import styles from "./page.module.scss";
 
 /** 우측 상세 패널: CourseManage 그대로 사용 */
