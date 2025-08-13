@@ -23,4 +23,6 @@ public interface InstructorQueryService {
     Instructor queryInstructorByUserId(Long userId);
 
     List<SubscribedInstructorItem> queryUserSubscriptionsByUserId(Long userId);
+
+    Boolean existsByUserId(Long userId);
 }
