@@ -15,7 +15,6 @@ COPY package*.json ./
 RUN npm ci
 
 # .env 포함: 빌드 시 NEXT_PUBLIC_* 등이 필요할 수 있음
-# (같은 디렉토리에 있는 .env, .env.production 등 모두 복사)
 COPY .env* ./
 
 # 소스 복사 및 빌드
@@ -31,25 +30,29 @@ ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     PORT=3000
 
-# 보안: non-root 실행
+# 1) 루트 권한으로 디렉토리 준비 및 소유권 설정
+#    - /app 및 .next 디렉토리를 미리 만들고 node 유저에게 소유권 부여
+RUN mkdir -p /app/.next/cache && chown -R node:node /app
+
+# 2) 빌드 산출물 복사 (소유권을 node:node로 맞춰서 복사)
+COPY --chown=node:node --from=builder /app/.next/standalone ./
+COPY --chown=node:node --from=builder /app/public ./public
+COPY --chown=node:node --from=builder /app/.next/static ./.next/static
+
+# (옵션) 런타임에서도 .env 읽도록 포함 (필요 시에만)
+COPY --chown=node:node --from=builder /app/.env ./.env
+# COPY --chown=node:node --from=builder /app/.env.production ./.env.production
+
+# 3) non-root로 실행 (이 시점 이후)
 USER node
-
-# standalone 파일 및 정적 리소스만 복사 → 실행 가벼움
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/static ./.next/static
-
-# (옵션) 런타임에서도 .env 읽도록 포함 (서버 전용 env가 필요할 때)
-# Next.js는 기본적으로 런타임에 .env를 자동 로딩하진 않지만,
-# node -r dotenv/config 등의 방식이나 커스텀 로직을 쓰는 경우를 대비해 둠.
-# 필요 없으면 아래 두 줄은 제거 가능.
-COPY --from=builder /app/.env ./.env
-# COPY --from=builder /app/.env.production ./.env.production
 
 EXPOSE 3000
 
-# HEALTHCHECK 사용 시 curl 필요 -> apk add curl (runner 단계에서 root 필요)
-# 여기서는 주석 처리
+# HEALTHCHECK 사용 시 필요한 패키지 설치 후 활성화 가능
+# (alpine에서 wget 사용 예시)
+# USER root
+# RUN apk add --no-cache wget
+# USER node
 # HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
 #   CMD wget -qO- http://localhost:3000/ || exit 1
 
