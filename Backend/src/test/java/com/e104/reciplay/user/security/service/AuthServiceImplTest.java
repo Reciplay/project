@@ -126,8 +126,8 @@ class AuthServiceImplTest {
         authService.invalidateAllTokens(testUser.getEmail());
 
         // then
-        assertThat(tokenRepository.findValidTokenByPlainAndUsername("", testUser.getEmail(), "ACCESS")).isNotNull();
-        assertThat(tokenRepository.findValidTokenByPlainAndUsername("", testUser.getEmail(), "REFRESH")).isNotNull();
+        assertThat(tokenRepository.findValidTokenByPlainAndUsername("", testUser.getEmail(), "ACCESS")).isNull();
+        assertThat(tokenRepository.findValidTokenByPlainAndUsername("", testUser.getEmail(), "REFRESH")).isNull();
     }
 
     @Test
