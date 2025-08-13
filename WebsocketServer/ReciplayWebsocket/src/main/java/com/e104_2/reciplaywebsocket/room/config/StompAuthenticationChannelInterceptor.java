@@ -34,7 +34,10 @@ public class StompAuthenticationChannelInterceptor implements ChannelInterceptor
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-
+        if(accessor != null && StompCommand.SUBSCRIBE.equals(accessor.getCommand())){
+            log.debug("구독 요청이 왔습니다.");
+            log.debug("SUBSCRIBE dest={}, user={}", accessor.getDestination(), accessor.getUser());
+        }
         if(accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
             String auth =  accessor.getFirstNativeHeader("Authorization");
 
