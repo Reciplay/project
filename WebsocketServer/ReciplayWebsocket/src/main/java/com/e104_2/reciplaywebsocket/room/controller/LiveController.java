@@ -63,7 +63,7 @@ public class LiveController {
     @MessageMapping("/help")
     public void helpMeEvent(@Payload EventMessage message) {
         log.debug("Help message 도착함 데이터 : {}", message);
-        if(message.getType().equals("help")) return;
+        if(!message.getType().equals("help")) return;
         log.debug("보낸 사람 : {}", message.getIssuer());
         String instructorIdentity = liveControlService.getLiveInstructorIdentity(message.getLectureId());
         log.debug("받는 사람 : {}", instructorIdentity);
