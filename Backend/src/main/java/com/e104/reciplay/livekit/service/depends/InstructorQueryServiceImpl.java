@@ -166,4 +166,9 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
         }
         return subscribedInstructorItems;
     }
+
+    @Override
+    public Boolean existsByUserId(Long userId) {
+        return instructorRepository.existsByUserId(userId);
+    }
 }
