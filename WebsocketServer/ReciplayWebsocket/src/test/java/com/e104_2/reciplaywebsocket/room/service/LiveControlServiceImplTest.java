@@ -163,6 +163,7 @@ class LiveControlServiceImplTest {
         Long lectureId = 1L;
         Long courseId = 10L;
         Long instructorId = 100L;
+        Long mockUserId = 1002L;
         String instructorEmail = "instructor@example.com";
 
         Lecture mockLecture = Lecture.builder().courseId(courseId).build();
@@ -171,7 +172,8 @@ class LiveControlServiceImplTest {
 
         when(lectureQueryService.queryLectureById(lectureId)).thenReturn(mockLecture);
         when(courseQueryService.queryCourseById(courseId)).thenReturn(mockCourse);
-        when(userQueryService.queryUserById(instructorId)).thenReturn(mockUser);
+        when(instructorQueryService.queryInstructorById(instructorId)).thenReturn(Instructor.builder().id(instructorId).userId(mockUserId).build());
+        when(userQueryService.queryUserById(mockUserId)).thenReturn(mockUser);
 
         // when
         String result = liveControlService.getLiveInstructorIdentity(lectureId);

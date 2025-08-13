@@ -147,7 +147,8 @@ public class LiveControlServiceImpl implements LiveControlService{
     public String getLiveInstructorIdentity(Long lectureId) {
         Long courseId = lectureQueryService.queryLectureById(lectureId).getCourseId();
         Long instructorId = courseQueryService.queryCourseById(courseId).getInstructorId();
-        return userQueryService.queryUserById(instructorId).getEmail();
+        Instructor instructor = instructorQueryService.queryInstructorById(instructorId);
+        return userQueryService.queryUserById(instructor.getUserId()).getEmail();
     }
 
     public void verifyPrivilege(Long lectureId, String email, String userEmail, String msg) {

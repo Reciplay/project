@@ -18,4 +18,9 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
         User user = userQueryService.queryUserByEmail(email);
         return instructorRepository.findByUserId(user.getId()).orElseThrow(() -> new IllegalArgumentException("강사가 아닌 회원입니다."));
     }
+
+    @Override
+    public Instructor queryInstructorById(Long instructorId) {
+        return instructorRepository.findById(instructorId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강사 입니다."));
+    }
 }

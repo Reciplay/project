@@ -4,4 +4,5 @@ import com.e104_2.reciplaywebsocket.entity.Instructor;
 
 public interface InstructorQueryService {
     Instructor queryInstructorByEmail(String email);
+    Instructor queryInstructorById(Long instructorId);
 }
