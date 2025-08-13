@@ -1,7 +1,7 @@
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
 
-export type TodoType = 'NORMAL' | 'TIMER' | 'ACTION';
+export type TodoType = "NORMAL" | "TIMER" | "ACTION";
 
 export interface ChapterTodoItem {
   title: string;
@@ -12,7 +12,7 @@ export interface ChapterTodoItem {
 
 export interface ChapterTodoResponse {
   // 서버 응답 예시 기준
-  type?: 'chapter-issue'; // 서버가 type을 넣어줄 수도 있으니 optional
+  type?: "chapter-issue"; // 서버가 type을 넣어줄 수도 있으니 optional
   chapterId: number;
   chapterSequence: number;
   chapterName: string;
@@ -31,5 +31,5 @@ export const useLiveStore = create<LiveState>()(
     chapter: null,
     setChapter: (payload) => set({ chapter: payload }),
     clearChapter: () => set({ chapter: null }),
-  }))
+  })),
 );

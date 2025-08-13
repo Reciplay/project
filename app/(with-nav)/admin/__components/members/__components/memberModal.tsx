@@ -1,11 +1,10 @@
 // components/admin/MemberModal.tsx
 "use client";
 
-import CustomModal from "@/components/modal/customModal";
-import styles from "../members.module.scss";
-import { useMemo } from "react";
-import { UserDetail } from "@/types/user";
 import CustomButton from "@/components/button/customButton";
+import CustomModal from "@/components/modal/customModal";
+import { UserDetail } from "@/types/user";
+import styles from "../members.module.scss";
 
 interface MemberModalProps {
   isOpen: boolean;

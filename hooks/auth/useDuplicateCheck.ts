@@ -93,7 +93,7 @@ export function useDuplicateCheck(type: "email" | "nickname") {
         setOk(result.ok);
       },
       500,
-      { trailing: true }
+      { trailing: true },
     );
 
     // ✅ blur 시 즉시 실행하고 싶을 때 쓰려고 flush 노출

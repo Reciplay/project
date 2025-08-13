@@ -1,14 +1,14 @@
-import { useEffect, useRef, useState } from "react";
-import { RemoteVideoTrack, Track, LocalVideoTrack } from "livekit-client";
-import { Landmark } from "@mediapipe/tasks-vision";
 import poseGestureRecognition, {
   createRecognizers,
 } from "@/lib/video/recognizeGesture";
+import { Landmark } from "@mediapipe/tasks-vision";
+import { RemoteVideoTrack, Track } from "livekit-client";
+import { useEffect, useRef, useState } from "react";
 
 export function useVideoUtil(
   track: Track,
   onNodesDetected: (nodes: Landmark[][]) => void,
-  setGesture?: (gesture: string) => void
+  setGesture?: (gesture: string) => void,
 ) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -45,7 +45,7 @@ export function useVideoUtil(
           canvas,
           setLandmarksData,
           setGesture,
-          onNodesDetected
+          onNodesDetected,
         ).then((returnedCleanup) => {
           cleanup = returnedCleanup;
         });

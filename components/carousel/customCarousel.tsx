@@ -1,18 +1,8 @@
 "use client";
 
-import React from "react";
 import { Carousel as AntdCarousel } from "antd";
-import styles from "./customCarousel.module.scss";
 import Image from "next/image";
-
-const contentStyle: React.CSSProperties = {
-  margin: 0,
-  height: "300px",
-  color: "#fff",
-  lineHeight: "160px",
-  textAlign: "center",
-  background: "#364d79",
-};
+import styles from "./customCarousel.module.scss";
 
 export default function CustomCarousel() {
   const onChange = (currentSlide: number) => {

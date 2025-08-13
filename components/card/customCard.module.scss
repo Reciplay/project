@@ -5,9 +5,12 @@
   border-radius: var(--radius-lg, 16px);
   padding: var(--space-3, 14px);
   gap: var(--space-3, 12px);
-  box-shadow: var(--shadow-sm, 0 2px 4px rgba(0, 0, 0, 0.06)),
+  box-shadow:
+    var(--shadow-sm, 0 2px 4px rgba(0, 0, 0, 0.06)),
     var(--shadow-md, 0 6px 12px rgba(0, 0, 0, 0.08));
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
   cursor: pointer;
   height: 100%;
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 
 export default function useLocalMedia() {
   const [error, setError] = useState<string | null>(null);

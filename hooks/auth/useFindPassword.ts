@@ -19,7 +19,7 @@ export function useFindPassword() {
       setStep(2);
     } catch (err) {
       setError(
-        err.response?.data?.message || "인증번호 요청 중 오류가 발생했습니다."
+        err.response?.data?.message || "인증번호 요청 중 오류가 발생했습니다.",
       );
     }
   };
@@ -29,7 +29,7 @@ export function useFindPassword() {
     try {
       const res = await restClient.get(
         "/user/auth/mail-verification/password",
-        { params: { email, otp } }
+        { params: { email, otp } },
       );
       setHash(res.data.data.hash);
       setStep(3);

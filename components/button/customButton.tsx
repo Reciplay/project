@@ -64,7 +64,7 @@ export default function CustomButton({
         styles[size],
         styles[variant],
         styles[color],
-        className
+        className,
       )}
       onClick={onClick}
       {...props}

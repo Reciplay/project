@@ -24,11 +24,11 @@ import LectureForm from "../create-course/__components/lectureform/lectureForm";
 import styles from "./page.module.scss";
 
 /** 우측 상세 패널: CourseManage 그대로 사용 */
-function CoursePanelDetail({ item }: { item: CourseManage }) {
-  const thumb =
-    item.thumbnailFileInfos?.[0]?.presignedUrl ??
-    item.courseCoverFileInfo?.presignedUrl ??
-    "";
+function CoursePanelDetail() {
+  // const thumb =
+  //   item.thumbnailFileInfos?.[0]?.presignedUrl ??
+  //   item.courseCoverFileInfo?.presignedUrl ??
+  //   "";
 
   return (
     <form className={styles.asd}>
@@ -94,58 +94,6 @@ function CoursePanelDetail({ item }: { item: CourseManage }) {
         />
       </div>
     </form>
-    // <div style={{ display: "grid", gap: "1.2rem" }}>
-    //   {thumb && (
-    //     <div style={{ width: 320, height: 180, position: "relative" }}>
-    //       <Image
-    //         src={thumb}
-    //         alt="course thumbnail"
-    //         fill
-    //         sizes="320px"
-    //         style={{ objectFit: "cover", borderRadius: 12 }}
-    //       />
-    //     </div>
-    //   )}
-
-    //   <section>
-    //     <h2>강좌 명</h2>
-    //     <p>{item.title}</p>
-    //   </section>
-
-    //   <section>
-    //     <h2>강좌 분야</h2>
-    //     <p>{item.category}</p>
-    //   </section>
-
-    //   {item.summary && (
-    //     <section>
-    //       <h2>강좌 요약</h2>
-    //       <p style={{ whiteSpace: "pre-wrap" }}>{item.summary}</p>
-    //     </section>
-    //   )}
-
-    //   {item.description && (
-    //     <section>
-    //       <h2>강좌 소개</h2>
-    //       <p style={{ whiteSpace: "pre-wrap" }}>{item.description}</p>
-    //     </section>
-    //   )}
-
-    //   <section style={{ display: "grid", gap: 8 }}>
-    //     <p>
-    //       <strong>기간:</strong> {item.courseStartDate} ~ {item.courseEndDate}
-    //     </p>
-    //     <p>
-    //       <strong>리뷰:</strong> {item.averageReviewScore} ⭐ /{" "}
-    //       {item.reviewCount}개
-    //     </p>
-    //     {Array.isArray(item.canLearns) && item.canLearns.length > 0 && (
-    //       <p>
-    //         <strong>배우는 것:</strong> {item.canLearns.join(", ")}
-    //       </p>
-    //     )}
-    //   </section>
-    // </div>
   );
 }
 
@@ -173,7 +121,7 @@ export default function Page() {
 
   const getKey = (i: CourseManage) => String(i.courseId);
   const getLabel = (i: CourseManage) => i.title;
-  const renderContent = (i: CourseManage) => <CoursePanelDetail item={i} />;
+  const renderContent = () => <CoursePanelDetail />;
 
   return (
     <div className={styles.container}>

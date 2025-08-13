@@ -1,17 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import {
   Box,
   Button,
+  InputAdornment,
   Popover,
   TextField,
   Typography,
-  InputAdornment,
 } from "@mui/material";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import styles from "./monthDatePicker.module.scss"; // SCSS 모듈
 import classNames from "classnames"; // 선택된 월 강조를 위한 className 결합
+import React, { useState } from "react";
+import styles from "./monthDatePicker.module.scss"; // SCSS 모듈
 
 function Component() {
   const currentYear = new Date().getFullYear();
@@ -104,7 +104,7 @@ function Component() {
                 key={month.value}
                 className={classNames(
                   styles.monthButton,
-                  selectedMonth === month.value && styles.selected
+                  selectedMonth === month.value && styles.selected,
                 )}
                 onClick={() => handleMonthClick(month.value)}
               >

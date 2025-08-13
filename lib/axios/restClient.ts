@@ -15,7 +15,7 @@ const restClient = axios.create({
 
 restClient.interceptors.request.use(
   async (
-    config: InternalAxiosRequestConfig
+    config: InternalAxiosRequestConfig,
   ): Promise<InternalAxiosRequestConfig> => {
     console.log(`[restClient REQUEST]`, {
       method: config.method,
@@ -42,7 +42,7 @@ restClient.interceptors.request.use(
       config.baseURL = "/api/rest";
     }
     return config;
-  }
+  },
 );
 
 // restClient.interceptors.response.use(

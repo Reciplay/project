@@ -36,7 +36,7 @@ export function useCourseInfo(courseId?: string) {
             params: { courseId: cid },
             requireAuth: true,
             validateStatus: () => true,
-          }
+          },
         );
 
         if (res.status >= 200 && res.status < 300) {
@@ -81,7 +81,7 @@ export function useCourseInfo(courseId?: string) {
             params: { courseId: cid },
             requireAuth: true,
             validateStatus: () => true,
-          }
+          },
         );
 
         if (res.status >= 200 && res.status < 300) {
@@ -97,7 +97,7 @@ export function useCourseInfo(courseId?: string) {
             params: { courseId: cid },
             requireAuth: true,
             validateStatus: () => true,
-          }
+          },
         );
 
         if (res.status >= 200 && res.status < 300) {
@@ -132,18 +132,20 @@ export function useCourseInfo(courseId?: string) {
             params: { courseId: cid },
             requireAuth: true,
             validateStatus: () => true,
-          }
+          },
         );
 
         if (!alive) return;
 
         if (res.status === 400) {
+          console.log(res);
           setMessage(res.data?.message ?? "잘못된 요청입니다.");
           setCourseDetail(sampleCourseDetail);
           return;
         }
 
         if (res.status === 404) {
+          console.log(res);
           setMessage(res.data?.message ?? "해당 강좌를 찾을 수 없습니다.");
           setCourseDetail(sampleCourseDetail);
           return;
@@ -155,7 +157,8 @@ export function useCourseInfo(courseId?: string) {
         // 서버에서 상태 내려주면 여기에 매핑(키 이름 예시는 가정)
         // setIsWished(!!data.isWished);
         // setIsEnrolled(!!data.isEnrolled);
-      } catch {
+      } catch (e) {
+        console.log(e);
         if (!alive) return;
         setCourseDetail(sampleCourseDetail);
       } finally {

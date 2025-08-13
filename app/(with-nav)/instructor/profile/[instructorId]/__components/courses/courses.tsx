@@ -97,7 +97,7 @@ export default function Courses({
                     >
                       {n}
                     </button>
-                  )
+                  ),
                 )}
               </div>
 

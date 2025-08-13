@@ -22,7 +22,7 @@ export default function CustomIcon({
   className,
 }: Props) {
   const kebab = useMemo(() => toKebab(name), [name]);
-  const src = `/icons/${kebab}-${filled ? "Filled" : "Outline"}.svg`;
+  const src = `/icons/${kebab}-${filled ? "filled" : "outline"}.svg`;
 
   return (
     <span

@@ -115,7 +115,9 @@
   padding: 24px;
   background-color: #ffffff;
 
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.05),
+    0 8px 24px rgba(0, 0, 0, 0.08);
 
   @media (max-width: 768px) {
     max-width: 100%; // ✅ 모바일 대응

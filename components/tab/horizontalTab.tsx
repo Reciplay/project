@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
 import { Tabs } from "antd";
+import React from "react";
 
 type TabItem = { key: string; label: string; content: React.ReactNode };
 

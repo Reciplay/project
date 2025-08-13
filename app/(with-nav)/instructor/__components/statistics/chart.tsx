@@ -1,13 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import {
-  VictoryArea,
-  VictoryChart,
-  VictoryStack,
-  VictoryTheme,
-} from 'victory';
-import _ from 'lodash';
+import _ from "lodash";
+import React from "react";
+import { VictoryArea, VictoryChart, VictoryStack, VictoryTheme } from "victory";
 
 type ChartDataPoint = { x: number; y: number };
 type ChartData = ChartDataPoint[];
@@ -31,7 +26,7 @@ export default function Chart() {
 
   return (
     <VictoryChart theme={VictoryTheme.clean}>
-      <VictoryStack colorScale={'blue'}>
+      <VictoryStack colorScale={"blue"}>
         {state.data.map((data: ChartData, i: number) => (
           <VictoryArea
             key={i}

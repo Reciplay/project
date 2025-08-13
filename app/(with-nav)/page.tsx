@@ -2,22 +2,51 @@
 
 import CustomCard from "@/components/card/customCard";
 import CustomGrid from "@/components/grid/customGrid/customGrid";
-import { useEnrolledCourses } from "@/hooks/course/useEnrolledCourses";
-import { useSoonCourses } from "@/hooks/course/useSoonCourses";
-import { useSpecialCourses } from "@/hooks/course/useSpecialCourses";
+import NetflixGrid from "@/components/grid/netflixGrid/netflixGrid";
+import { useCourseCards } from "@/hooks/course/useCourseCards";
 import { useRouter } from "next/navigation";
-import NetflixGrid from "../../components/grid/netflixGrid/netflixGrid";
 import SpecialCarousel from "./__components/specialCarousel/specialCarousel";
 import styles from "./page.module.scss";
 
 export default function Page() {
-  const { list: specialList, loading: specialLoading } = useSpecialCourses();
+  // const { list: specialList, loading: specialLoading } = useSpecialCourses();
 
-  const { list: soonList, loading: soonLoading } = useSoonCourses();
+  // const { list: soonList, loading: soonLoading } = useSoonCourses();
 
-  const { list: enrolledList, loading: enrolledLoading } = useEnrolledCourses();
+  // const { list: enrolledList, loading: enrolledLoading } = useEnrolledCourses();
+
+  const { list: soonsoon } = useCourseCards({
+    initialCondition: { requestCategory: "soon" },
+    size: 20, // 한 번에 불러올 개수
+    // sort: ["createdAt,desc"], // 정렬 옵션
+  });
+
+  // const { list: special } = useCourseCards({
+  //   initialCondition: { requestCategory: "special" },
+  //   size: 20, // 한 번에 불러올 개수
+  //   // sort: ["createdAt,desc"], // 정렬 옵션
+  // });
+
+  const { list: enrolled } = useCourseCards({
+    initialCondition: { requestCategory: "enrolled" },
+    size: 20, // 한 번에 불러올 개수
+  });
+
+  // const {
+  //   list: soonsoon,
+  //   loading,
+  //   error,
+  //   hasNext,
+  //   loadMore,
+  // } = useCourseCards({
+  //   initialCondition: { requestCategory: "soon" },
+  //   size: 20, // 한 번에 불러올 개수
+  //   sort: ["createdAt,desc"], // 정렬 옵션
+  // });
 
   const router = useRouter();
+
+  // console.log({ soonsoon });
 
   return (
     <div className={styles.container}>
@@ -25,7 +54,7 @@ export default function Page() {
 
       <NetflixGrid
         title="수강중인 강좌"
-        items={enrolledList}
+        items={enrolled}
         gapRem={2} // 넷플릭스 그리드 아이템 간격
         renderItem={(course) => (
           <CustomCard
@@ -38,7 +67,7 @@ export default function Page() {
 
       <CustomGrid
         title="개설 예정 강좌 목록"
-        items={soonList}
+        items={soonsoon}
         renderItem={(course) => (
           <CustomCard
             data={course}

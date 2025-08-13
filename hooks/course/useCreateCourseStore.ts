@@ -100,7 +100,7 @@ export function buildLectureFormData(lectures: Lecture[]) {
 
   fd.append(
     "lecture",
-    new Blob([JSON.stringify(lectureJson)], { type: "application/json" })
+    new Blob([JSON.stringify(lectureJson)], { type: "application/json" }),
   );
 
   lectures.forEach((lec, idx) => {
@@ -174,12 +174,12 @@ export const useCreateCourseStore = create<State>((set, get) => ({
     // 값 갱신(얕은 복사)
     const next = structuredClone(values) as Draft;
     // string path 적용
-    const apply = (k: Keys, v: any) => {
+    const apply = (k: Keys, v) => {
       const [a, b] = k.split(".");
       if (b) {
-        (next as any)[a][b] = v;
+        next[a][b] = v;
       } else {
-        (next as any)[a] = v;
+        next[a] = v;
       }
     };
     apply(key, value);
@@ -227,7 +227,7 @@ export const useCreateCourseStore = create<State>((set, get) => ({
         if (n < RULE.LEVEL_MIN || n > RULE.LEVEL_MAX)
           setErr(
             key,
-            `난이도는 ${RULE.LEVEL_MIN}~${RULE.LEVEL_MAX} 사이여야 합니다`
+            `난이도는 ${RULE.LEVEL_MIN}~${RULE.LEVEL_MAX} 사이여야 합니다`,
           );
         else setErr(key);
         break;
@@ -251,7 +251,7 @@ export const useCreateCourseStore = create<State>((set, get) => ({
             key,
             key.endsWith("StartDate")
               ? "수강 시작일을 선택해주세요"
-              : "수강 종료일을 선택해주세요"
+              : "수강 종료일을 선택해주세요",
           );
         else setErr(key);
         break;
@@ -289,7 +289,7 @@ export const useCreateCourseStore = create<State>((set, get) => ({
     else if (info.title.length > RULE.TITLE_MAX)
       push(
         "requestCourseInfo.title",
-        `제목은 ${RULE.TITLE_MAX}자 이하여야 합니다`
+        `제목은 ${RULE.TITLE_MAX}자 이하여야 합니다`,
       );
 
     if (!info.summary.trim())
@@ -297,7 +297,7 @@ export const useCreateCourseStore = create<State>((set, get) => ({
     else if (info.summary.length > RULE.SUMMARY_MAX)
       push(
         "requestCourseInfo.summary",
-        `요약은 ${RULE.SUMMARY_MAX}자 이하여야 합니다`
+        `요약은 ${RULE.SUMMARY_MAX}자 이하여야 합니다`,
       );
 
     if (!info.description.trim())
@@ -311,26 +311,26 @@ export const useCreateCourseStore = create<State>((set, get) => ({
     if (maxN < 1)
       push(
         "requestCourseInfo.maxEnrollments",
-        "모집 인원은 1명 이상이어야 합니다"
+        "모집 인원은 1명 이상이어야 합니다",
       );
     else if (maxN > RULE.MAX_ENROLLMENTS_MAX)
       push(
         "requestCourseInfo.maxEnrollments",
-        `모집 인원은 최대 ${RULE.MAX_ENROLLMENTS_MAX}명입니다`
+        `모집 인원은 최대 ${RULE.MAX_ENROLLMENTS_MAX}명입니다`,
       );
 
     const lv = Number(info.level || 0);
     if (lv < RULE.LEVEL_MIN || lv > RULE.LEVEL_MAX)
       push(
         "requestCourseInfo.level",
-        `난이도는 ${RULE.LEVEL_MIN}~${RULE.LEVEL_MAX} 사이여야 합니다`
+        `난이도는 ${RULE.LEVEL_MIN}~${RULE.LEVEL_MAX} 사이여야 합니다`,
       );
 
     // 날짜 존재 + 순서
     if (!info.enrollmentStartDate)
       push(
         "requestCourseInfo.enrollmentStartDate",
-        "수강 시작일을 선택해주세요"
+        "수강 시작일을 선택해주세요",
       );
     if (!info.enrollmentEndDate)
       push("requestCourseInfo.enrollmentEndDate", "수강 종료일을 선택해주세요");
@@ -340,7 +340,7 @@ export const useCreateCourseStore = create<State>((set, get) => ({
       if (!Number.isNaN(s) && !Number.isNaN(e) && s >= e)
         push(
           "requestCourseInfo.enrollmentEndDate",
-          "수강 종료일은 시작일 이후여야 합니다"
+          "수강 종료일은 시작일 이후여야 합니다",
         );
     }
 
@@ -348,7 +348,7 @@ export const useCreateCourseStore = create<State>((set, get) => ({
     if (!info.canLearns || info.canLearns.length < RULE.CANLEARNS_MIN)
       push(
         "requestCourseInfo.canLearns",
-        "배울 수 있는 내용을 1개 이상 입력해주세요"
+        "배울 수 있는 내용을 1개 이상 입력해주세요",
       );
 
     return { ok: msgs.length === 0, messages: msgs };
@@ -361,7 +361,7 @@ export const useCreateCourseStore = create<State>((set, get) => ({
     const infoJson = buildInfoJson(values);
     fd.append(
       "requestCourseInfo",
-      new Blob([JSON.stringify(infoJson)], { type: "application/json" })
+      new Blob([JSON.stringify(infoJson)], { type: "application/json" }),
     );
 
     // 2) 파일 파트들
@@ -379,7 +379,7 @@ export const useCreateCourseStore = create<State>((set, get) => ({
       fd.append(
         "courseCoverImage",
         values.courseCoverImage,
-        values.courseCoverImage.name
+        values.courseCoverImage.name,
       );
     } else if (
       typeof values.courseCoverImage === "string" &&

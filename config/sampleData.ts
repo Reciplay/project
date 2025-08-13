@@ -2,7 +2,6 @@ import { Instructor } from "@/types/instructor";
 
 export const sampleInstructors: Instructor[] = [
   {
-    id: "2",
     name: "김도윤",
     profileImage: "/images/김도윤.webp",
     coverImage: "/images/default-banner.png",
@@ -13,7 +12,6 @@ export const sampleInstructors: Instructor[] = [
     isSubscribed: true,
   },
   {
-    id: "3",
     name: "김승민",
     profileImage: "/images/김승민.webp",
     coverImage: "/images/default-banner.png",
@@ -24,7 +22,6 @@ export const sampleInstructors: Instructor[] = [
     isSubscribed: true,
   },
   {
-    id: "4",
     name: "남정석",
     profileImage: "/images/남정석.webp",
     coverImage: "/images/default-banner.png",
@@ -35,7 +32,6 @@ export const sampleInstructors: Instructor[] = [
     isSubscribed: true,
   },
   {
-    id: "5",
     name: "박준우",
     profileImage: "/images/박준우.webp",
     coverImage: "/images/default-banner.png",
@@ -46,7 +42,6 @@ export const sampleInstructors: Instructor[] = [
     isSubscribed: true,
   },
   {
-    id: "6",
     name: "방기수",
     profileImage: "/images/방기수.webp",
     coverImage: "/images/default-banner.png",

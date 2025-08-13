@@ -1,5 +1,5 @@
 import Image from "next/image";
-import styles from './authImage.module.scss';
+import styles from "./authImage.module.scss";
 
 export default function AuthImage() {
   return (

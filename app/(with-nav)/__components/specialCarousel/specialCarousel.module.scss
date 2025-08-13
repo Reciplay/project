@@ -97,11 +97,11 @@
   /* 옵션: 너무 번지면 투명도/블러 수치 조절 */
   background: rgba(255, 255, 255, 0.012);
   backdrop-filter: blur(6px);
-  border-left: 1.5px solid rgba(255, 255, 255, .22);
-  border-top: 1.5px solid rgba(255, 255, 255, .22);
+  border-left: 1.5px solid rgba(255, 255, 255, 0.22);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.22);
 }
 
-.glassOverlay>* {
+.glassOverlay > * {
   position: relative;
   z-index: 1;
 }
@@ -151,14 +151,16 @@
   border: 1px solid rgba(255, 255, 255, 0.28);
   color: #fff;
   text-decoration: none;
-  transition: transform .2s ease, background .2s ease;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
   margin-bottom: 2vw;
   margin-left: 2vw;
 }
 
 .ctaButton:hover {
   transform: translateY(-2px);
-  background: rgba(255, 255, 255, .24);
+  background: rgba(255, 255, 255, 0.24);
 }
 
 /* 반응형: 모바일에선 폭 넓게, 패딩 줄이기 */
@@ -169,6 +171,5 @@
     transform: translate(-50%, -50%);
     width: min(92vw, 560px);
     padding: 1rem 1.25rem;
-
   }
 }

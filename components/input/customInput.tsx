@@ -1,6 +1,6 @@
-import styles from "./customInput.module.scss";
 import classNames from "classnames";
 import React from "react";
+import styles from "./customInput.module.scss";
 
 interface CustomInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   placeholder: string;

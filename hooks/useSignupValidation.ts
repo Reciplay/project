@@ -1,9 +1,9 @@
 "use client";
 
-import { useFormContext } from "react-hook-form";
-import { SignupForm } from "@/app/(without-nav)/api/auth/signup/page";
 import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
+import { SignupForm } from "@/types/user";
+import { useFormContext } from "react-hook-form";
 
 export default function useSignupValidation() {
   const { setError, clearErrors, getValues } = useFormContext<SignupForm>();
@@ -25,7 +25,7 @@ export default function useSignupValidation() {
         "/user/auth/dup-nickname",
         {
           params: nickname,
-        }
+        },
       );
       const isDuplicated = res.data.data;
 
@@ -48,7 +48,7 @@ export default function useSignupValidation() {
 
   const checkEmailDuplicate = async (
     email: string,
-    onAvailable?: (available: boolean) => void
+    onAvailable?: (available: boolean) => void,
   ) => {
     if (!email || email.length < 5) return;
 
@@ -58,7 +58,7 @@ export default function useSignupValidation() {
     try {
       const res = await restClient.get<ApiResponse<boolean>>(
         `/api/v1/user/auth/dup-email`,
-        { params: { email } }
+        { params: { email } },
       );
 
       const isDuplicated = res.data.data;

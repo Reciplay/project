@@ -31,7 +31,7 @@ export default function BaseButton({
         styles[size],
         styles[variant],
         styles[color],
-        className
+        className,
       )}
       onClick={onClick}
       {...props}

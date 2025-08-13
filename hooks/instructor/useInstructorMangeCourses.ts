@@ -13,14 +13,14 @@ export function useInstructorManageCourses(status: CourseStatus) {
     try {
       const res = await restClient.get<ApiResponse<CourseManage[]>>(
         "/course/courses/list",
-        { params: { courseStatus: status }, requireAuth: true }
+        { params: { courseStatus: status }, requireAuth: true },
       );
       setList(res.data.data); // ✅ data 안에 배열
     } catch (e) {
       setError(
         e?.response?.data?.message ||
           e?.message ||
-          "강좌 목록을 불러오지 못했습니다."
+          "강좌 목록을 불러오지 못했습니다.",
       );
       setList([]);
     } finally {

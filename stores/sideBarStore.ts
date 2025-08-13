@@ -16,6 +16,6 @@ export const useSidebarStore = create<SidebarStore>()(
     }),
     {
       name: "sidebar-storage", // localStorage key
-    }
-  )
+    },
+  ),
 );

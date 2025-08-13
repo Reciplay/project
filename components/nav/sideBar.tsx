@@ -21,16 +21,9 @@ interface LinkItemProps {
   icon: string;
   title: string;
   isOpen: boolean;
-  isButton?: boolean;
 }
 
-function LinkItem({
-  href,
-  icon,
-  title,
-  isOpen,
-  isButton = false,
-}: LinkItemProps) {
+function LinkItem({ href, icon, title, isOpen }: LinkItemProps) {
   const pathname = usePathname();
   const isActive = pathname === href;
 
@@ -69,8 +62,6 @@ export default function SideBar() {
   const { data: session, status } = useSession();
   const { logout } = useLogout();
   const width = useWindowWidth();
-
-  console.log(session);
 
   const role = session?.role || "ROLE_STUDENT";
 

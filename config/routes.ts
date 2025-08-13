@@ -10,6 +10,12 @@ export const ROUTES = {
   ADMIN: "/admin",
 
   // 로그인 필요 없음
+
+  SEARCH: {
+    ROOT: "/search",
+    DETAIL: (query: string) => `/search?query=${query}`,
+  },
+
   COURSE: {
     DETAIL: (id: string) => `/course/${id}`, // 동적 경로
   },
@@ -34,13 +40,9 @@ export const ROUTES = {
     HISTORY: "/profile/history",
   },
 
-  // 로그인 필요 없음
-  SEARCH: "/search",
-
-  // 로그인 필요 없음
-
   // 로그인 이후 다른 페이지로 이동할때,
   // EXTRA DATA가 있는 지 확인 후 없다고 판단 시 EXTRA 페이지로
+
   AUTH: {
     LOGIN: "/api/auth/login",
     SIGNUP: "/api/auth/signup",

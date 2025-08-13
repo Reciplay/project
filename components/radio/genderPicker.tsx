@@ -57,7 +57,7 @@ export default function GenderPicker({
           styles.group,
           styles[size],
           { [styles.fullWidth]: fullWidth, [styles.disabled]: disabled },
-          className
+          className,
         )}
         tabIndex={0}
         onKeyDown={onKeyDown}

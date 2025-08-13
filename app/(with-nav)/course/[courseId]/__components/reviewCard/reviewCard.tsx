@@ -1,6 +1,5 @@
-import BaseButton from "@/components/button/baseButton";
-import styles from "./reviewCard.module.scss";
 import IconWithText from "@/components/text/iconWithText";
+import styles from "./reviewCard.module.scss";
 
 interface ReviewCardProps {
   nickname: string;

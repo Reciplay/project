@@ -21,7 +21,7 @@ export function useInstructorCourses(
     pageSize = 12,
     courseStatus = "string",
     isEnrollment = true,
-  }: Options = {}
+  }: Options = {},
 ) {
   const [page, setPage] = useState(initialPage);
   const [size] = useState(pageSize);
@@ -53,7 +53,7 @@ export function useInstructorCourses(
               isEnrollment,
             },
             requireAuth: true,
-          }
+          },
         );
 
         const data = res.data.data;
@@ -71,7 +71,7 @@ export function useInstructorCourses(
         setLoading(false);
       }
     },
-    [instructorId, size, courseStatus, isEnrollment]
+    [instructorId, size, courseStatus, isEnrollment],
   );
 
   useEffect(() => {

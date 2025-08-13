@@ -1,5 +1,5 @@
-import commonStyles from "../../../page.module.scss";
 import { CourseSummary } from "@/types/course";
+import commonStyles from "../../../page.module.scss";
 interface CourseTableProps {
   list: CourseSummary[];
   onRowClick: (CourseId: number) => void;

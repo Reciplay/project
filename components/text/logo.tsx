@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import styles from "./logo.module.scss"; // .logo 스타일 포함
+import { useEffect, useState } from "react";
 import FuzzyText from "./fuzzyText";
+import styles from "./logo.module.scss"; // .logo 스타일 포함
 
 export default function Logo() {
   const [baseIntensity, setBaseIntensity] = useState(0);

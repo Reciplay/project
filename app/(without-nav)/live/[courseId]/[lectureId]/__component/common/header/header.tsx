@@ -12,26 +12,26 @@ interface HeaderProps {
   onLeave?: () => void; // 떠나기 버튼 콜백
 }
 
-function formatDuration(seconds: number) {
-  const h = Math.floor(seconds / 3600)
-    .toString()
-    .padStart(2, "0");
-  const m = Math.floor((seconds % 3600) / 60)
-    .toString()
-    .padStart(2, "0");
-  const s = Math.floor(seconds % 60)
-    .toString()
-    .padStart(2, "0");
-  return `${h}:${m}:${s}`;
-}
+// function formatDuration(seconds: number) {
+//   const h = Math.floor(seconds / 3600)
+//     .toString()
+//     .padStart(2, "0");
+//   const m = Math.floor((seconds % 3600) / 60)
+//     .toString()
+//     .padStart(2, "0");
+//   const s = Math.floor(seconds % 60)
+//     .toString()
+//     .padStart(2, "0");
+//   return `${h}:${m}:${s}`;
+// }
 
 export default function Header({
   lectureName = "짜파게티 맛있게 먹는법",
-  courseName = "백종원의 한식가르치기",
+  // courseName = "백종원의 한식가르치기",
   startTime = new Date(),
   onLeave,
 }: HeaderProps) {
-  const [elapsedSec, setElapsedSec] = useState(() => {
+  const [, setElapsedSec] = useState(() => {
     return Math.floor((Date.now() - startTime.getTime()) / 1000);
   });
 

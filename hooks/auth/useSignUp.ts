@@ -63,7 +63,7 @@ export default function useSignUp(initial?: Partial<SignupValues>) {
   // 입력 변경자 (필드 단위)
   const setField = <K extends keyof SignupValues>(
     key: K,
-    val: SignupValues[K]
+    val: SignupValues[K],
   ) => {
     setValues((p) => ({ ...p, [key]: val }));
     setErrors((p) => ({ ...p, [key]: undefined }));
@@ -211,7 +211,7 @@ export default function useSignUp(initial?: Partial<SignupValues>) {
           password: values.password,
           nickname: values.nickname,
           hash: otp,
-        }
+        },
       );
 
       if (res.status === 201) {

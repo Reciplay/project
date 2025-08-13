@@ -1,8 +1,8 @@
 import {
-  PoseLandmarker,
   FilesetResolver,
-  Landmark,
   GestureRecognizer,
+  Landmark,
+  PoseLandmarker,
 } from "@mediapipe/tasks-vision";
 
 let poseLandmarker: PoseLandmarker;
@@ -10,7 +10,7 @@ let gestureRecognizer: GestureRecognizer;
 
 export const createRecognizers = async () => {
   const vision = await FilesetResolver.forVisionTasks(
-    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.9/wasm"
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.9/wasm",
   );
   gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
     baseOptions: {
@@ -19,8 +19,8 @@ export const createRecognizers = async () => {
       delegate: "CPU",
     },
     runningMode: "VIDEO",
-    numHands: 2
-  })
+    numHands: 2,
+  });
 
   poseLandmarker = await PoseLandmarker.createFromOptions(vision, {
     baseOptions: {
@@ -38,11 +38,11 @@ export default async function poseGestureRecognition(
   canvas: HTMLCanvasElement,
   setLandmarksData: (landmarks: Landmark[][]) => void,
   setHandGesture: (handGesture: string) => void,
-  onNodesDetected: (nodes: Landmark[][]) => void
+  onNodesDetected: (nodes: Landmark[][]) => void,
 ): Promise<() => void> {
   const canvasCtx = canvas.getContext("2d");
   if (!canvasCtx) {
-    return () => { };
+    return () => {};
   }
 
   let lastVideoTime = -1;
@@ -57,11 +57,11 @@ export default async function poseGestureRecognition(
       const timeStamp = performance.now();
       const gestureRecognizerResult = gestureRecognizer.recognizeForVideo(
         video,
-        timeStamp
+        timeStamp,
       );
       const poseLandmarkerResult = poseLandmarker.detectForVideo(
         video,
-        timeStamp
+        timeStamp,
       );
 
       canvasCtx.clearRect(0, 0, canvas.width, canvas.height);

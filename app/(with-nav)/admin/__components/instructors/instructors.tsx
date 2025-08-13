@@ -1,17 +1,14 @@
 // app/admin/InstructorRegisterList.tsx
 "use client";
 
-import commonStyles from "../../page.module.scss";
-import styles from "./instructors.module.scss";
 import HorizontalTab from "@/components/tab/horizontalTab";
 import useInstructorAdmin from "@/hooks/admin/useInstructorAdmin";
-import InstructorTable from "./__components/instructorTable";
+import commonStyles from "../../page.module.scss";
 import InstructorModal from "./__components/instructorModal";
+import InstructorTable from "./__components/instructorTable";
 
 export default function Instructors() {
   const {
-    loading,
-    error,
     sortedApproved,
     sortedRegister,
     modalOpen,

@@ -16,7 +16,7 @@ export function useScrollTabs(
     thresholds = [0.2, 0.4, 0.6, 0.8],
     scrollBehavior = "smooth",
     scrollBlock = "start",
-  }: Options = {}
+  }: Options = {},
 ) {
   // 섹션 DOM 보관
   const sectionsRef = useRef<Array<HTMLElement | null>>([]);
@@ -26,13 +26,13 @@ export function useScrollTabs(
     (index: number) => (el: HTMLElement | null) => {
       sectionsRef.current[index] = el;
     },
-    []
+    [],
   );
 
   // 고정된 길이의 ref 바인더 배열 (의존성 안전)
   const sectionRefs = useMemo(
     () => Array.from({ length: count }, (_, i) => getSectionRef(i)),
-    [count, getSectionRef]
+    [count, getSectionRef],
   );
 
   const [activeIdx, setActiveIdx] = useState(0);
@@ -51,7 +51,7 @@ export function useScrollTabs(
           if (idx !== -1) setActiveIdx(idx);
         }
       },
-      { rootMargin, threshold: thresholds }
+      { rootMargin, threshold: thresholds },
     );
 
     nodes.forEach((n) => io.observe(n));
@@ -63,7 +63,7 @@ export function useScrollTabs(
       const node = sectionsRef.current[index];
       node?.scrollIntoView({ behavior: scrollBehavior, block: scrollBlock });
     },
-    [scrollBehavior, scrollBlock]
+    [scrollBehavior, scrollBlock],
   );
 
   return {

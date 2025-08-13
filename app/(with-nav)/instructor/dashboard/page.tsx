@@ -1,28 +1,33 @@
 "use client";
 
-import CalendarOnly from "@/components/calendar/calendarOnly";
-import DailySmoothLineChart from "@/components/chart/lineChart";
-import TableComponent from "@/components/table/table";
-import Image from "next/image";
-import styles from "./page.module.scss";
 import Calendar from "@/components/calendar/calendar";
-import QandAList from "../__components/q&alist/q&aList";
+import DailySmoothLineChart from "@/components/chart/lineChart";
 import { useInstructorStats } from "@/hooks/dashboard/useStats";
 import { useProfile } from "@/hooks/profile/useProfile";
+import { useQnaPost } from "@/hooks/qna/useQnaPost";
+import Image from "next/image";
+import QandAList from "../__components/q&alist/q&aList";
+import styles from "./page.module.scss";
 
 export default function Page() {
-  const {
-    data,
-    loading,
-    error,
-    refresh,
-    totalStudents,
-    averageStars,
-    totalReviewCount,
-    subscriberCount,
-    profileImageUrl,
-    newQuestions,
-  } = useInstructorStats();
+  const { data, newQuestions } = useInstructorStats();
+  const { postAnswer } = useQnaPost();
+
+  const handleSubmitAnswer = async ({
+    questionId,
+    courseId,
+    answer,
+  }: {
+    questionId: number;
+    courseId: number;
+    answer: string;
+  }) => {
+    await postAnswer({
+      questionId,
+      courseId,
+      content: answer, // API 스펙에 맞게 content 필드로
+    });
+  };
 
   const { userData } = useProfile();
 
@@ -55,19 +60,19 @@ export default function Page() {
             <div className={styles.metrics}>
               <div className={styles.metricRow}>
                 <span>총 수강생 수</span>
-                <strong>{data.totalStudents}</strong>
+                <strong>{data?.totalStudents ?? 0}</strong>
               </div>
               <div className={styles.metricRow}>
                 <span>평균 별점</span>
-                <strong>{data.averageStars}</strong>
+                <strong>{data?.averageStars ?? 0}</strong>
               </div>
               <div className={styles.metricRow}>
                 <span>총 리뷰 수</span>
-                <strong>{data.totalReviewCount}</strong>
+                <strong>{data?.totalReviewCount ?? 0}</strong>
               </div>
               <div className={styles.metricRow}>
                 <span>구독자 수</span>
-                <strong>{data.subscriberCount}</strong>
+                <strong>{data?.subscriberCount ?? 0}</strong>
               </div>
             </div>
           </div>
@@ -90,7 +95,10 @@ export default function Page() {
           <Calendar lectures={[]} />
         </div>
         <div className={`${styles.card} ${styles.qaCard}`}>
-          <QandAList />
+          <QandAList
+            questions={newQuestions ?? []}
+            onSubmitAnswer={handleSubmitAnswer}
+          />
         </div>
       </div>
     </div>

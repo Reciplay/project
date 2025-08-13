@@ -21,6 +21,6 @@ export const useUserStore = create(
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
       },
-    }
-  )
+    },
+  ),
 );

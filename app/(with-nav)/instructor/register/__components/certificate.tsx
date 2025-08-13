@@ -1,29 +1,31 @@
 "use client";
 
+import BaseButton from "@/components/button/baseButton";
 import BaseInput from "@/components/input/baseInput";
-import BaseButton from '@/components/button/baseButton';
-import styles from "./certificate.module.scss";
-import Image from "next/image";
-import { useEffect, useState } from 'react';
-import { DatePicker } from "antd";
-import restClient from "@/lib/axios/restClient";
-import { ApiResponse } from "@/types/apiResponse";
 import { sampleLicenses } from "@/config/sampleLicenses";
-import { ResponseLicense } from "@/types/license";
+import restClient from "@/lib/axios/restClient";
 import { useInstructorStore } from "@/stores/instructorStore";
+import { ApiResponse } from "@/types/apiResponse";
+import { ResponseLicense } from "@/types/license";
+import { DatePicker } from "antd";
 import { Dayjs } from "dayjs";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import styles from "./certificate.module.scss";
 import CertificatesTable from "./certificatesTable/certificatesTable";
 
 export default function Certificate() {
   const [showInput, setShowInput] = useState(false);
-  const [certificateName, setCertificateName] = useState('');
+  const [certificateName, setCertificateName] = useState("");
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
-  const [issuer, setIssuer] = useState('');
+  const [issuer, setIssuer] = useState("");
 
   // 전체 옵션(페이지 로드시 API로 로드) + 필터 결과
   const [allLicenses, setAllLicenses] = useState<ResponseLicense[]>([]);
-  const [filteredLicenses, setFilteredLicenses] = useState<ResponseLicense[]>([]);
+  const [filteredLicenses, setFilteredLicenses] = useState<ResponseLicense[]>(
+    [],
+  );
   const [showDropdown, setShowDropdown] = useState(false);
 
   const { addCertificate, certificates } = useInstructorStore();
@@ -32,9 +34,12 @@ export default function Certificate() {
   useEffect(() => {
     const fetchLicenses = async () => {
       try {
-        const res = await restClient.get<ApiResponse<ResponseLicense[]>>("/user/license/list", { requireAuth: true });
+        const res = await restClient.get<ApiResponse<ResponseLicense[]>>(
+          "/user/license/list",
+          { requireAuth: true },
+        );
         setAllLicenses(res.data.data ?? []);
-        console.log(res.data.data)
+        console.log(res.data.data);
       } catch (error) {
         console.warn("API 호출 실패. 더미 데이터 사용", error);
         setAllLicenses(sampleLicenses.data ?? []);
@@ -45,8 +50,8 @@ export default function Certificate() {
 
   const handleCancel = () => {
     setShowInput(false);
-    setCertificateName('');
-    setIssuer('');
+    setCertificateName("");
+    setIssuer("");
     setSelectedId(null);
     setSelectedDate(null);
     setShowDropdown(false);
@@ -70,8 +75,8 @@ export default function Certificate() {
     });
 
     // 입력값만 초기화(인풋은 유지)
-    setCertificateName('');
-    setIssuer('');
+    setCertificateName("");
+    setIssuer("");
     setSelectedId(null);
     setSelectedDate(null);
     setShowDropdown(false);
@@ -79,8 +84,7 @@ export default function Certificate() {
   };
 
   const escapeRegex = (value: string) =>
-    value.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-
+    value.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
 
   return (
     <div>
@@ -90,7 +94,6 @@ export default function Certificate() {
           <Image src="/icons/plus.svg" alt="plus" width={13} height={13} />
           <span className={styles.addText}>추가</span>
         </div>
-
       </div>
       <hr />
       {certificates.length === 0 && !showInput && (
@@ -119,8 +122,10 @@ export default function Certificate() {
                   }
 
                   try {
-                    const regex = new RegExp(escapeRegex(value), 'i');
-                    const filtered = allLicenses.filter((item) => regex.test(item.name));
+                    const regex = new RegExp(escapeRegex(value), "i");
+                    const filtered = allLicenses.filter((item) =>
+                      regex.test(item.name),
+                    );
                     setFilteredLicenses(filtered);
                   } catch (err) {
                     console.error("정규식 에러:", err);
@@ -167,7 +172,6 @@ export default function Certificate() {
               className={styles.customDatePicker}
             />
           </div>
-
 
           <div className={styles.buttonWrapper}>
             <BaseButton

@@ -1,5 +1,4 @@
-import { set } from 'lodash';
-import { create } from 'zustand'
+import { create } from "zustand";
 
 export interface Certificate {
   id?: number;
@@ -15,7 +14,7 @@ export interface Career {
   position: string;
   jobDescription: string;
   startDate: string; // YYYY-MM-DD
-  endDate: string;   // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
 }
 
 export interface Profile {
@@ -46,17 +45,17 @@ export interface InstructorState {
 }
 
 export const useInstructorStore = create<InstructorState>((set) => ({
-  introduction: '',
+  introduction: "",
   certificates: [],
   careers: [],
 
   profile: {
-    coverImage: '',
-    phoneNumber: '',
-    address: '',
+    coverImage: "",
+    phoneNumber: "",
+    address: "",
   },
 
-  coverImageFile: null,                // ✅ 추가
+  coverImageFile: null, // ✅ 추가
   setCoverImageFile: (file) => set({ coverImageFile: file }), // ✅ 추가
 
   setProfile: (data) =>

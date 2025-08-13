@@ -1,85 +1,89 @@
 .card {
-    background: white;
-    border-radius: 16px;
-    padding: 16px;
-    overflow: hidden;
-    display: flex;
-    transition: box-shadow 0.3s ease;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  overflow: hidden;
+  display: flex;
+  transition: box-shadow 0.3s ease;
+  box-shadow:
+    0 6px 12px rgba(0, 0, 0, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.06);
 
-    flex: 0 0 auto;
-    scroll-snap-align: start;
+  flex: 0 0 auto;
+  scroll-snap-align: start;
 
-    &:hover {
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.08);
-    }
+  &:hover {
+    box-shadow:
+      0 8px 20px rgba(0, 0, 0, 0.15),
+      0 3px 6px rgba(0, 0, 0, 0.08);
+  }
 
-    &.vertical {
-        aspect-ratio: 3/4;
-        height: 300px;
-        flex-direction: column;
-    }
+  &.vertical {
+    aspect-ratio: 3/4;
+    height: 300px;
+    flex-direction: column;
+  }
 
-    &.horizontal {
-        width: 100%;
-        height: 180px;
-        flex-direction: row;
-        gap: 16px;
-    }
+  &.horizontal {
+    width: 100%;
+    height: 180px;
+    flex-direction: row;
+    gap: 16px;
+  }
 }
 
 .image {
-    position: relative;
-    border-radius: 12px;
-    overflow: hidden;
-    flex-shrink: 0;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
 
-    .vertical & {
-        width: 100%;
-        height: 180px;
-    }
+  .vertical & {
+    width: 100%;
+    height: 180px;
+  }
 
-    .horizontal & {
-        width: 200px;
-        height: 100%;
-    }
+  .horizontal & {
+    width: 200px;
+    height: 100%;
+  }
 }
 
 .content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 
-    .vertical & {
-        margin-top: 12px;
-    }
+  .vertical & {
+    margin-top: 12px;
+  }
 
-    .horizontal & {
-        padding: 8px 0;
-    }
+  .horizontal & {
+    padding: 8px 0;
+  }
 }
 
 .title {
-    font-size: var(--font-size-md);
+  font-size: var(--font-size-md);
 }
 
 .instructor {
-    font-size: var(--font-size-md);
+  font-size: var(--font-size-md);
 }
 
 .live {
-    font-size: var(--font-size-md);
+  font-size: var(--font-size-md);
 
-    &.on {
-        color: red;
-    }
+  &.on {
+    color: red;
+  }
 
-    &.off {
-        color: gray;
-    }
+  &.off {
+    color: gray;
+  }
 }
 
 .viewer {
-    font-size: var(--font-size-md);
+  font-size: var(--font-size-md);
 }

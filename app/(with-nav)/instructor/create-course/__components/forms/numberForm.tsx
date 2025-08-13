@@ -1,11 +1,9 @@
 "use client";
 
-import { InputNumber } from "antd";
 import { useCreateCourseStore } from "@/hooks/course/useCreateCourseStore";
+import { InputNumber } from "antd";
 
-type Name =
-  | "requestCourseInfo.maxEnrollments"
-  | "requestCourseInfo.level";
+type Name = "requestCourseInfo.maxEnrollments" | "requestCourseInfo.level";
 
 interface NumberFormProps {
   name: Name;
@@ -47,9 +45,7 @@ export default function NumberForm({
         step={step}
         status={error ? "error" : ""}
       />
-      {error && (
-        <p style={{ color: "red", marginTop: 4 }}>{error}</p>
-      )}
+      {error && <p style={{ color: "red", marginTop: 4 }}>{error}</p>}
     </div>
   );
 }

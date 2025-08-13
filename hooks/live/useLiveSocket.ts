@@ -46,13 +46,13 @@ export interface ChapterTodoResponse {
 export default function useLiveSocket(
   courseId: string,
   lectureId: string,
-  role: "instructor" | "student"
+  role: "instructor" | "student",
 ) {
   const [roomId, setRoomId] = useState<string | null>(null);
   const [socket, setSocket] = useState<SockJS | null>(null);
   const [stompClient, setStompClient] = useState<Client | null>(null);
   const [subscription, setSubscription] = useState<StompSubscription | null>(
-    null
+    null,
   );
   const [roomInfo, setRoomInfo] = useState<RoomInfo | null>(null);
   const [todo, setTodo] = useState<ChapterTodoResponse | null>(null);
@@ -63,7 +63,7 @@ export default function useLiveSocket(
       const res = await restClient.post<ApiResponse<RoomInfo>>(
         `/livekit/${role}/token`,
         { lectureId, courseId },
-        { requireAuth: true }
+        { requireAuth: true },
       );
 
       if (res.data.status !== "success") {
@@ -83,10 +83,10 @@ export default function useLiveSocket(
   /** 2. join 메시지 발송 */
   const sendJoin = useCallback(
     (client: Client, id: string) => {
-      // if (!roomInfo || !roomInfo.nickname) {
-      //   console.error('❌ nickname 없음, join 전송 취소');
-      //   return;
-      // }
+      if (!roomInfo || !roomInfo.nickname) {
+        console.error("❌ nickname 없음, join 전송 취소");
+        return;
+      }
 
       const message = {
         type: "join",
@@ -104,7 +104,7 @@ export default function useLiveSocket(
       });
       console.log(`➡️ Sent /ws/v1/app/join: ${JSON.stringify(message)}`);
     },
-    [roomInfo, lectureId]
+    [roomInfo, lectureId],
   );
 
   // 1) 구독 콜백에서 chapter-issue 응답을 스토어에 저장
@@ -151,15 +151,13 @@ export default function useLiveSocket(
               console.log(
                 "🔍 타입 추론 결과:",
                 typeof data,
-                Array.isArray(data) ? "배열" : "객체"
+                Array.isArray(data) ? "배열" : "객체",
               );
               console.dir(data, { depth: null }); // 중첩 구조까지 전부 출력
               // 서버가 보낼 수 있는 형태:
               // 1) { type: 'chapter-issue', chapterId, chapterSequence, chapterName, numOfTodos, todos: [...] }
               // 2) { chapterId, chapterSequence, chapterName, numOfTodos, todos: [...] }  (type 없이)
-              const isChapterIssue = (
-                data: any
-              ): data is ChapterTodoResponse => {
+              const isChapterIssue = (data): data is ChapterTodoResponse => {
                 return (
                   (data?.type === "chapter-issue" || data?.chapterId) &&
                   typeof data?.chapterId === "number" &&
@@ -189,7 +187,7 @@ export default function useLiveSocket(
             } catch (e) {
               console.error("❌ 메시지 파싱 실패:", e, message.body);
             }
-          }
+          },
         );
         console.log(`✅ 구독 성공: /ws/v1/topic/room/${id}`);
         setSubscription(sub);
@@ -213,10 +211,17 @@ export default function useLiveSocket(
 
       client.activate();
     },
-    [sendJoin]
+    [sendJoin],
   );
 
   // 2) 강사용: chapter-issue 보내기 함수
+  type SendChapterIssueArgs = {
+    issuer: string; // instructor email
+    lectureId: number | string;
+    roomId: string;
+    chapterSequence: number;
+    chapterName?: string; // 서버가 필요 없으면 생략 가능
+  };
 
   const sendChapterIssue = useCallback(
     (client: Client, args: SendChapterIssueArgs) => {
@@ -234,51 +239,10 @@ export default function useLiveSocket(
         body: JSON.stringify(payload),
       });
       // ✅ 출발 로그(보냈다)
-      console.log("➡️ Sent chapter-issue:", payload);
+      console.log("➡️ Sent /ws/v1/app/chapter-issue:", payload);
     },
-    []
+    [],
   );
-
-  useEffect(() => {
-    console.log(`${JSON.stringify(todo)} 변경`);
-  }, [todo]);
-  // const sendHelp = useCallback((client: Client, args: SendChapterIssueArgs) => {
-  //   const payload = {
-  //     type: "help",
-  //     roomId: args.roomId,
-  //     issuer: args.issuer,
-  //     lectureId: Number(args.lectureId),
-  //     ...(args.chapterName ? { chapterName: args.chapterName } : {}),
-  //   };
-
-  //   client.publish({
-  //     destination: '/ws/v1/app/help',
-  //     body: JSON.stringify(payload),
-  //   });
-  //   // ✅ 출발 로그(보냈다)
-  //   console.log('➡️ Sent help:', payload);
-
-  // }, []);
-
-  // const sendCheck = useCallback((client: Client, args: SendChapterIssueArgs) => {
-  //   const payload = {
-  //     type: "todo-check",
-  //     roomId: args.roomId,
-  //     issuer: args.issuer,
-  //     chapter: 1,
-  //     todoSequence: 1,
-  //     lectureId: Number(args.lectureId),
-  //     ...(args.chapterName ? { chapterName: args.chapterName } : {}),
-  //   };
-
-  //   client.publish({
-  //     destination: '/ws/v1/app/todo-check',
-  //     body: JSON.stringify(payload),
-  //   });
-  //   // ✅ 출발 로그(보냈다)
-  //   console.log('➡️ Sent todo-check:', payload);
-
-  // }, []);
 
   /** 4. cleanup */
   const cleanupConnection = useCallback(() => {

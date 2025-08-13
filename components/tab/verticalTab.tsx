@@ -33,7 +33,7 @@ export default function VerticalTab<T>({
   // 현재 선택된 key를 보관 (데이터 변경에도 안정적으로 동작)
   const firstKey = useMemo(
     () => (data[0] ? getKey(data[0]) : ""),
-    [data, getKey]
+    [data, getKey],
   );
   const [activeKey, setActiveKey] = useState<string>(firstKey);
 
@@ -57,12 +57,12 @@ export default function VerticalTab<T>({
         key: getKey(item),
         label: getLabel(item),
       })),
-    [data, getKey, getLabel]
+    [data, getKey, getLabel],
   );
 
   const selected = useMemo(
     () => data.find((i) => getKey(i) === activeKey) ?? null,
-    [data, activeKey, getKey]
+    [data, activeKey, getKey],
   );
 
   const handleChange = (key: string) => {

@@ -28,7 +28,7 @@ const FindPasswordModal = dynamic(
   () => import("../findModal/findPasswordModal"),
   {
     ssr: false,
-  }
+  },
 );
 
 export default function LoginForm() {
@@ -45,7 +45,7 @@ export default function LoginForm() {
     async (data: LoginFormValues) => {
       await login(data);
     },
-    [login]
+    [login],
   );
 
   const openEmail = useCallback(() => setModalType("email"), []);

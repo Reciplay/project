@@ -17,7 +17,7 @@ import {
 async function fetchCards(
   params: Record<string, unknown>,
   authed: boolean,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) {
   return restClient.get<PaginationResponse<CourseCard>>(ENDPOINT, {
     params,
@@ -48,11 +48,11 @@ export function useEnrolledCourses(options?: {
 
   const cond: CourseCardCondition = useMemo(
     () => ({ requestCategory: "enrolled" }),
-    []
+    [],
   );
   const pageable: Pageable = useMemo(
     () => ({ page, size, sort }),
-    [page, size, sort]
+    [page, size, sort],
   );
 
   const load = useCallback(async () => {
@@ -72,15 +72,18 @@ export function useEnrolledCourses(options?: {
       setMessage(null);
       const params = buildQuery(cond, pageable);
       const res = await fetchCards(params, true, controllerRef.current.signal);
+
       if (res.status === 200) {
         const d = res.data.data;
         setList(d.content ?? []);
         setTotalPages(d.totalPages ?? 1);
         setTotalElements(d.totalElements ?? 0);
       } else {
+        console.log("목록을 불러오지 못했어요");
         setMessage(res.data?.message ?? "목록을 불러오지 못했어요.");
       }
     } catch (e) {
+      console.log(e);
       if (e?.name === "CanceledError" || e?.code === "ERR_CANCELED") return;
       setMessage(e?.response?.data?.message ?? "네트워크 오류가 발생했습니다.");
     } finally {

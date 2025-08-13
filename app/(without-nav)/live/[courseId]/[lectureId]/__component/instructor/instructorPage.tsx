@@ -1,5 +1,6 @@
 "use client";
 
+<<<<<<< HEAD
 import { recognizeGesture } from "@/components/live/gestureRecognizer";
 import VideoSection from "@/components/live/videoSection";
 import useLivekitConnection from "@/hooks/live/useLivekitConnection";
@@ -159,6 +160,19 @@ const parsedChapterCard = useMemo<ChapterCard | undefined>(() => {
 
     // }
   }, [recognizedPose, handGesture])
+=======
+import Header from "../common/header/header";
+import TodoListCard from "../common/todoList/todoListCard";
+import VideoView from "./__component/videoView/videoView";
+import styles from "./instructorPage.module.scss";
+
+export default function InstructorPage() {
+  // const role = "instructor";
+  // const params = useParams();
+  // const courseId = params.courseId as string; // ✅ courseId 가져오기
+  // const lectureId = params.lectureId as string;
+  // const { roomId, socket } = useLiveSocket(courseId, lectureId, "instructor");
+>>>>>>> deploy
 
   return (
     <div className={styles.container}>

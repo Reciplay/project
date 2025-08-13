@@ -96,7 +96,10 @@
   font-size: var(--font-size-sm);
   font-weight: 500;
   color: #333;
-  transition: color 0.2s ease, font-weight 0.2s, font-size 0.2s;
+  transition:
+    color 0.2s ease,
+    font-weight 0.2s,
+    font-size 0.2s;
 }
 
 .link {

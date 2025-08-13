@@ -6,7 +6,7 @@ import GoogleProvider from "next-auth/providers/google";
 import KakaoProvider from "next-auth/providers/kakao";
 import NaverProvider from "next-auth/providers/naver";
 
-export const handler = NextAuth({
+const handler = NextAuth({
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -14,7 +14,7 @@ export const handler = NextAuth({
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials) {
           return null;
         }
@@ -30,7 +30,7 @@ export const handler = NextAuth({
               headers: {
                 ...formdata.getHeaders(),
               },
-            }
+            },
           );
 
           const accessToken = res.headers.authorization;

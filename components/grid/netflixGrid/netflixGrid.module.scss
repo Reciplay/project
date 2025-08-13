@@ -106,7 +106,9 @@
   place-items: center;
   cursor: pointer;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  transition: opacity 0.25s ease, visibility 0.25s ease;
+  transition:
+    opacity 0.25s ease,
+    visibility 0.25s ease;
   z-index: 2;
 
   &.hidden {

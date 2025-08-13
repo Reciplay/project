@@ -23,7 +23,7 @@ export default function ProfileInfo({
   userData,
   form,
   isEditing,
-  error,
+  // error,
   handleChange,
   toggleEdit,
   saveProfile,

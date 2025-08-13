@@ -19,11 +19,7 @@ const StreamVideo = memo(function StreamVideo({
   onNodesDetected,
   setGesture,
 }: StreamVideoProps) {
-  const { videoRef, canvasRef} = useVideoUtil(
-    track,
-    onNodesDetected,
-    setGesture
-  );
+  const { videoRef, canvasRef } = useVideoUtil(track, onNodesDetected);
 
   return (
     <div id={participantIdentity} className={styles.videoContainer}>

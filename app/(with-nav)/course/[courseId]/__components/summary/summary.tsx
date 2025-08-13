@@ -14,11 +14,11 @@ export default function Summary({ courseDetail }: SummaryProps) {
       ?.slice()
       .sort((a, b) => a.sequence - b.sequence)[0]?.presignedUrl ||
     courseDetail.courseCoverFileInfo?.presignedUrl ||
-    "/images/default_thumbnail.jpg";
+    "/images/404.jpg";
 
   const rating = Math.max(
     0,
-    Math.min(5, Number(courseDetail.averageReviewScore ?? 0))
+    Math.min(5, Number(courseDetail.averageReviewScore ?? 0)),
   );
   const ratingText = rating.toFixed(1);
 

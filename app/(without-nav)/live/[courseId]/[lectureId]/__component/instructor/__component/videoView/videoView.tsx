@@ -20,34 +20,34 @@ export default function VideoView(props:any) {
     const courseId = params.courseId as string;
     const lectureId = params.lectureId as string;
 
-    const { joinRoom, leaveRoom, localTrack, remoteTracks } =
-        useLivekitConnection();
+  const { joinRoom, leaveRoom, localTrack, remoteTracks } =
+    useLivekitConnection();
 
-    // 실시간 할 일 상태 -> 이 부분은 실제로는 서버에서 받아와야 함
-    const [todo, setTodo] = useState("샘플데이터");
-    const [role, setRole] = useState<string | null>(null);
-    const [userId, setUserId] = useState("");
+  // 실시간 할 일 상태 -> 이 부분은 실제로는 서버에서 받아와야 함
+  const [todo] = useState("샘플데이터");
+  const [role, setRole] = useState<string | null>(null);
+  const [userId, setUserId] = useState("");
 
-    // 페이지 로드 시 역할 적용
-    useEffect(() => {
-        const fetchSession = async () => {
-            const session = await getSession();
-            setRole(session?.role);
-            setUserId(session?.user.id);
-        };
+  // 페이지 로드 시 역할 적용
+  useEffect(() => {
+    const fetchSession = async () => {
+      const session = await getSession();
+      setRole(session?.role);
+      setUserId(session?.user.id);
+    };
 
-        fetchSession();
-    }, []);
+    fetchSession();
+  }, []);
 
-    // role이 준비되면 joinRoom 실행
-    useEffect(() => {
-        if (!role) return;
+  // role이 준비되면 joinRoom 실행
+  useEffect(() => {
+    if (!role) return;
 
-        joinRoom(courseId, lectureId, role);
-        return () => {
-            leaveRoom();
-        };
-    }, [courseId, lectureId, role]);
+    joinRoom(courseId, lectureId, role);
+    return () => {
+      leaveRoom();
+    };
+  }, [courseId, lectureId, role, joinRoom, leaveRoom]);
 
 
     const [handGesture, setHandGesture] = useState("");
@@ -136,22 +136,22 @@ export default function VideoView(props:any) {
                 <p>비디오 연결 중...</p>
             )}
 
-            {/* 원격 비디오 */}
-            <div>
-                {remoteTracks.map((remoteTrack) => {
-                    const video = remoteTrack.trackPublication.videoTrack;
-                    const audio = remoteTrack.trackPublication.audioTrack;
+      {/* 원격 비디오 */}
+      <div>
+        {remoteTracks.map((remoteTrack) => {
+          const video = remoteTrack.trackPublication.videoTrack;
+          const audio = remoteTrack.trackPublication.audioTrack;
 
-                    console.log("🔍 remote remoteTrack:", remoteTrack);
-                    console.log("🎥 remote videoTrack:", video);
-                    console.log("🔊 remote audioTrack:", audio);
+          console.log("🔍 remote remoteTrack:", remoteTrack);
+          console.log("🎥 remote videoTrack:", video);
+          console.log("🔊 remote audioTrack:", audio);
 
-                    if (!video) {
-                        console.warn(
-                            `⚠️ videoTrack 없음 → publication: ${remoteTrack.trackPublication.trackName}`
-                        );
-                        return null;
-                    }
+          if (!video) {
+            console.warn(
+              `⚠️ videoTrack 없음 → publication: ${remoteTrack.trackPublication.trackName}`,
+            );
+            return null;
+          }
 
                     return (
                         <VideoSection

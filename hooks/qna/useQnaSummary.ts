@@ -16,7 +16,7 @@ type UseQnaSummaryResult = {
 
 export function useQnaSummary(
   courseId?: string,
-  pageSize = 5
+  pageSize = 5,
 ): UseQnaSummaryResult {
   const [list, setList] = useState<QnA[]>([]);
   const [loading, setLoading] = useState(false);
@@ -55,13 +55,13 @@ export function useQnaSummary(
             },
             requireAuth: true,
             signal: ac.signal,
-          }
+          },
         );
 
         if (res.status === 200 && Array.isArray(res.data?.data)) {
           const newItems = res.data.data;
           setList((prev) =>
-            pageNum === 0 ? newItems : [...prev, ...newItems]
+            pageNum === 0 ? newItems : [...prev, ...newItems],
           );
           setHasMore(newItems.length === pageSize);
         } else if (res.status === 400) {
@@ -70,7 +70,7 @@ export function useQnaSummary(
           setHasMore(false);
         } else {
           setMessage(
-            res.data?.message ?? "Q&A 요약 정보를 불러올 수 없습니다."
+            res.data?.message ?? "Q&A 요약 정보를 불러올 수 없습니다.",
           );
           if (pageNum === 0) setList([]);
           setHasMore(false);
@@ -87,7 +87,7 @@ export function useQnaSummary(
         setList(sampleQna);
       }
     },
-    [courseId, pageSize]
+    [courseId, pageSize],
   );
 
   // 최초 5개 로드

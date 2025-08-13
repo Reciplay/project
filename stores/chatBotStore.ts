@@ -1,10 +1,10 @@
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface ChatbotStore {
-  messages: string[]
-  addMessage: (message: string) => void
-  clearMessages: () => void
+  messages: string[];
+  addMessage: (message: string) => void;
+  clearMessages: () => void;
 }
 
 export const useChatbotStore = create<ChatbotStore>()(
@@ -16,7 +16,7 @@ export const useChatbotStore = create<ChatbotStore>()(
       clearMessages: () => set({ messages: [] }),
     }),
     {
-      name: 'chatbot-storage', // unique name for storage
+      name: "chatbot-storage", // unique name for storage
     },
   ),
-)
+);

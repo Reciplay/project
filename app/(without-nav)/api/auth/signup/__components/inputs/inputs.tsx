@@ -34,7 +34,6 @@ export default function Inputs({
   passwordSuccessMessage,
   onSendEmail,
   sendingEmail,
-  isSubmitting,
 }: InputsProps) {
   return (
     <div className={styles.inputs} aria-live="polite">

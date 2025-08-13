@@ -1,13 +1,13 @@
-import { useState } from "react";
+import restClient from "@/lib/axios/restClient";
 import {
-  Room,
-  RoomEvent,
+  LocalVideoTrack,
+  RemoteParticipant,
   RemoteTrack,
   RemoteTrackPublication,
-  RemoteParticipant,
-  LocalVideoTrack,
+  Room,
+  RoomEvent,
 } from "livekit-client";
-import restClient from "@/lib/axios/restClient";
+import { useState } from "react";
 import useLocalMedia from "./useLocalMedia";
 
 const LIVEKIT_URL: string = "ws://i13e104.p.ssafy.io:7880/";
@@ -23,7 +23,7 @@ export default function useLivekitConnection() {
 
   // 로컬은 비디오만 처리 하면 되니까 LocalVideoTrack만 사용
   const [localTrack, setLocalTrack] = useState<LocalVideoTrack | undefined>(
-    undefined
+    undefined,
   );
 
   // 원격 트랙은 비디오와 오디오 모두 처리해야 하므로 TrackInfo 타입 사용
@@ -32,7 +32,7 @@ export default function useLivekitConnection() {
   const joinRoom = async (
     courseId: string,
     lectureId: string,
-    role: string
+    role: string,
   ) => {
     const newRoom = new Room();
     setRoom(newRoom);
@@ -49,12 +49,12 @@ export default function useLivekitConnection() {
       (
         _track: RemoteTrack,
         publication: RemoteTrackPublication,
-        participant: RemoteParticipant
+        participant: RemoteParticipant,
       ) => {
         console.log(
           "✅ TrackSubscribed:",
           publication.trackName,
-          publication.trackSid
+          publication.trackSid,
         );
 
         setRemoteTracks((prev) => [
@@ -64,7 +64,7 @@ export default function useLivekitConnection() {
             participantIdentity: participant.identity,
           },
         ]);
-      }
+      },
     );
 
     // 구독 해제 이벤트
@@ -73,10 +73,10 @@ export default function useLivekitConnection() {
       (_track: RemoteTrack, publication: RemoteTrackPublication) => {
         setRemoteTracks((prev) =>
           prev.filter(
-            (track) => track.trackPublication.trackSid !== publication.trackSid
-          )
+            (track) => track.trackPublication.trackSid !== publication.trackSid,
+          ),
         );
-      }
+      },
     );
 
     try {
@@ -89,12 +89,12 @@ export default function useLivekitConnection() {
       await newRoom.localParticipant.enableCameraAndMicrophone();
       setLocalTrack(
         newRoom.localParticipant.videoTrackPublications.values().next().value
-          .videoTrack
+          .videoTrack,
       );
     } catch (error) {
       console.log(
         "There was an error connecting to the room:",
-        (error as Error).message
+        (error as Error).message,
       );
       await newRoom.disconnect();
     }
@@ -110,14 +110,14 @@ export default function useLivekitConnection() {
   const getToken = async (
     courseId: string,
     lectureId: string,
-    role: string
+    role: string,
   ) => {
     const type = role == "ROLE_STUDENT" ? "student" : "instructor";
 
     const res = await restClient.post(
       `/livekit/${type}/token`,
       { lectureId: lectureId, courseId: courseId },
-      { requireAuth: true }
+      { requireAuth: true },
     );
     if (res.data.status !== "success") {
       const error = res.data.message;

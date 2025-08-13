@@ -1,12 +1,12 @@
 "use client";
 
-"use client";
 import BaseInput from "@/components/input/baseInput";
 import { ROUTES } from "@/config/routes";
 import { useSidebarStore } from "@/stores/sideBarStore";
 import { IMAGETYPE } from "@/types/image";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import TablerIcon from "../icon/tablerIcon";
 import ImageWrapper from "../image/imageWrapper";
@@ -28,6 +28,17 @@ export default function NavBar() {
 
   const [showSearch, setShowSearch] = useState(false);
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
+
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const query = searchQuery.trim();
+    if (!query) return;
+    router.push(ROUTES.SEARCH.DETAIL(encodeURIComponent(query)));
+    if (isMobile) setShowSearch(false);
+  };
+
   return (
     <nav className={styles.navbar}>
       {/* 왼쪽 */}
@@ -47,7 +58,17 @@ export default function NavBar() {
       {/* 가운데 */}
       {!isMobile && (
         <div className={styles.center}>
-          <BaseInput type="search" placeholder="검색" />
+          <form role="search" onSubmit={handleSearchSubmit}>
+            <BaseInput
+              type="search"
+              name="query"
+              placeholder="검색"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+              }}
+            />
+          </form>
         </div>
       )}
 

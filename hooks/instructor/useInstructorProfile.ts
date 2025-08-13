@@ -27,7 +27,7 @@ export function useInstructorProfile(instructorId?: string) {
           {
             params: { instructorId },
             requireAuth: true,
-          }
+          },
         );
 
         if (!alive) return;

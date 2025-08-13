@@ -85,7 +85,7 @@ export const instructorSideBarMenus: MenuSection[] = [
       {
         title: "대시보드",
         icon: "Device-Desktop-Analytics",
-        href: "/instructor",
+        href: "/instructor/dashboard",
       },
       {
         title: "강좌 관리",

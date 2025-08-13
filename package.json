@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "prebuild": "npm run format && npm run lint -- --fix || true",
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
