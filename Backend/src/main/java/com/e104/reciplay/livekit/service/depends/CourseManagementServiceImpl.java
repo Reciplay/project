@@ -17,7 +17,6 @@ import com.e104.reciplay.s3.enums.RelatedType;
 import com.e104.reciplay.s3.service.S3Service;
 import com.e104.reciplay.user.profile.service.CategoryQueryService;
 import com.e104.reciplay.user.profile.service.LevelManagementService;
-import com.e104.reciplay.user.profile.service.LevelManagementServiceImpl;
 import com.e104.reciplay.user.security.domain.User;
 import com.e104.reciplay.user.security.service.UserQueryService;
 import jakarta.transaction.Transactional;
@@ -106,19 +105,23 @@ public class CourseManagementServiceImpl implements CourseManagementService{
     @Transactional
     void uploadImagesWithCourseId(Long courseId, MultipartFile courseCoverImage,List<MultipartFile> thumbnailImages) {
         int thumbnailSequence = 1;
-        // 강좌 커버 이미지 업로드
-        try {
-            s3Service.uploadFile(courseCoverImage, FileCategory.IMAGES, RelatedType.COURSE_COVER, courseId, 1);
-        } catch (IOException e) {
-            log.warn("S3 업로드 과정에서 문제가 발생했습니다. : {}", e.getMessage());
-        }
-
-        // 썸네일 이미지들 업로드
-        for (MultipartFile file : thumbnailImages) {
+        if(courseCoverImage != null){
+            log.debug("강좌 커버 이미지 업로드");
             try {
-                s3Service.uploadFile(file, FileCategory.IMAGES, RelatedType.THUMBNAIL, courseId, thumbnailSequence++);
+                s3Service.uploadFile(courseCoverImage, FileCategory.IMAGES, RelatedType.COURSE_COVER, courseId, 1);
             } catch (IOException e) {
                 log.warn("S3 업로드 과정에서 문제가 발생했습니다. : {}", e.getMessage());
+            }
+        }
+
+        if(thumbnailImages != null){
+            log.debug("썸네일 이미지들 업로드");
+            for (MultipartFile file : thumbnailImages) {
+                try {
+                    s3Service.uploadFile(file, FileCategory.IMAGES, RelatedType.THUMBNAIL, courseId, thumbnailSequence++);
+                } catch (IOException e) {
+                    log.warn("S3 업로드 과정에서 문제가 발생했습니다. : {}", e.getMessage());
+                }
             }
         }
     }
