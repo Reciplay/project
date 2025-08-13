@@ -18,7 +18,7 @@ export type TrackInfo = {
 };
 
 export default function useLivekitConnection() {
-  const { getLocalMedia, error } = useLocalMedia();
+  const { getLocalMedia } = useLocalMedia();
   const [room, setRoom] = useState<Room | undefined>(undefined);
 
   // 로컬은 비디오만 처리 하면 되니까 LocalVideoTrack만 사용

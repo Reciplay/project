@@ -60,7 +60,7 @@ export function recognizeGesture(landmarks: Landmark[]): string {
         Math.pow(rightWrist.y - leftWrist.y, 2),
     );
 
-    if (wristDistance < 0.1) {
+    if (wristDistance < 0.2) {
       return "Clap";
     }
 

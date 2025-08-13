@@ -10,14 +10,16 @@ interface StreamVideoProps {
   track: LocalVideoTrack | RemoteVideoTrack;
   participantIdentity: string;
   onNodesDetected?: (nodes: Landmark[][]) => void;
+  setGesture?: (gesture: string) => void;
 }
 
 const StreamVideo = memo(function StreamVideo({
   track,
   participantIdentity,
   onNodesDetected,
+  setGesture,
 }: StreamVideoProps) {
-  const { videoRef, canvasRef } = useVideoUtil(track, onNodesDetected);
+  const { videoRef, canvasRef } = useVideoUtil(track, onNodesDetected, setGesture);
 
   return (
     <div id={participantIdentity} className={styles.videoContainer}>

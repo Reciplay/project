@@ -1,7 +1,7 @@
 // components/TodoListItem.tsx
-import { ClockCircleOutlined } from "@ant-design/icons";
-import { Timeline } from "antd";
-import styles from "./todoListCard.module.scss";
+import { ClockCircleOutlined } from '@ant-design/icons';
+import { Timeline } from 'antd';
+import styles from './todoListCard.module.scss';
 
 interface TodoListItemProps {
   stepNumber: number | string;
@@ -48,18 +48,16 @@ export default function TodoListItem({
       <div className={styles.stepperContent}>
         <div className={styles.stepperTitle}>{title}</div>
 
-        <div className={styles.timelineContent}>
-          <Timeline
-            items={items.map((item) => ({
-              children: item.content,
-              color: item.color,
-              dot: item.isCurrent ? (
-                <ClockCircleOutlined className={styles.timelineClockIcon} />
-              ) : undefined,
-            }))}
-          />
-        </div>
-      </div>
-    </div>
-  );
+                <div className={styles.timelineContent}>
+                    <Timeline
+                        items={items.map((item) => ( {
+                            children: item.content,
+                            color: item.color,
+                            dot: item.isCurrent ? <ClockCircleOutlined className={styles.timelineClockIcon} /> : undefined,
+                        }))}
+                        />
+                </div>
+            </div>
+        </div>  
+    );
 }
