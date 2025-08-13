@@ -1,5 +1,6 @@
 package com.e104.reciplay.course.courses.controller;
 
+import com.e104.reciplay.common.exception.NotInstructorException;
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.course.courses.dto.request.CourseCardCondition;
@@ -8,6 +9,7 @@ import com.e104.reciplay.course.courses.dto.response.CourseCard;
 import com.e104.reciplay.course.courses.dto.response.CourseDetail;
 import com.e104.reciplay.course.courses.dto.response.PagedResponse;
 import com.e104.reciplay.course.courses.service.CourseCardQueryService;
+import com.e104.reciplay.entity.Instructor;
 import com.e104.reciplay.livekit.service.depends.CourseManagementService;
 import com.e104.reciplay.livekit.service.depends.CourseQueryService;
 import com.e104.reciplay.livekit.service.depends.InstructorQueryService;
@@ -142,11 +144,13 @@ public class CourseApiController {
         String email = AuthenticationUtil.getSessionUsername();
         log.debug("요청 사용자 {}", email);
 
-        Long instructorId = instructorQueryService.queryInstructorIdByEmail(email);
+        Instructor instructor = instructorQueryService.queryInstructorByEmail(email);
+        if(!instructor.getIsApproved()){
+            throw new NotInstructorException();
+        }
 
-        Long courseId = courseManagementService.createCourseByInstructorId(instructorId,
+        Long courseId = courseManagementService.createCourseByInstructorId(instructor.getId(),
                 requestCourseInfo, thumbnailImages, courseCoverImage);
-
         return CommonResponseBuilder.success("강좌 등록에 성공하였습니다.", new CourseIdResponse(courseId));
     }
     record CourseIdResponse(Long courseId) {}

@@ -3,6 +3,7 @@ package com.e104.reciplay.admin.controller;
 import com.e104.reciplay.admin.dto.request.ApprovalInfo;
 import com.e104.reciplay.admin.dto.response.*;
 import com.e104.reciplay.admin.service.*;
+import com.e104.reciplay.common.exception.InvalidUserRoleException;
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.user.security.service.UserQueryService;
@@ -41,6 +42,10 @@ public class AdminApiController{
     public ResponseEntity<ResponseRoot<List<AdInstructorSummary>>> getInstructorSummaries(
             @RequestParam Boolean isApprove
     ) {
+        String email = AuthenticationUtil.getSessionUsername();
+        if(userQueryService.queryUserByEmail(email).getRole() != "ROLE_ADMIN"){
+            throw new InvalidUserRoleException("관리자가 아닌 사용자는 접근할 수 없습니다.");
+        }
         List<AdInstructorSummary> summaries = adInstructorQueryService.queryAdInstructorSummary(isApprove);
         return CommonResponseBuilder.success("강사 요약 정보 리스트 조회에 성공하였습니다.",
                 summaries);
@@ -55,6 +60,10 @@ public class AdminApiController{
     public ResponseEntity<ResponseRoot<AdInstructorDetail>> getInstructorDetail(
             @RequestParam Long instructorId
     ){
+        String email = AuthenticationUtil.getSessionUsername();
+        if(userQueryService.queryUserByEmail(email).getRole() != "ROLE_ADMIN"){
+            throw new InvalidUserRoleException("관리자가 아닌 사용자는 접근할 수 없습니다.");
+        }
         AdInstructorDetail detail = adInstructorQueryService.queryInstructorDetail(instructorId);
 
         return CommonResponseBuilder.success("강사 상세 정보 조회에 성공하였습니다.", detail);
@@ -70,6 +79,9 @@ public class AdminApiController{
             @RequestBody ApprovalInfo approvalInfo
     ){
         String email = AuthenticationUtil.getSessionUsername();
+        if(userQueryService.queryUserByEmail(email).getRole() != "ROLE_ADMIN"){
+            throw new InvalidUserRoleException("관리자가 아닌 사용자는 접근할 수 없습니다.");
+        }
         Long adminUserId = userQueryService.queryUserByEmail(email).getId();
         adInstructorManagementService.updateInstructorApproval(approvalInfo, adminUserId);
         return CommonResponseBuilder.success("강사 등록 수락/거절 및 알림 처리에 성공하였습니다.", null);
@@ -83,6 +95,10 @@ public class AdminApiController{
     public ResponseEntity<ResponseRoot<List<AdCourseSummary>>> getCourseSummaries(
             @RequestParam Boolean isApprove
     ) {
+        String email = AuthenticationUtil.getSessionUsername();
+        if(userQueryService.queryUserByEmail(email).getRole() != "ROLE_ADMIN"){
+            throw new InvalidUserRoleException("관리자가 아닌 사용자는 접근할 수 없습니다.");
+        }
         List<AdCourseSummary> summaries = adCourseQueryService.queryAdCourseSummary(isApprove);
         return CommonResponseBuilder.success("강좌 요약 정보 리스트 조회에 성공하였습니다.",
                 summaries);
@@ -97,7 +113,10 @@ public class AdminApiController{
     public ResponseEntity<ResponseRoot<AdCourseDetail>> getCourseDetail(
             @RequestParam Long courseId
     ){
-
+        String email = AuthenticationUtil.getSessionUsername();
+        if(userQueryService.queryUserByEmail(email).getRole() != "ROLE_ADMIN"){
+            throw new InvalidUserRoleException("관리자가 아닌 사용자는 접근할 수 없습니다.");
+        }
         AdCourseDetail detail = adCourseQueryService.queryCourseDetail(courseId);
         return CommonResponseBuilder.success("강좌 상세 정보 조회에 성공하였습니다.", detail);
 
@@ -113,6 +132,9 @@ public class AdminApiController{
             @RequestBody ApprovalInfo approvalInfo
     ){
         String email = AuthenticationUtil.getSessionUsername();
+        if(userQueryService.queryUserByEmail(email).getRole() != "ROLE_ADMIN"){
+            throw new InvalidUserRoleException("관리자가 아닌 사용자는 접근할 수 없습니다.");
+        }
         Long adminUserId = userQueryService.queryUserByEmail(email).getId();
         adCourseManagementService.updateCourseApproval(approvalInfo, adminUserId);
 
@@ -126,6 +148,10 @@ public class AdminApiController{
     @Operation(summary = "일반 회원 요약 정보 리스트 조회 API", description = "일반 회원 요약 정보 신청 리스트 조회")
     public ResponseEntity<ResponseRoot<List<AdUserSummary>>> getUserSummaries(
     ) {
+        String email = AuthenticationUtil.getSessionUsername();
+        if(userQueryService.queryUserByEmail(email).getRole() != "ROLE_ADMIN"){
+            throw new InvalidUserRoleException("관리자가 아닌 사용자는 접근할 수 없습니다.");
+        }
         List<AdUserSummary> adUserSummaries = adUserQueryService.queryUserSummaries();
         return CommonResponseBuilder.success("일반 회원 요약 정보 리스트 조회에 성공하였습니다.",
                 adUserSummaries);
@@ -140,6 +166,10 @@ public class AdminApiController{
     public ResponseEntity<ResponseRoot<AdUserDetail>> getUserDetail(
             @RequestParam Long userId
     ){
+        String email = AuthenticationUtil.getSessionUsername();
+        if(userQueryService.queryUserByEmail(email).getRole() != "ROLE_ADMIN"){
+            throw new InvalidUserRoleException("관리자가 아닌 사용자는 접근할 수 없습니다.");
+        }
         AdUserDetail adUserDetail = adUserQueryService.queryUserDetail(userId);
         return CommonResponseBuilder.success("일반 회원 상세 정보 조회에 성공하였습니다.", adUserDetail);
     }
@@ -153,6 +183,10 @@ public class AdminApiController{
     public ResponseEntity<ResponseRoot<Object>> DeleteUser(
             @RequestParam Long userId
     ){
+        String email = AuthenticationUtil.getSessionUsername();
+        if(userQueryService.queryUserByEmail(email).getRole() != "ROLE_ADMIN"){
+            throw new InvalidUserRoleException("관리자가 아닌 사용자는 접근할 수 없습니다.");
+        }
         adUserManagementService.deleteUser(userId);
         return CommonResponseBuilder.success("회원 탈퇴에 성공하였습니다.", null);
     }
