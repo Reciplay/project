@@ -47,13 +47,15 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         String token = auth.split(" ")[1];
-        if (jwtUtil.isExpired(token)) {
+        if (jwtUtil.isExpired(token) || !authService.validateToken(token, jwtUtil.getUsername(token), "ACCESS")) {
             log.debug("Expired token -> refresh-token is needed");
             // 기간이 지난 액세스 토큰을 만료 처리해야함.
             authService.invalidateToken(token, jwtUtil.getUsername(token), "ACCESS");
 
             filterChain.doFilter(request, response);
             response.setStatus(401);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write("{\"error\":\"Expired or invalid token\"}");
             return;
         }
 

@@ -17,6 +17,7 @@ public interface AuthService extends LogoutHandler {
     void invalidateAllTokens(String username);
     void invalidateToken(String plain, String username, String type);
     void issueNewToken(String plain, String username, String type);
+    boolean validateToken(String plain, String username, String type);
 
     String generateOTP();
 
