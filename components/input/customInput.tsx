@@ -4,7 +4,7 @@ import styles from "./customInput.module.scss";
 
 interface CustomInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   placeholder: string;
-  type: string;
+  type: React.InputHTMLAttributes<HTMLInputElement>["type"];
   value?: string;
   error?: string;
   success?: string;
@@ -26,8 +26,8 @@ export default function CustomInput({
   return (
     <div
       className={classNames(styles.wrapper, {
-        [styles.hasError]: !!error,
-        [styles.hasSuccess]: !!success,
+        [styles.hasError as string]: !!error,
+        [styles.hasSuccess as string]: !!success,
       })}
     >
       {isCustom ? (
@@ -55,8 +55,8 @@ export default function CustomInput({
       {showMessage && (
         <div
           className={classNames(styles.message, {
-            [styles.error]: !!error,
-            [styles.success]: !!success,
+            [styles.error as string]: !!error,
+            [styles.success as string]: !!success,
           })}
         >
           {error || success}

@@ -1,6 +1,7 @@
 "use client";
 
 import { sampleCourseDetail } from "@/config/sampleCourse";
+import { getErrorMessage } from "@/lib/axios/error";
 import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
 import { CourseDetail } from "@/types/course";
@@ -60,7 +61,7 @@ export function useCourseInfo(courseId?: string) {
         }
       }
     } catch (e) {
-      setMessage("네트워크 오류로 찜 처리에 실패했습니다.");
+      setMessage(getErrorMessage(e, "네트워크 오류로 찜 처리에 실패했습니다."));
     } finally {
       setZzimPending(false);
     }
@@ -107,7 +108,9 @@ export function useCourseInfo(courseId?: string) {
         }
       }
     } catch (e) {
-      setMessage("네트워크 오류로 수강 신청 처리에 실패했습니다.");
+      setMessage(
+        getErrorMessage(e, "네트워크 오류로 수강 신청 처리에 실패했습니다."),
+      );
     } finally {
       setEnrollPending(false);
     }

@@ -36,3 +36,6 @@ export interface LectureSummary {
 export interface UpdateLectureRequest {
   lecture: LectureDTO[];
 }
+export interface UpdateLectureResponse {
+  lecture: LectureDTO[];
+}

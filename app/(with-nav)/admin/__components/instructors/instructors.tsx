@@ -1,4 +1,3 @@
-// app/admin/InstructorRegisterList.tsx
 "use client";
 
 import HorizontalTab from "@/components/tab/horizontalTab";

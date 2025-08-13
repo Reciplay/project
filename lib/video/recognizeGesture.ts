@@ -36,9 +36,9 @@ export const createRecognizers = async () => {
 export default async function poseGestureRecognition(
   video: HTMLVideoElement,
   canvas: HTMLCanvasElement,
-  setLandmarksData: (landmarks: Landmark[][]) => void,
-  setHandGesture: (handGesture: string) => void,
-  onNodesDetected: (nodes: Landmark[][]) => void,
+  setLandmarksData: (_landmarks: Landmark[][]) => void,
+  setHandGesture: (_handGesture: string) => void,
+  onNodesDetected: (_nodes: Landmark[][]) => void,
 ): Promise<() => void> {
   const canvasCtx = canvas.getContext("2d");
   if (!canvasCtx) {

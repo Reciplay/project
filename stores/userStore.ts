@@ -4,8 +4,8 @@ import { persist } from "zustand/middleware";
 interface UserState {
   isExtraFilled: boolean | null;
   hasHydrated: boolean;
-  setIsExtraFilled: (value: boolean) => void;
-  setHasHydrated: (value: boolean) => void;
+  setIsExtraFilled: (_value: boolean) => void;
+  setHasHydrated: (_value: boolean) => void;
 }
 
 export const useUserStore = create(

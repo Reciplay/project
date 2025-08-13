@@ -1,6 +1,7 @@
 // hooks/instructor/useInstructorStats.ts
 "use client";
 
+import { getErrorMessage } from "@/lib/axios/error";
 import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
 import { InstructorStats } from "@/types/instructorStats";
@@ -30,7 +31,7 @@ export function useInstructorStats() {
       setData(fixed);
     } catch (e) {
       // Added any type for error
-      setError(e?.response?.data?.message || "강사 통계 조회 실패");
+      setError(getErrorMessage(e, "강사 통계 조회 실패"));
       setData(null); // Removed dummy data fallback
     } finally {
       setLoading(false);

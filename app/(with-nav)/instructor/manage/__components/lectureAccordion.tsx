@@ -1,6 +1,6 @@
 "use client";
 
-import type { LectureSummary, LectureDTO } from "@/types/lecture";
+import type { LectureDTO, LectureSummary } from "@/types/lecture";
 import { useState } from "react";
 import styles from "./lectureAccordion.module.scss";
 import LectureEditForm from "./lectureEditForm"; // Import LectureEditForm
@@ -8,7 +8,10 @@ import LectureEditForm from "./lectureEditForm"; // Import LectureEditForm
 interface LectureAccordionItemProps {
   lecture: LectureSummary;
   courseId: number; // Added courseId
-  updateLecture: (courseId: number, lectureData: { lecture: LectureDTO[] }) => Promise<any>; // Function to update lecture
+  updateLecture: (
+    courseId: number,
+    lectureData: { lecture: LectureDTO[] },
+  ) => Promise<any>; // Function to update lecture
   refetchLectures: () => void; // Function to refetch lectures after update
 }
 
@@ -51,7 +54,6 @@ const LectureAccordionItem = ({
           {isEditing ? (
             <LectureEditForm
               initialData={{
-                lectureId: lecture.lectureId,
                 title: lecture.title,
                 summary: "", // Summary is not in LectureSummary, will be empty or fetched
                 sequence: lecture.sequence,
@@ -92,7 +94,10 @@ interface LectureAccordionProps {
   loading: boolean;
   error: string | null;
   courseId: number; // Added courseId
-  updateLecture: (courseId: number, lectureData: { lecture: LectureDTO[] }) => Promise<any>; // Added updateLecture
+  updateLecture: (
+    courseId: number,
+    lectureData: { lecture: LectureDTO[] },
+  ) => Promise<any>; // Added updateLecture
   refetchLectures: () => void; // Added refetchLectures
 }
 

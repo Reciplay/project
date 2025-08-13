@@ -1,6 +1,7 @@
 // hooks/course/useCourseCards.ts
 "use client";
 
+import { getErrorMessage } from "@/lib/axios/error";
 import restClient from "@/lib/axios/restClient";
 import { PaginationResponse } from "@/types/apiResponse";
 import type { CourseCard, RequestCategory } from "@/types/course";
@@ -103,13 +104,7 @@ export function useCourseCards(options?: {
         );
       } catch (e) {
         console.log(e);
-        if (e.name !== "CanceledError" && e.code !== "ERR_CANCELED") {
-          setError(
-            e?.response?.data?.message ||
-              e?.message ||
-              "강좌 목록 조회에 실패했습니다.",
-          );
-        }
+        setError(getErrorMessage("강좌 목록 조회에 실패했습니다."));
       } finally {
         setLoading(false);
       }
@@ -185,7 +180,7 @@ function useDebouncedCondition(
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebounced((prev) => ({
+      setDebounced((_prev) => ({
         ...cond,
         searchContent: cond.searchContent,
       }));

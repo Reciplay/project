@@ -10,7 +10,7 @@ interface ProfileImageModalProps {
   isModalOpen: boolean;
   setIsModalOpen: (val: boolean) => void;
   previewUrl: string | null;
-  fileInputRef: RefObject<HTMLInputElement>;
+  fileInputRef: RefObject<HTMLInputElement | null>;
   handleFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   uploadProfileImage: () => void;
   selectedFile: File | null;

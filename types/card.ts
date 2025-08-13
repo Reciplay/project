@@ -1,4 +1,4 @@
-export enum CARDTYPE {
-  VERTICAL = "vertical",
-  HORIZONTAL = "horizontal",
-}
+// export enum CARDTYPE {
+//   VERTICAL = "vertical",
+//   HORIZONTAL = "horizontal",
+// }

@@ -31,17 +31,17 @@ export interface InstructorState {
 
   coverImageFile: File | null;
 
-  setProfile: (data: Partial<Profile>) => void;
-  setIntroduction: (text: string) => void;
-  setCertificates: (certs: Certificate[]) => void;
-  setCareers: (careers: Career[]) => void;
-  setCoverImageFile: (file: File | null) => void; // ✅ 추가
+  setProfile: (_data: Partial<Profile>) => void;
+  setIntroduction: (_text: string) => void;
+  setCertificates: (_certs: Certificate[]) => void;
+  setCareers: (_careers: Career[]) => void;
+  setCoverImageFile: (_file: File | null) => void; // ✅ 추가
 
-  addCertificate: (cert: Certificate) => void;
-  removeCertificate: (index: number) => void;
+  addCertificate: (_cert: Certificate) => void;
+  removeCertificate: (_index: number) => void;
 
-  addCareer: (career: Career) => void;
-  removeCareer: (index: number) => void;
+  addCareer: (_career: Career) => void;
+  removeCareer: (_index: number) => void;
 }
 
 export const useInstructorStore = create<InstructorState>((set) => ({

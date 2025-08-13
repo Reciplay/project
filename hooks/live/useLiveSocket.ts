@@ -7,6 +7,8 @@ import { getSession } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
 import SockJS from "sockjs-client";
 
+type SockInstance = InstanceType<typeof SockJS>;
+
 export type SendChapterIssueArgs = {
   type: string;
   roomId: string;
@@ -49,7 +51,7 @@ export default function useLiveSocket(
   role: "instructor" | "student",
 ) {
   const [roomId, setRoomId] = useState<string | null>(null);
-  const [socket, setSocket] = useState<SockJS | null>(null);
+  const [socket, setSocket] = useState<SockInstance | null>(null);
   const [stompClient, setStompClient] = useState<Client | null>(null);
   const [subscription, setSubscription] = useState<StompSubscription | null>(
     null,
@@ -158,26 +160,32 @@ export default function useLiveSocket(
               // 서버가 보낼 수 있는 형태:
               // 1) { type: 'chapter-issue', chapterId, chapterSequence, chapterName, numOfTodos, todos: [...] }
               // 2) { chapterId, chapterSequence, chapterName, numOfTodos, todos: [...] }  (type 없이)
-              const isChapterIssue = (data): data is ChapterTodoResponse => {
-                return (
-                  (data?.type === "chapter-issue" || data?.chapterId) &&
-                  typeof data?.chapterId === "number" &&
-                  typeof data?.chapterSequence === "number" &&
-                  typeof data?.numOfTodos === "number" &&
-                  Array.isArray(data?.todos)
-                );
-              };
+
+              // 사용 안되길래 주석
+              // const isChapterIssue = (
+              //   data: any,
+              // ): data is ChapterTodoResponse => {
+              //   return (
+              //     (data?.type === "chapter-issue" || data?.chapterId) &&
+              //     typeof data?.chapterId === "number" &&
+              //     typeof data?.chapterSequence === "number" &&
+              //     typeof data?.numOfTodos === "number" &&
+              //     Array.isArray(data?.todos)
+              //   );
+              // };
               if (data) {
                 // ✅ 도착 로그(받았다)
                 console.log("⬅️ Received ChapterTodoResponse:", data);
-                const chapter: ChapterTodoResponse = {
-                  type: data.type ?? "chapter-issue",
-                  chapterId: data.chapterId,
-                  chapterSequence: data.chapterSequence,
-                  chapterName: data.chapterName,
-                  numOfTodos: data.numOfTodos,
-                  todos: data.todos,
-                };
+
+                // 사용 안되길래 주석
+                // const chapter: ChapterTodoResponse = {
+                //   type: data.type ?? "chapter-issue",
+                //   chapterId: data.chapterId,
+                //   chapterSequence: data.chapterSequence,
+                //   chapterName: data.chapterName,
+                //   numOfTodos: data.numOfTodos,
+                //   todos: data.todos,
+                // };
                 setTodo(data);
                 console.log("📝 ChapterTodoResponse 저장:", data);
                 return data;
@@ -229,26 +237,32 @@ export default function useLiveSocket(
               // 서버가 보낼 수 있는 형태:
               // 1) { type: 'chapter-issue', chapterId, chapterSequence, chapterName, numOfTodos, todos: [...] }
               // 2) { chapterId, chapterSequence, chapterName, numOfTodos, todos: [...] }  (type 없이)
-              const isChapterIssue = (data): data is ChapterTodoResponse => {
-                return (
-                  (data?.type === "chapter-issue" || data?.chapterId) &&
-                  typeof data?.chapterId === "number" &&
-                  typeof data?.chapterSequence === "number" &&
-                  typeof data?.numOfTodos === "number" &&
-                  Array.isArray(data?.todos)
-                );
-              };
+
+              // 사용 안되길래 주석
+              // const isChapterIssue = (
+              //   data: any,
+              // ): data is ChapterTodoResponse => {
+              //   return (
+              //     (data?.type === "chapter-issue" || data?.chapterId) &&
+              //     typeof data?.chapterId === "number" &&
+              //     typeof data?.chapterSequence === "number" &&
+              //     typeof data?.numOfTodos === "number" &&
+              //     Array.isArray(data?.todos)
+              //   );
+              // };
               if (data) {
                 // ✅ 도착 로그(받았다)
                 console.log("⬅️ Received ChapterTodoResponse:", data);
-                const chapter: ChapterTodoResponse = {
-                  type: data.type ?? "chapter-issue",
-                  chapterId: data.chapterId,
-                  chapterSequence: data.chapterSequence,
-                  chapterName: data.chapterName,
-                  numOfTodos: data.numOfTodos,
-                  todos: data.todos,
-                };
+
+                // 사용 안되길래 주석
+                // const chapter: ChapterTodoResponse = {
+                //   type: data.type ?? "chapter-issue",
+                //   chapterId: data.chapterId,
+                //   chapterSequence: data.chapterSequence,
+                //   chapterName: data.chapterName,
+                //   numOfTodos: data.numOfTodos,
+                //   todos: data.todos,
+                // };
                 setTodo(data);
                 console.log("📝 ChapterTodoResponse 저장:", data);
                 return data;
@@ -288,6 +302,7 @@ export default function useLiveSocket(
 
   // 2) 강사용: chapter-issue 보내기 함수
   type SendChapterIssueArgs = {
+    type: string;
     issuer: string; // instructor email
     lectureId: number | string;
     roomId: string;

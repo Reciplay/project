@@ -1,4 +1,3 @@
-// app/admin/page.tsx
 "use client";
 
 import Courses from "./__components/courses/courses";

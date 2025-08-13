@@ -7,6 +7,8 @@ import { useEffect, useRef, useState } from "react";
 
 export function useProfile() {
   const [userData, setUserData] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   // 수정용 form 상태
   const [form, setForm] = useState({
@@ -17,7 +19,6 @@ export function useProfile() {
   });
 
   const [isEditing, setIsEditing] = useState(false);
-  const [error, setError] = useState("");
 
   // 프로필 이미지 관련
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -29,6 +30,8 @@ export function useProfile() {
   // ✅ 초기 데이터 불러오기
   useEffect(() => {
     const fetchProfile = async () => {
+      setLoading(true);
+      setError("");
       try {
         const res = await restClient.get<ApiResponse<User>>("/user/profile", {
           requireAuth: true,
@@ -47,6 +50,9 @@ export function useProfile() {
         ); // 초기 이미지 설정
       } catch (e) {
         console.error("프로필 불러오기 실패:", e);
+        setError("프로필 정보를 불러오는 데 실패했습니다.");
+      } finally {
+        setLoading(false);
       }
     };
     fetchProfile();
@@ -107,7 +113,7 @@ export function useProfile() {
     formData.append("profileImage", selectedFile);
 
     try {
-      const res = await restClient.post("/user/profile/photo", formData, {
+      await restClient.post("/user/profile/photo", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -135,9 +141,10 @@ export function useProfile() {
 
   return {
     userData,
+    loading,
+    error,
     form,
     isEditing,
-    error,
     handleChange,
     toggleEdit,
     saveProfile,

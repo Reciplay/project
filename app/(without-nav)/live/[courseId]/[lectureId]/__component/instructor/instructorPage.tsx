@@ -14,22 +14,19 @@ import styles from "./instructorPage.module.scss";
 
 type ServerTodoItem = {
   title: string;
-  type: 'NORMAL' | 'TIMER';
+  type: "NORMAL" | "TIMER";
   seconds: number | null;
   sequence: number;
 };
 
 export type ChapterTodoResponse = {
-  type?: 'chapter-issue';
+  type?: "chapter-issue";
   chapterId: number;
   chapterSequence: number;
   chapterName: string;
   numOfTodos: number;
   todos: ServerTodoItem[];
 };
-
-
-
 
 export default function InstructorPage() {
   const { data: session } = useSession();
@@ -38,10 +35,17 @@ export default function InstructorPage() {
   const courseId = params.courseId as string;
   // const lectureId = String(1) as string;
 
-// ====================주석제거하기!!===================================
+  // ====================주석제거하기!!===================================
   const lectureId = params.lectureId as string;
-  const { roomId, stompClient, sendChapterIssue, roomInfo, todo, setTodo, sendHelp } = useLiveSocket(courseId, lectureId, "instructor");
-
+  const {
+    roomId,
+    stompClient,
+    sendChapterIssue,
+    roomInfo,
+    todo,
+    // setTodo,
+    sendHelp,
+  } = useLiveSocket(courseId, lectureId, "instructor");
 
   const { joinRoom, leaveRoom, localTrack, remoteTracks } =
     useLivekitConnection();
@@ -72,29 +76,26 @@ export default function InstructorPage() {
     };
   }, [courseId, lectureId, role]);
 
-  
-
-const parsedChapterCard = useMemo<ChapterCard | undefined>(() => {
+  const parsedChapterCard = useMemo<ChapterCard | undefined>(() => {
     // todo가 객체이며, chapterId 속성을 가지고 있는지 확인
-    if (!todo || typeof todo !== 'object' || !('chapterId' in todo)) {
-        return undefined;
+    if (!todo || typeof todo !== "object" || !("chapterId" in todo)) {
+      return undefined;
     }
 
     const data = todo as ChapterTodoResponse; // todo는 이미 객체이므로 바로 사용
     return {
-        chapterId: data.chapterId,
-        chapterSequence: data.chapterSequence,
-        chapterName: data.chapterName,
-        numOfTodos: data.numOfTodos,
-        todos: data.todos.map((t) => ({
-            title: t.title,
-            type: t.type,
-            seconds: t.seconds ?? null,
-            sequence: t.sequence,
-        })),
+      chapterId: data.chapterId,
+      chapterSequence: data.chapterSequence,
+      chapterName: data.chapterName,
+      numOfTodos: data.numOfTodos,
+      todos: data.todos.map((t) => ({
+        title: t.title,
+        type: t.type,
+        seconds: t.seconds ?? null,
+        sequence: t.sequence,
+      })),
     };
-}, [todo]);
-
+  }, [todo]);
 
   const [handGesture, setHandGesture] = useState("");
   const lastHandGestureCheck = useRef(0);
@@ -103,7 +104,7 @@ const parsedChapterCard = useMemo<ChapterCard | undefined>(() => {
     const now = Date.now();
     if (now - lastHandGestureCheck.current > 1000) {
       lastHandGestureCheck.current = now;
-      setHandGesture(prev => (prev === value ? prev : value));
+      setHandGesture((prev) => (prev === value ? prev : value));
       if (value && value !== "None") {
         console.log("Hand Gesture recognized:", value);
       }
@@ -112,7 +113,7 @@ const parsedChapterCard = useMemo<ChapterCard | undefined>(() => {
 
   const lastGestureCheck = useRef(0);
   const [recognizedPose, setPose] = useState("");
-  const handleNodesDetected = useCallback((nodes) => {
+  const handleNodesDetected = useCallback((nodes: any) => {
     const now = Date.now();
     if (now - lastGestureCheck.current > 1000) {
       lastGestureCheck.current = now;
@@ -121,13 +122,11 @@ const parsedChapterCard = useMemo<ChapterCard | undefined>(() => {
         if (newGesture) {
           console.log("Gesture recognized:", newGesture);
           setPose(newGesture);
-          console.log(recognizedPose)
+          console.log(recognizedPose);
         }
       }
     }
   }, []);
-
-
 
   useEffect(() => {
     // 수정된 부분: 필요한 값이 전부 준비되지 않았으면 조기 리턴
@@ -139,28 +138,27 @@ const parsedChapterCard = useMemo<ChapterCard | undefined>(() => {
     const issuer: string = roomInfo?.email ?? "";
     // if (now - lastGestureSended.current > 2000) {
     //   lastGestureSended.current = now
-      if (recognizedPose === 'Clap') {
-        console.log('박수실행됨==================================')
-        sendChapterIssue(stompClient!, {
-          type: "chapter-issue",
-          issuer: issuer,
-          lectureId: Number(lectureId),
-          roomId: roomId,
-          chapterSequence: 1
-        })
-      }
-      if (handGesture === 'Closed_Fist') {
-          console.log('Closed_Fist==================================')
-          sendHelp(stompClient, {
-              type:"help",
-              nickname: "별명",
-              issuer : issuer,
-              lectureId : lectureId,
-              roomId : roomId,
-          })
-      }
-
-  }, [ handGesture, recognizeGesture])
+    if (recognizedPose === "Clap") {
+      console.log("박수실행됨==================================");
+      sendChapterIssue(stompClient!, {
+        type: "chapter-issue",
+        issuer: issuer,
+        lectureId: Number(lectureId),
+        roomId: roomId,
+        chapterSequence: 1,
+      });
+    }
+    if (handGesture === "Closed_Fist") {
+      console.log("Closed_Fist==================================");
+      sendHelp(stompClient, {
+        type: "help",
+        nickname: "별명",
+        issuer: issuer,
+        lectureId: lectureId,
+        roomId: roomId,
+      });
+    }
+  }, [handGesture, recognizeGesture]);
 
   return (
     <div className={styles.container}>
@@ -200,7 +198,7 @@ const parsedChapterCard = useMemo<ChapterCard | undefined>(() => {
 
                 if (!video) {
                   console.warn(
-                    `⚠️ videoTrack 없음 → publication: ${remoteTrack.trackPublication.trackName}`
+                    `⚠️ videoTrack 없음 → publication: ${remoteTrack.trackPublication.trackName}`,
                   );
                   return null;
                 }
@@ -217,16 +215,15 @@ const parsedChapterCard = useMemo<ChapterCard | undefined>(() => {
             </div>
           </div>
         </div>
-        <div className={styles.checklistSection}> 
-        {parsedChapterCard ? (
-        <TodoListCard chapterCard={parsedChapterCard} />
+        <div className={styles.checklistSection}>
+          {parsedChapterCard ? (
+            <TodoListCard chapterCard={parsedChapterCard} />
           ) : (
-          <div>
-            <p>챕터 정보를 기다리고 있습니다...</p>
-          </div>
-          )}  <TodoListCard
-            chapterCard={parsedChapterCard}
-          />
+            <div>
+              <p>챕터 정보를 기다리고 있습니다...</p>
+            </div>
+          )}{" "}
+          <TodoListCard chapterCard={parsedChapterCard} />
         </div>
       </div>
     </div>

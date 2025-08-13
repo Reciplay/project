@@ -147,6 +147,10 @@ export default function useSignUp(initial?: Partial<SignupValues>) {
     }
   };
 
+  interface EmailVerified {
+    hash: string;
+  }
+
   // 인증 코드 확인 (원래 handleVerifyCode)
   const handleVerifyCode = async (): Promise<string | null> => {
     if (!values.email || !values.confirmEmail) {
@@ -162,17 +166,25 @@ export default function useSignUp(initial?: Partial<SignupValues>) {
     }
     try {
       setVerifyingEmail(true);
-      const res = await restClient.get("/user/auth/mail-verification", {
-        params: { email: values.email, otp: values.confirmEmail },
-      });
+      const res = await restClient.get<ApiResponse<EmailVerified>>(
+        "/user/auth/mail-verification",
+        {
+          params: { email: values.email, otp: values.confirmEmail },
+          validateStatus: (status) =>
+            (status >= 200 && status < 300) || status === 400 || status === 403,
+        },
+      );
       if (res.status === 200) {
         alert("이메일 인증 완료");
         setIsEmailVerified(true);
         return res.data.data.hash as string;
-      } else {
-        alert("인증번호가 올바르지 않습니다.");
       }
-    } catch {
+
+      if (res.status == 400 || 403) {
+        alert(res.data.message);
+      }
+    } catch (e) {
+      console.log(e);
       alert("이메일 인증 실패");
     } finally {
       setVerifyingEmail(false);

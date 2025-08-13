@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@/lib/axios/error";
 import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
 import { CourseManage, CourseStatus } from "@/types/course";
@@ -17,11 +18,7 @@ export function useInstructorManageCourses(status: CourseStatus) {
       );
       setList(res.data.data); // ✅ data 안에 배열
     } catch (e) {
-      setError(
-        e?.response?.data?.message ||
-          e?.message ||
-          "강좌 목록을 불러오지 못했습니다.",
-      );
+      setError(getErrorMessage(e, "강좌 목록을 불러오지 못했습니다."));
       setList([]);
     } finally {
       setLoading(false);

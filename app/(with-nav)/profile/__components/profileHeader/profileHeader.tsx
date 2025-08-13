@@ -10,7 +10,7 @@ interface ProfileHeaderProps {
   userData: User;
   isModalOpen: boolean;
   setIsModalOpen: (val: boolean) => void;
-  fileInputRef: RefObject<HTMLInputElement>;
+  fileInputRef: RefObject<HTMLInputElement | null>;
   handleFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   uploadProfileImage: () => void;
   previewUrl: string | null;

@@ -48,7 +48,7 @@ export default function useSignupValidation() {
 
   const checkEmailDuplicate = async (
     email: string,
-    onAvailable?: (available: boolean) => void,
+    onAvailable?: (_available: boolean) => void,
   ) => {
     if (!email || email.length < 5) return;
 

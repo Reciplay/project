@@ -1,14 +1,17 @@
 import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
+import { UpdateLectureRequest, UpdateLectureResponse } from "@/types/lecture";
 import { useState } from "react";
-import { LectureDTO, UpdateLectureRequest, UpdateLectureResponse } from "@/types/lecture";
 
 export const useUpdateLecture = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<UpdateLectureResponse | null>(null);
 
-  const updateLecture = async (courseId: number, lectureData: UpdateLectureRequest) => {
+  const updateLecture = async (
+    courseId: number,
+    lectureData: UpdateLectureRequest,
+  ) => {
     setLoading(true);
     setError(null);
     setData(null);

@@ -18,9 +18,6 @@ export default function CourseModal({
   loading = false,
   onApprove,
 }: CourseModalProps) {
-  // 날짜 포맷(필요시 국제화 변경)
-  // const fmt = (d?: string) => (d ? new Date(d).toLocaleString() : "-");
-
   return (
     <CustomModal isOpen={isOpen} onClose={onClose}>
       {loading || !detail ? (

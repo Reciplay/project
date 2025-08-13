@@ -49,7 +49,7 @@ export default function useExtraForm(initial?: Partial<ExtraValues>) {
     name: "",
     job: "",
     birthDate: "",
-    gender: undefined,
+    gender: null,
     ...initial,
   });
 

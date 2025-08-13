@@ -1,4 +1,3 @@
-// app/admin/MemberList.tsx
 "use client";
 
 import useMemberAdmin from "@/hooks/admin/useMemberAdmin";
@@ -11,14 +10,12 @@ export default function Members() {
     sorted,
     loading,
     error,
-
     // 상세/모달
     modalOpen,
     detail,
     detailLoading,
     openModal,
     closeModal,
-
     // 액션
     deleteMember,
   } = useMemberAdmin();

@@ -1,4 +1,5 @@
 // app/admin/hooks/useCourseList.ts
+import { getErrorMessage } from "@/lib/axios/error";
 import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
 import { Course, CourseSummary } from "@/types/course";
@@ -36,7 +37,7 @@ export default function useCourseAdmin() {
       setApprovedList(approvedRes.data.data ?? []);
       setRegisterList(registerRes.data.data ?? []);
     } catch (e) {
-      setError(e?.message ?? "강좌 목록 조회 실패");
+      setError(getErrorMessage(e, "강좌 목록 조회 실패"));
     } finally {
       setLoading(false);
     }

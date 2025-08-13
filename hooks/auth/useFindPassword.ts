@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@/lib/axios/error";
 import restClient from "@/lib/axios/restClient";
 import { useState } from "react";
 
@@ -12,15 +13,13 @@ export function useFindPassword() {
   const requestOtp = async () => {
     setError("");
     try {
-      const res = await restClient.get("/user/auth/mail-otp", {
+      await restClient.get("/user/auth/mail-otp", {
         params: { email: email.trim() },
       });
       alert("인증번호가 이메일로 전송되었습니다.");
       setStep(2);
-    } catch (err) {
-      setError(
-        err.response?.data?.message || "인증번호 요청 중 오류가 발생했습니다.",
-      );
+    } catch (e) {
+      setError(getErrorMessage(e, "인증번호 요청 중 오류가 발생했습니다."));
     }
   };
 

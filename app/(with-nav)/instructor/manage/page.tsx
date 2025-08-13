@@ -50,8 +50,8 @@ function CoursePanelDetail({ courseId }: { courseId: number }) {
   } = useUpdateCourse();
   const {
     updateLecture,
-    loading: updateLectureLoading,
-    error: updateLectureError,
+    // loading: updateLectureLoading,
+    // error: updateLectureError,
   } = useUpdateLecture(); // Call useUpdateLecture
 
   const [formData, setFormData] = useState<CourseDetailFormData | null>(null);
@@ -84,7 +84,10 @@ function CoursePanelDetail({ courseId }: { courseId: number }) {
     }
   }, [course]);
 
-  const setCourseField = (field: keyof CourseDetailFormData, value) => {
+  const setCourseField = <K extends keyof CourseDetailFormData>(
+    field: K,
+    value: CourseDetailFormData[K],
+  ) => {
     setFormData((prev) => (prev ? { ...prev, [field]: value } : null));
   };
 
@@ -163,7 +166,7 @@ function CoursePanelDetail({ courseId }: { courseId: number }) {
         {/* 카테고리 */}
         <CategoryForm
           value={formData.categoryId}
-          onChange={(v) => setCourseField("categoryId", v)}
+          onChange={(v) => setCourseField("categoryId", v ?? 0)}
         />
 
         {/* 강좌소개 */}

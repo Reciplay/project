@@ -108,7 +108,7 @@ export default function LectureForm({
           sequence: 0,
           title: "기본 챕터",
           // DTO 스키마에 맞춰 todos로 매핑
-          todos: parsedTodos,
+          todoList: parsedTodos,
         },
       ],
       // 필요 시 DTO 확장 필드가 있다면 타입 정의에 맞춰 추가

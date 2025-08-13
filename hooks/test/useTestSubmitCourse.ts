@@ -43,7 +43,9 @@ async function logFormData(fd: FormData, label: string) {
           } catch {
             console.log(`  ${key} (text):`, txt);
           }
-        } catch {}
+        } catch {
+          console.log();
+        }
       }
     } else if (value instanceof Blob) {
       console.log(`- ${key}: Blob(type="${value.type}", size=${value.size}B)`);
@@ -55,7 +57,9 @@ async function logFormData(fd: FormData, label: string) {
           try {
             const txt = await value.text();
             console.log(`  ${key} (text):`, txt);
-          } catch {}
+          } catch {
+            console.log();
+          }
         }
       }
     } else {

@@ -3,7 +3,7 @@ import { persist } from "zustand/middleware";
 
 interface ChatbotStore {
   messages: string[];
-  addMessage: (message: string) => void;
+  addMessage: (_message: string) => void;
   clearMessages: () => void;
 }
 
