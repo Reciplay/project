@@ -60,10 +60,12 @@ public class InstructorManagementServiceImpl implements InstructorManagementServ
 
     // 공통 강사 정보 생성( 강사 배너 이미지, 경력, 자격증 모두)
     private void createCommonInstructorInfo(Long instructorId, MultipartFile instructorBannerImage, List<CareerItem> careerItems, List<LicenseItem> licenseItems){
-        try {
-            s3Service.uploadFile(instructorBannerImage, FileCategory.IMAGES, RelatedType.INSTRUCTOR_BANNER, instructorId, 1);
-        } catch (IOException e) {
-            log.warn("S3 업로드 과정에서 문제가 발생했습니다. : {}", e.getMessage());
+        if(instructorBannerImage != null){
+            try {
+                s3Service.uploadFile(instructorBannerImage, FileCategory.IMAGES, RelatedType.INSTRUCTOR_BANNER, instructorId, 1);
+            } catch (IOException e) {
+                log.warn("S3 업로드 과정에서 문제가 발생했습니다. : {}", e.getMessage());
+            }
         }
 
         log.debug("자격증 목록 {}", licenseItems);
