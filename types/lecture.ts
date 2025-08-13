@@ -1,5 +1,3 @@
-import { RcFile } from "antd/es/upload";
-
 export type LectureTodo = {
   id?: number;
   sequence: number;
@@ -24,5 +22,5 @@ export type LectureDTO = {
   startedAt: string;
   endedAt: string;
   chapterList: LectureChapter[];
-  localMaterialFile?: File | RcFile | null;
+  localMaterialFile?: File | null;
 };
