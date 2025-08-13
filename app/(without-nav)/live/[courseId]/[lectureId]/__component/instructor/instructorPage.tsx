@@ -36,8 +36,11 @@ export default function InstructorPage() {
 
   const params = useParams();
   const courseId = params.courseId as string;
+  // const lectureId = String(1) as string;
+
+// ====================주석제거하기!!===================================
   const lectureId = params.lectureId as string;
-  const { roomId, stompClient, sendChapterIssue, roomInfo, todo, setTodo } = useLiveSocket(courseId, lectureId, "instructor");
+  const { roomId, stompClient, sendChapterIssue, roomInfo, todo, setTodo, sendHelp } = useLiveSocket(courseId, lectureId, "instructor");
 
 
   const { joinRoom, leaveRoom, localTrack, remoteTracks } =
@@ -146,19 +149,18 @@ const parsedChapterCard = useMemo<ChapterCard | undefined>(() => {
           chapterSequence: 1
         })
       }
-      // if (handGesture === 'Closed_Fist') {
-      //     console.log('Closed_Fist==================================')
-      //     sendHelp(props.stompClient, {
-      //         type:"help",
-      //         issuer : issuer,
-      //         lectureId : lectureId,
-      //         roomId : roomId,
-      //     })
-      // }
+      if (handGesture === 'Closed_Fist') {
+          console.log('Closed_Fist==================================')
+          sendHelp(stompClient, {
+              type:"help",
+              nickname: "별명",
+              issuer : issuer,
+              lectureId : lectureId,
+              roomId : roomId,
+          })
+      }
 
-
-    // }
-  }, [recognizedPose, handGesture])
+  }, [ handGesture, recognizeGesture])
 
   return (
     <div className={styles.container}>

@@ -142,6 +142,7 @@ export default function useLiveSocket(
         setStompClient(client);
 
         console.log(`subscribe : /ws/v1/topic/room/${id}`);
+
         const sub = client.subscribe(
           `/ws/v1/topic/room/${id}`,
           (message: IMessage) => {
@@ -205,6 +206,77 @@ export default function useLiveSocket(
         // }
       };
 
+      // 개인채널 구독
+      client.onConnect = (frame) => {
+        console.log("✅ Connected : ", frame);
+
+        setStompClient(client);
+
+        console.log(`subscribe : /ws/v1/user/queue/${id}`);
+
+        const sub = client.subscribe(
+          `/ws/v1/user/queue/${id}`,
+          (message: IMessage) => {
+            try {
+              const data = JSON.parse(message.body);
+              console.log("📦 받은 데이터 구조:", data);
+              console.log(
+                "🔍 타입 추론 결과:",
+                typeof data,
+                Array.isArray(data) ? "배열" : "객체",
+              );
+              console.dir(data, { depth: null }); // 중첩 구조까지 전부 출력
+              // 서버가 보낼 수 있는 형태:
+              // 1) { type: 'chapter-issue', chapterId, chapterSequence, chapterName, numOfTodos, todos: [...] }
+              // 2) { chapterId, chapterSequence, chapterName, numOfTodos, todos: [...] }  (type 없이)
+              const isChapterIssue = (data): data is ChapterTodoResponse => {
+                return (
+                  (data?.type === "chapter-issue" || data?.chapterId) &&
+                  typeof data?.chapterId === "number" &&
+                  typeof data?.chapterSequence === "number" &&
+                  typeof data?.numOfTodos === "number" &&
+                  Array.isArray(data?.todos)
+                );
+              };
+              if (data) {
+                // ✅ 도착 로그(받았다)
+                console.log("⬅️ Received ChapterTodoResponse:", data);
+                const chapter: ChapterTodoResponse = {
+                  type: data.type ?? "chapter-issue",
+                  chapterId: data.chapterId,
+                  chapterSequence: data.chapterSequence,
+                  chapterName: data.chapterName,
+                  numOfTodos: data.numOfTodos,
+                  todos: data.todos,
+                };
+                setTodo(data);
+                console.log("📝 ChapterTodoResponse 저장:", data);
+                return data;
+              }
+
+              // 그 외 다른 이벤트들은 기존처럼 로그
+              console.log(`📩 메시지 수신 [room/${id}]`, data);
+            } catch (e) {
+              console.error("❌ 메시지 파싱 실패:", e, message.body);
+            }
+          },
+        );
+        console.log(`✅ 개인 구독 성공: /ws/v1/user/queue/${id}`);
+        setSubscription(sub);
+
+        sendJoin(client, id);
+        // if (roomInfo) {
+        //   sendChapterIssue(client, {
+        //     type: 'chapter-issue',
+        //     issuer: roomInfo.email,
+        //     lectureId: roomInfo.lectureId,
+        //     roomId: id,
+        //     chapterSequence: 1,
+        //     chapterName: '테스트 챕터',
+        //   });
+        // }
+      };
+
       client.onStompError = (frame) => {
         console.error("❌ STOMP 오류", frame.headers["message"]);
       };
@@ -221,6 +293,14 @@ export default function useLiveSocket(
     roomId: string;
     chapterSequence: number;
     chapterName?: string; // 서버가 필요 없으면 생략 가능
+  };
+
+  type SendHelpIssueArgs = {
+    type: string;
+    issuer: string;
+    nickname: string;
+    lectureId: number | string;
+    roomId: string;
   };
 
   const sendChapterIssue = useCallback(
@@ -243,6 +323,29 @@ export default function useLiveSocket(
     },
     [],
   );
+
+  const sendHelp = useCallback((client: Client, args: SendHelpIssueArgs) => {
+    const payload = {
+      type: "help",
+      issuer: args.issuer,
+      nickname: args.nickname,
+      lectureId: Number(args.lectureId),
+      roomId: args.roomId,
+    };
+
+    client.publish({
+      destination: "/ws/v1/app/help",
+      body: JSON.stringify(payload),
+    });
+    console.log("➡️ Sent /ws/v1/app/help:", payload);
+  }, []);
+
+  // const sendTodoCheck = useCallback((client: Client, args: SendHelpIssueArgs) => {
+  //   const payload = {
+  //     type: "todo-check",
+  //     issuer:
+  //   }
+  // })
 
   /** 4. cleanup */
   const cleanupConnection = useCallback(() => {
@@ -281,6 +384,7 @@ export default function useLiveSocket(
     roomInfo,
     todo,
     setTodo,
-    // sendHelp, sendCheck
+    sendHelp,
+    // sendCheck
   };
 }
