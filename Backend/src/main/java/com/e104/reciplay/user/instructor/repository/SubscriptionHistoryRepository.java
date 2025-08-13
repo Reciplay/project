@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SubscriptionHistoryRepository extends JpaRepository<SubscriptionHistory, Long> {
+    SubscriptionHistory findByInstructorId(Long instructorId);
 }
