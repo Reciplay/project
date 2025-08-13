@@ -5,12 +5,12 @@ export interface ApiResponse<T> {
 }
 export interface PagePayload<T> {
   content: T[];
-  page: number; // 0-base
+  page: number;
   size: number;
   totalElements: number;
   totalPages: number;
-  hasNext?: boolean; // 👈 추가
-  hasPrevious?: boolean; // 👈 추가
+  hasNext?: boolean;
+  hasPrevious?: boolean;
 }
 
 export interface PaginationResponse<T> {
