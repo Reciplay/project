@@ -43,7 +43,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        if(jwtUtil.isExpired(token)) {
+        if(jwtUtil.isExpired(token) || tokenQueryService.isInvalidToken(token)) {
             log.warn("액세스 토큰이 만료되었습니다.");
             filterChain.doFilter(request, response);
             return;
