@@ -29,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.lenient;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -52,7 +53,7 @@ class AdminApiControllerTest {
     @Mock AdCourseManagementService adCourseManagementService;
     @Mock UserQueryService userQueryService;
 
-    private static final String BASE = "/api/v1/course/admin";
+    private static final String BASE = "/api/v1/admin";
     private static final String ADMIN_EMAIL = "admin@example.com";
 
     private User adminMockUser;
@@ -78,14 +79,12 @@ class AdminApiControllerTest {
                """;
     }
 
-    /** 공통: 관리자 역할만 stub (ID는 PUT 테스트에서만 stub) */
     private MockedStatic<AuthenticationUtil> mockAdminRoleOnly() {
         MockedStatic<AuthenticationUtil> mockedStatic = Mockito.mockStatic(AuthenticationUtil.class);
         mockedStatic.when(AuthenticationUtil::getSessionUsername).thenReturn(ADMIN_EMAIL);
 
         adminMockUser = Mockito.mock(User.class);
-        given(adminMockUser.getRole()).willReturn("ROLE_ADMIN");
-        given(userQueryService.queryUserByEmail(ADMIN_EMAIL)).willReturn(adminMockUser);
+        lenient().when(userQueryService.queryUserByEmail(ADMIN_EMAIL)).thenReturn(adminMockUser);
 
         return mockedStatic;
     }
@@ -127,7 +126,7 @@ class AdminApiControllerTest {
         @DisplayName("PUT /instructor - 200 & 승인 처리 호출 검증")
         void handleInstructorRegistration() throws Exception {
             try (MockedStatic<AuthenticationUtil> ignored = mockAdminRoleOnly()) {
-                given(adminMockUser.getId()).willReturn(99L); // PUT에서만 ID 사용
+                given(adminMockUser.getId()).willReturn(99L);
 
                 mockMvc.perform(put(BASE + "/instructor")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -136,8 +135,7 @@ class AdminApiControllerTest {
                         .andExpect(status().isOk())
                         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-                // 컨트롤러가 권한 체크 + adminId 조회로 2회 호출하므로 2회 검증
-                verify(userQueryService, times(2)).queryUserByEmail(ADMIN_EMAIL);
+                verify(userQueryService, times(1)).queryUserByEmail(ADMIN_EMAIL);
                 verify(adInstructorManagementService, times(1))
                         .updateInstructorApproval(any(ApprovalInfo.class), Mockito.eq(99L));
             }
@@ -181,7 +179,7 @@ class AdminApiControllerTest {
         @DisplayName("PUT /course - 200 & 승인 처리 호출 검증")
         void handleCourseRegistration() throws Exception {
             try (MockedStatic<AuthenticationUtil> ignored = mockAdminRoleOnly()) {
-                given(adminMockUser.getId()).willReturn(11L); // PUT에서만 ID 사용
+                given(adminMockUser.getId()).willReturn(11L);
 
                 mockMvc.perform(put(BASE + "/course")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -189,8 +187,7 @@ class AdminApiControllerTest {
                         .andExpect(status().isOk())
                         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-                // 이 엔드포인트도 컨트롤러에서 2회 호출
-                verify(userQueryService, times(2)).queryUserByEmail(ADMIN_EMAIL);
+                verify(userQueryService, times(1)).queryUserByEmail(ADMIN_EMAIL);
                 verify(adCourseManagementService, times(1))
                         .updateCourseApproval(any(ApprovalInfo.class), Mockito.eq(11L));
             }
