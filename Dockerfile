@@ -44,7 +44,7 @@ COPY --from=builder /app/.next/static ./.next/static
 # node -r dotenv/config 등의 방식이나 커스텀 로직을 쓰는 경우를 대비해 둠.
 # 필요 없으면 아래 두 줄은 제거 가능.
 COPY --from=builder /app/.env ./.env
-COPY --from=builder /app/.env.production ./.env.production
+# COPY --from=builder /app/.env.production ./.env.production
 
 EXPOSE 3000
 
