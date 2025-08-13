@@ -2,10 +2,7 @@ package com.e104.reciplay.livekit.service.depends;
 
 import com.e104.reciplay.course.courses.service.SubFileMetadataQueryService;
 import com.e104.reciplay.course.qna.service.QnaQueryService;
-import com.e104.reciplay.entity.Career;
-import com.e104.reciplay.entity.FileMetadata;
-import com.e104.reciplay.entity.Instructor;
-import com.e104.reciplay.entity.InstructorLicense;
+import com.e104.reciplay.entity.*;
 import com.e104.reciplay.repository.InstructorRepository;
 import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import com.e104.reciplay.s3.service.S3Service;
@@ -14,10 +11,15 @@ import com.e104.reciplay.user.instructor.dto.response.InstructorStat;
 import com.e104.reciplay.user.instructor.dto.response.item.CareerItem;
 import com.e104.reciplay.user.instructor.dto.response.item.InstructorQuestion;
 import com.e104.reciplay.user.instructor.dto.response.item.LicenseItem;
-import com.e104.reciplay.user.instructor.service.*;
+import com.e104.reciplay.user.instructor.service.CareerQueryService;
+import com.e104.reciplay.user.instructor.service.InstructorLicenseQueryService;
+import com.e104.reciplay.user.instructor.service.InstructorStatQueryService;
+import com.e104.reciplay.user.instructor.service.LicenseQueryService;
 import com.e104.reciplay.user.security.domain.User;
 import com.e104.reciplay.user.security.exception.EmailNotFoundException;
 import com.e104.reciplay.user.security.service.UserQueryService;
+import com.e104.reciplay.user.subscription.dto.SubscribedInstructorItem;
+import com.e104.reciplay.user.subscription.service.SubscriptionHistoryService;
 import com.e104.reciplay.user.subscription.service.SubscriptionQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +42,7 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
     private final SubscriptionQueryService subscriptionQueryService;
     private final InstructorStatQueryService instructorStatQueryService;
     private final QnaQueryService qnaQueryService;
+    private final SubscriptionHistoryService subscriptionHistoryService;
     @Override
     public Instructor queryInstructorByEmail(String email) {
         User user = userQueryService.queryUserByEmail(email);
@@ -69,7 +72,7 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
         InstructorProfile instructorProfile = new InstructorProfile();
 
         // 강사 프로필 이미지 찾기
-        FileMetadata instructorProfileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructorId, "user_profile");
+        FileMetadata instructorProfileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructor.getUserId(), "user_profile");
         ResponseFileInfo instructorProfileFileInfo = s3Service.getResponseFileInfo(instructorProfileMetadata);
 
         // 강사 배너 이미지 찾기
@@ -132,5 +135,35 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
     public Instructor queryInstructorByUserId(Long userId) {
         return instructorRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("강사로 등록되지 않은 회원입니다."));
+    }
+
+    @Override
+    public List<SubscribedInstructorItem> queryUserSubscriptionsByUserId(Long userId) {
+        List<SubscribedInstructorItem> subscribedInstructorItems = new ArrayList<>();
+        log.debug("해당 유저 구독 정보 조회");
+        List<Subscription> subscriptions = subscriptionQueryService.querySubscriptionsByUserId(userId);
+        log.debug("해당 유저 구독 정보 리스트를 SubscriptionInfo 리스트로 변환");
+
+        for(Subscription s : subscriptions){
+            SubscribedInstructorItem item = new SubscribedInstructorItem();
+
+            log.debug("해당 강사의 사용자 아이디 조회");
+            Long instructorUserId = instructorRepository.findById(s.getInstructorId()).get().getUserId();
+
+            log.debug("해당 강사의 userProfileFileMetadata 조회");
+            FileMetadata fileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructorUserId, "user_profile");
+            log.debug("해당 강사의 responseFIleInfo 생성");
+            ResponseFileInfo responseFileInfo = s3Service.getResponseFileInfo(fileMetadata);
+            item.setInstructorProfileFileInfo(responseFileInfo);
+
+            item.setInstructorId(s.getInstructorId());
+            log.debug("해당 강사의 이름 조회 후 subscriptionInfo에 대입");
+            item.setInstructorName(instructorRepository.findNameById(s.getInstructorId()));
+            log.debug("해당 강사의 구독자 수 조회 후 subscriptionInfo에 대입");
+            item.setSubscriberCount(subscriptionHistoryService.querySubscriberCount(s.getInstructorId()));
+
+            subscribedInstructorItems.add(item);
+        }
+        return subscribedInstructorItems;
     }
 }
