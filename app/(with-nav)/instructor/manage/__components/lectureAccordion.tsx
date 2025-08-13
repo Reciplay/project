@@ -11,7 +11,7 @@ interface LectureAccordionItemProps {
   updateLecture: (
     courseId: number,
     lectureData: { lecture: LectureDTO[] },
-  ) => Promise<any>; // Function to update lecture
+  ) => Promise<void>; // Function to update lecture
   refetchLectures: () => void; // Function to refetch lectures after update
 }
 
@@ -97,7 +97,7 @@ interface LectureAccordionProps {
   updateLecture: (
     courseId: number,
     lectureData: { lecture: LectureDTO[] },
-  ) => Promise<any>; // Added updateLecture
+  ) => Promise<void>; // Added updateLecture
   refetchLectures: () => void; // Added refetchLectures
 }
 

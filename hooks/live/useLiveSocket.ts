@@ -389,7 +389,7 @@ export default function useLiveSocket(
   useEffect(() => {
     if (roomId) connectSocket(roomId);
     return () => cleanupConnection();
-  }, [roomId]);
+  }, [roomId, connectSocket, cleanupConnection]);
 
   return {
     roomId,

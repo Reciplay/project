@@ -100,7 +100,7 @@ export default function useCourseAdmin() {
   const handleApprove = useCallback(
     async (courseId: number, message: string, isApprove: boolean) => {
       try {
-        const res = await restClient.put(
+        await restClient.put(
           "/admin/course",
           { instructorId, courseId, message, isApprove },
           { requireAuth: true },

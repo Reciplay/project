@@ -129,7 +129,7 @@ const handler = NextAuth({
       },
 
       // ✅ 시그니처: (credentials, req)
-      async authorize(credentials, _req) {
+      async authorize(credentials) {
         if (!credentials) return null;
 
         const formdata = new FormData();
@@ -218,18 +218,24 @@ const handler = NextAuth({
       session.role = token.role ?? undefined;
       session.required = token.required ?? undefined;
 
-      // user.id는 강제 세팅
-      if (!session.user) {
-        // 타입 상 session.user는 항상 존재하지만 방어 로직
-        // @ts-ignore
-        session.user = {};
-      }
-      // @ts-ignore - module augmentation 상 user.id 보장
-      session.user.id = token.user?.id ?? session.user.email ?? "";
+      // ✅ user가 없을 때 타입을 만족하도록 id를 넣어 초기화
+      session.user ??= {
+        id:
+          (typeof token.user?.id === "string" && token.user.id) ||
+          (typeof token.email === "string" ? token.email : ""),
+      };
 
-      if (token.email) {
-        session.user.email = token.email as string;
+      // 이후 필요한 필드들 채워넣기
+      if (typeof token.email === "string") {
+        session.user.email = token.email;
       }
+      if (typeof token.user?.name === "string") {
+        session.user.name = token.user.name;
+      }
+      if (typeof token.user?.image === "string") {
+        session.user.image = token.user.image;
+      }
+
       return session;
     },
   },

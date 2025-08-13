@@ -231,7 +231,10 @@ function CoursePanelDetail({ courseId }: { courseId: number }) {
           loading={lecturesLoading}
           error={lecturesError}
           courseId={courseId}
-          updateLecture={updateLecture}
+          updateLecture={async (cId, data) => {
+            await updateLecture(cId, data); // 반환값을 사용하지 않으므로 await만 하고 끝
+            // 반환값을 쓸 일이 생기면 여기에 처리(토스트 등) 추가
+          }}
           refetchLectures={refetchLectures}
         />
 

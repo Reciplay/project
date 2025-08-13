@@ -1,6 +1,7 @@
 // hooks/admin/useInstructorAdmin.ts
 "use client";
 
+import { getErrorMessage } from "@/lib/axios/error";
 import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
 import { InstructorDetail, InstructorSummary } from "@/types/instructor";
@@ -99,7 +100,7 @@ export default function useInstructorAdmin() {
       setApprovedList(approvedRes.data.data ?? []);
       setRegisterList(registerRes.data.data ?? []);
     } catch (e) {
-      setError(e?.message ?? "목록 조회 실패");
+      setError(getErrorMessage(e, "목록 조회 실패"));
     } finally {
       setLoading(false);
     }

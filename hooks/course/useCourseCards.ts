@@ -7,14 +7,6 @@ import { PaginationResponse } from "@/types/apiResponse";
 import type { CourseCard, RequestCategory } from "@/types/course";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-// export type RequestCategory =
-//   | "soon"
-//   | "special"
-//   | "popular"
-//   | "latest"
-//   | "enrolled"
-//   | string;
-
 export interface CourseCardCondition {
   requestCategory?: RequestCategory;
   searchContent?: string;
@@ -47,6 +39,7 @@ export function useCourseCards(options?: {
 
   const [condition, setCondition] =
     useState<CourseCardCondition>(initialCondition);
+
   const [pageable, setPageable] = useState<Required<Pageable>>({
     page: initialPage,
     size,
@@ -80,7 +73,8 @@ export function useCourseCards(options?: {
         const res = await restClient.get<PaginationResponse<CourseCard>>(
           "/course/courses/cards",
           {
-            requireAuth: true,
+            // ✅ 옵션값을 실제로 사용 (의존성 정당화)
+            requireAuth,
             signal: controller.signal,
             params: {
               requestCategory: debouncedCond.requestCategory,
@@ -94,23 +88,23 @@ export function useCourseCards(options?: {
           },
         );
 
-        console.log(res);
         const pageData = res.data.data;
-
         setTotalPages(pageData.totalPages);
         setTotalElements(pageData.totalElements);
         setList((prev) =>
           reset ? pageData.content : [...prev, ...pageData.content],
         );
       } catch (e) {
-        console.log(e);
-        setError(getErrorMessage("강좌 목록 조회에 실패했습니다."));
+        setError(getErrorMessage(e, "강좌 목록 조회에 실패했습니다."));
       } finally {
         setLoading(false);
       }
     },
     [debouncedCond, pageable.page, pageable.size, pageable.sort, requireAuth],
   );
+
+  // ✅ 복잡한 deps 분리
+  const sortKey = useMemo(() => JSON.stringify(pageable.sort), [pageable.sort]);
 
   useEffect(() => {
     setPageable((p) => ({ ...p, page: 0 }));
@@ -120,7 +114,7 @@ export function useCourseCards(options?: {
     debouncedCond.instructorId,
     debouncedCond.isEnrolled,
     pageable.size,
-    JSON.stringify(pageable.sort),
+    sortKey, // ← 문자열 키만 의존
   ]);
 
   useEffect(() => {
@@ -172,6 +166,7 @@ export function useCourseCards(options?: {
   };
 }
 
+/** 조건 객체를 딜레이 후 반영하는 간단한 디바운스 훅 */
 function useDebouncedCondition(
   cond: CourseCardCondition,
   delay: number,
@@ -180,22 +175,10 @@ function useDebouncedCondition(
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebounced((_prev) => ({
-        ...cond,
-        searchContent: cond.searchContent,
-      }));
+      setDebounced(cond);
     }, delay);
     return () => clearTimeout(timer);
-  }, [cond.searchContent, delay]);
-
-  useEffect(() => {
-    setDebounced((prev) => ({
-      ...prev,
-      requestCategory: cond.requestCategory,
-      instructorId: cond.instructorId,
-      isEnrolled: cond.isEnrolled,
-    }));
-  }, [cond.requestCategory, cond.instructorId, cond.isEnrolled]);
+  }, [cond, delay]); // ✅ cond를 명시적으로 의존성에 포함
 
   return debounced;
 }

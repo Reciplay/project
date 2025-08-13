@@ -8,9 +8,10 @@ import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Header from "../common/header/header";
-import type { ChapterCard } from "../common/todoList/todoListCard"; // 실제 경로로 수정
+import type { ChapterCard } from "../common/todoList/todoListCard";
 import TodoListCard from "../common/todoList/todoListCard";
 import styles from "./studentPage.module.scss";
+
 type ServerTodoItem = {
   title: string;
   type: "NORMAL" | "TIMER";
@@ -32,50 +33,42 @@ export default function StudentPage() {
 
   const params = useParams();
   const courseId = params.courseId as string;
+
+  // TODO: 실제 라우팅 사용할 때 주석 해제
+  // const lectureId = params.lectureId as string;
   const lectureId = String(1) as string;
 
-  // ====================주석제거하기!!===================================
-  // const lectureId = params.lectureId as string;
-  // const { roomId, stompClient, sendChapterIssue, roomInfo, todo, setTodo, sendHelp } = useLiveSocket(courseId, lectureId, "instructor");
+  // 역할은 학생이므로 세 번째 인자를 "student"로 두는 것을 권장
   const { roomId, stompClient, sendChapterIssue, roomInfo, todo, sendHelp } =
-    useLiveSocket(courseId, lectureId, "instructor");
+    useLiveSocket(courseId, lectureId, "student");
 
   const { joinRoom, leaveRoom, localTrack, remoteTracks } =
     useLivekitConnection();
 
-  // 실시간 할 일 상태 -> 이 부분은 실제로는 서버에서 받아와야 함
   const [role, setRole] = useState<string | null>(null);
   const [userId, setUserId] = useState("");
 
-  // 페이지 로드 시 역할 적용
+  // 세션에서 role/id 읽기 (deps: session)
   useEffect(() => {
-    const fetchSession = async () => {
-      const roleFromSession = session?.role ?? session?.role ?? null;
-      setRole(roleFromSession as string | null);
-      const uid = session?.user?.id ?? "";
-      setUserId(uid); // 수정된 부분
-    };
+    const roleFromSession = (session?.role as string | null) ?? null;
+    setRole(roleFromSession);
+    setUserId(session?.user?.id ?? "");
+  }, [session]);
 
-    fetchSession();
-  }, []);
-
-  // role이 준비되면 joinRoom 실행
+  // role 준비되면 입장/퇴장 (deps: joinRoom, leaveRoom 포함)
   useEffect(() => {
     if (!role) return;
-
     joinRoom(courseId, lectureId, role);
     return () => {
       leaveRoom();
     };
-  }, [courseId, lectureId, role]);
+  }, [courseId, lectureId, role, joinRoom, leaveRoom]);
 
   const parsedChapterCard = useMemo<ChapterCard | undefined>(() => {
-    // todo가 객체이며, chapterId 속성을 가지고 있는지 확인
     if (!todo || typeof todo !== "object" || !("chapterId" in todo)) {
       return undefined;
     }
-
-    const data = todo as ChapterTodoResponse; // todo는 이미 객체이므로 바로 사용
+    const data = todo as ChapterTodoResponse;
     return {
       chapterId: data.chapterId,
       chapterSequence: data.chapterSequence,
@@ -106,58 +99,65 @@ export default function StudentPage() {
 
   const lastGestureCheck = useRef(0);
   const [recognizedPose, setPose] = useState("");
-  const handleNodesDetected = useCallback((nodes: any[]) => {
+
+  // ✅ any 제거: 알 수 없는 배열로 받고 우리 로직에서 좁히기
+  const handleNodesDetected = useCallback((nodes: ReadonlyArray<unknown>) => {
     const now = Date.now();
     if (now - lastGestureCheck.current > 1000) {
       lastGestureCheck.current = now;
-      if (nodes && nodes.length > 0) {
+      if (Array.isArray(nodes) && nodes.length > 0) {
         const newGesture = recognizeGesture(nodes[0]);
         if (newGesture) {
           console.log("Gesture recognized:", newGesture);
           setPose(newGesture);
-          console.log(recognizedPose);
         }
       }
     }
   }, []);
 
+  // issuer 메모 (deps: roomInfo?.email)
+  const issuer = useMemo(() => roomInfo?.email ?? "", [roomInfo?.email]);
+
+  // 제스처 전송 (필요한 의존성 모두 명시)
   useEffect(() => {
-    // 수정된 부분: 필요한 값이 전부 준비되지 않았으면 조기 리턴
-    if (!stompClient || !roomInfo?.email || !roomId) {
-      // 아직 연결/세션 정보가 준비되지 않았음
-      return;
-    }
-    // const now = Date.now()
-    const issuer: string = roomInfo?.email ?? "";
-    // if (now - lastGestureSended.current > 2000) {
-    //   lastGestureSended.current = now
+    if (!stompClient || !issuer || !roomId) return;
+
     if (recognizedPose === "Clap") {
       console.log("박수실행됨==================================");
-      sendChapterIssue(stompClient!, {
+      sendChapterIssue(stompClient, {
         type: "chapter-issue",
-        issuer: issuer,
+        issuer,
         lectureId: Number(lectureId),
-        roomId: roomId,
+        roomId,
         chapterSequence: 1,
       });
     }
+
     if (handGesture === "Closed_Fist") {
       console.log("Closed_Fist==================================");
       sendHelp(stompClient, {
         type: "help",
         nickname: "별명",
-        issuer: issuer,
-        lectureId: lectureId,
-        roomId: roomId,
+        issuer,
+        lectureId,
+        roomId,
       });
     }
-  }, [handGesture, recognizeGesture]);
+  }, [
+    stompClient,
+    issuer,
+    roomId,
+    recognizedPose,
+    handGesture,
+    sendChapterIssue,
+    sendHelp,
+    lectureId,
+  ]);
 
   return (
     <div className={styles.container}>
       <Header
         lectureName="한식강의"
-        // courseName={`강의 ID: ${lectureId}`}
         startTime={new Date("2025-08-02T14:00:00+09:00")}
         onLeave={() => {
           console.log("강의 떠나기");
@@ -208,6 +208,7 @@ export default function StudentPage() {
             </div>
           </div>
         </div>
+
         <div className={styles.checklistSection}>
           {parsedChapterCard ? (
             <TodoListCard chapterCard={parsedChapterCard} />
@@ -215,7 +216,7 @@ export default function StudentPage() {
             <div>
               <p>챕터 정보를 기다리고 있습니다...</p>
             </div>
-          )}{" "}
+          )}
           <TodoListCard chapterCard={parsedChapterCard} />
         </div>
       </div>

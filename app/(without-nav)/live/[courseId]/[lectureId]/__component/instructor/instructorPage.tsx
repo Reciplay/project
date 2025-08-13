@@ -56,25 +56,19 @@ export default function InstructorPage() {
 
   // 페이지 로드 시 역할 적용
   useEffect(() => {
-    const fetchSession = async () => {
-      const roleFromSession = session?.role ?? session?.role ?? null;
-      setRole(roleFromSession as string | null);
-      const uid = session?.user?.id ?? "";
-      setUserId(uid); // 수정된 부분
-    };
-
-    fetchSession();
-  }, []);
+    const roleFromSession = (session?.role as string | null) ?? null;
+    setRole(roleFromSession);
+    setUserId(session?.user?.id ?? "");
+  }, [session]);
 
   // role이 준비되면 joinRoom 실행
   useEffect(() => {
     if (!role) return;
-
     joinRoom(courseId, lectureId, role);
     return () => {
       leaveRoom();
     };
-  }, [courseId, lectureId, role]);
+  }, [courseId, lectureId, role, joinRoom, leaveRoom]);
 
   const parsedChapterCard = useMemo<ChapterCard | undefined>(() => {
     // todo가 객체이며, chapterId 속성을 가지고 있는지 확인
@@ -113,52 +107,54 @@ export default function InstructorPage() {
 
   const lastGestureCheck = useRef(0);
   const [recognizedPose, setPose] = useState("");
-  const handleNodesDetected = useCallback((nodes: any) => {
+  const handleNodesDetected = useCallback((nodes: ReadonlyArray<unknown>) => {
     const now = Date.now();
     if (now - lastGestureCheck.current > 1000) {
       lastGestureCheck.current = now;
-      if (nodes && nodes.length > 0) {
+      if (Array.isArray(nodes) && nodes.length > 0) {
         const newGesture = recognizeGesture(nodes[0]);
         if (newGesture) {
           console.log("Gesture recognized:", newGesture);
           setPose(newGesture);
-          console.log(recognizedPose);
         }
       }
     }
-  }, []);
+  }, []); // recognizeGesture는 정적 import → deps 불필요
+  // 추가: issuer 메모
+  const issuer = useMemo(() => roomInfo?.email ?? "", [roomInfo?.email]);
 
   useEffect(() => {
-    // 수정된 부분: 필요한 값이 전부 준비되지 않았으면 조기 리턴
-    if (!stompClient || !roomInfo?.email || !roomId) {
-      // 아직 연결/세션 정보가 준비되지 않았음
-      return;
-    }
-    // const now = Date.now()
-    const issuer: string = roomInfo?.email ?? "";
-    // if (now - lastGestureSended.current > 2000) {
-    //   lastGestureSended.current = now
+    if (!stompClient || !issuer || !roomId) return;
+
     if (recognizedPose === "Clap") {
-      console.log("박수실행됨==================================");
-      sendChapterIssue(stompClient!, {
+      sendChapterIssue(stompClient, {
         type: "chapter-issue",
-        issuer: issuer,
+        issuer,
         lectureId: Number(lectureId),
-        roomId: roomId,
+        roomId,
         chapterSequence: 1,
       });
     }
+
     if (handGesture === "Closed_Fist") {
-      console.log("Closed_Fist==================================");
       sendHelp(stompClient, {
         type: "help",
         nickname: "별명",
-        issuer: issuer,
-        lectureId: lectureId,
-        roomId: roomId,
+        issuer,
+        lectureId,
+        roomId,
       });
     }
-  }, [handGesture, recognizeGesture]);
+  }, [
+    stompClient,
+    issuer,
+    roomId,
+    recognizedPose,
+    handGesture,
+    sendChapterIssue,
+    sendHelp,
+    lectureId,
+  ]);
 
   return (
     <div className={styles.container}>

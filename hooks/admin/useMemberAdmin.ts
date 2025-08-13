@@ -46,6 +46,7 @@ export const sampleMemberDetail: UserDetail = {
 
 // hooks/admin/useMembers.ts
 
+import { getErrorMessage } from "@/lib/axios/error";
 import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -70,7 +71,7 @@ export default function useMemberAdmin() {
       );
       setList(res.data.data ?? []);
     } catch (e) {
-      setError(e?.message ?? "회원 목록을 불러오지 못했습니다.");
+      setError(getErrorMessage(e, "회원 목록을 불러오지 못했습니다."));
     } finally {
       setLoading(false);
     }

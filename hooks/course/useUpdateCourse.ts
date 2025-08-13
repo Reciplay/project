@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@/lib/axios/error";
 import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
 import { useState } from "react";
@@ -41,7 +42,7 @@ export const useUpdateCourse = () => {
       setData(response.data.data); // Changed to access the 'data' property of ApiResponse
       return response.data.data; // Changed return value
     } catch (err) {
-      setError(err.message || "강좌 정보 수정에 실패했습니다.");
+      setError(getErrorMessage(err, "강좌 정보 수정에 실패했습니다."));
       throw err; // Re-throw to allow caller to handle
     } finally {
       setLoading(false);

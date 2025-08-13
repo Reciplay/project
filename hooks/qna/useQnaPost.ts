@@ -1,5 +1,6 @@
 "use client";
 
+import { getErrorMessage } from "@/lib/axios/error";
 import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
 import { message } from "antd";
@@ -36,12 +37,7 @@ export function useQnaPost() {
         return false;
       }
     } catch (e) {
-      const msg =
-        e?.response?.data?.message ||
-        e?.message ||
-        "답변 등록 중 오류가 발생했습니다.";
-      message.error(msg);
-      setError(msg);
+      setError(getErrorMessage(e, "답변 등록 중 오류가 발생했습니다."));
       return false;
     } finally {
       setLoading(false);

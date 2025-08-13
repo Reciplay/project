@@ -1,8 +1,9 @@
+import { getErrorMessage } from "@/lib/axios/error";
 import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
 import { SubscriptionPoint } from "@/types/instructorStats";
-import { useState, useEffect, useCallback } from "react";
 import qs from "qs";
+import { useCallback, useEffect, useState } from "react";
 
 export type SubscriptionCriteria = "daily" | "weekly" | "monthly" | "yearly";
 
@@ -18,16 +19,16 @@ export const useSubscriptionTrend = (criteria: SubscriptionCriteria) => {
       const params = qs.stringify({ criteris: criteria }, { encode: true });
       const res = await restClient.get<ApiResponse<SubscriptionPoint[]>>(
         `/user/instructor/subscription?${params}`,
-        { requireAuth: true, useCors: false }
+        { requireAuth: true, useCors: false },
       );
       if (res.data.status === "success") {
         setTrendData(res.data.data);
       } else {
         setError(res.data.message || "구독자 추이 데이터 조회 실패");
       }
-    } catch (err: any) {
-      console.error("Error fetching subscription trend:", err);
-      setError(err?.response?.data?.message || "구독자 추이 데이터 조회 실패");
+    } catch (e) {
+      console.error("Error fetching subscription trend:", e);
+      setError(getErrorMessage(e, "구독자 추이 데이터 조회 실패"));
     } finally {
       setLoading(false);
     }

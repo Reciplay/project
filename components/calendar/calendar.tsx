@@ -30,7 +30,6 @@ const ScheduleSidebar = ({
   allEvents,
   onDateClick,
 }: SidebarProps) => {
-  // 전체 이벤트를 날짜 오름차순으로 정렬(선택)
   const eventsSorted = useMemo(
     () =>
       [...allEvents].sort(
@@ -69,14 +68,27 @@ const ScheduleSidebar = ({
   );
 };
 
-function toYMD(iso: string) {
-  return iso.split("T")[0];
+// 안전한 YYYY-MM-DD 변환 (잘못된 날짜면 null)
+function toYMDStrict(iso: unknown): string | null {
+  if (typeof iso !== "string") return null;
+  const t = Date.parse(iso);
+  if (!Number.isFinite(t)) return null;
+  // 올데이(date)에는 UTC기준 YYYY-MM-DD가 안전
+  return new Date(t).toISOString().slice(0, 10);
 }
+
 function toYMDLocal(d: Date) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
+}
+
+// 타입가드: 유효한 startedAt을 가진 Lecture만 통과
+function hasValidStart(
+  l: Lecture,
+): l is Lecture & { startedAt: string; title: string } {
+  return toYMDStrict(l?.startedAt) !== null;
 }
 
 export default function Calendar({
@@ -86,25 +98,28 @@ export default function Calendar({
 }) {
   const calendarRef = useRef<CalendarApi | null>(null);
 
-  // lectures → FullCalendar events
+  // lectures → FullCalendar events (date는 항상 string 보장)
   const events: FCEvent[] = useMemo(
     () =>
-      (lectures ?? []).map((l) => ({
+      (lectures ?? []).filter(hasValidStart).map((l) => ({
         title: l.title,
-        date: toYMD(l.startedAt),
-        extendedProps: { lectureId: l.lectureId, isSkipped: l.isSkipped },
+        date: toYMDStrict(l.startedAt)!,
+        extendedProps: {
+          lectureId: l.lectureId,
+          isSkipped: !!l.isSkipped,
+        },
       })),
     [lectures],
   );
 
-  // 사이드바 선택(하이라이트) 상태
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
-  // 초기 선택/이동
+  // 초기 선택/이동 (first 존재 체크)
   useEffect(() => {
-    if (events.length) {
-      setSelectedDate(events[0].date);
-      calendarRef.current?.gotoDate(events[0].date);
+    const first = events[0];
+    if (first) {
+      setSelectedDate(first.date);
+      calendarRef.current?.gotoDate(first.date); // string 보장
     } else {
       setSelectedDate(null);
     }
@@ -112,7 +127,7 @@ export default function Calendar({
 
   const handleDateSelect = (date: string) => {
     setSelectedDate(date);
-    calendarRef.current?.gotoDate(date); // 포커스 이동
+    calendarRef.current?.gotoDate(date);
   };
 
   return (
@@ -139,12 +154,12 @@ export default function Calendar({
           events={events}
           dateClick={(info) => handleDateSelect(info.dateStr)}
           dayCellContent={(arg) => arg.date.getDate().toString()}
-          // 선택된 날짜 하이라이트 클래스 부여
-          dayCellClassNames={(arg) => {
+          // 선택된 날짜 하이라이트 (반환형을 명시적으로 string[]로)
+          dayCellClassNames={(arg): string[] => {
             if (!selectedDate) return [];
-            return toYMDLocal(arg.date) === selectedDate
-              ? [styles.selectedCell]
-              : [];
+            const isSelected = toYMDLocal(arg.date) === selectedDate;
+            const cls = styles.selectedCell; // string | undefined
+            return isSelected && cls ? [cls] : []; // ← 정의된 string만 반환
           }}
           eventContent={(arg) => {
             const skipped = Boolean(arg.event.extendedProps["isSkipped"]);

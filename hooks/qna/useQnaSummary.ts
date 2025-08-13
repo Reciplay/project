@@ -1,6 +1,7 @@
 "use client";
 
 import { sampleQna } from "@/config/sampleQna";
+import { getErrorMessage } from "@/lib/axios/error";
 import restClient from "@/lib/axios/restClient";
 import type { ApiResponse } from "@/types/apiResponse";
 import type { QnA } from "@/types/qna";
@@ -76,11 +77,9 @@ export function useQnaSummary(
           setHasMore(false);
         }
       } catch (e) {
-        if (e?.name !== "CanceledError") {
-          setMessage("네트워크 오류가 발생했습니다.");
-          if (pageNum === 0) setList([]);
-          setHasMore(false);
-        }
+        setMessage(getErrorMessage(e, "네트워크 오류가 발생했습니다."));
+        if (pageNum === 0) setList([]);
+        setHasMore(false);
       } finally {
         inFlightRef.current = false;
         setLoading(false);

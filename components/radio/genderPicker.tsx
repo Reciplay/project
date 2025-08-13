@@ -56,7 +56,10 @@ export default function GenderPicker({
         className={classNames(
           styles.group,
           styles[size],
-          { [styles.fullWidth as string]: fullWidth, [styles.disabled as string]: disabled },
+          {
+            [styles.fullWidth as string]: fullWidth,
+            [styles.disabled as string]: disabled,
+          },
           className,
         )}
         tabIndex={0}

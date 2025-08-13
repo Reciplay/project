@@ -1,7 +1,8 @@
+import { getErrorMessage } from "@/lib/axios/error";
 import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
 import { CourseDetail } from "@/types/course";
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export const useCourseDetail = (courseId: number | null) => {
   const [course, setCourse] = useState<CourseDetail | null>(null);
@@ -21,16 +22,16 @@ export const useCourseDetail = (courseId: number | null) => {
     try {
       const res = await restClient.get<ApiResponse<CourseDetail>>(
         `/course/courses?courseId=${courseId}`,
-        { requireAuth: true, useCors: false }
+        { requireAuth: true, useCors: false },
       );
       if (res.data.status === "success") {
         setCourse(res.data.data);
       } else {
         setError(res.data.message || "강좌 상세 정보 조회 실패");
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error fetching course detail:", err);
-      setError(err?.response?.data?.message || "강좌 상세 정보 조회 실패");
+      setError(getErrorMessage(err, "강좌 상세 정보 조회 실패"));
     } finally {
       setLoading(false);
     }

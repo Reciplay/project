@@ -28,12 +28,18 @@ interface DailySmoothLineChartProps {
   data: SubscriptionPoint[]; // Accept data as prop
 }
 
-export default function DailySmoothLineChart({ data: trendData }: DailySmoothLineChartProps) { // Destructure data prop
+export default function DailySmoothLineChart({
+  data: trendData,
+}: DailySmoothLineChartProps) {
+  // Destructure data prop
   const chartData = {
     datasets: [
       {
         label: "구독자 추이",
-        data: trendData.map(point => ({ x: point.date, y: point.subscriber })),
+        data: trendData.map((point) => ({
+          x: point.date,
+          y: point.subscriber,
+        })),
         fill: true,
         borderColor: "#2a73ff",
         backgroundColor: "rgba(42,115,255,0.2)",

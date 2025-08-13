@@ -73,7 +73,10 @@ export const dummyInstructorStats: InstructorStats = {
   averageStars: 4.7,
   totalReviewCount: 56,
   subscriberCount: 42,
-  profileImageUrl:
-    "https://reciplay-media.s3.ap-northeast-2.amazonaws.com/images/user_profile/sample.jpg",
+  profileFileInfo: {
+    presignedUrl: "string",
+    name: "string",
+    sequence: 0,
+  },
   newQuestions: dummyQuestions,
 };

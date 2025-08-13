@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware";
 interface UserState {
   isExtraFilled: boolean | null;
   hasHydrated: boolean;
-  setIsExtraFilled: (_value: boolean) => void;
+  setIsExtraFilled: (_value: boolean | null) => void;
   setHasHydrated: (_value: boolean) => void;
 }
 

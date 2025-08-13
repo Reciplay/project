@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@/lib/axios/error";
 import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
 import { UpdateLectureRequest, UpdateLectureResponse } from "@/types/lecture";
@@ -25,9 +26,8 @@ export const useUpdateLecture = () => {
       );
       setData(response.data.data);
       return response.data.data;
-    } catch (err: any) {
-      setError(err.message || "강의 정보 수정에 실패했습니다.");
-      throw err;
+    } catch (e) {
+      setError(getErrorMessage(e, "강의 정보 수정에 실패했습니다."));
     } finally {
       setLoading(false);
     }

@@ -1,5 +1,6 @@
 "use client";
 
+import { getErrorMessage } from "@/lib/axios/error";
 import type { CourseCard } from "@/types/course";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -51,8 +52,7 @@ export function useSpecialCourses(options?: {
         setMessage(res.data?.message ?? "목록을 불러오지 못했어요.");
       }
     } catch (e) {
-      if (e?.name === "CanceledError" || e?.code === "ERR_CANCELED") return;
-      setMessage(e?.response?.data?.message ?? "네트워크 오류가 발생했습니다.");
+      setMessage(getErrorMessage(e, "네트워크 오류가 발생했습니다."));
     } finally {
       setLoading(false);
     }

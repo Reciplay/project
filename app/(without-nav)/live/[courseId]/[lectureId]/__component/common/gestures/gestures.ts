@@ -8,4 +8,4 @@ export const GESTURES = {
   none: "none",
 } as const;
 
-export type GestureName = typeof GESTURES[keyof typeof GESTURES];
+export type GestureName = (typeof GESTURES)[keyof typeof GESTURES];

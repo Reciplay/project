@@ -32,7 +32,9 @@ function LinkItem({ href, icon, title, isOpen }: LinkItemProps) {
   return (
     <Link
       href={href}
-      className={classNames(styles.link, { [styles.active]: isActive })}
+      className={classNames(styles.link, {
+        [styles.active as string]: isActive,
+      })}
     >
       {isOpen ? (
         <div className={styles.linkItem}>
@@ -75,7 +77,11 @@ export default function SideBar() {
   }
 
   return (
-    <aside className={classNames(styles.sidebar, { [styles.closed]: !isOpen })}>
+    <aside
+      className={classNames(styles.sidebar, {
+        [styles.closed as string]: !isOpen,
+      })}
+    >
       {sidebarMenu.map((section, idx) => (
         <div className={styles.section} key={idx}>
           {isOpen && (

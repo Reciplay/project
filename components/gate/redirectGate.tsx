@@ -35,23 +35,20 @@ function useGuards() {
     [],
   );
 
-  const INSTRUCTOR_PROTECTED_ROUTES = useMemo(
-    () =>
-      new Set<string>([
-        ROUTES.INSTRUCTOR.DASHBOARD,
-        ROUTES.INSTRUCTOR.CREATECOURSE,
-        ROUTES.INSTRUCTOR.EDIT,
-        ROUTES.INSTRUCTOR.MANAGE,
-      ]),
-    [],
-  );
+  // 🔻 이 블록은 사용되지 않으므로 제거
+  // const INSTRUCTOR_PROTECTED_ROUTES = useMemo(
+  //   () =>
+  //     new Set<string>([
+  //       ROUTES.INSTRUCTOR.DASHBOARD,
+  //       ROUTES.INSTRUCTOR.CREATECOURSE,
+  //       ROUTES.INSTRUCTOR.EDIT,
+  //       ROUTES.INSTRUCTOR.MANAGE,
+  //     ]),
+  //   [],
+  // );
 
   const MATCH = useMemo(() => {
     const isInstructorRoot = pathname === "/instructor";
-
-    // ✅ 공개 강사 프로필: /instructor/profile/:id
-    // 현재 라우팅 구조상 INSTRUCTOR_PROTECTED_ROUTES 및 REGISTER 경로와 겹치지 않으므로,
-    // startsWith 조건만으로 충분합니다.
     const isPublicInstructorProfile = pathname.startsWith(
       "/instructor/profile/",
     );
@@ -65,7 +62,7 @@ function useGuards() {
       isLive: isPrefixOf("/live"),
 
       // 강사 영역
-      isInstructorRoot, // /instructor 루트
+      isInstructorRoot,
       isInstructorRegister: pathname === ROUTES.INSTRUCTOR.REGISTER,
       isInstructorDashboard:
         pathname === ROUTES.INSTRUCTOR.DASHBOARD ||
@@ -84,7 +81,7 @@ function useGuards() {
       isPublicInstructorProfile,
       isCourseDetail: pathname.startsWith("/course/"),
     };
-  }, [pathname, PROFILE_ROUTES, INSTRUCTOR_PROTECTED_ROUTES, isPrefixOf]);
+  }, [pathname, PROFILE_ROUTES, isPrefixOf]); // ✅ INSTRUCTOR_PROTECTED_ROUTES 제거
 
   return { MATCH, pathname };
 }

@@ -2,11 +2,9 @@
 
 import { ROUTES } from "@/config/routes";
 import { useSidebarStore } from "@/stores/sideBarStore";
-import { IMAGETYPE } from "@/types/image";
+// import { IMAGETYPE } from "@/types/image";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import CustomButton from "../button/customButton";
 import TablerIcon from "../icon/tablerIcon";
 import ImageWrapper from "../image/imageWrapper";
@@ -18,26 +16,26 @@ export default function NavBar() {
   const { data: session } = useSession();
   const isLogin = !!session?.accessToken;
 
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 1200);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  // const [isMobile, setIsMobile] = useState(false);
+  // useEffect(() => {
+  //   // const handleResize = () => setIsMobile(window.innerWidth <= 1200);
+  //   // handleResize();
+  //   // window.addEventListener("resize", handleResize);
+  //   // return () => window.removeEventListener("resize", handleResize);
+  // }, []);
 
-  const [showSearch, setShowSearch] = useState(false);
+  // const [showSearch, setShowSearch] = useState(false);
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const router = useRouter();
+  // const [searchQuery, setSearchQuery] = useState("");
+  // const router = useRouter();
 
-  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const query = searchQuery.trim();
-    if (!query) return;
-    router.push(ROUTES.SEARCH.DETAIL(encodeURIComponent(query)));
-    if (isMobile) setShowSearch(false);
-  };
+  // const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   const query = searchQuery.trim();
+  //   if (!query) return;
+  //   router.push(ROUTES.SEARCH.DETAIL(encodeURIComponent(query)));
+  //   if (isMobile) setShowSearch(false);
+  // };
 
   return (
     <nav className={styles.navbar}>
@@ -46,7 +44,7 @@ export default function NavBar() {
         <ImageWrapper
           src="/icons/hamburger.svg"
           alt="hamburger"
-          type={IMAGETYPE.ICON}
+          // type={IMAGETYPE.ICON}
           className={styles.hamburger}
           onClick={toggle}
         />
