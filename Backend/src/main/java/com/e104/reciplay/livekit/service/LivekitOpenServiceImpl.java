@@ -111,7 +111,7 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
             liveParticipationManagementService.participateIn(liveRoom, AuthenticationUtil.getSessionUsername());
         }
         User user = userQueryService.queryUserByEmail(AuthenticationUtil.getSessionUsername());
-        return new LivekitTokenResponse(token.toJwt(), roomName, user.getNickname(), user.getEmail(), lectureId);
+        return new LivekitTokenResponse(token.toJwt(), roomName, user.getNickname(), user.getEmail(), user.getRole(), lectureId);
     }
 
     public void isParticipatable(Long lectureId, Long courseId) {
@@ -169,7 +169,7 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
             liveParticipationManagementService.participateIn(liveRoom, email);
         }
         User user = userQueryService.queryUserByEmail(AuthenticationUtil.getSessionUsername());
-        return new LivekitTokenResponse(token.toJwt(), roomName, user.getNickname(), user.getEmail(), lectureId);
+        return new LivekitTokenResponse(token.toJwt(), roomName, user.getNickname(), user.getEmail(), user.getRole(), lectureId);
     }
 
     @Override

@@ -72,7 +72,7 @@ class LivekitControllerTest {
     public void 강사_토큰_생성에_성공한다() throws Exception {
         injectMockInstructor();
         Map<String, String> request = Map.of("lectureId", MOCK_LECTURE_ID.toString(), "courseId", MOCK_COURSE_ID.toString());
-        LivekitTokenResponse mockResponse = new LivekitTokenResponse("test_token", "test_roomID", "nickname", "email", 1L);
+        LivekitTokenResponse mockResponse = new LivekitTokenResponse("test_token", "test_roomID", "nickname", "email", "ROLE_STRUDENT", 1L);
         Mockito.when(livekitOpenService.createInstructorToken(MOCK_LECTURE_ID, MOCK_COURSE_ID)).thenReturn(mockResponse);
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(LIVEKIT_URL+"/instructor/token")
                 .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request)));
@@ -86,7 +86,7 @@ class LivekitControllerTest {
     public void 학생이_토큰_생성에_성공한다() throws Exception {
         injectMockStudent();
         Map<String, String> request = Map.of("lectureId", MOCK_LECTURE_ID.toString(), "courseId", MOCK_COURSE_ID.toString());
-        LivekitTokenResponse mockResponse = new LivekitTokenResponse("test_token", "test_roomID", "nickname", "email", 1L);
+        LivekitTokenResponse mockResponse = new LivekitTokenResponse("test_token", "test_roomID", "nickname", "email", "ROLE_INSTRUCTOR", 1L);
         Mockito.when(livekitOpenService.createStudentToken(MOCK_LECTURE_ID, MOCK_COURSE_ID)).thenReturn(mockResponse);
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post(LIVEKIT_URL+"/student/token")
                 .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request)));

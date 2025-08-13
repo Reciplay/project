@@ -14,5 +14,6 @@ public class LivekitTokenResponse {
     String roomId;
     String nickname;
     String email;
+    String role;
     Long lectureId;
 }
