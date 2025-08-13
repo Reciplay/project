@@ -3,7 +3,7 @@ package com.e104.reciplay.common.handler;
 import com.e104.reciplay.common.exception.CourseNotFoundException;
 import com.e104.reciplay.common.exception.InvalidUserRoleException;
 import com.e104.reciplay.common.exception.LectureNotFoundException;
-import com.e104.reciplay.common.response.dto.ResponseRoot;
+import com.e104.reciplay.common.exception.NotInstructorException;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.course.courses.exception.CourseClosedException;
 import com.e104.reciplay.course.enrollment.exception.AlreadyEnrolledException;
@@ -12,7 +12,6 @@ import com.e104.reciplay.course.qna.exception.CanNotAnswerException;
 import com.e104.reciplay.course.qna.exception.EnrollmentHistoryNotFoundException;
 import com.e104.reciplay.livekit.exception.CanNotOpenLiveRoomException;
 import com.e104.reciplay.livekit.exception.CanNotParticipateInLiveRoomException;
-import com.e104.reciplay.livekit.exception.EmptyPropertyException;
 import com.e104.reciplay.livekit.exception.RoomIdExpiredException;
 import com.e104.reciplay.s3.exception.FileUploadFailureException;
 import com.e104.reciplay.s3.exception.IllegalFileTypeException;
@@ -21,11 +20,9 @@ import com.e104.reciplay.user.auth.exception.EmailAuthFailureException;
 import com.e104.reciplay.user.auth.exception.IllegalEmailFormatException;
 import com.e104.reciplay.user.security.exception.EmailNotFoundException;
 import io.swagger.v3.oas.annotations.Hidden;
-import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import retrofit2.Response;
 
 import java.io.IOException;
 
@@ -127,5 +124,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IOException.class)
     public ResponseEntity<?> iOExceptionHandler(IOException e) {
         return CommonResponseBuilder.serverError(e.getMessage());
+    }
+
+    @ExceptionHandler(NotInstructorException.class)
+    public ResponseEntity<?> notInstructorExceptionHandler(NotInstructorException e){
+        return CommonResponseBuilder.badRequest(e.getMessage());
     }
 }

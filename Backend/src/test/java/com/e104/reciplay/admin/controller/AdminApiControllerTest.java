@@ -28,7 +28,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -41,11 +41,9 @@ class AdminApiControllerTest {
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
 
-    // ===== Controller under test =====
     @InjectMocks
     AdminApiController controller;
 
-    // ===== Mock collaborators =====
     @Mock AdInstructorQueryService adInstructorQueryService;
     @Mock AdInstructorManagementService adInstructorManagementService;
     @Mock AdCourseQueryService adCourseQueryService;
@@ -55,6 +53,9 @@ class AdminApiControllerTest {
     @Mock UserQueryService userQueryService;
 
     private static final String BASE = "/api/v1/course/admin";
+    private static final String ADMIN_EMAIL = "admin@example.com";
+
+    private User adminMockUser;
 
     @BeforeEach
     void setUp() {
@@ -66,25 +67,27 @@ class AdminApiControllerTest {
     }
 
     private String instructorApprovalJsonApprove() {
-        // ApprovalInfo의 실제 구조에 맞춰 필드명 사용
         return """
-               {
-                 "instructorId": 2,
-                 "isApprove": true,
-                 "message": "OK"
-               }
+               { "instructorId": 2, "isApprove": true, "message": "OK" }
                """;
     }
 
     private String courseApprovalJsonApprove() {
         return """
-               {
-                 "courseId": 1,
-                 "instructorId": 2,
-                 "isApprove": true,
-                 "message": "OK"
-               }
+               { "courseId": 1, "instructorId": 2, "isApprove": true, "message": "OK" }
                """;
+    }
+
+    /** 공통: 관리자 역할만 stub (ID는 PUT 테스트에서만 stub) */
+    private MockedStatic<AuthenticationUtil> mockAdminRoleOnly() {
+        MockedStatic<AuthenticationUtil> mockedStatic = Mockito.mockStatic(AuthenticationUtil.class);
+        mockedStatic.when(AuthenticationUtil::getSessionUsername).thenReturn(ADMIN_EMAIL);
+
+        adminMockUser = Mockito.mock(User.class);
+        given(adminMockUser.getRole()).willReturn("ROLE_ADMIN");
+        given(userQueryService.queryUserByEmail(ADMIN_EMAIL)).willReturn(adminMockUser);
+
+        return mockedStatic;
     }
 
     @Nested
@@ -94,43 +97,37 @@ class AdminApiControllerTest {
         @Test
         @DisplayName("GET /instructor/summaries - 200 & service 호출 검증")
         void getInstructorSummaries() throws Exception {
-            given(adInstructorQueryService.queryAdInstructorSummary(true))
-                    .willReturn(List.of());
+            try (MockedStatic<AuthenticationUtil> ignored = mockAdminRoleOnly()) {
+                given(adInstructorQueryService.queryAdInstructorSummary(true)).willReturn(List.of());
 
-            mockMvc.perform(get(BASE + "/instructor/summaries")
-                            .param("isApprove", "true"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+                mockMvc.perform(get(BASE + "/instructor/summaries").param("isApprove", "true"))
+                        .andExpect(status().isOk())
+                        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-            verify(adInstructorQueryService, times(1))
-                    .queryAdInstructorSummary(true);
+                verify(adInstructorQueryService, times(1)).queryAdInstructorSummary(true);
+            }
         }
 
         @Test
         @DisplayName("GET /instructor - 200 & service 호출 검증")
         void getInstructorDetail() throws Exception {
-            AdInstructorDetail detail = Mockito.mock(AdInstructorDetail.class);
-            given(adInstructorQueryService.queryInstructorDetail(10L)).willReturn(detail);
+            try (MockedStatic<AuthenticationUtil> ignored = mockAdminRoleOnly()) {
+                AdInstructorDetail detail = Mockito.mock(AdInstructorDetail.class);
+                given(adInstructorQueryService.queryInstructorDetail(10L)).willReturn(detail);
 
-            mockMvc.perform(get(BASE + "/instructor")
-                            .param("instructorId", "10"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+                mockMvc.perform(get(BASE + "/instructor").param("instructorId", "10"))
+                        .andExpect(status().isOk())
+                        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-            verify(adInstructorQueryService, times(1))
-                    .queryInstructorDetail(10L);
+                verify(adInstructorQueryService, times(1)).queryInstructorDetail(10L);
+            }
         }
 
         @Test
-        @DisplayName("PUT /instructor - 200 & 승인 처리 호출 검증 (정적 인증 유틸 + User 목)")
+        @DisplayName("PUT /instructor - 200 & 승인 처리 호출 검증")
         void handleInstructorRegistration() throws Exception {
-            try (MockedStatic<AuthenticationUtil> mockedStatic = Mockito.mockStatic(AuthenticationUtil.class)) {
-                mockedStatic.when(AuthenticationUtil::getSessionUsername)
-                        .thenReturn("admin@example.com");
-
-                User mockedUser = Mockito.mock(User.class);
-                given(mockedUser.getId()).willReturn(99L);
-                given(userQueryService.queryUserByEmail("admin@example.com")).willReturn(mockedUser);
+            try (MockedStatic<AuthenticationUtil> ignored = mockAdminRoleOnly()) {
+                given(adminMockUser.getId()).willReturn(99L); // PUT에서만 ID 사용
 
                 mockMvc.perform(put(BASE + "/instructor")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -139,7 +136,8 @@ class AdminApiControllerTest {
                         .andExpect(status().isOk())
                         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-                verify(userQueryService, times(1)).queryUserByEmail("admin@example.com");
+                // 컨트롤러가 권한 체크 + adminId 조회로 2회 호출하므로 2회 검증
+                verify(userQueryService, times(2)).queryUserByEmail(ADMIN_EMAIL);
                 verify(adInstructorManagementService, times(1))
                         .updateInstructorApproval(any(ApprovalInfo.class), Mockito.eq(99L));
             }
@@ -153,43 +151,37 @@ class AdminApiControllerTest {
         @Test
         @DisplayName("GET /course/summaries - 200 & service 호출 검증")
         void getCourseSummaries() throws Exception {
-            given(adCourseQueryService.queryAdCourseSummary(false))
-                    .willReturn(List.of());
+            try (MockedStatic<AuthenticationUtil> ignored = mockAdminRoleOnly()) {
+                given(adCourseQueryService.queryAdCourseSummary(false)).willReturn(List.of());
 
-            mockMvc.perform(get(BASE + "/course/summaries")
-                            .param("isApprove", "false"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+                mockMvc.perform(get(BASE + "/course/summaries").param("isApprove", "false"))
+                        .andExpect(status().isOk())
+                        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-            verify(adCourseQueryService, times(1))
-                    .queryAdCourseSummary(false);
+                verify(adCourseQueryService, times(1)).queryAdCourseSummary(false);
+            }
         }
 
         @Test
         @DisplayName("GET /course - 200 & service 호출 검증")
         void getCourseDetail() throws Exception {
-            AdCourseDetail detail = Mockito.mock(AdCourseDetail.class);
-            given(adCourseQueryService.queryCourseDetail(7L)).willReturn(detail);
+            try (MockedStatic<AuthenticationUtil> ignored = mockAdminRoleOnly()) {
+                AdCourseDetail detail = Mockito.mock(AdCourseDetail.class);
+                given(adCourseQueryService.queryCourseDetail(7L)).willReturn(detail);
 
-            mockMvc.perform(get(BASE + "/course")
-                            .param("courseId", "7"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+                mockMvc.perform(get(BASE + "/course").param("courseId", "7"))
+                        .andExpect(status().isOk())
+                        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-            verify(adCourseQueryService, times(1))
-                    .queryCourseDetail(7L);
+                verify(adCourseQueryService, times(1)).queryCourseDetail(7L);
+            }
         }
 
         @Test
-        @DisplayName("PUT /course - 200 & 승인 처리 호출 검증 (정적 인증 유틸 + User 목)")
+        @DisplayName("PUT /course - 200 & 승인 처리 호출 검증")
         void handleCourseRegistration() throws Exception {
-            try (MockedStatic<AuthenticationUtil> mockedStatic = Mockito.mockStatic(AuthenticationUtil.class)) {
-                mockedStatic.when(AuthenticationUtil::getSessionUsername)
-                        .thenReturn("admin@example.com");
-
-                User mockedUser = Mockito.mock(User.class);
-                given(mockedUser.getId()).willReturn(11L);
-                given(userQueryService.queryUserByEmail("admin@example.com")).willReturn(mockedUser);
+            try (MockedStatic<AuthenticationUtil> ignored = mockAdminRoleOnly()) {
+                given(adminMockUser.getId()).willReturn(11L); // PUT에서만 ID 사용
 
                 mockMvc.perform(put(BASE + "/course")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -197,7 +189,8 @@ class AdminApiControllerTest {
                         .andExpect(status().isOk())
                         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-                verify(userQueryService, times(1)).queryUserByEmail("admin@example.com");
+                // 이 엔드포인트도 컨트롤러에서 2회 호출
+                verify(userQueryService, times(2)).queryUserByEmail(ADMIN_EMAIL);
                 verify(adCourseManagementService, times(1))
                         .updateCourseApproval(any(ApprovalInfo.class), Mockito.eq(11L));
             }
@@ -211,38 +204,42 @@ class AdminApiControllerTest {
         @Test
         @DisplayName("GET /user/summaries - 200 & service 호출 검증")
         void getUserSummaries() throws Exception {
-            given(adUserQueryService.queryUserSummaries()).willReturn(List.of());
+            try (MockedStatic<AuthenticationUtil> ignored = mockAdminRoleOnly()) {
+                given(adUserQueryService.queryUserSummaries()).willReturn(List.of());
 
-            mockMvc.perform(get(BASE + "/user/summaries"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+                mockMvc.perform(get(BASE + "/user/summaries"))
+                        .andExpect(status().isOk())
+                        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-            verify(adUserQueryService, times(1)).queryUserSummaries();
+                verify(adUserQueryService, times(1)).queryUserSummaries();
+            }
         }
 
         @Test
         @DisplayName("GET /user - 200 & service 호출 검증")
         void getUserDetail() throws Exception {
-            AdUserDetail detail = Mockito.mock(AdUserDetail.class);
-            given(adUserQueryService.queryUserDetail(123L)).willReturn(detail);
+            try (MockedStatic<AuthenticationUtil> ignored = mockAdminRoleOnly()) {
+                AdUserDetail detail = Mockito.mock(AdUserDetail.class);
+                given(adUserQueryService.queryUserDetail(123L)).willReturn(detail);
 
-            mockMvc.perform(get(BASE + "/user")
-                            .param("userId", "123"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+                mockMvc.perform(get(BASE + "/user").param("userId", "123"))
+                        .andExpect(status().isOk())
+                        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-            verify(adUserQueryService, times(1)).queryUserDetail(123L);
+                verify(adUserQueryService, times(1)).queryUserDetail(123L);
+            }
         }
 
         @Test
         @DisplayName("DELETE /user - 200 & 삭제 호출 검증")
         void deleteUser() throws Exception {
-            mockMvc.perform(delete(BASE + "/user")
-                            .param("userId", "77"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+            try (MockedStatic<AuthenticationUtil> ignored = mockAdminRoleOnly()) {
+                mockMvc.perform(delete(BASE + "/user").param("userId", "77"))
+                        .andExpect(status().isOk())
+                        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-            verify(adUserManagementService, times(1)).deleteUser(77L);
+                verify(adUserManagementService, times(1)).deleteUser(77L);
+            }
         }
     }
 }
