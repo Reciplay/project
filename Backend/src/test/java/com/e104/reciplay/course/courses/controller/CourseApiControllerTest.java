@@ -6,6 +6,7 @@ import com.e104.reciplay.course.courses.dto.response.CourseCard;
 import com.e104.reciplay.course.courses.dto.response.CourseDetail;
 import com.e104.reciplay.course.courses.dto.response.PagedResponse;
 import com.e104.reciplay.course.courses.service.CourseCardQueryService;
+import com.e104.reciplay.entity.Instructor;
 import com.e104.reciplay.livekit.service.depends.CourseManagementService;
 import com.e104.reciplay.livekit.service.depends.CourseQueryService;
 import com.e104.reciplay.livekit.service.depends.InstructorQueryService;
@@ -19,7 +20,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
@@ -45,14 +45,12 @@ class CourseApiControllerTest {
     @Mock private CourseQueryService courseQueryService;
     @Mock private CourseManagementService courseManagementService;
     @Mock private UserQueryService userQueryService;
-    // ✅ 추가: /cards에서 사용할 서비스
     @Mock private CourseCardQueryService courseCardQueryService;
 
     private MockMvc mockMvc;
 
     @BeforeEach
     void setup() {
-        // ✅ 생성자 인자에 courseCardQueryService 추가
         CourseApiController controller = new CourseApiController(
                 instructorQueryService,
                 courseQueryService,
@@ -66,7 +64,7 @@ class CourseApiControllerTest {
 
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
-                .setCustomArgumentResolvers(pageableResolver) // Pageable 처리
+                .setCustomArgumentResolvers(pageableResolver)
                 .build();
     }
 
@@ -93,7 +91,6 @@ class CourseApiControllerTest {
             mocked.when(AuthenticationUtil::getSessionUsername).thenReturn(email);
             when(userQueryService.queryUserByEmail(email)).thenReturn(mockUser);
 
-            // ✅ 기존 courseQueryService가 아니라 courseCardQueryService로 스텁/검증
             when(courseCardQueryService.queryCardsByCardCondtion(any(CourseCardCondition.class), any(), eq(userId)))
                     .thenReturn(fakePage);
 
@@ -169,7 +166,7 @@ class CourseApiControllerTest {
     }
 
     @Test
-    @DisplayName("POST '' - 강좌 등록 multipart 요청 성공 (CourseIdResponse 반환)")
+    @DisplayName("POST '' - 강좌 등록 multipart 요청 성공 (Instructor 승인 확인 후 CourseIdResponse 반환)")
     void createCourse_ok() throws Exception {
         String email = "ins@example.com";
         Long instructorId = 9L;
@@ -205,7 +202,13 @@ class CourseApiControllerTest {
 
         try (MockedStatic<AuthenticationUtil> mocked = mockStatic(AuthenticationUtil.class)) {
             mocked.when(AuthenticationUtil::getSessionUsername).thenReturn(email);
-            when(instructorQueryService.queryInstructorIdByEmail(email)).thenReturn(instructorId);
+
+            // ✅ 변경: Instructor 객체로 승인 여부 확인
+            Instructor mockInstructor = mock(Instructor.class);
+            when(mockInstructor.getId()).thenReturn(instructorId);
+            when(mockInstructor.getIsApproved()).thenReturn(true);
+            when(instructorQueryService.queryInstructorByEmail(email)).thenReturn(mockInstructor);
+
             when(courseManagementService.createCourseByInstructorId(anyLong(), any(RequestCourseInfo.class), anyList(), any()))
                     .thenReturn(100L);
 
@@ -218,8 +221,9 @@ class CourseApiControllerTest {
                                     .contentType(MediaType.MULTIPART_FORM_DATA)
                                     .characterEncoding("UTF-8")
                     )
-                    .andExpect(status().isOk());
+                    .andExpect(status().isOk()); // CommonResponseBuilder.success가 200을 반환한다고 가정
 
+            // instructor.getId()가 들어갔는지 검증
             ArgumentCaptor<RequestCourseInfo> infoCaptor = ArgumentCaptor.forClass(RequestCourseInfo.class);
             verify(courseManagementService).createCourseByInstructorId(eq(instructorId), infoCaptor.capture(), anyList(), any());
             RequestCourseInfo parsed = infoCaptor.getValue();
@@ -227,7 +231,8 @@ class CourseApiControllerTest {
             assertEquals(10L, parsed.getCategoryId());
             assertEquals(2, parsed.getCanLearns().size());
 
-            verifyNoInteractions(courseCardQueryService);
+            verify(instructorQueryService).queryInstructorByEmail(email); // ✅ 호출 검증
+            verifyNoInteractions(courseCardQueryService, userQueryService, courseQueryService);
         }
     }
 
@@ -285,6 +290,6 @@ class CourseApiControllerTest {
         assertEquals("수정 강좌", parsed.getTitle());
         assertEquals(3, parsed.getCanLearns().size());
 
-        verifyNoInteractions(courseCardQueryService);
+        verifyNoInteractions(courseCardQueryService, instructorQueryService, userQueryService, courseQueryService);
     }
 }
