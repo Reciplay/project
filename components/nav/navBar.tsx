@@ -1,6 +1,5 @@
 "use client";
 
-import BaseInput from "@/components/input/baseInput";
 import { ROUTES } from "@/config/routes";
 import { useSidebarStore } from "@/stores/sideBarStore";
 import { IMAGETYPE } from "@/types/image";
@@ -8,6 +7,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import CustomButton from "../button/customButton";
 import TablerIcon from "../icon/tablerIcon";
 import ImageWrapper from "../image/imageWrapper";
 import Logo from "../text/logo";
@@ -55,52 +55,30 @@ export default function NavBar() {
         </Link>
       </div>
 
-      {/* 가운데 */}
-      {!isMobile && (
-        <div className={styles.center}>
-          <form role="search" onSubmit={handleSearchSubmit}>
-            <BaseInput
-              type="search"
-              name="query"
-              placeholder="검색"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-              }}
-            />
-          </form>
-        </div>
-      )}
-
       {/* 오른쪽 */}
       <div className={styles.right}>
-        {isMobile && (
+        <Link href={ROUTES.SEARCH.ROOT}>
+          <TablerIcon name="Search" size={28} />
+        </Link>
+        {isLogin ? (
           <>
-            {!showSearch ? (
-              <button
-                className={styles.iconButton}
-                aria-label="검색"
-                onClick={() => setShowSearch(true)}
-                type="button"
-              >
-                <TablerIcon name="Search" size={28} />
-              </button>
-            ) : (
-              <BaseInput
-                type="search"
-                placeholder="검색"
-                autoFocus
-                className={styles.mobileSearchInput}
-                onBlur={() => setShowSearch(false)}
-              />
-            )}
+            <Link href={ROUTES.PROFILE.ROOT}>
+              <div className={styles.circle}>
+                <TablerIcon
+                  name="User"
+                  size={28}
+                  className={styles.profileIcon}
+                />
+              </div>
+            </Link>
+          </>
+        ) : (
+          <>
+            <Link href={ROUTES.AUTH.LOGIN}>
+              <CustomButton title="로그인" />
+            </Link>
           </>
         )}
-        <Link href={isLogin ? ROUTES.PROFILE.ROOT : ROUTES.AUTH.LOGIN}>
-          <div className={styles.circle}>
-            <TablerIcon name="User" size={28} className={styles.profileIcon} />
-          </div>
-        </Link>
       </div>
     </nav>
   );

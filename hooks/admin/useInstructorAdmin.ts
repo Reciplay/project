@@ -87,11 +87,11 @@ export default function useInstructorAdmin() {
 
       const [approvedRes, registerRes] = await Promise.all([
         restClient.get<ApiResponse<InstructorSummary[]>>(
-          "/course/admin/instructor/summaries",
+          "/admin/instructor/summaries",
           { params: { isApprove: true }, requireAuth: true },
         ),
         restClient.get<ApiResponse<InstructorSummary[]>>(
-          "/course/admin/instructor/summaries",
+          "/admin/instructor/summaries",
           { params: { isApprove: false }, requireAuth: true },
         ),
       ]);
@@ -138,7 +138,7 @@ export default function useInstructorAdmin() {
     try {
       console.log(instructorId);
       const res = await restClient.get<ApiResponse<InstructorDetail>>(
-        "/course/admin/instructor",
+        "/admin/instructor",
         { params: { instructorId }, requireAuth: true },
       );
 
@@ -163,7 +163,7 @@ export default function useInstructorAdmin() {
     async (instructorId: number, message: string, isApprove: boolean) => {
       try {
         const res = await restClient.put<ApiResponse<object>>(
-          "/course/admin/instructor",
+          "/admin/instructor",
           {
             instructorId,
             message,

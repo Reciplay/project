@@ -65,7 +65,7 @@ export default function useMemberAdmin() {
       setLoading(true);
       setError("");
       const res = await restClient.get<ApiResponse<UserSummary[]>>(
-        "/course/admin/user/summaries",
+        "/admin/user/summaries",
         { requireAuth: true },
       );
       setList(res.data.data ?? []);
@@ -96,10 +96,10 @@ export default function useMemberAdmin() {
     setDetail(null);
     setDetailLoading(true);
     try {
-      const res = await restClient.get<ApiResponse<UserDetail>>(
-        "/course/admin/user",
-        { params: { userId }, requireAuth: true },
-      );
+      const res = await restClient.get<ApiResponse<UserDetail>>("/admin/user", {
+        params: { userId },
+        requireAuth: true,
+      });
       setDetail(res.data.data ?? null);
     } catch {
       setDetail(null);
@@ -118,7 +118,7 @@ export default function useMemberAdmin() {
   const deleteMember = useCallback(
     async (userId: number) => {
       try {
-        await restClient.delete<ApiResponse<object>>("/course/admin/user", {
+        await restClient.delete<ApiResponse<object>>("/admin/user", {
           params: { userId },
           requireAuth: true,
         });

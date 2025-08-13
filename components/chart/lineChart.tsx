@@ -13,6 +13,7 @@ import {
 import "chartjs-adapter-date-fns";
 import { ko } from "date-fns/locale";
 import { Line } from "react-chartjs-2";
+import { SubscriptionPoint } from "@/types/instructorStats"; // Import SubscriptionPoint
 
 ChartJS.register(
   TimeScale,
@@ -23,20 +24,16 @@ ChartJS.register(
   Filler,
 );
 
-export default function DailySmoothLineChart() {
-  const data = {
+interface DailySmoothLineChartProps {
+  data: SubscriptionPoint[]; // Accept data as prop
+}
+
+export default function DailySmoothLineChart({ data: trendData }: DailySmoothLineChartProps) { // Destructure data prop
+  const chartData = {
     datasets: [
       {
         label: "구독자 추이",
-        data: [
-          { x: "2025-08-01", y: 12 },
-          { x: "2025-08-02", y: 19 },
-          { x: "2025-08-03", y: 8 },
-          { x: "2025-08-04", y: 15 },
-          { x: "2025-08-05", y: 14 },
-          { x: "2025-08-06", y: 25 },
-          { x: "2025-08-07", y: 18 },
-        ],
+        data: trendData.map(point => ({ x: point.date, y: point.subscriber })),
         fill: true,
         borderColor: "#2a73ff",
         backgroundColor: "rgba(42,115,255,0.2)",
@@ -65,5 +62,5 @@ export default function DailySmoothLineChart() {
     },
   };
 
-  return <Line data={data} options={options} />;
+  return <Line data={chartData} options={options} />;
 }

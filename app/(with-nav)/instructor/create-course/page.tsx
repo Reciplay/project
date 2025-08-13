@@ -88,7 +88,7 @@ function lecturesDtoToApiPayload(lectures: LectureDTO[]) {
       sequence: ch.sequence,
       title: ch.title,
       // DTO의 todos -> API의 todoList
-      todoList: (ch.todos ?? []).map((t) => ({
+      todoList: (ch.todoList ?? []).map((t) => ({
         id: t.id ?? 0,
         sequence: t.sequence,
         title: t.title,
@@ -212,7 +212,7 @@ export default function Page() {
     if (!r.description.trim()) msgs.push("강좌 소개를 입력하세요.");
     if (!courseCoverImage) msgs.push("커버 이미지를 업로드하세요.");
     if (thumbnailImages.length === 0)
-      msgs.push("썸네일 이미지를 1개 이상 업लोड하세요.");
+      msgs.push("썸네일 이미지를 1개 이상 업로드하세요.");
     return { ok: msgs.length === 0, messages: msgs };
   };
 

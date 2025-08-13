@@ -1,4 +1,3 @@
-// components/gate/redirectGate.tsx
 "use client";
 
 import { ROUTES } from "@/config/routes";
@@ -8,11 +7,9 @@ import { useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo } from "react";
 
-/** 세션에서 role 읽기 (session.user.role 또는 session.role 둘 다 대응) */
 function useRole() {
   const { data: session } = useSession();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const role = (session as any)?.user?.role ?? (session as any)?.role ?? null;
+  const role = session?.role ?? null;
   return role as "ROLE_ADMIN" | "ROLE_INSTRUCTOR" | "ROLE_STUDENT" | null;
 }
 
@@ -53,10 +50,11 @@ function useGuards() {
     const isInstructorRoot = pathname === "/instructor";
 
     // ✅ 공개 강사 프로필: /instructor/profile/:id
-    const isPublicInstructorProfile =
-      pathname.startsWith("/instructor/profile/") &&
-      !INSTRUCTOR_PROTECTED_ROUTES.has(pathname) &&
-      pathname !== ROUTES.INSTRUCTOR.REGISTER;
+    // 현재 라우팅 구조상 INSTRUCTOR_PROTECTED_ROUTES 및 REGISTER 경로와 겹치지 않으므로,
+    // startsWith 조건만으로 충분합니다.
+    const isPublicInstructorProfile = pathname.startsWith(
+      "/instructor/profile/",
+    );
 
     return {
       // 관리자
@@ -134,13 +132,20 @@ export default function RedirectGate({
     MATCH.isInstructorManage;
   const requiresAdmin = MATCH.isAdminRoot;
 
-  /** B) 로그인 직후 추가정보 로딩 */
+  /**
+   * B) 비인증 사용자 보호 라우트 가드
+   * 비인증 사용자가 공개 라우트가 아닌 곳에 접근 시 로그인 페이지로 리디렉션합니다.
+   */
   useEffect(() => {
-    if (!hasHydrated) return;
+    // isLoading 상태가 아닐 때만 실행 (세션 및 스토어 로딩 완료 후)
+    if (isLoading) return;
+
+    // 비인증 상태이고 현재 라우트가 공개 라우트가 아니라면 로그인 페이지로 리디렉션
     if (status === "unauthenticated" && !isPublicRoute) {
-      router.replace(ROUTES.AUTH.LOGIN);
+      safeReplace(ROUTES.AUTH.LOGIN);
+      return;
     }
-  }, [status, hasHydrated, isPublicRoute, router]);
+  }, [isLoading, status, isPublicRoute, safeReplace]);
 
   // 1) 사용자 추가정보 로딩
   useEffect(() => {
@@ -235,16 +240,6 @@ export default function RedirectGate({
     }
     safeReplace(ROUTES.INSTRUCTOR.REGISTER);
   }, [isLoading, MATCH.isInstructorRoot, status, role, safeReplace]);
-
-  /** I) 최후 수단 가드 */
-  useEffect(() => {
-    if (isLoading) return;
-
-    if (!isPublicRoute && status === "unauthenticated") {
-      safeReplace(ROUTES.AUTH.LOGIN);
-      return;
-    }
-  }, [isLoading, isPublicRoute, status, safeReplace]);
 
   if (isLoading) return null;
   return <>{children}</>;

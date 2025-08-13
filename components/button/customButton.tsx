@@ -22,6 +22,7 @@
         - "inf": 너비 100% 확장 버튼
     - className: 외부에서 전달하는 추가 클래스
     - onClick: 클릭 이벤트 핸들러
+    - disabled: 버튼 비활성화 여부
 
     사용 예시:
     <CustomButton title="로그인" variant="default" color="black" fontSize="1.4rem" fontWeight="600" />
@@ -37,13 +38,21 @@ interface CustomButtonProps {
   title: string;
   color?: "black" | "red" | "green" | "blue" | "white";
   type?: ButtonType;
-  variant?: "default" | "custom" | "outline" | "ghost" | "link";
+  variant?:
+    | "default"
+    | "custom"
+    | "outline"
+    | "ghost"
+    | "link"
+    | "primary"
+    | "secondary"; // Added primary and secondary
   size?: "sm" | "md" | "lg" | "inf";
   fontSize?: string;
   fontWeight?: number | string;
   fontFamily?: string;
   className?: string;
   onClick?: VoidFunction;
+  disabled?: boolean; // Added disabled prop
 }
 
 export default function CustomButton({
@@ -54,6 +63,7 @@ export default function CustomButton({
   size = "md",
   className,
   onClick,
+  disabled, // Destructure disabled prop
   ...props
 }: CustomButtonProps) {
   return (
@@ -67,6 +77,7 @@ export default function CustomButton({
         className,
       )}
       onClick={onClick}
+      disabled={disabled} // Pass disabled prop to button element
       {...props}
     >
       {title}

@@ -3,6 +3,7 @@
 import Calendar from "@/components/calendar/calendar";
 import DailySmoothLineChart from "@/components/chart/lineChart";
 import { useInstructorStats } from "@/hooks/dashboard/useStats";
+import { useSubscriptionTrend } from "@/hooks/dashboard/useSubscriptionTrend"; // Import the new hook
 import { useProfile } from "@/hooks/profile/useProfile";
 import { useQnaPost } from "@/hooks/qna/useQnaPost";
 import Image from "next/image";
@@ -10,7 +11,14 @@ import QandAList from "../__components/q&alist/q&aList";
 import styles from "./page.module.scss";
 
 export default function Page() {
-  const { data, newQuestions } = useInstructorStats();
+  const { data, newQuestions, loading, error, profileImageUrl } =
+    useInstructorStats();
+  const {
+    trendData,
+    loading: trendLoading,
+    error: trendError,
+  } = useSubscriptionTrend("daily"); // Fetch subscription trend data
+
   const { postAnswer } = useQnaPost();
 
   const handleSubmitAnswer = async ({
@@ -31,6 +39,32 @@ export default function Page() {
 
   const { userData } = useProfile();
 
+  if (loading || trendLoading) {
+    // Check both loadings
+    return (
+      <div className={styles.messageContainer}>
+        강사 통계 정보를 불러오는 중...
+      </div>
+    );
+  }
+
+  if (error || trendError) {
+    // Check both errors
+    return (
+      <div className={`${styles.messageContainer} ${styles.errorMessage}`}>
+        오류: {error || trendError}
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className={`${styles.messageContainer} ${styles.noDataMessage}`}>
+        강사 통계 정보를 찾을 수 없습니다.
+      </div>
+    );
+  }
+
   if (!userData) {
     return null; // 또는 로딩 스피너
   }
@@ -45,7 +79,8 @@ export default function Page() {
             <h3 className={styles.cardTitle}>구독자 추이</h3>
           </div>
           <div className={styles.chartArea}>
-            <DailySmoothLineChart />
+            <DailySmoothLineChart data={trendData} />{" "}
+            {/* Pass trendData to the chart */}
           </div>
         </div>
 
@@ -78,14 +113,16 @@ export default function Page() {
           </div>
 
           <div className={styles.wrapper}>
-            <Image
-              className={styles.image}
-              src="/images/profile.webp"
-              alt="profile"
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority
-            />
+            {profileImageUrl && (
+              <Image
+                className={styles.image}
+                src={profileImageUrl}
+                alt="profile"
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority
+              />
+            )}
           </div>
         </div>
 

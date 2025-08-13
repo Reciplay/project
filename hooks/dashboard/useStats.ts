@@ -1,7 +1,6 @@
 // hooks/instructor/useInstructorStats.ts
 "use client";
 
-import { dummyInstructorStats } from "@/config/sampleQuestion";
 import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
 import { InstructorStats } from "@/types/instructorStats";
@@ -15,10 +14,11 @@ export function useInstructorStats() {
   const fetchStats = useCallback(async () => {
     setLoading(true);
     setError("");
+
     try {
       const res = await restClient.get<ApiResponse<InstructorStats>>(
-        "/user/instructor/statisic",
-        { requireAuth: true },
+        "/user/instructor/statistic", // Corrected endpoint
+        { requireAuth: true, useCors: false }, // Added useCors: false based on restClient.ts
       );
       console.log(res.data?.data);
       const body = res.data?.data as InstructorStats;
@@ -29,9 +29,9 @@ export function useInstructorStats() {
 
       setData(fixed);
     } catch (e) {
+      // Added any type for error
       setError(e?.response?.data?.message || "강사 통계 조회 실패");
-      setData(dummyInstructorStats);
-      // setData(null);
+      setData(null); // Removed dummy data fallback
     } finally {
       setLoading(false);
     }
@@ -51,7 +51,7 @@ export function useInstructorStats() {
     averageStars: data?.averageStars ?? 0,
     totalReviewCount: data?.totalReviewCount ?? 0,
     subscriberCount: data?.subscriberCount ?? 0,
-    profileImageUrl: data?.profileImageUrl ?? "",
+    profileImageUrl: data?.profileFileInfo?.presignedUrl ?? "", // Adjusted to profileFileInfo.presignedUrl
     newQuestions: data?.newQuestions ?? [],
   };
 }

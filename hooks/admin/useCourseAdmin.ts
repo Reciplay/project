@@ -24,11 +24,11 @@ export default function useCourseAdmin() {
 
       const [approvedRes, registerRes] = await Promise.all([
         restClient.get<ApiResponse<CourseSummary[]>>(
-          "/course/admin/course/summaries",
+          "/admin/course/summaries",
           { params: { isApprove: true }, requireAuth: true },
         ),
         restClient.get<ApiResponse<CourseSummary[]>>(
-          "/course/admin/course/summaries",
+          "/admin/course/summaries",
           { params: { isApprove: false }, requireAuth: true },
         ),
       ]);
@@ -73,10 +73,10 @@ export default function useCourseAdmin() {
     setDetailLoading(true);
     setDetail(null);
     try {
-      const res = await restClient.get<ApiResponse<Course>>(
-        "/course/admin/course",
-        { params: { courseId }, requireAuth: true },
-      );
+      const res = await restClient.get<ApiResponse<Course>>("/admin/course", {
+        params: { courseId },
+        requireAuth: true,
+      });
 
       console.log(res.data.data.instructorId);
       setInstructorId(res.data.data.instructorId);
@@ -100,7 +100,7 @@ export default function useCourseAdmin() {
     async (courseId: number, message: string, isApprove: boolean) => {
       try {
         const res = await restClient.put(
-          "/course/admin/course",
+          "/admin/course",
           { instructorId, courseId, message, isApprove },
           { requireAuth: true },
         );
