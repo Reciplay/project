@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/test")
 public class TestController {
 
-    @GetMapping("/")
+    @GetMapping("")
     public String testP() {
         return "test success";
     }

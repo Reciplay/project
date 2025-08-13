@@ -8,8 +8,10 @@ import java.awt.print.Pageable;
 import java.util.List;
 
 
-public interface TokenRepository extends JpaRepository<Token, Long>, CustomTokenRepository {
+public interface TokenRepository extends CustomTokenRepository {
     List<Token> findByUsernameAndIsExpired(String username, Boolean isExpired);
     List<Token> findByUsernameAndIsExpiredAndType(String username, Boolean isExpired, String type);
+    Token save(Token token);
 
+    void deleteTokens(String username, String type);
 }
