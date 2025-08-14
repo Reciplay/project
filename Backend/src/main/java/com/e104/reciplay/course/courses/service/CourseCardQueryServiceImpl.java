@@ -63,9 +63,11 @@ public class CourseCardQueryServiceImpl implements CourseCardQueryService{
 
                 FileMetadata fileMetadata = null;
                 if (cat.equals("special")) {
-                        fileMetadata = subFileMetadataQueryService.queryMetadataByCondition(c.getId(), "COURSE_COVER");
+//                        fileMetadata = subFileMetadataQueryService.queryMetadataByCondition(c.getId(), "COURSE_COVER");
+                    fileMetadata = subFileMetadataQueryService.queryMetadataBySequenceCondition(c.getId(), "SPECIAL_BANNER", 1);
                 } else {
-                    fileMetadata = subFileMetadataQueryService.queryMetadataByCondition(c.getId(), "THUMBNAIL");
+//                    fileMetadata = subFileMetadataQueryService.queryMetadataByCondition(c.getId(), "THUMBNAIL");
+                    fileMetadata = subFileMetadataQueryService.queryMetadataBySequenceCondition(c.getId(), "THUMBNAIL", 1);
                 }
                 try {
                     card.setResponseFileInfo(s3Service.getResponseFileInfo(fileMetadata));

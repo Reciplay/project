@@ -11,4 +11,6 @@ public interface FileMetadataRepository extends JpaRepository<FileMetadata, Long
     List<FileMetadata> findListByRelatedIdAndRelatedType(Long relatedId, RelatedType relatedType);
 
     FileMetadata findByRelatedIdAndRelatedType(Long relatedId, RelatedType relatedType);
+
+    FileMetadata findByRelatedIdAndRelatedTypeAndSequence(Long relatedId,RelatedType related,Integer sequence);
 }

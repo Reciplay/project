@@ -23,7 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -69,6 +69,10 @@ class CourseCardQueryServiceImplTest {
                 .build();
     }
 
+    /**
+     * 공통 스텁
+     * @param fileType 서비스가 넘기는 문자열 타입 ("SPECIAL_BANNER" 또는 "THUMBNAIL")
+     */
     private void stubCommon(Long courseId, Long instructorId, String instructorName,
                             List<String> canLearns, double avg, boolean enrolled,
                             String categoryName, String fileType) {
@@ -79,8 +83,11 @@ class CourseCardQueryServiceImplTest {
         when(reviewQueryService.avgStarsByCourseId(courseId)).thenReturn(avg);
         when(courseHistoryQueryService.enrolled(anyLong(), eq(courseId))).thenReturn(enrolled);
 
+        // ✅ 변경 포인트: sequence 기반 메서드로 스텁
         FileMetadata meta = FileMetadata.builder().relatedId(courseId).build();
-        when(subFileMetadataQueryService.queryMetadataByCondition(courseId, fileType)).thenReturn(meta);
+        when(subFileMetadataQueryService.queryMetadataBySequenceCondition(eq(courseId), eq(fileType), eq(1)))
+                .thenReturn(meta);
+
         when(s3Service.getResponseFileInfo(meta)).thenReturn(mock(ResponseFileInfo.class));
     }
 
@@ -100,15 +107,16 @@ class CourseCardQueryServiceImplTest {
     }
 
     @Test
-    @DisplayName("special: findSpecialCoursesPage 호출 + course_cover 사용 + 필드 매핑 검증")
+    @DisplayName("special: findSpecialCoursesPage 호출 + SPECIAL_BANNER 사용 + 필드 매핑 검증")
     void special_ok() {
         Long userId = 10L;
         Course c = buildCourse(1L, 77L, "스페셜");
         Page<Course> page = new PageImpl<>(List.of(c), PAGEABLE, 1);
         when(courseRepository.findSpecialCoursesPage(PAGEABLE)).thenReturn(page);
 
+        // ✅ SPECIAL_BANNER 로 변경
         stubCommon(1L, 77L, "홍길동",
-                List.of("자바", "스프링"), 4.9, true, "백엔드", "COURSE_COVER");
+                List.of("자바", "스프링"), 4.9, true, "백엔드", "SPECIAL_BANNER");
 
         CourseCardCondition cond = CourseCardCondition.builder()
                 .requestCategory("special")
@@ -131,12 +139,12 @@ class CourseCardQueryServiceImplTest {
         assertThat(card.getIsEnrolled()).isTrue();
         assertThat(card.getResponseFileInfo()).isNotNull();
 
-        // 파일 타입 확인
-        verify(subFileMetadataQueryService).queryMetadataByCondition(1L, "COURSE_COVER");
+        // ✅ verify 도 sequence 기반으로 변경
+        verify(subFileMetadataQueryService).queryMetadataBySequenceCondition(1L, "SPECIAL_BANNER", 1);
     }
 
     @Test
-    @DisplayName("soon: findSoonCoursesPage 호출 + thumbnail 사용 + 필드 매핑 검증")
+    @DisplayName("soon: findSoonCoursesPage 호출 + THUMBNAIL 사용 + 필드 매핑 검증")
     void soon_ok() {
         Long userId = 20L;
         Course c = buildCourse(2L, 88L, "모집중");
@@ -165,11 +173,11 @@ class CourseCardQueryServiceImplTest {
         assertThat(card.getIsEnrolled()).isFalse();
         assertThat(card.getResponseFileInfo()).isNotNull();
 
-        verify(subFileMetadataQueryService).queryMetadataByCondition(2L, "THUMBNAIL");
+        verify(subFileMetadataQueryService).queryMetadataBySequenceCondition(2L, "THUMBNAIL", 1);
     }
 
     @Test
-    @DisplayName("search: findsearchCoursesPage 호출(검색어/수강여부 전달) + thumbnail 사용")
+    @DisplayName("search: findsearchCoursesPage 호출(검색어/수강여부 전달) + THUMBNAIL 사용")
     void search_ok() {
         Long userId = 30L;
         Course c = buildCourse(3L, 99L, "검색강좌");
@@ -190,11 +198,11 @@ class CourseCardQueryServiceImplTest {
 
         verify(courseRepository).findsearchCoursesPage("java", true, userId, PAGEABLE);
         assertThat(resp.getContent()).hasSize(1);
-        verify(subFileMetadataQueryService).queryMetadataByCondition(3L, "THUMBNAIL");
+        verify(subFileMetadataQueryService).queryMetadataBySequenceCondition(3L, "THUMBNAIL", 1);
     }
 
     @Test
-    @DisplayName("instructor: findInstructorCoursesPage 호출 + thumbnail 사용")
+    @DisplayName("instructor: findInstructorCoursesPage 호출 + THUMBNAIL 사용")
     void instructor_ok() {
         Long userId = 40L;
         Long instructorId = 555L;
@@ -214,11 +222,11 @@ class CourseCardQueryServiceImplTest {
 
         verify(courseRepository).findInstructorCoursesPage(instructorId, PAGEABLE);
         assertThat(resp.getContent()).hasSize(1);
-        verify(subFileMetadataQueryService).queryMetadataByCondition(4L, "THUMBNAIL");
+        verify(subFileMetadataQueryService).queryMetadataBySequenceCondition(4L, "THUMBNAIL", 1);
     }
 
     @Test
-    @DisplayName("enrolled: findEnrolledCoursesPage 호출 + thumbnail 사용")
+    @DisplayName("enrolled: findEnrolledCoursesPage 호출 + THUMBNAIL 사용")
     void enrolled_ok() {
         Long userId = 50L;
         Course c = buildCourse(5L, 1L, "내 수강중");
@@ -236,10 +244,12 @@ class CourseCardQueryServiceImplTest {
         verify(courseRepository).findEnrolledCoursesPage(userId, PAGEABLE);
         assertThat(resp.getContent()).hasSize(1);
         assertThat(resp.getContent().get(0).getIsEnrolled()).isTrue();
+
+        verify(subFileMetadataQueryService).queryMetadataBySequenceCondition(5L, "THUMBNAIL", 1);
     }
 
     @Test
-    @DisplayName("zzim: findZzimCoursesPage 호출 + thumbnail 사용")
+    @DisplayName("zzim: findZzimCoursesPage 호출 + THUMBNAIL 사용")
     void zzim_ok() {
         Long userId = 60L;
         Course c = buildCourse(6L, 2L, "찜한 강좌");
@@ -256,10 +266,12 @@ class CourseCardQueryServiceImplTest {
 
         verify(courseRepository).findZzimCoursesPage(userId, PAGEABLE);
         assertThat(resp.getContent()).hasSize(1);
+
+        verify(subFileMetadataQueryService).queryMetadataBySequenceCondition(6L, "THUMBNAIL", 1);
     }
 
     @Test
-    @DisplayName("complete: findCompletedCoursesPage 호출 + thumbnail 사용")
+    @DisplayName("complete: findCompletedCoursesPage 호출 + THUMBNAIL 사용")
     void complete_ok() {
         Long userId = 70L;
         Course c = buildCourse(7L, 3L, "완료 강좌");
@@ -276,6 +288,8 @@ class CourseCardQueryServiceImplTest {
 
         verify(courseRepository).findCompletedCoursesPage(userId, PAGEABLE);
         assertThat(resp.getContent()).hasSize(1);
+
+        verify(subFileMetadataQueryService).queryMetadataBySequenceCondition(7L, "THUMBNAIL", 1);
     }
 
     @Test
