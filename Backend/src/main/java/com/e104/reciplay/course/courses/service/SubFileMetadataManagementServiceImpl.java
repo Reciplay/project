@@ -11,6 +11,7 @@ public class SubFileMetadataManagementServiceImpl implements SubFileMetadataMana
     private final FileMetadataRepository fileMetadataRepository;
     @Override
     public void deleteMetadataByEntitiy(FileMetadata fileMetadata) {
+
         fileMetadataRepository.delete(fileMetadata);
     }
 }
