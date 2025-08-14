@@ -150,21 +150,24 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
 
     @Override
     public InstructorStat queryInstructorStatistic(Long instructorId) {
+        log.debug("강사 통계 정보 조회 메서드 실행.");
         InstructorStat instructorStat = new InstructorStat();
         Integer totalStudents = instructorStatQueryService.queryTotalStudents(instructorId);
-        log.debug("total students :  {}", totalStudents);
+        log.debug("총 학생 수 : {} 명", totalStudents);
         Double averageStars = instructorStatQueryService.queryAvgStars(instructorId);
-        log.debug("averageStars :  {}", averageStars);
+        log.debug("평균 별점 : {} 점", averageStars);
         Integer totalReviewCount = instructorStatQueryService.queryTotalReviewCount(instructorId);
-        log.debug("totalReviewCousn : {}", totalReviewCount);
+        log.debug("총 리뷰 수 : {} 개", totalReviewCount);
         Integer subscriberCount = instructorStatQueryService.querySubsciberCount(instructorId);
-        log.debug("subscriberCount : {}", subscriberCount);
+        log.debug("총 구독자 수 : {} 명", subscriberCount);
 
-        log.debug("프로필 파일메타데이터  조회");
-        ResponseFileInfo instructorProfileFileInfo = null;
+        ResponseFileInfo profileFileInfo = null;
         try {
-            FileMetadata instructorProfileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructorId, USER_PROFILE);
-            log.debug("조회된 강사 프로필의 메타 데이터 = {}", instructorProfileMetadata);
+            FileMetadata profileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructorId, "USER_PROFILE");
+            profileFileInfo = s3Service.getResponseFileInfo(profileMetadata);
+        } catch (Exception e) {
+            log.debug("프로필 조회중 오류 발생함. : {}", e.getMessage());
+        }
 
             instructorProfileFileInfo = s3Service.getResponseFileInfo(instructorProfileMetadata);
             log.debug("조회된 강사 프로필 파일의 정보 = {}", instructorProfileFileInfo);
