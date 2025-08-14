@@ -14,7 +14,6 @@ public class WebClientConfig {
     private int CODEC_SIZE;
     private final int KB = 1000;
 
-
     // 챗봇에 요청하기 위한 API
     @Bean
     public WebClient chatBotClient(WebClient.Builder builder) {

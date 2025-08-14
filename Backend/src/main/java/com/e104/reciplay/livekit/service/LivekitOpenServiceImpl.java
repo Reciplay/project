@@ -113,6 +113,14 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
             liveParticipationManagementService.participateIn(liveRoom, AuthenticationUtil.getSessionUsername());
         }
         User user = userQueryService.queryUserByEmail(AuthenticationUtil.getSessionUsername());
+
+        // 챗봇 서버로 파일 다운로드 요청 전송하기.
+        // 한 번에 다 넣는다?
+        // 파일 다운로드
+        // 볼륨에 저장하기
+        // 로드하여 파싱하기
+        // 임베딩 하기
+
         return new LivekitTokenResponse(token.toJwt(), roomName, user.getNickname(), user.getEmail(), user.getRole(), lectureId);
     }
 
