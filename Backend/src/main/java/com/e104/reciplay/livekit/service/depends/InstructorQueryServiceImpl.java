@@ -43,6 +43,10 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
     private final InstructorStatQueryService instructorStatQueryService;
     private final QnaQueryService qnaQueryService;
     private final SubscriptionHistoryService subscriptionHistoryService;
+
+    private static final String USER_PROFILE = "USER_PROFILE";
+    private static final String INSTRUCTOR_BANNER = "INSTRUCTOR_BANNER";
+
     @Override
     public Instructor queryInstructorByEmail(String email) {
         log.debug("강사를 이메일로 조회하는 메서드 email = {}", email);
@@ -79,17 +83,21 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
         log.debug("조회된 강사 프로필 = {}", instructorProfile);
 
         // 강사 프로필 이미지 찾기
-        FileMetadata instructorProfileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructor.getUserId(), "user_profile");
-        log.debug("조회된 강사 프로필의 메타 데이터 = {}", instructorProfileMetadata);
+        ResponseFileInfo instructorProfileFileInfo = null;
+        try {
+            FileMetadata instructorProfileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructor.getUserId(), USER_PROFILE);
+            log.debug("조회된 강사 프로필의 메타 데이터 = {}", instructorProfileMetadata);
 
-        ResponseFileInfo instructorProfileFileInfo = s3Service.getResponseFileInfo(instructorProfileMetadata);
-        log.debug("조회된 강사 프로필 파일의 정보 = {}", instructorProfileFileInfo);
-
+            instructorProfileFileInfo = s3Service.getResponseFileInfo(instructorProfileMetadata);
+            log.debug("조회된 강사 프로필 파일의 정보 = {}", instructorProfileFileInfo);
+        } catch (Exception e) {
+            log.debug("이미지 조회중 에러가 발생함. {}", e.getMessage());
+        }
 
         ResponseFileInfo instructorBannerFileInfo = null;
         // 강사 배너 이미지 찾기
         try {
-            FileMetadata instructorBannerMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructorId, "instructor_banner");
+            FileMetadata instructorBannerMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructorId, INSTRUCTOR_BANNER);
             log.debug("조회된 강사 배너 파일 정보 = {}", instructorProfileFileInfo);
 
             instructorBannerFileInfo = s3Service.getResponseFileInfo(instructorBannerMetadata);
@@ -99,6 +107,7 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
             log.debug("파일 조회 예외 {}", e.getMessage());
             log.debug("이미지 파일이 없는 것 같습니다.");
         }
+        log.debug("licenseItemIist 설정");
         // licenseItemList 설정
         List<LicenseItem> licenseItems = new ArrayList<>();
         List<InstructorLicense> licenses = instructorLicenseQueryService.queryLicensesByInstructorId(instructorId);
@@ -108,6 +117,7 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
             licenseItems.add(item);
         }
 
+        log.debug("careerItemIist 설정");
         // careerItemList 설정
         List<CareerItem> careerItems = new ArrayList<>();
         List<Career> careers = careerQueryService.queryCarrersByInstructorId(instructorId);
@@ -118,13 +128,21 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
 
 
         // instructorProfile 값 설정
+        log.debug("instructorProfileFileInfo 설정");
         instructorProfile.setInstructorProfileFileInfo(instructorProfileFileInfo);
+        log.debug("instructorBannerFileInfo 설정");
         instructorProfile.setInstructorBannerFileInfo(instructorBannerFileInfo);
+        log.debug("careerItems 설정");
         instructorProfile.setCareers(careerItems);
+        log.debug("licneseItems 설정");
         instructorProfile.setLicenses(licenseItems);
+        log.debug("licneseItems 설정");
         instructorProfile.setIsSubscribed(subscriptionQueryService.isSubscribedInstructor(instructorId, userId));
+        log.debug("해당 유저 구독했는지 변수 설정");
         instructorProfile.setSubscriberCount(subscriptionQueryService.countSubscribers(instructorId).intValue());
+        log.debug("해당 유저 구독했는지 변수 설정");
         instructorProfile.setName(instructorRepository.findNameById(instructorId));
+        log.debug("강사 소개 변수 설정");
         instructorProfile.setIntroduction(instructor.getIntroduction());
 
         return instructorProfile;
@@ -151,12 +169,20 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
             log.debug("프로필 조회중 오류 발생함. : {}", e.getMessage());
         }
 
+            instructorProfileFileInfo = s3Service.getResponseFileInfo(instructorProfileMetadata);
+            log.debug("조회된 강사 프로필 파일의 정보 = {}", instructorProfileFileInfo);
+        } catch (Exception e) {
+            log.debug("이미지 조회중 에러가 발생함. {}", e.getMessage());
+        }
+
+        log.debug("questions 조회");
         List<InstructorQuestion> newQuestions = qnaQueryService.queryQuestionsByInstructorId(instructorId);
+        log.debug("instructorStat 변수들 설정");
         instructorStat.setAverageStars(averageStars);
         instructorStat.setSubscriberCount(subscriberCount);
         instructorStat.setTotalReviewCount(totalReviewCount);
         instructorStat.setNewQuestions(newQuestions);
-        instructorStat.setProfileFileInfo(profileFileInfo);
+        instructorStat.setProfileFileInfo(instructorProfileFileInfo);
         instructorStat.setTotalStudents(totalStudents);
         return  instructorStat;
     }
@@ -181,7 +207,7 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
             Long instructorUserId = instructorRepository.findById(s.getInstructorId()).get().getUserId();
 
             log.debug("해당 강사의 userProfileFileMetadata 조회");
-            FileMetadata fileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructorUserId, "user_profile");
+            FileMetadata fileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructorUserId, USER_PROFILE);
             log.debug("해당 강사의 responseFIleInfo 생성");
             ResponseFileInfo responseFileInfo = s3Service.getResponseFileInfo(fileMetadata);
             item.setInstructorProfileFileInfo(responseFileInfo);
