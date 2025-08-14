@@ -184,7 +184,8 @@ public class CustomCourseRepositoryImpl implements CustomCourseRepository{
     public Page<Course> findInstructorCoursesPage(Long instructorId, Pageable pageable) {
         // course.instructorId == instructorId AND 종료일이 현재 날짜 이후 또는 같음
         BooleanExpression where = course.instructorId.eq(instructorId)
-                .and(course.courseEndDate.goe(now.toLocalDate()));
+                .and(course.courseEndDate.goe(now.toLocalDate()))
+                .and(course.isApproved.eq(true));
 
         List<Course> content = queryFactory
                 .selectFrom(course)
