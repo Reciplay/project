@@ -7,8 +7,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 public class WebClientConfig {
-    @Value("${ai.llm.baseurl}")
-    private String BASE_URL;
 
     @Value("${ai.llm.codec-size}")
     private int CODEC_SIZE;
@@ -17,8 +15,7 @@ public class WebClientConfig {
     // 챗봇에 요청하기 위한 API
     @Bean
     public WebClient chatBotClient(WebClient.Builder builder) {
-        return builder.baseUrl(BASE_URL)
-                .codecs(config -> {
+        return builder.codecs(config -> {
                     config.defaultCodecs().maxInMemorySize(CODEC_SIZE * KB);
                 }).build();
     }
