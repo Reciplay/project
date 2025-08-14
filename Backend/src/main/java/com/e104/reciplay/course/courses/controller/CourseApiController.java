@@ -96,6 +96,10 @@ public class CourseApiController {
     public ResponseEntity<ResponseRoot<CourseDetail>> getCourseDetail(
             @RequestParam Long courseId
     ){
+        if (!Boolean.TRUE.equals(courseQueryService.queryCourseById(courseId).getIsApproved())) {
+            throw new RuntimeException("승인되지 않은 강좌입니다.");
+        }
+
         log.debug("강좌 상세 API 요청됨 ");
         log.debug("요청 데이터 {}", courseId);
         String email = AuthenticationUtil.getSessionUsername();

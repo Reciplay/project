@@ -86,6 +86,7 @@ public class CustomCourseRepositoryImpl implements CustomCourseRepository{
         List<Course> results = queryFactory
                 .selectFrom(course)
                 .join(specialCourse).on(specialCourse.courseId.eq(course.id))
+                .where(course.isApproved.isTrue()) // 승인된 강좌만
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .orderBy(orderBy(pageable.getSort(), course))
@@ -95,6 +96,7 @@ public class CustomCourseRepositoryImpl implements CustomCourseRepository{
                 .select(course.count())
                 .from(course)
                 .join(specialCourse).on(specialCourse.courseId.eq(course.id))
+                .where(course.isApproved.isTrue())
                 .fetchOne();
 
         long total = Optional.ofNullable(countResult).orElse(0L);
@@ -106,6 +108,7 @@ public class CustomCourseRepositoryImpl implements CustomCourseRepository{
         List<Course> content = queryFactory
                 .selectFrom(course)
                 .where(
+                        course.isApproved.isTrue(),
                         course.enrollmentStartDate.loe(now),
                         course.enrollmentEndDate.goe(now)
                 )
@@ -118,6 +121,7 @@ public class CustomCourseRepositoryImpl implements CustomCourseRepository{
                 .select(course.count())
                 .from(course)
                 .where(
+                        course.isApproved.isTrue(),
                         course.enrollmentStartDate.loe(now),
                         course.enrollmentEndDate.goe(now)
                 )
@@ -154,9 +158,13 @@ public class CustomCourseRepositoryImpl implements CustomCourseRepository{
                     .notExists();
         }
 
-        BooleanExpression where = andAll(keywordCond, enrolledCond);
+        // 3) 승인 조건
+        BooleanExpression approvedCond = course.isApproved.isTrue(); // ✅ [추가]
 
-        // 3) 목록 쿼리: Course -> Instructor -> User
+        // 4) 모든 조건 결합
+        BooleanExpression where = andAll(keywordCond, enrolledCond, approvedCond); // ✅ [수정: approvedCond 포함]
+
+        // 5) 목록 쿼리: Course -> Instructor -> User
         List<Course> contentList = queryFactory
                 .selectFrom(course)
                 .leftJoin(instructor).on(instructor.id.eq(course.instructorId))
