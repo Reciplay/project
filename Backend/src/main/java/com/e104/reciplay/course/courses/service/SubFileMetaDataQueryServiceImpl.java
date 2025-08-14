@@ -27,4 +27,10 @@ public class SubFileMetaDataQueryServiceImpl implements SubFileMetadataQueryServ
         return fileMetadataRepository.findByRelatedIdAndRelatedType(relatedId, related);
     }
 
+    @Override
+    public FileMetadata queryMetadataBySequenceCondition(Long relatedId, String relatedType, Integer sequence) {
+        RelatedType related = RelatedType.valueOf(relatedType);
+        return fileMetadataRepository.findByRelatedIdAndRelatedTypeAndSequence(relatedId, related, sequence);
+    }
+
 }
