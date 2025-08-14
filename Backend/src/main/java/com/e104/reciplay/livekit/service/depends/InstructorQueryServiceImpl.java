@@ -31,7 +31,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class InstructorQueryServiceImpl implements InstructorQueryService{
+public class InstructorQueryServiceImpl implements InstructorQueryService {
     private final UserQueryService userQueryService;
     private final InstructorRepository instructorRepository;
     private final SubFileMetadataQueryService subFileMetadataQueryService;
@@ -43,7 +43,6 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
     private final InstructorStatQueryService instructorStatQueryService;
     private final QnaQueryService qnaQueryService;
     private final SubscriptionHistoryService subscriptionHistoryService;
-
     private static final String USER_PROFILE = "USER_PROFILE";
     private static final String INSTRUCTOR_BANNER = "INSTRUCTOR_BANNER";
 
@@ -51,7 +50,7 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
     public Instructor queryInstructorByEmail(String email) {
         log.debug("강사를 이메일로 조회하는 메서드 email = {}", email);
         User user = userQueryService.queryUserByEmail(email);
-        return instructorRepository.findByUserId(user.getId()).orElseThrow(()->new IllegalArgumentException("강사가 아닌 유저의 이메일 입니다."));
+        return instructorRepository.findByUserId(user.getId()).orElseThrow(() -> new IllegalArgumentException("강사가 아닌 유저의 이메일 입니다."));
     }
 
     @Override
@@ -69,13 +68,13 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
     @Override
     public Instructor queryInstructorById(Long instructorId) {
         log.debug("강사 아이디로 강사를 조회하는 메서드 instructorId = {}", instructorId);
-        return instructorRepository.findById(instructorId).orElseThrow(()->new EmailNotFoundException("전달된 instructorId를 찾을 수 없습니다. (instructorId : "+instructorId+")"));
+        return instructorRepository.findById(instructorId).orElseThrow(() -> new EmailNotFoundException("전달된 instructorId를 찾을 수 없습니다. (instructorId : " + instructorId + ")"));
     }
 
     @Override
     public InstructorProfile queryInstructorProfile(Long instructorId, Long userId) {
         log.debug("강사 아이디로 강사 프로필 조회하는 메서드 instructorId = {}, userId = {}", instructorId, userId);
-        Instructor instructor = instructorRepository.findById(instructorId).orElseThrow(()->new EmailNotFoundException("전달된 강사을 찾을 수 없습니다. (강사Id : "+instructorId+")"));
+        Instructor instructor = instructorRepository.findById(instructorId).orElseThrow(() -> new EmailNotFoundException("전달된 강사을 찾을 수 없습니다. (강사Id : " + instructorId + ")"));
         log.debug("조회된 강사 = {}", instructor);
 
         // InstructorProfile 인스턴스 생성
@@ -111,7 +110,7 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
         // licenseItemList 설정
         List<LicenseItem> licenseItems = new ArrayList<>();
         List<InstructorLicense> licenses = instructorLicenseQueryService.queryLicensesByInstructorId(instructorId);
-        for(InstructorLicense license : licenses){
+        for (InstructorLicense license : licenses) {
             LicenseItem item = new LicenseItem(license);
             item.setLicenseName(licenseQueryService.queryLicenseById(license.getLicenseId()).getName());
             licenseItems.add(item);
@@ -121,7 +120,7 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
         // careerItemList 설정
         List<CareerItem> careerItems = new ArrayList<>();
         List<Career> careers = careerQueryService.queryCarrersByInstructorId(instructorId);
-        for(Career career : careers){
+        for (Career career : careers) {
             CareerItem item = new CareerItem(career);
             careerItems.add(item);
         }
@@ -161,18 +160,13 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
         Integer subscriberCount = instructorStatQueryService.querySubsciberCount(instructorId);
         log.debug("총 구독자 수 : {} 명", subscriberCount);
 
-        ResponseFileInfo profileFileInfo = null;
+        ResponseFileInfo instructorProfileFileInfo = null;
+        Instructor instructor = this.queryInstructorById(instructorId);
         try {
-            FileMetadata profileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructorId, "USER_PROFILE");
-            profileFileInfo = s3Service.getResponseFileInfo(profileMetadata);
-        } catch (Exception e) {
+            FileMetadata profileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructor.getUserId(), USER_PROFILE);
+            instructorProfileFileInfo = s3Service.getResponseFileInfo(profileMetadata);
+        } catch (RuntimeException e) {
             log.debug("프로필 조회중 오류 발생함. : {}", e.getMessage());
-        }
-
-            instructorProfileFileInfo = s3Service.getResponseFileInfo(instructorProfileMetadata);
-            log.debug("조회된 강사 프로필 파일의 정보 = {}", instructorProfileFileInfo);
-        } catch (Exception e) {
-            log.debug("이미지 조회중 에러가 발생함. {}", e.getMessage());
         }
 
         log.debug("questions 조회");
@@ -184,7 +178,7 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
         instructorStat.setNewQuestions(newQuestions);
         instructorStat.setProfileFileInfo(instructorProfileFileInfo);
         instructorStat.setTotalStudents(totalStudents);
-        return  instructorStat;
+        return instructorStat;
     }
 
     @Override
@@ -200,7 +194,7 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
         List<Subscription> subscriptions = subscriptionQueryService.querySubscriptionsByUserId(userId);
         log.debug("해당 유저 구독 정보 리스트를 SubscriptionInfo 리스트로 변환");
 
-        for(Subscription s : subscriptions){
+        for (Subscription s : subscriptions) {
             SubscribedInstructorItem item = new SubscribedInstructorItem();
 
             log.debug("해당 강사의 사용자 아이디 조회");
