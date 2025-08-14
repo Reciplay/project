@@ -16,6 +16,13 @@ import java.util.concurrent.TimeUnit;
 public class RoomRedisService {
     private final RedisTemplate<String, String> redisTemplate;
 
+    public boolean isRoomOpened(String lectureName, Long lectureId) {
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        String key = getRoomKey(lectureName, lectureId);
+        return operations.get(key) != null;
+    }
+
+
     public String addRoomId(String lectureName, Long lectureId) {
         String roomId = UUID.randomUUID().toString();
         ValueOperations<String, String> operations = redisTemplate.opsForValue();

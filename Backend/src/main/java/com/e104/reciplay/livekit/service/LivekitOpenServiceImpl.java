@@ -77,12 +77,14 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
         if(!isTest) {
             isOpenable(lectureId, courseId); // 불가능할 경우 예외 던져짐.
         }
+        log.debug("강사 토큰 생성 서비스 호출. 강의 ID = {}, 강좌 ID = {}", lectureId, courseId);
 
         AccessToken token = new AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET);
         token.setIdentity(AuthenticationUtil.getSessionUsername()); // participantName 대신 user의 이메일 사용
         token.setName(AuthenticationUtil.getSessionUsername());
 
         String roomName = getRoomIdOf(lectureId, true);
+        log.debug("조회된 roomName = {}", roomName);
 
         token.addGrants(
                 new RoomJoin(true),
@@ -111,6 +113,14 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
             liveParticipationManagementService.participateIn(liveRoom, AuthenticationUtil.getSessionUsername());
         }
         User user = userQueryService.queryUserByEmail(AuthenticationUtil.getSessionUsername());
+
+        // 챗봇 서버로 파일 다운로드 요청 전송하기.
+        // 한 번에 다 넣는다?
+        // 파일 다운로드
+        // 볼륨에 저장하기
+        // 로드하여 파싱하기
+        // 임베딩 하기
+
         return new LivekitTokenResponse(token.toJwt(), roomName, user.getNickname(), user.getEmail(), user.getRole(), lectureId);
     }
 
@@ -142,8 +152,10 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
         }
         // 강좌 참여가 가능한 상태이다.
         // 토큰 발급 + 참여 처리.
+        log.debug("학생 토큰 생성 서비스 호출됨. 강의 ID = {}, 강좌 ID = {}", lectureId, courseId);
         String roomName = this.getRoomIdOf(lectureId, false);
         String email = AuthenticationUtil.getSessionUsername();
+        log.debug("조회된 roomName = {}, email = {}", roomName, email);
 
         AccessToken token = new AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET);
         token.setIdentity(email); // participantName 대신 userId 사용
@@ -175,6 +187,7 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
     @Override
     @Transactional
     public void closeLiveRoom(CloseLiveRequest request, String email) {
+        log.debug("강의실 종료 API. 호출됨.");
         Lecture lecture = lectureQueryService.queryLectureById(request.getLectureId());
         User user = userQueryService.queryUserByEmail(email);
         log.debug("lecture, user를 조회함.");
@@ -211,7 +224,13 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
         if(!isTest) {
             lectureName = lectureQueryService.queryLectureById(lectureId).getTitle();
         }
-        if(instructor) return roomRedisService.addRoomId(lectureName, lectureId);
-        else return roomRedisService.getRoomId(lectureName, lectureId);
+        if(roomRedisService.isRoomOpened(lectureName, lectureId) || !instructor) {
+            log.debug("이미 생성된 방 정보를 조회함, 강사? {}", instructor);
+            return roomRedisService.getRoomId(lectureName, lectureId);
+        }
+        else {
+            log.debug("새로운 강의실 ID를 저장함.");
+            return roomRedisService.addRoomId(lectureName, lectureId);
+        }
     }
 }
