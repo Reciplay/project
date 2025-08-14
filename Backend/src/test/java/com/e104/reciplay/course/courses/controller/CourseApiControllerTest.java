@@ -7,6 +7,7 @@ import com.e104.reciplay.course.courses.dto.response.CourseDetail;
 import com.e104.reciplay.course.courses.dto.response.PagedResponse;
 import com.e104.reciplay.course.courses.service.CourseCardQueryService;
 import com.e104.reciplay.entity.Instructor;
+import com.e104.reciplay.entity.Course; // ✅ 추가
 import com.e104.reciplay.livekit.service.depends.CourseManagementService;
 import com.e104.reciplay.livekit.service.depends.CourseQueryService;
 import com.e104.reciplay.livekit.service.depends.InstructorQueryService;
@@ -138,7 +139,7 @@ class CourseApiControllerTest {
     }
 
     @Test
-    @DisplayName("GET '' - 단건 상세 조회 200 반환 (userId 포함 로직 반영)")
+    @DisplayName("GET '' - 단건 상세 조회 200 반환 (승인 확인 + userId 로직 반영)")
     void getCourseDetail_ok() throws Exception {
         String email = "user@example.com";
         Long userId = 999L;
@@ -151,6 +152,11 @@ class CourseApiControllerTest {
             when(mockUser.getId()).thenReturn(userId);
             when(userQueryService.queryUserByEmail(email)).thenReturn(mockUser);
 
+            // ✅ 추가: 승인된 강좌로 스텁
+            Course mockCourse = mock(Course.class);
+            when(mockCourse.getIsApproved()).thenReturn(true); // 승인 true
+            when(courseQueryService.queryCourseById(courseId)).thenReturn(mockCourse); // ✅ 추가
+
             when(courseQueryService.queryCourseDetailByCourseId(courseId, userId))
                     .thenReturn(new CourseDetail());
 
@@ -159,6 +165,8 @@ class CourseApiControllerTest {
                     .andExpect(status().isOk());
 
             verify(userQueryService).queryUserByEmail(email);
+            // ✅ 승인 확인을 위해 호출되는 메서드까지 검증
+            verify(courseQueryService).queryCourseById(courseId); // ✅ 추가
             verify(courseQueryService).queryCourseDetailByCourseId(courseId, userId);
             verifyNoMoreInteractions(userQueryService, courseQueryService);
             verifyNoInteractions(instructorQueryService, courseManagementService, courseCardQueryService);
