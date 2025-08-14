@@ -1,6 +1,7 @@
 // hooks/course/enrolled/useEnrolledCourses.ts
 "use client";
 
+import { getErrorMessage } from "@/lib/axios/error";
 import restClient from "@/lib/axios/restClient";
 import type { PaginationResponse } from "@/types/apiResponse";
 import type { CourseCard } from "@/types/course";
@@ -84,8 +85,8 @@ export function useEnrolledCourses(options?: {
       }
     } catch (e) {
       console.log(e);
-      if (e?.name === "CanceledError" || e?.code === "ERR_CANCELED") return;
-      setMessage(e?.response?.data?.message ?? "네트워크 오류가 발생했습니다.");
+
+      setMessage(getErrorMessage(e, "네트워크 오류가 발생했습니다."));
     } finally {
       setLoading(false);
     }

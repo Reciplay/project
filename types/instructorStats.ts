@@ -5,7 +5,11 @@ export type InstructorStats = {
   averageStars: number;
   totalReviewCount: number;
   subscriberCount: number;
-  profileImageUrl: string | null;
+  profileFileInfo: {
+    presignedUrl: string;
+    name: string;
+    sequence: number;
+  };
   newQuestions: NewQuestion[];
 };
 

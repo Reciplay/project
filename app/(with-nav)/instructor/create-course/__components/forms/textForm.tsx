@@ -8,7 +8,7 @@ type Props = {
   /** 제어 값 */
   value: string;
   /** 값 변경 핸들러 */
-  onChange: (val: string) => void;
+  onChange?: (val: string) => void; // Made optional
 
   /** UI 옵션 */
   label?: string;
@@ -18,6 +18,8 @@ type Props = {
   size?: "small" | "middle" | "large";
   disabled?: boolean;
   required?: boolean;
+  readOnly?: boolean;
+  type?: string; // Added type prop
 
   /** 상태/에러 표시 */
   error?: string | string[] | null;
@@ -30,7 +32,7 @@ type Props = {
 
 export default function TextForm({
   value,
-  onChange,
+  onChange, // onChange is now optional
   label,
   placeholder,
   maxLength,
@@ -38,6 +40,8 @@ export default function TextForm({
   size = "middle",
   disabled = false,
   required = false,
+  readOnly,
+  type, // Destructure type prop
   error = null,
   status,
   prefix,
@@ -66,7 +70,7 @@ export default function TextForm({
 
       <Input
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={onChange ? (e) => onChange(e.target.value) : undefined} // Conditionally pass onChange
         placeholder={placeholder}
         maxLength={maxLength}
         allowClear={allowClear}
@@ -74,6 +78,8 @@ export default function TextForm({
         status={computedStatus}
         showCount={!!maxLength}
         disabled={disabled}
+        readOnly={readOnly}
+        type={type} // Pass type prop to Input element
         prefix={prefix}
         suffix={suffix}
       />

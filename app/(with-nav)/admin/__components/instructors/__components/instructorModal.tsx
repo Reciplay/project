@@ -1,4 +1,3 @@
-// components/admin/InstructorModal.tsx
 "use client";
 
 import CareersTable from "@/app/(with-nav)/instructor/register/__components/careerTable/careerTable";

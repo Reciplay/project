@@ -121,6 +121,9 @@ export interface CourseDetail {
   courseStartDate: string; // YYYY-MM-DD
   courseEndDate: string; // YYYY-MM-DD
   instructorId: number;
+  instructorEmail: string;
+  instructorName: string;
+  instructorNickname: string;
   courseId: number;
   enrollmentStartDate: string; // ISO datetime
   enrollmentEndDate: string; // ISO datetime

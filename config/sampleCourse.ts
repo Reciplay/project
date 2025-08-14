@@ -141,7 +141,11 @@ export const sampleCourse3: CourseManage[] = [
 export const sampleCourseCards: CourseCard[] = [
   {
     specialBannerUrl: "/images/banner1.png",
-    responseFileInfo: null,
+    responseFileInfo: {
+      presignedUrl: "string",
+      name: "string",
+      sequence: 0,
+    },
 
     viewerCount: 1250,
     title: "React 마스터 클래스",
@@ -163,7 +167,11 @@ export const sampleCourseCards: CourseCard[] = [
   },
   {
     specialBannerUrl: "/images/banner2.png",
-    responseFileInfo: null,
+    responseFileInfo: {
+      presignedUrl: "string",
+      name: "string",
+      sequence: 0,
+    },
     viewerCount: 980,
     title: "Node.js 백엔드 입문",
     courseId: 2,
@@ -184,7 +192,11 @@ export const sampleCourseCards: CourseCard[] = [
   },
   {
     specialBannerUrl: "/images/banner3.png",
-    responseFileInfo: null,
+    responseFileInfo: {
+      presignedUrl: "string",
+      name: "string",
+      sequence: 0,
+    },
     viewerCount: 2100,
     title: "파이썬 데이터 분석",
     courseId: 3,
@@ -205,7 +217,11 @@ export const sampleCourseCards: CourseCard[] = [
   },
   {
     specialBannerUrl: "/images/banner4.png",
-    responseFileInfo: null,
+    responseFileInfo: {
+      presignedUrl: "string",
+      name: "string",
+      sequence: 0,
+    },
     viewerCount: 450,
     title: "UI/UX 디자인 기초",
     courseId: 4,
@@ -225,7 +241,11 @@ export const sampleCourseCards: CourseCard[] = [
   },
   {
     specialBannerUrl: "/images/banner5.png",
-    responseFileInfo: null,
+    responseFileInfo: {
+      presignedUrl: "string",
+      name: "string",
+      sequence: 0,
+    },
     viewerCount: 3200,
     title: "Spring Boot 마이크로서비스",
     courseId: 5,
@@ -246,7 +266,11 @@ export const sampleCourseCards: CourseCard[] = [
   },
   {
     specialBannerUrl: "/images/banner6.png",
-    responseFileInfo: null,
+    responseFileInfo: {
+      presignedUrl: "string",
+      name: "string",
+      sequence: 0,
+    },
     viewerCount: 870,
     title: "Kotlin 안드로이드 앱 개발",
     courseId: 6,
@@ -266,7 +290,11 @@ export const sampleCourseCards: CourseCard[] = [
   },
   {
     specialBannerUrl: "/images/banner7.png",
-    responseFileInfo: null,
+    responseFileInfo: {
+      presignedUrl: "string",
+      name: "string",
+      sequence: 0,
+    },
     viewerCount: 1950,
     title: "머신러닝 입문",
     courseId: 7,
@@ -286,7 +314,11 @@ export const sampleCourseCards: CourseCard[] = [
   },
   {
     specialBannerUrl: "/images/banner8.png",
-    responseFileInfo: null,
+    responseFileInfo: {
+      presignedUrl: "string",
+      name: "string",
+      sequence: 0,
+    },
     viewerCount: 600,
     title: "AWS 클라우드 서비스",
     courseId: 8,
@@ -306,7 +338,11 @@ export const sampleCourseCards: CourseCard[] = [
   },
   {
     specialBannerUrl: "/images/banner9.png",
-    responseFileInfo: null,
+    responseFileInfo: {
+      presignedUrl: "string",
+      name: "string",
+      sequence: 0,
+    },
     viewerCount: 1320,
     title: "Go 언어 웹 개발",
     courseId: 9,
@@ -326,7 +362,11 @@ export const sampleCourseCards: CourseCard[] = [
   },
   {
     specialBannerUrl: "/images/banner10.png",
-    responseFileInfo: null,
+    responseFileInfo: {
+      presignedUrl: "string",
+      name: "string",
+      sequence: 0,
+    },
     viewerCount: 500,
     title: "Vue 3 + TypeScript",
     courseId: 10,
@@ -346,7 +386,11 @@ export const sampleCourseCards: CourseCard[] = [
   },
   {
     specialBannerUrl: "/images/banner11.png",
-    responseFileInfo: null,
+    responseFileInfo: {
+      presignedUrl: "string",
+      name: "string",
+      sequence: 0,
+    },
     viewerCount: 750,
     title: "일본 요리 마스터 클래스",
     courseId: 11,

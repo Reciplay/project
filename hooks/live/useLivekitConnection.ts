@@ -18,7 +18,7 @@ export type TrackInfo = {
 };
 
 export default function useLivekitConnection() {
-  const { getLocalMedia, error } = useLocalMedia();
+  const { getLocalMedia } = useLocalMedia();
   const [room, setRoom] = useState<Room | undefined>(undefined);
 
   // 로컬은 비디오만 처리 하면 되니까 LocalVideoTrack만 사용
@@ -87,10 +87,21 @@ export default function useLivekitConnection() {
 
       await newRoom.connect(LIVEKIT_URL, token);
       await newRoom.localParticipant.enableCameraAndMicrophone();
-      setLocalTrack(
-        newRoom.localParticipant.videoTrackPublications.values().next().value
-          .videoTrack,
+      const pubs = Array.from(
+        newRoom.localParticipant.videoTrackPublications.values(),
       );
+      const maybeVideo = pubs.find((p) => !!p.videoTrack)?.videoTrack;
+
+      if (maybeVideo instanceof LocalVideoTrack) {
+        setLocalTrack(maybeVideo);
+      } else {
+        // 퍼블리시가 아직 안 된 경우 대비(옵션)
+        setLocalTrack(undefined);
+      }
+      // setLocalTrack(
+      //   newRoom.localParticipant.videoTrackPublications.values().next().value
+      //     .videoTrack,
+      // );
     } catch (error) {
       console.log(
         "There was an error connecting to the room:",

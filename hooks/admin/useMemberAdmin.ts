@@ -46,6 +46,7 @@ export const sampleMemberDetail: UserDetail = {
 
 // hooks/admin/useMembers.ts
 
+import { getErrorMessage } from "@/lib/axios/error";
 import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -65,12 +66,12 @@ export default function useMemberAdmin() {
       setLoading(true);
       setError("");
       const res = await restClient.get<ApiResponse<UserSummary[]>>(
-        "/course/admin/user/summaries",
+        "/admin/user/summaries",
         { requireAuth: true },
       );
       setList(res.data.data ?? []);
     } catch (e) {
-      setError(e?.message ?? "회원 목록을 불러오지 못했습니다.");
+      setError(getErrorMessage(e, "회원 목록을 불러오지 못했습니다."));
     } finally {
       setLoading(false);
     }
@@ -96,10 +97,10 @@ export default function useMemberAdmin() {
     setDetail(null);
     setDetailLoading(true);
     try {
-      const res = await restClient.get<ApiResponse<UserDetail>>(
-        "/course/admin/user",
-        { params: { userId }, requireAuth: true },
-      );
+      const res = await restClient.get<ApiResponse<UserDetail>>("/admin/user", {
+        params: { userId },
+        requireAuth: true,
+      });
       setDetail(res.data.data ?? null);
     } catch {
       setDetail(null);
@@ -118,7 +119,7 @@ export default function useMemberAdmin() {
   const deleteMember = useCallback(
     async (userId: number) => {
       try {
-        await restClient.delete<ApiResponse<object>>("/course/admin/user", {
+        await restClient.delete<ApiResponse<object>>("/admin/user", {
           params: { userId },
           requireAuth: true,
         });

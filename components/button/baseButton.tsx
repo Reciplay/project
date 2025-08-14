@@ -7,7 +7,13 @@ interface BaseButtonProps {
   title: string;
   color?: "black" | "red" | "green" | "blue" | "white";
   type?: ButtonType; // ✅ 수정
-  variant?: "default" | "custom" | "outline" | "ghost";
+  variant?:
+    | "default"
+    | "custom"
+    | "outline"
+    | "ghost"
+    | "primary"
+    | "secondary"; // Added primary and secondary
   size?: "sm" | "md" | "lg" | "inf";
   className?: string;
   onClick?: VoidFunction;

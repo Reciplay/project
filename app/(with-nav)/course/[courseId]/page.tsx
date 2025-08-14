@@ -63,7 +63,7 @@ export default function Page() {
           </section>
 
           <section ref={sectionRefs[4]} className={styles.section}>
-            <Reviews />
+            <Reviews courseId={courseId} courseDetail={courseDetail} />
           </section>
         </div>
       </div>

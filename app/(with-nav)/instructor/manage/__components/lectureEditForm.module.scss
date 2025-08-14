@@ -1,0 +1,24 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background-color: #f9f9f9;
+  border-top: 1px solid #eee;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.chapterListPlaceholder {
+  padding: 12px;
+  border: 1px dashed #ccc;
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  background-color: #fff;
+}

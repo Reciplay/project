@@ -15,6 +15,7 @@ interface VideoSectionProps {
   audioTrack?: LocalAudioTrack | RemoteAudioTrack;
   participantIdentity: string;
   onNodesDetected?: (nodes: Landmark[][]) => void;
+  setGesture?: (gesture: string) => void;
   todo?: string;
 }
 
@@ -23,7 +24,7 @@ export default function VideoSection({
   audioTrack,
   participantIdentity,
   onNodesDetected,
-  todo,
+  setGesture,
 }: VideoSectionProps) {
   return (
     <div className={`${styles.video} ${styles.localVideo}`}>
@@ -31,6 +32,7 @@ export default function VideoSection({
         track={videoTrack}
         participantIdentity={participantIdentity}
         onNodesDetected={onNodesDetected}
+        setGesture={setGesture}
       />
 
       {/* 닉네임 오버레이 */}
@@ -38,11 +40,6 @@ export default function VideoSection({
         <p>{participantIdentity}</p>
       </div>
 
-      {/* ToDo 오버레이 */}
-      <div className={styles.todoOverlay}>
-        <h4>📋 할 일</h4>
-        <div>{todo}</div>
-      </div>
       {audioTrack instanceof RemoteAudioTrack && (
         <StreamAudio track={audioTrack} />
       )}

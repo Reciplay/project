@@ -2,6 +2,7 @@ import IconWithText from "@/components/text/iconWithText";
 import styles from "./reviewCard.module.scss";
 
 interface ReviewCardProps {
+  id: number;
   nickname: string;
   createdAt: string;
   rating: number;
@@ -10,6 +11,7 @@ interface ReviewCardProps {
 }
 
 export default function ReviewCard({
+  id,
   nickname,
   createdAt,
   rating,
@@ -17,7 +19,7 @@ export default function ReviewCard({
   likeCount,
 }: ReviewCardProps) {
   return (
-    <div className={styles.card}>
+    <div key={id} className={styles.card}>
       <div className={styles.header}>
         <div className={styles.profile}>
           <div className={styles.avatar} />

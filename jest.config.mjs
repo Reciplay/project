@@ -13,7 +13,7 @@ const config = {
   testEnvironment: "jest-environment-jsdom",
   moduleNameMapper: {
     // Handle CSS imports (with CSS modules)
-    "\.(css|scss)$": "identity-obj-proxy",
+    ".(css|scss)$": "identity-obj-proxy",
     // Handle module aliases (if you have them in tsconfig.json)
     "^@/components/(.*)$": "<rootDir>/components/$1",
     "^@/lib/(.*)$": "<rootDir>/lib/$1",
@@ -21,7 +21,7 @@ const config = {
   },
   testPathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/.next/"],
   transform: {
-    "^.+\.(t|j)sx?$": "@swc/jest",
+    "^.+.(t|j)sx?$": "@swc/jest",
   },
 };
 

@@ -11,7 +11,7 @@ interface FuzzyTextProps {
   enableHover?: boolean;
   baseIntensity?: number;
   hoverIntensity?: number;
-  className?: string; // 추가
+  className?: string;
 }
 
 const FuzzyText: React.FC<FuzzyTextProps> = ({
@@ -23,7 +23,7 @@ const FuzzyText: React.FC<FuzzyTextProps> = ({
   enableHover = true,
   baseIntensity = 0.18,
   hoverIntensity = 0.5,
-  className, // 추가
+  className,
 }) => {
   const canvasRef = useRef<
     HTMLCanvasElement & { cleanupFuzzyText?: () => void }
@@ -51,6 +51,7 @@ const FuzzyText: React.FC<FuzzyTextProps> = ({
 
       const fontSizeStr =
         typeof fontSize === "number" ? `${fontSize}px` : fontSize;
+
       let numericFontSize: number;
       if (typeof fontSize === "number") {
         numericFontSize = fontSize;
@@ -154,11 +155,16 @@ const FuzzyText: React.FC<FuzzyTextProps> = ({
         isHovering = false;
       };
 
+      // ✅ touch 존재 가드 추가
       const handleTouchMove = (e: TouchEvent) => {
         if (!enableHover) return;
         e.preventDefault();
         const rect = canvas.getBoundingClientRect();
         const touch = e.touches[0];
+        if (!touch) {
+          isHovering = false;
+          return;
+        }
         const x = touch.clientX - rect.left;
         const y = touch.clientY - rect.top;
         isHovering = isInsideTextArea(x, y);

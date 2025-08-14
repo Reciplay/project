@@ -2,7 +2,7 @@
 
 import {
   Chart as ChartJS,
-  Filler, // 'time' 스케일
+  Filler,
   LinearScale,
   LineElement,
   PointElement,
@@ -13,6 +13,7 @@ import {
 import "chartjs-adapter-date-fns";
 import { ko } from "date-fns/locale";
 import { Line } from "react-chartjs-2";
+import { SubscriptionPoint } from "@/types/instructorStats";
 
 ChartJS.register(
   TimeScale,
@@ -23,27 +24,36 @@ ChartJS.register(
   Filler,
 );
 
-export default function DailySmoothLineChart() {
-  const data = {
+interface SmoothLineChartProps {
+  data: SubscriptionPoint[];
+  timeUnit: "day" | "month" | "year";
+}
+
+export default function SmoothLineChart({
+  data: trendData,
+  timeUnit,
+}: SmoothLineChartProps) {
+  const chartData = {
     datasets: [
       {
         label: "구독자 추이",
-        data: [
-          { x: "2025-08-01", y: 12 },
-          { x: "2025-08-02", y: 19 },
-          { x: "2025-08-03", y: 8 },
-          { x: "2025-08-04", y: 15 },
-          { x: "2025-08-05", y: 14 },
-          { x: "2025-08-06", y: 25 },
-          { x: "2025-08-07", y: 18 },
-        ],
+        data: trendData.map((point) => ({
+          x: point.date,
+          y: point.subscriber,
+        })),
         fill: true,
         borderColor: "#2a73ff",
         backgroundColor: "rgba(42,115,255,0.2)",
-        tension: 0.4, // 부드러운 선
-        pointRadius: 0, // 점 숨김
+        tension: 0.4,
+        pointRadius: 0,
       },
     ],
+  };
+
+  const timeFormats = {
+    day: "MM월 dd일",
+    month: "yyyy년 MM월",
+    year: "yyyy년",
   };
 
   const options: ChartOptions<"line"> = {
@@ -51,10 +61,10 @@ export default function DailySmoothLineChart() {
     plugins: { legend: { display: false } },
     scales: {
       x: {
-        type: "time", // ← 리터럴
+        type: "time",
         time: {
-          unit: "day", // ← 리터럴
-          tooltipFormat: "MM월 dd일",
+          unit: timeUnit,
+          tooltipFormat: timeFormats[timeUnit],
         },
         adapters: { date: { locale: ko } },
         grid: { display: false },
@@ -65,5 +75,5 @@ export default function DailySmoothLineChart() {
     },
   };
 
-  return <Line data={data} options={options} />;
+  return <Line data={chartData} options={options} />;
 }

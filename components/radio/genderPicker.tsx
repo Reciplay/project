@@ -8,7 +8,7 @@ import styles from "./genderPicker.module.scss";
 type Size = "sm" | "md" | "lg";
 
 type GenderPickerProps = {
-  value?: Gender; // 0 = 남자, 1 = 여자
+  value?: Gender | null; // 0 = 남자, 1 = 여자
   onChange?: (gender: Gender) => void;
   name?: string; // 폼 전송용 hidden input name (옵션)
   size?: Size; // 높이/폰트 프리셋
@@ -56,7 +56,10 @@ export default function GenderPicker({
         className={classNames(
           styles.group,
           styles[size],
-          { [styles.fullWidth]: fullWidth, [styles.disabled]: disabled },
+          {
+            [styles.fullWidth as string]: fullWidth,
+            [styles.disabled as string]: disabled,
+          },
           className,
         )}
         tabIndex={0}
@@ -67,7 +70,7 @@ export default function GenderPicker({
           role="radio"
           aria-checked={isSelected(0)}
           className={classNames(styles.option, {
-            [styles.selected]: isSelected(0),
+            [styles.selected as string]: isSelected(0),
           })}
           onClick={() => handleSelect(0)}
           disabled={disabled}
@@ -80,7 +83,7 @@ export default function GenderPicker({
           role="radio"
           aria-checked={isSelected(1)}
           className={classNames(styles.option, {
-            [styles.selected]: isSelected(1),
+            [styles.selected as string]: isSelected(1),
           })}
           onClick={() => handleSelect(1)}
           disabled={disabled}

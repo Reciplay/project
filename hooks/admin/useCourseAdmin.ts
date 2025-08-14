@@ -1,4 +1,5 @@
 // app/admin/hooks/useCourseList.ts
+import { getErrorMessage } from "@/lib/axios/error";
 import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
 import { Course, CourseSummary } from "@/types/course";
@@ -24,11 +25,11 @@ export default function useCourseAdmin() {
 
       const [approvedRes, registerRes] = await Promise.all([
         restClient.get<ApiResponse<CourseSummary[]>>(
-          "/course/admin/course/summaries",
+          "/admin/course/summaries",
           { params: { isApprove: true }, requireAuth: true },
         ),
         restClient.get<ApiResponse<CourseSummary[]>>(
-          "/course/admin/course/summaries",
+          "/admin/course/summaries",
           { params: { isApprove: false }, requireAuth: true },
         ),
       ]);
@@ -36,7 +37,7 @@ export default function useCourseAdmin() {
       setApprovedList(approvedRes.data.data ?? []);
       setRegisterList(registerRes.data.data ?? []);
     } catch (e) {
-      setError(e?.message ?? "강좌 목록 조회 실패");
+      setError(getErrorMessage(e, "강좌 목록 조회 실패"));
     } finally {
       setLoading(false);
     }
@@ -73,10 +74,10 @@ export default function useCourseAdmin() {
     setDetailLoading(true);
     setDetail(null);
     try {
-      const res = await restClient.get<ApiResponse<Course>>(
-        "/course/admin/course",
-        { params: { courseId }, requireAuth: true },
-      );
+      const res = await restClient.get<ApiResponse<Course>>("/admin/course", {
+        params: { courseId },
+        requireAuth: true,
+      });
 
       console.log(res.data.data.instructorId);
       setInstructorId(res.data.data.instructorId);
@@ -99,8 +100,8 @@ export default function useCourseAdmin() {
   const handleApprove = useCallback(
     async (courseId: number, message: string, isApprove: boolean) => {
       try {
-        const res = await restClient.put(
-          "/course/admin/course",
+        await restClient.put(
+          "/admin/course",
           { instructorId, courseId, message, isApprove },
           { requireAuth: true },
         );

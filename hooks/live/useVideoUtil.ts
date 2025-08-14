@@ -1,11 +1,15 @@
-import poseRecognition, {
-  createPoseLandmarker,
+import poseGestureRecognition, {
+  createRecognizers,
 } from "@/lib/video/recognizeGesture";
 import { Landmark } from "@mediapipe/tasks-vision";
 import { RemoteVideoTrack, Track } from "livekit-client";
 import { useEffect, useRef, useState } from "react";
 
-export function useVideoUtil(track: Track, onNodesDetected: (nodes) => void) {
+export function useVideoUtil(
+  track: Track,
+  onNodesDetected: (_nodes: Landmark[][]) => void,
+  setGesture?: (_gesture: string) => void,
+) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [landmarksData, setLandmarksData] = useState<Landmark[][]>([]);
@@ -26,7 +30,7 @@ export function useVideoUtil(track: Track, onNodesDetected: (nodes) => void) {
     const video = videoRef.current;
     const canvas = canvasRef.current;
 
-    if (!video || !canvas) return;
+    if (!video || !canvas || !setGesture) return;
     if (track instanceof RemoteVideoTrack) return;
 
     let cleanup: (() => void) | undefined;
@@ -35,12 +39,16 @@ export function useVideoUtil(track: Track, onNodesDetected: (nodes) => void) {
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
 
-      createPoseLandmarker().then(() => {
-        poseRecognition(video, canvas, setLandmarksData, onNodesDetected).then(
-          (returnedCleanup) => {
-            cleanup = returnedCleanup;
-          },
-        );
+      createRecognizers().then(() => {
+        poseGestureRecognition(
+          video,
+          canvas,
+          setLandmarksData,
+          setGesture,
+          onNodesDetected,
+        ).then((returnedCleanup) => {
+          cleanup = returnedCleanup;
+        });
       });
     };
 
@@ -50,7 +58,7 @@ export function useVideoUtil(track: Track, onNodesDetected: (nodes) => void) {
       video.removeEventListener("loadedmetadata", handleMetadataLoaded);
       if (cleanup) cleanup();
     };
-  }, [track, onNodesDetected]);
+  }, [track, onNodesDetected, setGesture]);
 
   return { videoRef, canvasRef, landmarksData };
 }

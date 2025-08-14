@@ -24,13 +24,13 @@ type Lecture = {
 };
 function toISOIfNeeded(s: string) {
   if (!s) return "";
-  // 이미 ISO로 보이면 그대로
   if (/^\d{4}-\d{2}-\d{2}T/.test(s)) return s;
-  // "YYYY-MM-DD HH:mm" 처리
-  const [date, time] = s.split(" ");
-  const [y, m, d] = date.split("-").map(Number);
-  const [hh, mm] = (time ?? "00:00").split(":").map(Number);
-  return new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0).toISOString();
+
+  const [datePart = "", timePart = "00:00"] = s.split(" ");
+  const [y = 0, m = 1, d = 1] = datePart.split("-").map((n) => Number(n));
+  const [hh = 0, mm = 0] = timePart.split(":").map((n) => Number(n));
+
+  return new Date(y, m - 1, d, hh, mm).toISOString();
 }
 
 type Draft = {
@@ -74,7 +74,7 @@ type Keys = keyof ErrorMap;
 type State = {
   values: Draft;
   errors: ErrorMap;
-  setField: (key: Keys, value) => void;
+  setField: (key: Keys, value: unknown) => void;
   setRange: (start: string, end: string) => void;
   validateAll: () => { ok: boolean; messages: string[] };
   buildPayload: () => CreateCourseRequestFinal;
@@ -123,11 +123,10 @@ export async function uploadLectures(courseId: number, lectures: Lecture[]) {
 
 function toISO(local: string) {
   if (!local) return "";
-  const [date, time] = local.split(" ");
-  const [y, m, d] = date.split("-").map(Number);
-  const [hh, mm] = (time ?? "00:00").split(":").map(Number);
-  const dt = new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0, 0, 0);
-  return dt.toISOString();
+  const [datePart = "", timePart = "00:00"] = local.split(" ");
+  const [y = 0, m = 1, d = 1] = datePart.split("-").map((n) => Number(n));
+  const [hh = 0, mm = 0] = timePart.split(":").map((n) => Number(n));
+  return new Date(y, m - 1, d, hh, mm).toISOString();
 }
 function buildInfoJson(values: Draft) {
   const info = values.requestCourseInfo;
@@ -135,11 +134,11 @@ function buildInfoJson(values: Draft) {
     title: info.title,
     enrollmentStartDate: toISO(info.enrollmentStartDate),
     enrollmentEndDate: toISO(info.enrollmentEndDate),
-    categoryId: Number(info.categoryId),
+    categoryId: Number(info.categoryId ?? 0),
+    maxEnrollments: Number(info.maxEnrollments ?? 0),
+    level: Number(info.level ?? 0),
     summary: info.summary,
-    maxEnrollments: Number(info.maxEnrollments),
     description: info.description,
-    level: Number(info.level),
     announcement: info.announcement ?? "",
     canLearns: info.canLearns, // 배열 그대로
   };
@@ -170,16 +169,20 @@ export const useCreateCourseStore = create<State>((set, get) => ({
   },
   setField: (key, value) => {
     const { values, errors } = get();
-
-    // 값 갱신(얕은 복사)
     const next = structuredClone(values) as Draft;
+
     // string path 적용
-    const apply = (k: Keys, v) => {
-      const [a, b] = k.split(".");
+    const apply = (k: Keys, v: unknown) => {
+      const [a, b] = k.split(".") as [keyof Draft | string, string?];
+
       if (b) {
-        next[a][b] = v;
+        // 현재 dotted key는 requestCourseInfo.* 만 존재
+        if (a === "requestCourseInfo") {
+          (next.requestCourseInfo as Record<string, unknown>)[b] = v;
+        }
+        // (필요 시 다른 dotted 경로가 생기면 여기에 else-if 추가)
       } else {
-        next[a] = v;
+        (next as unknown as Record<string, unknown>)[a] = v;
       }
     };
     apply(key, value);
@@ -397,13 +400,13 @@ export const useCreateCourseStore = create<State>((set, get) => ({
     const payload: CreateCourseRequestFinal = {
       requestCourseInfo: {
         title: info.title,
+        categoryId: Number(info.categoryId ?? 0),
+        maxEnrollments: Number(info.maxEnrollments ?? 0),
+        level: Number(info.level ?? 0),
         enrollmentStartDate: toISO(info.enrollmentStartDate),
         enrollmentEndDate: toISO(info.enrollmentEndDate),
-        categoryId: Number(info.categoryId), // undefined였으면 validateAll에서 막힘
         summary: info.summary,
-        maxEnrollments: Number(info.maxEnrollments),
         description: info.description,
-        level: Number(info.level),
         // announcement: swagger는 string이므로 빈문자열 허용(원하면 undefined 처리 가능)
         announcement: info.announcement ?? "",
         canLearns: info.canLearns,

@@ -9,44 +9,20 @@ import SpecialCarousel from "./__components/specialCarousel/specialCarousel";
 import styles from "./page.module.scss";
 
 export default function Page() {
-  // const { list: specialList, loading: specialLoading } = useSpecialCourses();
-
-  // const { list: soonList, loading: soonLoading } = useSoonCourses();
-
-  // const { list: enrolledList, loading: enrolledLoading } = useEnrolledCourses();
-
   const { list: soonsoon } = useCourseCards({
     initialCondition: { requestCategory: "soon" },
     size: 20, // 한 번에 불러올 개수
+    requireAuth: true,
     // sort: ["createdAt,desc"], // 정렬 옵션
   });
-
-  // const { list: special } = useCourseCards({
-  //   initialCondition: { requestCategory: "special" },
-  //   size: 20, // 한 번에 불러올 개수
-  //   // sort: ["createdAt,desc"], // 정렬 옵션
-  // });
 
   const { list: enrolled } = useCourseCards({
     initialCondition: { requestCategory: "enrolled" },
     size: 20, // 한 번에 불러올 개수
+    requireAuth: true,
   });
 
-  // const {
-  //   list: soonsoon,
-  //   loading,
-  //   error,
-  //   hasNext,
-  //   loadMore,
-  // } = useCourseCards({
-  //   initialCondition: { requestCategory: "soon" },
-  //   size: 20, // 한 번에 불러올 개수
-  //   sort: ["createdAt,desc"], // 정렬 옵션
-  // });
-
   const router = useRouter();
-
-  // console.log({ soonsoon });
 
   return (
     <div className={styles.container}>

@@ -6,7 +6,9 @@ import { User } from "@/types/user";
 import { useEffect, useRef, useState } from "react";
 
 export function useProfile() {
-  const [userData, setUserData] = useState<User | null>(null);
+  const [data, setData] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   // 수정용 form 상태
   const [form, setForm] = useState({
@@ -17,7 +19,6 @@ export function useProfile() {
   });
 
   const [isEditing, setIsEditing] = useState(false);
-  const [error, setError] = useState("");
 
   // 프로필 이미지 관련
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -29,24 +30,28 @@ export function useProfile() {
   // ✅ 초기 데이터 불러오기
   useEffect(() => {
     const fetchProfile = async () => {
+      setLoading(true);
+      setError("");
       try {
         const res = await restClient.get<ApiResponse<User>>("/user/profile", {
           requireAuth: true,
         });
 
-        const data = res.data.data;
-        setUserData(data);
+        setData(res.data.data);
         setForm({
-          name: data.name,
-          job: data.job,
-          birthDate: data.birthDate,
-          gender: data.gender,
+          name: res.data.data.name,
+          job: res.data.data.job,
+          birthDate: res.data.data.birthDate,
+          gender: res.data.data.gender,
         });
         setPreviewUrl(
-          data.profileImage?.presignedUrl ?? "/images/profile.webp",
+          res.data.data.profileImage?.presignedUrl ?? "/images/profile.webp",
         ); // 초기 이미지 설정
       } catch (e) {
         console.error("프로필 불러오기 실패:", e);
+        setError("프로필 정보를 불러오는 데 실패했습니다.");
+      } finally {
+        setLoading(false);
       }
     };
     fetchProfile();
@@ -73,7 +78,7 @@ export function useProfile() {
         { requireAuth: true },
       );
       alert("프로필이 수정되었습니다.");
-      setUserData((prev) =>
+      setData((prev) =>
         prev
           ? {
               ...prev,
@@ -107,7 +112,7 @@ export function useProfile() {
     formData.append("profileImage", selectedFile);
 
     try {
-      const res = await restClient.post("/user/profile/photo", formData, {
+      await restClient.post("/user/profile/photo", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -116,7 +121,7 @@ export function useProfile() {
       alert("프로필 이미지가 변경되었습니다!");
       setIsModalOpen(false);
       // 성공 후 서버 이미지 반영
-      setUserData((prev) =>
+      setData((prev) =>
         prev
           ? {
               ...prev,
@@ -134,10 +139,11 @@ export function useProfile() {
   };
 
   return {
-    userData,
+    data,
+    loading,
+    error,
     form,
     isEditing,
-    error,
     handleChange,
     toggleEdit,
     saveProfile,

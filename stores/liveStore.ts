@@ -22,7 +22,7 @@ export interface ChapterTodoResponse {
 
 interface LiveState {
   chapter: ChapterTodoResponse | null;
-  setChapter: (payload: ChapterTodoResponse) => void;
+  setChapter: (_payload: ChapterTodoResponse) => void;
   clearChapter: () => void;
 }
 

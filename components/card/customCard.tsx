@@ -47,8 +47,8 @@ export default function CustomCard({ data, type, onClick }: CardProps) {
   return (
     <article
       className={classNames(styles.card, {
-        [styles.horizontal]: type === CARDTYPE.HORIZONTAL,
-        [styles.vertical]: !type || type === CARDTYPE.VERTICAL,
+        [styles.horizontal as string]: type === CARDTYPE.HORIZONTAL,
+        [styles.vertical as string]: !type || type === CARDTYPE.VERTICAL,
       })}
       onClick={onClick}
       role="button"
@@ -67,10 +67,10 @@ export default function CustomCard({ data, type, onClick }: CardProps) {
         {/* 상태 뱃지 */}
         <span
           className={classNames(styles.statusBadge, {
-            [styles.recruiting]: status.key === "recruiting",
-            [styles.ongoing]: status.key === "ongoing",
-            [styles.ended]: status.key === "ended",
-            [styles.unknown]: status.key === "unknown",
+            [styles.recruiting as string]: status.key === "recruiting",
+            [styles.ongoing as string]: status.key === "ongoing",
+            [styles.ended as string]: status.key === "ended",
+            [styles.unknown as string]: status.key === "unknown",
           })}
         >
           <strong>{status.label}</strong>

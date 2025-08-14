@@ -12,16 +12,16 @@ interface Rule {
   minLength?: { value: number; message: string };
   maxLength?: { value: number; message: string };
   pattern?: { value: RegExp; message: string };
-  validate?: (value) => string | boolean | undefined;
+  validate?: (value: string) => string | boolean | undefined;
 }
 
-interface FieldConfig<T extends FieldName> {
+interface FieldConfig {
   placeholder: string;
   type: React.InputHTMLAttributes<HTMLInputElement>["type"];
   rules: Rule;
 }
 
-export const formData: Record<FieldName, FieldConfig<FieldName>> = {
+export const formData: Record<FieldName, FieldConfig> = {
   email: {
     placeholder: "이메일",
     type: "email",

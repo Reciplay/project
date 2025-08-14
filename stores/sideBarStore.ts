@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware";
 interface SidebarStore {
   isOpen: boolean;
   toggle: () => void;
-  setOpen: (value: boolean) => void;
+  setOpen: (_value: boolean) => void;
 }
 
 export const useSidebarStore = create<SidebarStore>()(

@@ -70,7 +70,7 @@ export default function useAuth() {
       } else {
         alert("회원가입 실패");
       }
-    } catch (error) {
+    } catch {
       alert("서버 오류 발생");
     }
   };

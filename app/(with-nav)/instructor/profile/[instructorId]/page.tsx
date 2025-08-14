@@ -12,5 +12,7 @@ export default function Page() {
   if (!instructor)
     return <div>{message ?? "강사 정보를 불러올 수 없습니다."}</div>;
 
-  return <InstructorProfile instructor={instructor} />;
+  return (
+    <InstructorProfile instructor={instructor} instructorId={instructorId} />
+  );
 }

@@ -25,7 +25,7 @@ export function useInstructorProfile(instructorId?: string) {
         const res = await restClient.get<ApiResponse<Instructor>>(
           "/user/instructor/profile",
           {
-            params: { instructorId },
+            params: { instructorId: Number(instructorId) },
             requireAuth: true,
           },
         );

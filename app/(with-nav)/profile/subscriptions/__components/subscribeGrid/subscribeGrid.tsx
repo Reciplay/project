@@ -1,13 +1,13 @@
 import BaseButton from "@/components/button/baseButton";
 import CircleAvatar from "@/components/image/circleAvatar";
 import { ROUTES } from "@/config/routes";
-import { Instructor } from "@/types/instructor";
+import { SubscribedInstructor } from "@/hooks/profile/useSubscribedInstructors";
 import Link from "next/link";
 import styles from "./subscribeGrid.module.scss";
 
 interface SubscribeGridProps {
   type: string;
-  instructors: Instructor[];
+  instructors: SubscribedInstructor[];
 }
 
 export default function SubscribeGrid({
@@ -21,10 +21,13 @@ export default function SubscribeGrid({
         {instructors.map((ins) => (
           <Link href={ROUTES.INSTRUCTOR.PROFILE(String(1))} key={1}>
             <div className={styles.item}>
-              <CircleAvatar alt={ins.name} src={ins.profileImage} />
-              <div className={styles.name}>{ins.name}</div>
+              <CircleAvatar
+                alt={ins.instructorProfileFileInfo.name}
+                src={ins.instructorProfileFileInfo.presignedUrl}
+              />
+              <div className={styles.name}>{ins.instructorName}</div>
               <div className={styles.subscribeNum}>
-                구독자 수 {Math.floor(ins.subscriberCount / 10000)}만 명
+                구독자 수 {ins.subscriberCount} 명
               </div>
               <BaseButton title="구독" color="black" />
             </div>

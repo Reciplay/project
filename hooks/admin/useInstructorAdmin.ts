@@ -1,6 +1,7 @@
 // hooks/admin/useInstructorAdmin.ts
 "use client";
 
+import { getErrorMessage } from "@/lib/axios/error";
 import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
 import { InstructorDetail, InstructorSummary } from "@/types/instructor";
@@ -87,11 +88,11 @@ export default function useInstructorAdmin() {
 
       const [approvedRes, registerRes] = await Promise.all([
         restClient.get<ApiResponse<InstructorSummary[]>>(
-          "/course/admin/instructor/summaries",
+          "/admin/instructor/summaries",
           { params: { isApprove: true }, requireAuth: true },
         ),
         restClient.get<ApiResponse<InstructorSummary[]>>(
-          "/course/admin/instructor/summaries",
+          "/admin/instructor/summaries",
           { params: { isApprove: false }, requireAuth: true },
         ),
       ]);
@@ -99,7 +100,7 @@ export default function useInstructorAdmin() {
       setApprovedList(approvedRes.data.data ?? []);
       setRegisterList(registerRes.data.data ?? []);
     } catch (e) {
-      setError(e?.message ?? "목록 조회 실패");
+      setError(getErrorMessage(e, "목록 조회 실패"));
     } finally {
       setLoading(false);
     }
@@ -138,7 +139,7 @@ export default function useInstructorAdmin() {
     try {
       console.log(instructorId);
       const res = await restClient.get<ApiResponse<InstructorDetail>>(
-        "/course/admin/instructor",
+        "/admin/instructor",
         { params: { instructorId }, requireAuth: true },
       );
 
@@ -163,7 +164,7 @@ export default function useInstructorAdmin() {
     async (instructorId: number, message: string, isApprove: boolean) => {
       try {
         const res = await restClient.put<ApiResponse<object>>(
-          "/course/admin/instructor",
+          "/admin/instructor",
           {
             instructorId,
             message,

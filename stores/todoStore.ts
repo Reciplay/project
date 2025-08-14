@@ -9,7 +9,7 @@ interface Todo {
 
 interface TodoState {
   todos: Todo[];
-  setTodos: (todos: Todo[]) => void;
+  setTodos: (_todos: Todo[]) => void;
 }
 
 export const useTodoStore = create<TodoState>((set) => ({

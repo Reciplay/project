@@ -1,18 +1,17 @@
 "use client";
 
-import Calendar from "@/components/calendar/calendar";
-import DailySmoothLineChart from "@/components/chart/lineChart";
 import { useInstructorStats } from "@/hooks/dashboard/useStats";
-import { useProfile } from "@/hooks/profile/useProfile";
-import { useQnaPost } from "@/hooks/qna/useQnaPost";
-import Image from "next/image";
+import { usePostQnaAnswer } from "@/hooks/qna/usePostQnaAnswer";
 import QandAList from "../__components/q&alist/q&aList";
+import DashboardCalendar from "./__components/dashboardCalendar";
+import DashboardChart from "./__components/dashboardChart";
+import DashboardProfile from "./__components/dashboardProfile";
 import styles from "./page.module.scss";
 
 export default function Page() {
-  const { data, newQuestions } = useInstructorStats();
-  const { postAnswer } = useQnaPost();
+  const { postAnswer } = usePostQnaAnswer();
 
+  const { data: statData, loading, error } = useInstructorStats();
   const handleSubmitAnswer = async ({
     questionId,
     courseId,
@@ -29,74 +28,21 @@ export default function Page() {
     });
   };
 
-  const { userData } = useProfile();
-
-  if (!userData) {
-    return null; // 또는 로딩 스피너
-  }
-
   return (
     <div className={styles.container}>
       <div className={styles.cardContainer}>
         {/* 1행: 차트(1) */}
-        <div className={`${styles.card} ${styles.chartCard}`}>
-          <div className={styles.cardHeader}>
-            <span>📈</span>
-            <h3 className={styles.cardTitle}>구독자 추이</h3>
-          </div>
-          <div className={styles.chartArea}>
-            <DailySmoothLineChart />
-          </div>
-        </div>
+        <DashboardChart />
 
         {/* 1행: 프로필(1) */}
-        <div className={`${styles.card} ${styles.profileCard}`}>
-          <div className={styles.profileInfo}>
-            <div>
-              <div className={styles.profileName}>{userData.name}</div>
-              <div className={styles.profileSub}>{userData.job}</div>
-            </div>
-
-            <div className={styles.metrics}>
-              <div className={styles.metricRow}>
-                <span>총 수강생 수</span>
-                <strong>{data?.totalStudents ?? 0}</strong>
-              </div>
-              <div className={styles.metricRow}>
-                <span>평균 별점</span>
-                <strong>{data?.averageStars ?? 0}</strong>
-              </div>
-              <div className={styles.metricRow}>
-                <span>총 리뷰 수</span>
-                <strong>{data?.totalReviewCount ?? 0}</strong>
-              </div>
-              <div className={styles.metricRow}>
-                <span>구독자 수</span>
-                <strong>{data?.subscriberCount ?? 0}</strong>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.wrapper}>
-            <Image
-              className={styles.image}
-              src="/images/profile.webp"
-              alt="profile"
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority
-            />
-          </div>
-        </div>
+        <DashboardProfile statData={statData} loading={loading} error={error} />
 
         {/* 2행: 달력(2) */}
-        <div className={`${styles.card} ${styles.calendarCard}`}>
-          {/* <CalendarOnly /> */}
-          <Calendar lectures={[]} />
-        </div>
+        <DashboardCalendar />
+
         <div className={`${styles.card} ${styles.qaCard}`}>
           <QandAList
-            questions={newQuestions ?? []}
+            questions={statData?.newQuestions ?? []}
             onSubmitAnswer={handleSubmitAnswer}
           />
         </div>

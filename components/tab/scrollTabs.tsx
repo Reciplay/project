@@ -20,7 +20,7 @@ export default function ScrollTabs({
           key={title}
           type="button"
           className={classNames(styles.tab, {
-            [styles.active]: activeIdx === idx,
+            [styles.active as string]: activeIdx === idx,
           })}
           onClick={() => onClickTab(idx)}
         >

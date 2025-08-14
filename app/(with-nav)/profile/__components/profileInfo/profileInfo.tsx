@@ -23,21 +23,11 @@ export default function ProfileInfo({
   userData,
   form,
   isEditing,
-  // error,
+  error,
   handleChange,
   toggleEdit,
   saveProfile,
 }: ProfileInfoProps) {
-  // const {
-  //   userData,
-  //   form,
-  //   isEditing,
-  //   error,
-  //   handleChange,
-  //   saveProfile,
-  //   toggleEdit,
-  // } = useProfile();
-
   return (
     <div className={styles.container}>
       {/* 헤더 영역 */}
@@ -51,10 +41,12 @@ export default function ProfileInfo({
         </button>
       </div>
 
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
       {/* 내용 영역 */}
       <div className={styles.section}>
         <div className={styles.title}>이메일</div>
-        <div className={styles.value}>{userData?.email}</div>
+        <div className={styles.value}>{userData.email}</div>
       </div>
 
       <div className={styles.section}>
@@ -66,7 +58,7 @@ export default function ProfileInfo({
             onChange={(e) => handleChange("name", e.target.value)}
           />
         ) : (
-          <div className={styles.value}>{userData?.name}</div>
+          <div className={styles.value}>{userData.name}</div>
         )}
       </div>
 
@@ -79,7 +71,7 @@ export default function ProfileInfo({
             onChange={(e) => handleChange("job", e.target.value)}
           />
         ) : (
-          <div className={styles.value}>{userData?.job}</div>
+          <div className={styles.value}>{userData.job}</div>
         )}
       </div>
 
@@ -92,7 +84,7 @@ export default function ProfileInfo({
             onChange={(e) => handleChange("birthDate", e.target.value)}
           />
         ) : (
-          <div className={styles.value}>{userData?.birthDate}</div>
+          <div className={styles.value}>{userData.birthDate}</div>
         )}
       </div>
 
@@ -108,7 +100,7 @@ export default function ProfileInfo({
           </select>
         ) : (
           <div className={styles.value}>
-            {userData?.gender === 0 ? "남성" : "여성"}
+            {userData.gender === 0 ? "남성" : "여성"}
           </div>
         )}
       </div>
