@@ -135,21 +135,21 @@ class InstructorQueryServiceImplTest {
         Long instructorId = 10L;
         Long userId = 20L;
 
-        // instructor.getUserId() 사용으로 변경됨!
+        // instructor.getUserId() 사용
         Long instructorUserId = 999L;
         Instructor inst = buildInstructor(instructorId, instructorUserId);
         when(instructorRepository.findById(instructorId)).thenReturn(Optional.of(inst));
 
-        // 프로필: relatedId = instructorUserId, key="user_profile"
+        // 프로필: relatedId = instructorUserId, key="USER_PROFILE" (대문자)
         FileMetadata profileMeta = FileMetadata.builder().relatedId(instructorUserId).sequence(1).build();
-        when(subFileMetadataQueryService.queryMetadataByCondition(instructorUserId, "user_profile"))
+        when(subFileMetadataQueryService.queryMetadataByCondition(instructorUserId, "USER_PROFILE"))
                 .thenReturn(profileMeta);
         ResponseFileInfo profileInfo = mock(ResponseFileInfo.class);
         when(s3Service.getResponseFileInfo(profileMeta)).thenReturn(profileInfo);
 
-        // 배너: relatedId = instructorId, key="instructor_banner"
+        // 배너: relatedId = instructorId, key="INSTRUCTOR_BANNER" (대문자)
         FileMetadata bannerMeta = FileMetadata.builder().relatedId(instructorId).sequence(2).build();
-        when(subFileMetadataQueryService.queryMetadataByCondition(instructorId, "instructor_banner"))
+        when(subFileMetadataQueryService.queryMetadataByCondition(instructorId, "INSTRUCTOR_BANNER"))
                 .thenReturn(bannerMeta);
         ResponseFileInfo bannerInfo = mock(ResponseFileInfo.class);
         when(s3Service.getResponseFileInfo(bannerMeta)).thenReturn(bannerInfo);
@@ -192,8 +192,8 @@ class InstructorQueryServiceImplTest {
         assertThat(profile.getCareers()).hasSize(1);
 
         verify(instructorRepository).findById(instructorId);
-        verify(subFileMetadataQueryService).queryMetadataByCondition(instructorUserId, "user_profile"); // ✅ 변경
-        verify(subFileMetadataQueryService).queryMetadataByCondition(instructorId, "instructor_banner");
+        verify(subFileMetadataQueryService).queryMetadataByCondition(instructorUserId, "USER_PROFILE");       // ✅ 대문자
+        verify(subFileMetadataQueryService).queryMetadataByCondition(instructorId, "INSTRUCTOR_BANNER");      // ✅ 대문자
         verify(s3Service).getResponseFileInfo(profileMeta);
         verify(s3Service).getResponseFileInfo(bannerMeta);
         verify(instructorLicenseQueryService).queryLicensesByInstructorId(instructorId);
@@ -214,8 +214,9 @@ class InstructorQueryServiceImplTest {
         when(instructorStatQueryService.queryTotalReviewCount(instructorId)).thenReturn(222);
         when(instructorStatQueryService.querySubsciberCount(instructorId)).thenReturn(555);
 
+        // 구현은 instructorId + "USER_PROFILE"
         FileMetadata profileMeta = FileMetadata.builder().relatedId(instructorId).sequence(1).build();
-        when(subFileMetadataQueryService.queryMetadataByCondition(instructorId, "user_profile"))
+        when(subFileMetadataQueryService.queryMetadataByCondition(instructorId, "USER_PROFILE"))
                 .thenReturn(profileMeta);
         ResponseFileInfo fileInfo = mock(ResponseFileInfo.class);
         when(s3Service.getResponseFileInfo(profileMeta)).thenReturn(fileInfo);
@@ -239,12 +240,11 @@ class InstructorQueryServiceImplTest {
         verify(instructorStatQueryService).queryAvgStars(instructorId);
         verify(instructorStatQueryService).queryTotalReviewCount(instructorId);
         verify(instructorStatQueryService).querySubsciberCount(instructorId);
-        verify(subFileMetadataQueryService).queryMetadataByCondition(instructorId, "user_profile");
+        verify(subFileMetadataQueryService).queryMetadataByCondition(instructorId, "USER_PROFILE"); // ✅ 대문자
         verify(s3Service).getResponseFileInfo(profileMeta);
         verify(qnaQueryService).queryQuestionsByInstructorId(instructorId);
     }
 
-    // ✅ 신규 메서드 테스트 1: 정상 조립
     @Test
     @DisplayName("queryUserSubscriptionsByUserId - 구독 목록을 SubscribedInstructorItem 리스트로 조립")
     void queryUserSubscriptionsByUserId_ok() {
@@ -261,11 +261,11 @@ class InstructorQueryServiceImplTest {
         given(instructorRepository.findById(100L)).willReturn(Optional.of(inst100));
         given(instructorRepository.findById(200L)).willReturn(Optional.of(inst200));
 
-        // 프로필 메타/이미지
+        // 프로필 메타/이미지 (USER_PROFILE 대문자)
         FileMetadata fm100 = FileMetadata.builder().relatedId(1000L).sequence(1).build();
         FileMetadata fm200 = FileMetadata.builder().relatedId(2000L).sequence(1).build();
-        given(subFileMetadataQueryService.queryMetadataByCondition(1000L, "user_profile")).willReturn(fm100);
-        given(subFileMetadataQueryService.queryMetadataByCondition(2000L, "user_profile")).willReturn(fm200);
+        given(subFileMetadataQueryService.queryMetadataByCondition(1000L, "USER_PROFILE")).willReturn(fm100);
+        given(subFileMetadataQueryService.queryMetadataByCondition(2000L, "USER_PROFILE")).willReturn(fm200);
 
         ResponseFileInfo r100 = mock(ResponseFileInfo.class);
         ResponseFileInfo r200 = mock(ResponseFileInfo.class);
@@ -297,8 +297,8 @@ class InstructorQueryServiceImplTest {
         verify(subscriptionQueryService).querySubscriptionsByUserId(userId);
         verify(instructorRepository).findById(100L);
         verify(instructorRepository).findById(200L);
-        verify(subFileMetadataQueryService).queryMetadataByCondition(1000L, "user_profile");
-        verify(subFileMetadataQueryService).queryMetadataByCondition(2000L, "user_profile");
+        verify(subFileMetadataQueryService).queryMetadataByCondition(1000L, "USER_PROFILE"); // ✅ 대문자
+        verify(subFileMetadataQueryService).queryMetadataByCondition(2000L, "USER_PROFILE"); // ✅ 대문자
         verify(s3Service).getResponseFileInfo(fm100);
         verify(s3Service).getResponseFileInfo(fm200);
         verify(instructorRepository).findNameById(100L);
@@ -307,7 +307,6 @@ class InstructorQueryServiceImplTest {
         verify(subscriptionHistoryService).querySubscriberCount(200L);
     }
 
-    // ✅ 신규 메서드 테스트 2: 빈 목록
     @Test
     @DisplayName("queryUserSubscriptionsByUserId - 구독이 없으면 빈 리스트 반환, 다른 의존성 호출 없음")
     void queryUserSubscriptionsByUserId_empty() {
