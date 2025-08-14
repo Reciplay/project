@@ -17,6 +17,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -33,6 +34,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(LectureApiController.class)
@@ -63,7 +65,7 @@ class LectureApiControllerTest {
 
     @BeforeEach
     public void setup() {
-        user = new User(null, "test@mail.com", "123", "nn", "lwj", LocalDate.now(), 1, "개발자", null, true, "USER_INSTRUCTOR");
+        user = new User(1L, "test@mail.com", "123", "nn", "lwj", LocalDate.now(), 1, "개발자", null, true, "USER_INSTRUCTOR");
         Authentication auth = new UsernamePasswordAuthenticationToken(new CustomUserDetails(user), null, List.of(new SimpleGrantedAuthority(user.getRole())));
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
@@ -71,6 +73,7 @@ class LectureApiControllerTest {
     @Test
     @DisplayName("강의 요약 리스트 조회 성공")
     void getLectureSummaries() throws Exception {
+        Mockito.when(lectureQueryService.queryLectureSummaries(any())).thenReturn(List.of());
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/course/lecture/summaries")
                         .param("courseId", "1"))
                 .andExpect(status().isOk());
