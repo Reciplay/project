@@ -82,6 +82,9 @@ dependencies {
 
 	// oauth2.0 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	// webflux 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 def generated = layout.buildDirectory.dir("generated/querydsl").get().asFile;
