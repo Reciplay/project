@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 
 export type SubscriptionCriteria = "daily" | "weekly" | "monthly" | "yearly";
 
-export const useSubscriptionTrend = (criteria: SubscriptionCriteria) => {
+export const useSubscriptionTrend = (criteris: SubscriptionCriteria) => {
   const [trendData, setTrendData] = useState<SubscriptionPoint[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -16,9 +16,9 @@ export const useSubscriptionTrend = (criteria: SubscriptionCriteria) => {
     setLoading(true);
     setError(null);
     try {
-      const params = qs.stringify({ criteris: criteria }, { encode: true });
+      const params = qs.stringify({ criteris: criteris }, { encode: true });
       const res = await restClient.get<ApiResponse<SubscriptionPoint[]>>(
-        `/user/instructor/subscription?${params}`,
+        `/user/instructor/subscriber?${params}`,
         { requireAuth: true, useCors: false },
       );
       if (res.data.status === "success") {
@@ -32,7 +32,7 @@ export const useSubscriptionTrend = (criteria: SubscriptionCriteria) => {
     } finally {
       setLoading(false);
     }
-  }, [criteria]);
+  }, [criteris]);
 
   useEffect(() => {
     fetchTrend();

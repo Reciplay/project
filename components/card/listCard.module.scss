@@ -74,19 +74,19 @@
 }
 
 .highlight {
-  font-size: 16px; // 🔺 크기 키움
+  font-size: 2rem; // 🔺 크기 키움
   font-weight: var(--font-weight-semibold); // 🔺 볼드 처리
 }
 
 .meta {
-  font-size: 15px; // 🔺 크기 키움
-  font-weight: var(--font-weight-bold); // 🔺 볼드 처리
+  font-size: 1.6rem; // 🔺 크기 키움
+  font-weight: var(--font-weight-regular); // 🔺 볼드 처리
   margin-bottom: 10px;
 }
-
+.announcement,
 .rating {
-  margin-bottom: 10px;
-  font-size: 15px; // 🔺 크기 키움
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
 }
 
 .live {

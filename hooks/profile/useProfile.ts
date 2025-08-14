@@ -6,7 +6,7 @@ import { User } from "@/types/user";
 import { useEffect, useRef, useState } from "react";
 
 export function useProfile() {
-  const [userData, setUserData] = useState<User | null>(null);
+  const [data, setData] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -37,16 +37,15 @@ export function useProfile() {
           requireAuth: true,
         });
 
-        const data = res.data.data;
-        setUserData(data);
+        setData(res.data.data);
         setForm({
-          name: data.name,
-          job: data.job,
-          birthDate: data.birthDate,
-          gender: data.gender,
+          name: res.data.data.name,
+          job: res.data.data.job,
+          birthDate: res.data.data.birthDate,
+          gender: res.data.data.gender,
         });
         setPreviewUrl(
-          data.profileImage?.presignedUrl ?? "/images/profile.webp",
+          res.data.data.profileImage?.presignedUrl ?? "/images/profile.webp",
         ); // 초기 이미지 설정
       } catch (e) {
         console.error("프로필 불러오기 실패:", e);
@@ -79,7 +78,7 @@ export function useProfile() {
         { requireAuth: true },
       );
       alert("프로필이 수정되었습니다.");
-      setUserData((prev) =>
+      setData((prev) =>
         prev
           ? {
               ...prev,
@@ -122,7 +121,7 @@ export function useProfile() {
       alert("프로필 이미지가 변경되었습니다!");
       setIsModalOpen(false);
       // 성공 후 서버 이미지 반영
-      setUserData((prev) =>
+      setData((prev) =>
         prev
           ? {
               ...prev,
@@ -140,7 +139,7 @@ export function useProfile() {
   };
 
   return {
-    userData,
+    data,
     loading,
     error,
     form,

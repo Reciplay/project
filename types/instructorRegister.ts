@@ -12,15 +12,15 @@ export interface InstructorProfile {
 }
 
 export interface requestLicense {
-  id: number;
+  licenseId: number;
   licenseName: string;
   institution: string;
   acquisitionDate: string; // YYYY-MM-DD
-  grade: number;
+  grade: string;
 }
 
 export interface Career {
-  id: number;
+  careerId: number;
   companyName: string;
   position: string;
   jobDescription: string;

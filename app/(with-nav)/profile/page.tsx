@@ -17,7 +17,7 @@ const sampleLevels: Level[] = [
 ];
 
 export default function Page() {
-  const { userData, loading, error, ...rest } = useProfile();
+  const { data, loading, error, ...rest } = useProfile();
 
   if (loading) {
     return <div>프로필 정보를 불러오는 중입니다...</div>;
@@ -27,7 +27,7 @@ export default function Page() {
     return <div>오류: {error}</div>;
   }
 
-  if (!userData) {
+  if (!data) {
     return <div>프로필 정보를 찾을 수 없습니다.</div>;
   }
 
@@ -35,14 +35,13 @@ export default function Page() {
     <div className={styles.container}>
       <div className={styles.title}>내 프로필</div>
       <div className={styles.content}>
-        <ProfileHeader userData={userData} {...rest} />
+        <ProfileHeader userData={data} {...rest} />
         <div className={styles.subContent}>
           <div className={styles.child}>
-            <ProfileInfo userData={userData} error={error} {...rest} />
+            <ProfileInfo userData={data} error={error} {...rest} />
           </div>
           <div className={styles.child}>
             <RadarChart levels={sampleLevels} />
-            {/* <RadarChart levels={userData.levels ?? sampleLevels} /> */}
           </div>
         </div>
       </div>

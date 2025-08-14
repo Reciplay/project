@@ -1,7 +1,9 @@
 import Star from "@/components/rate/star";
 import IconWithText from "@/components/text/iconWithText";
+import { ROUTES } from "@/config/routes";
 import { CourseDetail } from "@/types/course";
 import Image from "next/image";
+import Link from "next/link";
 import styles from "./summary.module.scss";
 
 interface SummaryProps {
@@ -39,10 +41,14 @@ export default function Summary({ courseDetail }: SummaryProps) {
             {maxEnroll.toLocaleString()}명
           </span>
         </div>
-        <div className={styles.author}>
-          {/* CourseDetail에 instructorName이 없으면 추후 주입 */}
-          <IconWithText iconName="user" title="김밀란" />
-        </div>
+        <Link
+          href={ROUTES.INSTRUCTOR.PROFILE(String(courseDetail.instructorId))}
+        >
+          <div className={styles.author}>
+            {/* CourseDetail에 instructorName이 없으면 추후 주입 */}
+            <IconWithText iconName="user" title={courseDetail.instructorName} />
+          </div>
+        </Link>
       </div>
       <div className={styles.right}>
         <div className={styles.imageWrapper}>

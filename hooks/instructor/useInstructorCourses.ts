@@ -17,7 +17,7 @@ interface Options {
 export function useInstructorCourses(
   instructorId?: string,
   {
-    initialPage = 1,
+    initialPage = 0,
     pageSize = 12,
     courseStatus = "string",
     isEnrollment = true,
@@ -42,15 +42,15 @@ export function useInstructorCourses(
         setErr(null);
 
         const res = await restClient.get<PaginationResponse<CourseCard>>(
-          "/course/instructor/courses",
+          "/course/courses/cards",
           {
             params: {
               requestCategory: "instructor",
               instructorId,
               page: p, // 서버 1-base 기준
               size,
-              courseStatus,
-              isEnrollment,
+              // courseStatus,
+              // isEnrollment,
             },
             requireAuth: true,
           },
@@ -65,7 +65,7 @@ export function useInstructorCourses(
         // setErr("강좌를 불러오는 중 오류가 발생했습니다.");
         // 데모/폴백
         setList(sampleCourseCards);
-        setTotalPages(1);
+        setTotalPages(p++);
         setTotalElements(sampleCourseCards.length);
       } finally {
         setLoading(false);

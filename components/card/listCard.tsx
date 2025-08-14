@@ -31,7 +31,7 @@ export default function Card({ data }: CourseCardProps) {
               <div key={idx}>{line}</div>
             ))}
             <br />
-            <span>{data.level}자 시청 추천</span>
+            <span>난이도 {data.level}</span>
           </div>
         </div>
       </div>
@@ -52,23 +52,24 @@ export default function Card({ data }: CourseCardProps) {
             <span> • </span>
             <span className={styles.live}>LIVE</span>
             <span> • </span>
-            <span className={styles.viewerCount}>{data.viewerCount}명</span>
-            시청 중
+            <span className={styles.viewerCount}>
+              {data.viewerCount ?? 0} 명 시청 중
+            </span>
           </div>
           <div className={styles.rating}>
             평균 별점 {"★".repeat(filledStars)}
             {"☆".repeat(emptyStars)}
           </div>
-          <div className={styles.rating}>“이 강의 하나면 한식 기본 끝!”</div>
+          <div className={styles.announcement}>{data.announcement}</div>
+          <BaseButton
+            title="찜"
+            variant="custom"
+            type="submit"
+            color="black"
+            size="sm"
+            // className={style.wishButton}
+          />
         </div>
-        <BaseButton
-          title="찜"
-          variant="custom"
-          type="submit"
-          color="black"
-          size="sm"
-          // className={style.wishButton}
-        />
       </div>
     </div>
   );

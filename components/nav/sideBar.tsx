@@ -105,7 +105,7 @@ export default function SideBar() {
 
       {status === "authenticated" && (
         <div>
-          {width > 1400 ? (
+          {width > 1400 && isOpen ? (
             <BaseButton title="로그아웃" onClick={logout} />
           ) : (
             <div className={styles.section} onClick={logout}>

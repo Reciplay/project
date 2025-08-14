@@ -73,7 +73,6 @@ export function useCourseCards(options?: {
         const res = await restClient.get<PaginationResponse<CourseCard>>(
           "/course/courses/cards",
           {
-            // ✅ 옵션값을 실제로 사용 (의존성 정당화)
             requireAuth,
             signal: controller.signal,
             params: {

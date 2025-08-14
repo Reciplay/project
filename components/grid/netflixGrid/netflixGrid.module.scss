@@ -133,3 +133,197 @@
   visibility: hidden;
   pointer-events: none;
 }
+/* ========== Empty State (SCSS 변수만 사용) ========== */
+$ng-bg: #ffffff !default;
+$ng-text: #0f172a !default; // slate-900
+$ng-text-sub: #64748b !default; // slate-500
+$ng-border: #e2e8f0 !default; // slate-200
+$ng-primary: #111827 !default; // gray-900
+$ng-ring: #60a5fa !default; // sky-400
+$ng-accent: #a78bfa !default; // violet-400
+$ng-accent-2: #22d3ee !default; // cyan-400
+
+$ng-radius-xl: 16px !default;
+$ng-radius-lg: 12px !default;
+$ng-gap-sm: 0.5rem !default;
+$ng-gap-md: 0.75rem !default;
+$ng-gap-lg: 1rem !default;
+$ng-shadow: 0 6px 24px rgba(15, 23, 42, 0.08) !default;
+
+@keyframes ngFloat {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(0.8deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes ngPulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.5;
+  }
+  70% {
+    transform: scale(1.05);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.05);
+    opacity: 0;
+  }
+}
+
+.emptyWrap {
+  height: 30rem;
+  position: relative;
+  display: flex;
+  place-items: center;
+  text-align: center;
+  gap: $ng-gap-md;
+  justify-content: center;
+
+  padding: clamp(1.25rem, 2vw + 1rem, 2rem);
+  border: 1px solid $ng-border;
+  border-radius: $ng-radius-xl;
+  background:
+    radial-gradient(
+      120% 120% at 8% 8%,
+      rgba(167, 139, 250, 0.12) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      120% 120% at 92% -10%,
+      rgba(34, 211, 238, 0.12) 0%,
+      transparent 60%
+    ),
+    $ng-bg;
+  box-shadow: $ng-shadow;
+  backdrop-filter: saturate(1.05) blur(2.5px);
+  overflow: hidden;
+}
+
+.emptyArt {
+  width: 96px;
+  height: 96px;
+  border-radius: 9999px;
+  background: radial-gradient(
+    120% 120% at 30% 30%,
+    rgba(167, 139, 250, 0.24) 0%,
+    #fff 55%
+  );
+  border: 1px solid $ng-border;
+  position: relative;
+  isolation: isolate;
+  animation: ngFloat 4.8s ease-in-out infinite;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: -1;
+  }
+  &::before {
+    box-shadow: 0 0 0 6px rgba(96, 165, 250, 0.16);
+    opacity: 0.5;
+  }
+  &::after {
+    box-shadow: 0 0 0 0 rgba(96, 165, 250, 0.24);
+    animation: ngPulse 2.8s ease-out infinite;
+  }
+}
+
+.emptyTexts {
+  display: grid;
+  gap: 2rem;
+}
+
+.emptyTitle {
+  font-size: clamp(2.4rem, 0.8rem + 0.6vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: $ng-text;
+}
+
+.emptyDesc {
+  font-size: clamp(1.6rem, 0.85rem + 0.2vw, 2rem);
+  color: $ng-text-sub;
+  line-height: 1.6;
+}
+
+.emptyActions {
+  display: flex;
+  gap: $ng-gap-sm;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.25rem;
+}
+
+/* 버튼 베이스 (placeholder) */
+%ngBtnBase {
+  appearance: none;
+  border-radius: $ng-radius-lg;
+  padding: 0.625rem 0.9rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    transform 120ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
+  will-change: transform;
+
+  &:active {
+    transform: translateY(1px);
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.3);
+  }
+}
+
+.primaryBtn {
+  @extend %ngBtnBase;
+  background: $ng-primary;
+  color: #fff;
+  border-color: $ng-primary;
+
+  // &:hover {
+  //   background: darken($ng-primary, 8%);
+  //   border-color: darken($ng-primary, 8%);
+  // }
+}
+
+.secondaryBtn {
+  @extend %ngBtnBase;
+  background: #fff;
+  color: $ng-text;
+  border-color: $ng-border;
+
+  &:hover {
+    border-color: rgba(15, 23, 42, 0.28);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .emptyArt {
+    animation: none;
+  }
+  .emptyArt::after {
+    display: none;
+  }
+  .primaryBtn,
+  .secondaryBtn {
+    transition: none;
+  }
+}

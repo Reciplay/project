@@ -11,13 +11,12 @@ import QandAList from "../__components/q&alist/q&aList";
 import styles from "./page.module.scss";
 
 export default function Page() {
-  const { data, newQuestions, loading, error, profileImageUrl } =
-    useInstructorStats();
+  const { data: statData, loading, error } = useInstructorStats();
   const {
     trendData,
     loading: trendLoading,
     error: trendError,
-  } = useSubscriptionTrend("daily"); // Fetch subscription trend data
+  } = useSubscriptionTrend("daily");
 
   const { postAnswer } = useQnaPost();
 
@@ -37,7 +36,7 @@ export default function Page() {
     });
   };
 
-  const { userData } = useProfile();
+  const { data: userData } = useProfile();
 
   if (loading || trendLoading) {
     // Check both loadings
@@ -49,7 +48,6 @@ export default function Page() {
   }
 
   if (error || trendError) {
-    // Check both errors
     return (
       <div className={`${styles.messageContainer} ${styles.errorMessage}`}>
         오류: {error || trendError}
@@ -57,7 +55,7 @@ export default function Page() {
     );
   }
 
-  if (!data) {
+  if (!statData) {
     return (
       <div className={`${styles.messageContainer} ${styles.noDataMessage}`}>
         강사 통계 정보를 찾을 수 없습니다.
@@ -66,7 +64,7 @@ export default function Page() {
   }
 
   if (!userData) {
-    return null; // 또는 로딩 스피너
+    return null;
   }
 
   return (
@@ -95,28 +93,28 @@ export default function Page() {
             <div className={styles.metrics}>
               <div className={styles.metricRow}>
                 <span>총 수강생 수</span>
-                <strong>{data?.totalStudents ?? 0}</strong>
+                <strong>{statData?.totalStudents ?? 0}</strong>
               </div>
               <div className={styles.metricRow}>
                 <span>평균 별점</span>
-                <strong>{data?.averageStars ?? 0}</strong>
+                <strong>{statData?.averageStars ?? 0}</strong>
               </div>
               <div className={styles.metricRow}>
                 <span>총 리뷰 수</span>
-                <strong>{data?.totalReviewCount ?? 0}</strong>
+                <strong>{statData?.totalReviewCount ?? 0}</strong>
               </div>
               <div className={styles.metricRow}>
                 <span>구독자 수</span>
-                <strong>{data?.subscriberCount ?? 0}</strong>
+                <strong>{statData?.subscriberCount ?? 0}</strong>
               </div>
             </div>
           </div>
 
           <div className={styles.wrapper}>
-            {profileImageUrl && (
+            {statData?.profileFileInfo?.presignedUrl && (
               <Image
                 className={styles.image}
-                src={profileImageUrl}
+                src={statData?.profileFileInfo?.presignedUrl}
                 alt="profile"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
@@ -128,12 +126,11 @@ export default function Page() {
 
         {/* 2행: 달력(2) */}
         <div className={`${styles.card} ${styles.calendarCard}`}>
-          {/* <CalendarOnly /> */}
           <Calendar lectures={[]} />
         </div>
         <div className={`${styles.card} ${styles.qaCard}`}>
           <QandAList
-            questions={newQuestions ?? []}
+            questions={statData?.newQuestions ?? []}
             onSubmitAnswer={handleSubmitAnswer}
           />
         </div>

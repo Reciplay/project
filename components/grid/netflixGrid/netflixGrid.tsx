@@ -102,6 +102,9 @@ export default function NetflixGrid({
   const showLeftUI = canPrev;
   const showRightUI = canNext;
 
+  // ✅ 빈 상태 판단
+  const isEmpty = !loading && (!items || items.length === 0);
+
   return (
     <section className={classNames(styles.wrap, className)}>
       {(title || onSeeAll) && (
@@ -114,7 +117,7 @@ export default function NetflixGrid({
           )}
         </header>
       )}
-
+      {/* 
       <div className={styles.stage}>
         {showLeftUI && (
           <>
@@ -174,6 +177,95 @@ export default function NetflixGrid({
               ))}
         </div>
       </div>
+    </section>
+  );
+} */}
+      {/* ✅ 빈 상태 UI */}
+      {isEmpty ? (
+        <div
+          className={styles.emptyWrap}
+          role="region"
+          aria-label="빈 강좌 영역"
+        >
+          <div className={styles.emptyTexts}>
+            <h4 className={styles.emptyTitle}>수강 중인 강좌가 없어요</h4>
+            <p className={styles.emptyDesc}>
+              관심 있는 강좌를 찾아 시작해보세요. 꾸준히 들으면 성장 곡선이 확
+              달라져요!
+            </p>
+          </div>
+          <div className={styles.emptyActions}></div>
+        </div>
+      ) : (
+        // ✅ 기존 가로 스크롤 레일
+        <div className={styles.stage}>
+          {showLeftUI && (
+            <>
+              <i
+                className={classNames(
+                  styles.fade,
+                  styles.leftFade,
+                  styles.show,
+                )}
+              />
+              <button
+                type="button"
+                aria-label="이전"
+                className={classNames(styles.navBtn, styles.prev)}
+                onClick={() => scrollByPage(-1)}
+              >
+                ‹
+              </button>
+            </>
+          )}
+
+          {showRightUI && (
+            <>
+              <i
+                className={classNames(
+                  styles.fade,
+                  styles.rightFade,
+                  styles.show,
+                )}
+              />
+              <button
+                type="button"
+                aria-label="다음"
+                className={classNames(styles.navBtn, styles.next)}
+                onClick={() => scrollByPage(1)}
+              >
+                ›
+              </button>
+            </>
+          )}
+
+          <div
+            ref={scrollerRef}
+            className={styles.scroller}
+            style={
+              {
+                "--lane-gap": `${gapRem}rem`,
+                "--card-w-px": "251.34px",
+                "--card-h-px": "334.8px",
+              } as React.CSSProperties
+            }
+          >
+            {loading
+              ? Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className={styles.item} />
+                ))
+              : items.map((it, i) => (
+                  <div key={i} className={styles.item}>
+                    {renderItem ? (
+                      renderItem(it, i)
+                    ) : (
+                      <CustomCard data={it} type={CARDTYPE.VERTICAL} />
+                    )}
+                  </div>
+                ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }
