@@ -208,6 +208,7 @@ class InstructorQueryServiceImplTest {
     @DisplayName("queryInstructorStatistic - 총 수강생/평점/리뷰/구독/프로필이미지/새 질문 목록")
     void queryInstructorStatistic_ok() {
         Long instructorId = 77L;
+        Long userId = 1L;
 
         when(instructorStatQueryService.queryTotalStudents(instructorId)).thenReturn(1000);
         when(instructorStatQueryService.queryAvgStars(instructorId)).thenReturn(4.7);
@@ -216,7 +217,7 @@ class InstructorQueryServiceImplTest {
 
         // 구현은 instructorId + "USER_PROFILE"
         FileMetadata profileMeta = FileMetadata.builder().relatedId(instructorId).sequence(1).build();
-        when(subFileMetadataQueryService.queryMetadataByCondition(instructorId, "USER_PROFILE"))
+        when(subFileMetadataQueryService.queryMetadataByCondition(userId, "USER_PROFILE"))
                 .thenReturn(profileMeta);
         ResponseFileInfo fileInfo = mock(ResponseFileInfo.class);
         when(s3Service.getResponseFileInfo(profileMeta)).thenReturn(fileInfo);
@@ -226,7 +227,7 @@ class InstructorQueryServiceImplTest {
                 .title("질문1").questionAt(LocalDateTime.now()).build();
         when(qnaQueryService.queryQuestionsByInstructorId(instructorId))
                 .thenReturn(List.of(q1));
-
+        when(instructorRepository.findById(any())).thenReturn(Optional.of(Instructor.builder().id(instructorId).userId(userId).build()));
         InstructorStat stat = service.queryInstructorStatistic(instructorId);
 
         assertThat(stat.getTotalStudents()).isEqualTo(1000);
@@ -240,7 +241,7 @@ class InstructorQueryServiceImplTest {
         verify(instructorStatQueryService).queryAvgStars(instructorId);
         verify(instructorStatQueryService).queryTotalReviewCount(instructorId);
         verify(instructorStatQueryService).querySubsciberCount(instructorId);
-        verify(subFileMetadataQueryService).queryMetadataByCondition(instructorId, "USER_PROFILE"); // ✅ 대문자
+        verify(subFileMetadataQueryService).queryMetadataByCondition(userId, "USER_PROFILE"); // ✅ 대문자
         verify(s3Service).getResponseFileInfo(profileMeta);
         verify(qnaQueryService).queryQuestionsByInstructorId(instructorId);
     }
