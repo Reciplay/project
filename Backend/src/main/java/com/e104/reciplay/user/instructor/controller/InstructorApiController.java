@@ -41,9 +41,13 @@ public class InstructorApiController {
     public ResponseEntity<ResponseRoot<InstructorProfile>> getInstructorProfile(
             @RequestParam("instructorId") Long instructorId
     ) {
+        log.debug("강사 소개 조회 API 호출됨, 강사 ID = {}", instructorId);
         String email = AuthenticationUtil.getSessionUsername();
+        log.debug("강사 소개 조회 API 호출됨, 세션 이메일 = {}", email);
         Long userId = userQueryService.queryUserByEmail(email).getId();
+        log.debug("강사 소개 조회 API 호출됨, 유저 ID = {}", userId);
         InstructorProfile instructorProfile = instructorQueryService.queryInstructorProfile(instructorId, userId);
+        log.debug("강사 소개 조회 API 응답 데이터 = {}", instructorProfile);
         return CommonResponseBuilder.success("강사 정보 조회에 성공했습니다.", instructorProfile);
     }
 
@@ -86,17 +90,23 @@ public class InstructorApiController {
     @ApiResponse(responseCode = "403", description = "강사가 아닌 사용자가 시도")
     public ResponseEntity<ResponseRoot<InstructorStat>> getInstructorStatistic(
     ) {
+        log.debug("강사 통계 정보 조회 API 호출 중");
         String email = AuthenticationUtil.getSessionUsername();
+        log.debug("통계 정보 조회 요청자 이메일 : {}", email);
+
         Long instructorId = instructorQueryService.queryInstructorIdByEmail(email);
+
+        log.debug("통계 정보 조회 요청자의 강사 ID : {}", instructorId);
+
         InstructorStat instructorStat = instructorQueryService.queryInstructorStatistic(instructorId);
         return CommonResponseBuilder.success("강사 통계 정보 조회에 성공했습니다.", instructorStat);
     }
 
-    @GetMapping("/subscription")
-    @Operation(summary = "강사 통계 정보 조회 API", description = "강사의 통계 정보를 조회합니다.")
+    @GetMapping("/subscriber")
+    @Operation(summary = "강사 구독자 추이 조회", description = "강사의 통계합니다.")
     @ApiResponse(responseCode = "200", description = "강사 통계 정보 조회 성공")
     @ApiResponse(responseCode = "403", description = "강사가 아닌 사용자가 시도")
-    public ResponseEntity<ResponseRoot<List<SubscriberHistory>>> getInstructorStatistic(
+    public ResponseEntity<ResponseRoot<List<SubscriberHistory>>> getInstructorSubscriberStat(
             @RequestParam("criteris") String subscriberChartCriteria
     ) {
             List<SubscriberHistory> subscriberHistories = List.of(

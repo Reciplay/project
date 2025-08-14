@@ -77,8 +77,11 @@ public class CourseApiController {
     public ResponseEntity<ResponseRoot<List<CourseDetail>>> getCourseCards(
             @RequestParam String courseStatus
     ) {
+        log.debug("이메일 조회");
         String email = AuthenticationUtil.getSessionUsername();
+        log.debug("강사 Id 조회");
         Long instructorId = instructorQueryService.queryInstructorIdByEmail(email);
+        log.debug("강사의 강좌 상세 리스트 조회 시작");
         List<CourseDetail> courses = courseQueryService.queryCourseDetailsByInstructorId(instructorId, courseStatus);
         return CommonResponseBuilder.success("강사의 강좌 상세 정보 리스트 조회에 성공하였습니다.",
                 courses);
