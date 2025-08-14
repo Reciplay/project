@@ -13,3 +13,12 @@ export type NewQuestion = {
   courseName: string;
   courseId: number;
 };
+
+export interface QnaDetail {
+  title: string;
+  questionContent: string;
+  answerContent: string | null;
+  answerAt: string | null;
+  questionUpdateAt: string;
+  answerUpdateAt: string | null;
+}

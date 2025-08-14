@@ -12,10 +12,12 @@ import styles from "./instructorProfile.module.scss";
 
 interface InstructorProfileProps {
   instructor: Instructor;
+  instructorId: string;
 }
 
 export default function InstructorProfile({
   instructor,
+  instructorId,
 }: InstructorProfileProps) {
   const tabTitles = ["경력", "자격증", "강좌목록"];
   const { activeIdx, handleScrollTo, sectionRefs } = useScrollTabs(
@@ -32,6 +34,9 @@ export default function InstructorProfile({
           name: instructor.name,
           jobDescription: instructor.careers?.[0]?.jobDescription ?? "",
           companyName: instructor.careers?.[0]?.companyName ?? "",
+          // 이거 있나..?
+          isSubscribed: false,
+          instructorId: Number(instructorId),
         }}
       />
 

@@ -12,7 +12,7 @@ export type PostQnaAnswerRequest = {
   content: string;
 };
 
-export function useQnaPost() {
+export function usePostQnaAnswer() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
 
@@ -23,12 +23,14 @@ export function useQnaPost() {
     try {
       const res = await restClient.post<ApiResponse<null>>(
         "/course/qna/answer",
-        { ...payload, requireAuth: true },
+        payload,
+        { requireAuth: true },
       );
 
-      // 백엔드 응답 구조에 맞게 처리
       if (res.status >= 200 && res.status < 300) {
-        message.success(res.data?.message || "답변이 등록되었습니다.");
+        message.success(
+          res.data?.message || "답변이 성공적으로 등록되었습니다.",
+        );
         return true;
       } else {
         const msg = res.data?.message || "답변 등록에 실패했습니다.";
@@ -37,7 +39,12 @@ export function useQnaPost() {
         return false;
       }
     } catch (e) {
-      setError(getErrorMessage(e, "답변 등록 중 오류가 발생했습니다."));
+      const errorMessage = getErrorMessage(
+        e,
+        "답변 등록 중 오류가 발생했습니다.",
+      );
+      setError(errorMessage);
+      message.error(errorMessage);
       return false;
     } finally {
       setLoading(false);

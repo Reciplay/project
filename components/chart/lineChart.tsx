@@ -2,7 +2,7 @@
 
 import {
   Chart as ChartJS,
-  Filler, // 'time' 스케일
+  Filler,
   LinearScale,
   LineElement,
   PointElement,
@@ -13,7 +13,7 @@ import {
 import "chartjs-adapter-date-fns";
 import { ko } from "date-fns/locale";
 import { Line } from "react-chartjs-2";
-import { SubscriptionPoint } from "@/types/instructorStats"; // Import SubscriptionPoint
+import { SubscriptionPoint } from "@/types/instructorStats";
 
 ChartJS.register(
   TimeScale,
@@ -24,14 +24,15 @@ ChartJS.register(
   Filler,
 );
 
-interface DailySmoothLineChartProps {
-  data: SubscriptionPoint[]; // Accept data as prop
+interface SmoothLineChartProps {
+  data: SubscriptionPoint[];
+  timeUnit: "day" | "month" | "year";
 }
 
-export default function DailySmoothLineChart({
+export default function SmoothLineChart({
   data: trendData,
-}: DailySmoothLineChartProps) {
-  // Destructure data prop
+  timeUnit,
+}: SmoothLineChartProps) {
   const chartData = {
     datasets: [
       {
@@ -43,10 +44,16 @@ export default function DailySmoothLineChart({
         fill: true,
         borderColor: "#2a73ff",
         backgroundColor: "rgba(42,115,255,0.2)",
-        tension: 0.4, // 부드러운 선
-        pointRadius: 0, // 점 숨김
+        tension: 0.4,
+        pointRadius: 0,
       },
     ],
+  };
+
+  const timeFormats = {
+    day: "MM월 dd일",
+    month: "yyyy년 MM월",
+    year: "yyyy년",
   };
 
   const options: ChartOptions<"line"> = {
@@ -54,10 +61,10 @@ export default function DailySmoothLineChart({
     plugins: { legend: { display: false } },
     scales: {
       x: {
-        type: "time", // ← 리터럴
+        type: "time",
         time: {
-          unit: "day", // ← 리터럴
-          tooltipFormat: "MM월 dd일",
+          unit: timeUnit,
+          tooltipFormat: timeFormats[timeUnit],
         },
         adapters: { date: { locale: ko } },
         grid: { display: false },

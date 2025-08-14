@@ -1,25 +1,17 @@
 "use client";
 
-import Calendar from "@/components/calendar/calendar";
-import DailySmoothLineChart from "@/components/chart/lineChart";
 import { useInstructorStats } from "@/hooks/dashboard/useStats";
-import { useSubscriptionTrend } from "@/hooks/dashboard/useSubscriptionTrend"; // Import the new hook
-import { useProfile } from "@/hooks/profile/useProfile";
-import { useQnaPost } from "@/hooks/qna/useQnaPost";
-import Image from "next/image";
+import { usePostQnaAnswer } from "@/hooks/qna/usePostQnaAnswer";
 import QandAList from "../__components/q&alist/q&aList";
+import DashboardCalendar from "./__components/dashboardCalendar";
+import DashboardChart from "./__components/dashboardChart";
+import DashboardProfile from "./__components/dashboardProfile";
 import styles from "./page.module.scss";
 
 export default function Page() {
+  const { postAnswer } = usePostQnaAnswer();
+
   const { data: statData, loading, error } = useInstructorStats();
-  const {
-    trendData,
-    loading: trendLoading,
-    error: trendError,
-  } = useSubscriptionTrend("daily");
-
-  const { postAnswer } = useQnaPost();
-
   const handleSubmitAnswer = async ({
     questionId,
     courseId,
@@ -36,98 +28,18 @@ export default function Page() {
     });
   };
 
-  const { data: userData } = useProfile();
-
-  if (loading || trendLoading) {
-    // Check both loadings
-    return (
-      <div className={styles.messageContainer}>
-        강사 통계 정보를 불러오는 중...
-      </div>
-    );
-  }
-
-  if (error || trendError) {
-    return (
-      <div className={`${styles.messageContainer} ${styles.errorMessage}`}>
-        오류: {error || trendError}
-      </div>
-    );
-  }
-
-  if (!statData) {
-    return (
-      <div className={`${styles.messageContainer} ${styles.noDataMessage}`}>
-        강사 통계 정보를 찾을 수 없습니다.
-      </div>
-    );
-  }
-
-  if (!userData) {
-    return null;
-  }
-
   return (
     <div className={styles.container}>
       <div className={styles.cardContainer}>
         {/* 1행: 차트(1) */}
-        <div className={`${styles.card} ${styles.chartCard}`}>
-          <div className={styles.cardHeader}>
-            <span>📈</span>
-            <h3 className={styles.cardTitle}>구독자 추이</h3>
-          </div>
-          <div className={styles.chartArea}>
-            <DailySmoothLineChart data={trendData} />{" "}
-            {/* Pass trendData to the chart */}
-          </div>
-        </div>
+        <DashboardChart />
 
         {/* 1행: 프로필(1) */}
-        <div className={`${styles.card} ${styles.profileCard}`}>
-          <div className={styles.profileInfo}>
-            <div>
-              <div className={styles.profileName}>{userData.name}</div>
-              <div className={styles.profileSub}>{userData.job}</div>
-            </div>
-
-            <div className={styles.metrics}>
-              <div className={styles.metricRow}>
-                <span>총 수강생 수</span>
-                <strong>{statData?.totalStudents ?? 0}</strong>
-              </div>
-              <div className={styles.metricRow}>
-                <span>평균 별점</span>
-                <strong>{statData?.averageStars ?? 0}</strong>
-              </div>
-              <div className={styles.metricRow}>
-                <span>총 리뷰 수</span>
-                <strong>{statData?.totalReviewCount ?? 0}</strong>
-              </div>
-              <div className={styles.metricRow}>
-                <span>구독자 수</span>
-                <strong>{statData?.subscriberCount ?? 0}</strong>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.wrapper}>
-            {statData?.profileFileInfo?.presignedUrl && (
-              <Image
-                className={styles.image}
-                src={statData?.profileFileInfo?.presignedUrl}
-                alt="profile"
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                priority
-              />
-            )}
-          </div>
-        </div>
+        <DashboardProfile statData={statData} loading={loading} error={error} />
 
         {/* 2행: 달력(2) */}
-        <div className={`${styles.card} ${styles.calendarCard}`}>
-          <Calendar lectures={[]} />
-        </div>
+        <DashboardCalendar />
+
         <div className={`${styles.card} ${styles.qaCard}`}>
           <QandAList
             questions={statData?.newQuestions ?? []}
