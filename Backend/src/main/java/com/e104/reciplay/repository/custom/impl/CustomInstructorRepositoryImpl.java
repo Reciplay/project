@@ -7,12 +7,14 @@ import com.e104.reciplay.repository.custom.CustomInstructorRepository;
 import com.e104.reciplay.user.security.domain.QUser;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class CustomInstructorRepositoryImpl implements CustomInstructorRepository {
     private final JPAQueryFactory queryFactory;
 
@@ -21,6 +23,7 @@ public class CustomInstructorRepositoryImpl implements CustomInstructorRepositor
 
     @Override
     public Long findIdByEmail(String email) {
+        log.debug("CustomInstructorRepositoryImpl findIdByEmail  email = {}", email);
         return queryFactory
                 .select(instructor.id)
                 .from(instructor)
@@ -31,6 +34,7 @@ public class CustomInstructorRepositoryImpl implements CustomInstructorRepositor
 
     @Override
     public String findNameById(Long id) {
+        log.debug("CustomInstructorRepositoryImpl findNameById id = {}", id);
         return queryFactory
                 .select(user.name)
                 .from(instructor)
@@ -41,6 +45,8 @@ public class CustomInstructorRepositoryImpl implements CustomInstructorRepositor
 
     @Override
     public List<AdInstructorSummary> findAdInstructorSummariesByIsApprove(Boolean isApprove) {
+        log.debug("CustomInstructorRepositoryImpl findAdInstructorSummariesByIsApprove isApprove = {}", isApprove);
+
         return queryFactory
                 .select(com.querydsl.core.types.Projections.constructor(
                         AdInstructorSummary.class,
@@ -58,6 +64,7 @@ public class CustomInstructorRepositoryImpl implements CustomInstructorRepositor
 
     @Override
     public AdInstructorDetail findAdInstructorDetailByInstructorId(Long instructorId) {
+        log.debug("CustomInstructorRepositoryImpl findAdInstructorDetailByInstructorId instructorId = {}", instructorId);
         return queryFactory
                 .select(com.querydsl.core.types.Projections.bean(
                         AdInstructorDetail.class,
@@ -80,6 +87,7 @@ public class CustomInstructorRepositoryImpl implements CustomInstructorRepositor
 
     @Override
     public void updateInstructorApprovalByInstructorId(Long instructorId) {
+        log.debug("CustomInstructorRepositoryImpl updateInstructorApprovalByInstructorId instructorId = {}", instructorId);
         queryFactory
                 .update(instructor)
                 .set(instructor.isApproved, true)
