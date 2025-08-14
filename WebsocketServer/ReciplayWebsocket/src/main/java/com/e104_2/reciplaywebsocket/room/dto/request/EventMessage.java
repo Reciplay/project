@@ -20,4 +20,5 @@ public class EventMessage {
     private Long lectureId;
     private String roomId;
     private List<String> state;
+    private String role;
 }
