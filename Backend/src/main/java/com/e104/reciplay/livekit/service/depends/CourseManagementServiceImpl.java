@@ -83,8 +83,8 @@ public class CourseManagementServiceImpl implements CourseManagementService{
         // 해당 강좌의 이런걸 배울 수 있어요 삭제
         canLearnManagementService.deleteCanLearnsByCourseId(courseId);
         // 강좌Id로 썸네일 이미지들과 강좌커버이미지의 메타데이터 찾기
-        List<FileMetadata> oldThumbnailImages = subFileMetadataQueryService.queryMetadataListByCondition(courseId, "thumbnail");
-        FileMetadata oldCourseCoverImages = subFileMetadataQueryService.queryMetadataByCondition(courseId, "course_cover");
+        List<FileMetadata> oldThumbnailImages = subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAILS");
+        FileMetadata oldCourseCoverImages = subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER");
         // 해당 강좌의 메타데이터들과 s3 파일들 모두 삭제
         for(FileMetadata data : oldThumbnailImages){
             s3Service.deleteFile(data);
