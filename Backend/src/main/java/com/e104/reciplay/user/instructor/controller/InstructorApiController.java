@@ -86,8 +86,14 @@ public class InstructorApiController {
     @ApiResponse(responseCode = "403", description = "강사가 아닌 사용자가 시도")
     public ResponseEntity<ResponseRoot<InstructorStat>> getInstructorStatistic(
     ) {
+        log.debug("강사 통계 정보 조회 API 호출 중");
         String email = AuthenticationUtil.getSessionUsername();
+        log.debug("통계 정보 조회 요청자 이메일 : {}", email);
+
         Long instructorId = instructorQueryService.queryInstructorIdByEmail(email);
+
+        log.debug("통계 정보 조회 요청자의 강사 ID : {}", instructorId);
+
         InstructorStat instructorStat = instructorQueryService.queryInstructorStatistic(instructorId);
         return CommonResponseBuilder.success("강사 통계 정보 조회에 성공했습니다.", instructorStat);
     }
