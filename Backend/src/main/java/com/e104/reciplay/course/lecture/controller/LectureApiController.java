@@ -148,7 +148,7 @@ public class LectureApiController {
         log.debug("강의 기간 : {}", term);
 
         courseManagementService.setCourseTerm(term, courseId);
-
+        log.debug("강의 기간 등록 성공.");
         return CommonResponseBuilder.create("강의 등록에 성공했습니다.", null);
     }
 }
