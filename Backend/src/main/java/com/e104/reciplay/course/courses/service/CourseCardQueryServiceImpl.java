@@ -38,7 +38,7 @@ public class CourseCardQueryServiceImpl implements CourseCardQueryService{
     public PagedResponse<CourseCard> queryCardsByCardCondtion(CourseCardCondition condition, Pageable pageable, Long userId) {
         String cat = condition.getRequestCategory();
         if (cat == null) throw new IllegalArgumentException("requestCategory는 필수입니다.");
-
+        log.debug("강좌 카테고리 확인 후 페이지네이션 조회");
         Page<Course> page = switch (cat) {
             case "special"     -> courseRepository.findSpecialCoursesPage(pageable);
             case "soon"        -> courseRepository.findSoonCoursesPage(pageable);
@@ -51,17 +51,23 @@ public class CourseCardQueryServiceImpl implements CourseCardQueryService{
         };
         // 1) 기본 필드 매핑
            List<CourseCard> cards  = new ArrayList<>();
-
+        log.debug("강좌 카드 속성 추가");
             for(Course c : page.getContent()){
                 CourseCard card = new CourseCard(c);
+                log.debug("강사 id 속성 추가");
                 card.setInstructorId(c.getInstructorId());
+                log.debug("강사 이름 속성 추가");
                 card.setInstructorName(instructorQueryService.queryNameByInstructorId(c.getInstructorId()));
                 card.setCategory(categoryQueryService.queryNameByCourseId(c.getId()));
+                log.debug("강좌 카테고리 속성 추가");
                 card.setCanLearns(canLearnQueryService.queryContentsByCourseId(c.getId()));
+                log.debug("리뷰 평균별점 속성 추가");
                 card.setAverageReviewScore(reviewQueryService.avgStarsByCourseId(c.getId()));
+                log.debug("해당 회원 수강 여부 속성 추가");
                 card.setIsEnrolled(courseHistoryQueryService.enrolled(userId, c.getId()));
 
                 FileMetadata fileMetadata = null;
+                log.debug("카드 관련 이미지 속성 추가");
                 if (cat.equals("special")) {
 //                        fileMetadata = subFileMetadataQueryService.queryMetadataByCondition(c.getId(), "COURSE_COVER");
                     fileMetadata = subFileMetadataQueryService.queryMetadataBySequenceCondition(c.getId(), "SPECIAL_BANNER", 1);
@@ -74,7 +80,7 @@ public class CourseCardQueryServiceImpl implements CourseCardQueryService{
                 } catch(Exception e) {
                     log.debug("파일 조회에 오류가 발생. 없는 파일 같아요 {}", e.getMessage());
                 }
-
+                log.debug("카드 리스트에 카드 추가");
                 cards.add(card);
             }
         return PagedResponse.from(page, cards);

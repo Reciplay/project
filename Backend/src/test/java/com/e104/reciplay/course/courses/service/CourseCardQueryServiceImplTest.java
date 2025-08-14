@@ -15,7 +15,8 @@ import com.e104.reciplay.user.review.service.ReviewQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 
@@ -43,7 +44,8 @@ class CourseCardQueryServiceImplTest {
     @InjectMocks
     private CourseCardQueryServiceImpl service;
 
-    private static final Pageable PAGEABLE = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("courseStartDate")));
+    private static final Pageable PAGEABLE =
+            PageRequest.of(0, 10, Sort.by(Sort.Order.desc("courseStartDate")));
 
     // ---------- 공통 헬퍼 ----------
 
@@ -83,7 +85,7 @@ class CourseCardQueryServiceImplTest {
         when(reviewQueryService.avgStarsByCourseId(courseId)).thenReturn(avg);
         when(courseHistoryQueryService.enrolled(anyLong(), eq(courseId))).thenReturn(enrolled);
 
-        // ✅ 변경 포인트: sequence 기반 메서드로 스텁
+        // ✅ 시퀀스 기반 조회 메서드로 변경
         FileMetadata meta = FileMetadata.builder().relatedId(courseId).build();
         when(subFileMetadataQueryService.queryMetadataBySequenceCondition(eq(courseId), eq(fileType), eq(1)))
                 .thenReturn(meta);
@@ -114,7 +116,7 @@ class CourseCardQueryServiceImplTest {
         Page<Course> page = new PageImpl<>(List.of(c), PAGEABLE, 1);
         when(courseRepository.findSpecialCoursesPage(PAGEABLE)).thenReturn(page);
 
-        // ✅ SPECIAL_BANNER 로 변경
+        // ✅ SPECIAL_BANNER
         stubCommon(1L, 77L, "홍길동",
                 List.of("자바", "스프링"), 4.9, true, "백엔드", "SPECIAL_BANNER");
 
@@ -124,10 +126,8 @@ class CourseCardQueryServiceImplTest {
 
         PagedResponse<CourseCard> resp = service.queryCardsByCardCondtion(cond, PAGEABLE, userId);
 
-        // 레포 호출
         verify(courseRepository).findSpecialCoursesPage(PAGEABLE);
 
-        // 결과 검증
         assertThat(resp.getContent()).hasSize(1);
         CourseCard card = resp.getContent().get(0);
         assertThat(card.getCourseId()).isEqualTo(1L);
@@ -139,7 +139,7 @@ class CourseCardQueryServiceImplTest {
         assertThat(card.getIsEnrolled()).isTrue();
         assertThat(card.getResponseFileInfo()).isNotNull();
 
-        // ✅ verify 도 sequence 기반으로 변경
+        // ✅ 시퀀스=1 검증
         verify(subFileMetadataQueryService).queryMetadataBySequenceCondition(1L, "SPECIAL_BANNER", 1);
     }
 
