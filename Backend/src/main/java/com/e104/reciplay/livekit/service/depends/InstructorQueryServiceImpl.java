@@ -132,14 +132,24 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
 
     @Override
     public InstructorStat queryInstructorStatistic(Long instructorId) {
+        log.debug("강사 통계 정보 조회 메서드 실행.");
         InstructorStat instructorStat = new InstructorStat();
         Integer totalStudents = instructorStatQueryService.queryTotalStudents(instructorId);
+        log.debug("총 학생 수 : {} 명", totalStudents);
         Double averageStars = instructorStatQueryService.queryAvgStars(instructorId);
+        log.debug("평균 별점 : {} 점", averageStars);
         Integer totalReviewCount = instructorStatQueryService.queryTotalReviewCount(instructorId);
+        log.debug("총 리뷰 수 : {} 개", totalReviewCount);
         Integer subscriberCount = instructorStatQueryService.querySubsciberCount(instructorId);
+        log.debug("총 구독자 수 : {} 명", subscriberCount);
 
-        FileMetadata profileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructorId, "user_profile");
-        ResponseFileInfo profileFileInfo = s3Service.getResponseFileInfo(profileMetadata);
+        ResponseFileInfo profileFileInfo = null;
+        try {
+            FileMetadata profileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructorId, "USER_PROFILE");
+            profileFileInfo = s3Service.getResponseFileInfo(profileMetadata);
+        } catch (Exception e) {
+            log.debug("프로필 조회중 오류 발생함. : {}", e.getMessage());
+        }
 
         List<InstructorQuestion> newQuestions = qnaQueryService.queryQuestionsByInstructorId(instructorId);
         instructorStat.setAverageStars(averageStars);
