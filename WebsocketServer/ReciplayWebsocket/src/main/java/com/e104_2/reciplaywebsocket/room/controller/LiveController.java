@@ -93,7 +93,9 @@ public class LiveController {
         log.debug("re-join message 도착함 데이터 : {}", message);
 
         if(!message.getType().equals("re-join")) return;
-        messagingTemplate.convertAndSendToUser(message.getReceiver(), URL_PREFIX + "/queue/room/" + message.getRoomId(), message);
+        messagingTemplate.convertAndSendToUser(message.getReceiver(),
+                "/queue/" + message.getRoomId(),
+                message);
     }
 
     @MessageMapping("/quit")
