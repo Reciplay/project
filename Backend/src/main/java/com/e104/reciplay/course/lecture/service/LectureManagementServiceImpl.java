@@ -149,13 +149,15 @@ public class LectureManagementServiceImpl implements LectureManagementService{
 
         LocalDate startDate = requests.get(0).getRequest().getStartedAt().toLocalDate();
         LocalDate endDate = requests.get(0).getRequest().getStartedAt().toLocalDate();
-
+        log.debug("초기 시작 날짜 {}, 초기 종료 날짜 {}", startDate, endDate);
         // 강의별 자료 저장함.
         for(int i = 0; i < requests.size(); i++) {
             Long lectureId = lectureIds.get(i);
             MultipartFile file = requests.get(i).getMaterial();
+            log.debug("강좌 아이디 = {}, file = {}", lectureId, file);
 
             try {
+                log.debug("파일 업로드 합니다. {}", file);
                 if(file != null) s3Service.uploadFile(file, FileCategory.MATERIALS, RelatedType.LECTURE, lectureId, i + 1);
             } catch (IOException e) {
                 throw new FileUploadFailureException("스토리지에 강의자료 업로드 중 에러가 발생했습니다.");
@@ -165,10 +167,12 @@ public class LectureManagementServiceImpl implements LectureManagementService{
             LocalDate lectureEndDate = requests.get(i).getRequest().getEndedAt().toLocalDate();
             startDate = (startDate.isAfter(lectureStartDate)) ? lectureStartDate : startDate;
             endDate = (endDate.isBefore(lectureEndDate)) ? lectureEndDate : endDate;
+            log.debug("업데이트 된 시작 날짜 {}, 업데이트 된 종료 날짜 {}", startDate, endDate);
         }
         log.debug("챕터 메니지먼트 호출.");
         chapterManagementService.registChaptersWithTodos(requests, lectureIds);
 
+        log.debug("강의 입력 완료.");
         return new CourseTerm(startDate, endDate);
     }
 

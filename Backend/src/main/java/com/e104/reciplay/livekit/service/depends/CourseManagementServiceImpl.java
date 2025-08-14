@@ -127,6 +127,7 @@ public class CourseManagementServiceImpl implements CourseManagementService{
     }
 
     @Override
+    @Transactional
     public void setCourseTerm(CourseTerm term, Long courseId) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강좌 ID 입니다."));
         course.setCourseStartDate(term.getStartDate());
