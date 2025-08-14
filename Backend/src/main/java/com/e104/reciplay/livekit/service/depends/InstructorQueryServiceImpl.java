@@ -45,40 +45,60 @@ public class InstructorQueryServiceImpl implements InstructorQueryService{
     private final SubscriptionHistoryService subscriptionHistoryService;
     @Override
     public Instructor queryInstructorByEmail(String email) {
+        log.debug("강사를 이메일로 조회하는 메서드 email = {}", email);
         User user = userQueryService.queryUserByEmail(email);
         return instructorRepository.findByUserId(user.getId()).orElseThrow(()->new IllegalArgumentException("강사가 아닌 유저의 이메일 입니다."));
     }
 
     @Override
     public Long queryInstructorIdByEmail(String email) {
+        log.debug("강사 아이디 이메일로 조회하는 메서드 email = {}", email);
         return instructorRepository.findIdByEmail(email);
     }
 
     @Override
     public String queryNameByInstructorId(Long instructorId) {
+        log.debug("강사 아이디로 이름을 조회하는 메서드 instructorId = {}", instructorId);
         return instructorRepository.findNameById(instructorId);
     }
 
     @Override
     public Instructor queryInstructorById(Long instructorId) {
+        log.debug("강사 아이디로 강사를 조회하는 메서드 instructorId = {}", instructorId);
         return instructorRepository.findById(instructorId).orElseThrow(()->new EmailNotFoundException("전달된 instructorId를 찾을 수 없습니다. (instructorId : "+instructorId+")"));
     }
 
     @Override
     public InstructorProfile queryInstructorProfile(Long instructorId, Long userId) {
+        log.debug("강사 아이디로 강사 프로필 조회하는 메서드 instructorId = {}, userId = {}", instructorId, userId);
         Instructor instructor = instructorRepository.findById(instructorId).orElseThrow(()->new EmailNotFoundException("전달된 강사을 찾을 수 없습니다. (강사Id : "+instructorId+")"));
+        log.debug("조회된 강사 = {}", instructor);
 
         // InstructorProfile 인스턴스 생성
         InstructorProfile instructorProfile = new InstructorProfile();
+        log.debug("조회된 강사 프로필 = {}", instructorProfile);
 
         // 강사 프로필 이미지 찾기
         FileMetadata instructorProfileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructor.getUserId(), "user_profile");
+        log.debug("조회된 강사 프로필의 메타 데이터 = {}", instructorProfileMetadata);
+
         ResponseFileInfo instructorProfileFileInfo = s3Service.getResponseFileInfo(instructorProfileMetadata);
+        log.debug("조회된 강사 프로필 파일의 정보 = {}", instructorProfileFileInfo);
 
+
+        ResponseFileInfo instructorBannerFileInfo = null;
         // 강사 배너 이미지 찾기
-        FileMetadata instructorBannerMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructorId, "instructor_banner");
-        ResponseFileInfo instructorBannerFileInfo =s3Service.getResponseFileInfo(instructorBannerMetadata);
+        try {
+            FileMetadata instructorBannerMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructorId, "instructor_banner");
+            log.debug("조회된 강사 배너 파일 정보 = {}", instructorProfileFileInfo);
 
+            instructorBannerFileInfo = s3Service.getResponseFileInfo(instructorBannerMetadata);
+            log.debug("조회된 강사 배너 파일 = {}", instructorBannerFileInfo);
+
+        } catch (Exception e) {
+            log.debug("파일 조회 예외 {}", e.getMessage());
+            log.debug("이미지 파일이 없는 것 같습니다.");
+        }
         // licenseItemList 설정
         List<LicenseItem> licenseItems = new ArrayList<>();
         List<InstructorLicense> licenses = instructorLicenseQueryService.queryLicensesByInstructorId(instructorId);

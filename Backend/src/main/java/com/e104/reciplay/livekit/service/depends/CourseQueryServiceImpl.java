@@ -5,7 +5,6 @@ import com.e104.reciplay.course.courses.service.CanLearnQueryService;
 import com.e104.reciplay.course.courses.service.SubFileMetadataQueryService;
 import com.e104.reciplay.course.courses.service.ZzimQueryService;
 import com.e104.reciplay.entity.Course;
-import com.e104.reciplay.entity.CourseHistory;
 import com.e104.reciplay.entity.FileMetadata;
 import com.e104.reciplay.entity.Instructor;
 import com.e104.reciplay.repository.CourseRepository;
@@ -49,6 +48,7 @@ public class CourseQueryServiceImpl implements CourseQueryService{
     @Override
     public List<CourseDetail> queryCourseDetailsByInstructorId(Long instructorId, String courseStatus) {
         List<Course> courses;
+        log.debug("강좌 상태에 따른 course 리스트 조회");
         switch (courseStatus){
             case "soon": courses = courseRepository.findSoonCourseByInstructorId(instructorId); break;
             case "ongoing": courses = courseRepository.findOngoingCourseByInstructorId(instructorId); break;
@@ -57,6 +57,7 @@ public class CourseQueryServiceImpl implements CourseQueryService{
         }
         List<CourseDetail> courseDetails = new ArrayList<>();
         for(Course c : courses){
+            log.debug("courses를 courseDetails에 삽입");
             courseDetails.add(this.collectCourseDetailWithCommonFields(c));
         }
         return courseDetails;
@@ -64,8 +65,11 @@ public class CourseQueryServiceImpl implements CourseQueryService{
 
     @Override
     public CourseDetail queryCourseDetailByCourseId(Long courseId, Long userId) {
+        log.debug("강좌 조회");
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강좌 ID 입니다."));
+        log.debug("courseDetail에 course 속성 삽입");
         CourseDetail courseDetail = this.collectCourseDetailWithCommonFields(course);
+        log.debug("해당 강좌와 사용자 사이의 속성 삽입");
         if(userId != null) {
             courseDetail.setIsZzimed(zzimQueryService.isZzimed(courseId, userId));
             courseDetail.setIsEnrolled(courseHistoryQueryService.enrolled(courseId, userId));
@@ -75,7 +79,7 @@ public class CourseQueryServiceImpl implements CourseQueryService{
             courseDetail.setIsEnrolled(false);
             courseDetail.setIsReviwed(false);
         }
-
+        log.debug("courseDetail에 추가 데이터 삽입");
         Instructor instructor = instructorQueryService.queryInstructorById(course.getInstructorId());
         User user = userQueryService.queryUserById(instructor.getUserId());
         courseDetail.setInstructorEmail(user.getEmail());
