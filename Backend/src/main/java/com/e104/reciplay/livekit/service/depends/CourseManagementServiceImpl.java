@@ -27,6 +27,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Slf4j
@@ -132,6 +134,9 @@ public class CourseManagementServiceImpl implements CourseManagementService{
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강좌 ID 입니다."));
         course.setCourseStartDate(term.getStartDate());
         course.setCourseEndDate(term.getEndDate());
+
+        course.setEnrollmentEndDate(LocalDateTime.of(term.getStartDate().minusDays(1), LocalTime.MAX));
+        course.setEnrollmentEndDate(LocalDateTime.of(term.getStartDate().minusDays(1).minusWeeks(1), LocalTime.MAX));
     }
 
     @Override
