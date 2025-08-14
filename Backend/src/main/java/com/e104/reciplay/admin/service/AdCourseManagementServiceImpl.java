@@ -2,7 +2,6 @@ package com.e104.reciplay.admin.service;
 
 import com.e104.reciplay.admin.dto.request.ApprovalInfo;
 import com.e104.reciplay.entity.Course;
-import com.e104.reciplay.entity.Instructor;
 import com.e104.reciplay.livekit.service.depends.CourseQueryService;
 import com.e104.reciplay.livekit.service.depends.InstructorQueryService;
 import com.e104.reciplay.repository.CourseRepository;
@@ -32,15 +31,17 @@ public class AdCourseManagementServiceImpl implements AdCourseManagementService{
         if(course == null){
             throw new EntityNotFoundException("해당 강좌를 찾을 수 없습니다.");
         }
-
+        log.debug("예외 통과");
         String content;
         Long instructorUserId = instructorQueryService.queryInstructorById(approvalInfo.getInstructorId()).getUserId();
 
         if(approvalInfo.getIsApprove()) {
+            log.debug("강좌 등록 승인 처리");
             courseRepository.updateCourseApprovalById(approvalInfo.getCourseId());
             content = course.getTitle() + " 강좌 등록이 승인되었습니다.";
             messageManagementService.createMessage(adminUserId, instructorUserId, content);
         }else{
+            log.debug("강좌 등록 거절 처리");
             courseRepository.deleteById(approvalInfo.getCourseId());
             content = "강좌 등록이 거절되었습니다.\n거절 사유 : " + approvalInfo.getMessage();
             messageManagementService.createMessage(adminUserId, instructorUserId, content);

@@ -55,6 +55,7 @@ public class CourseManagementServiceImpl implements CourseManagementService{
     @Override
     @Transactional
     public void activateLiveState(Long courseId) {
+        log.debug("라이브 상태 활성화");
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강좌 ID 입니다."));
         course.setIsLive(true);
     }
@@ -79,14 +80,18 @@ public class CourseManagementServiceImpl implements CourseManagementService{
     public Long updateCourseByCourseId(RequestCourseInfo requestCourseInfo, List<MultipartFile> thumbnailImages, MultipartFile courseCoverImage) {
         Long courseId = requestCourseInfo.getCourseId();
         Course course = courseQueryService.queryCourseById(courseId); // 강좌 찾기
+        log.debug("해당 강좌 찾아서 기본 속성들 업데이트");
         course.updateCourse(requestCourseInfo); // 강좌 수정
         courseRepository.save(course); // 수정된 강좌 정보 저장
 
+        log.debug("이런걸 배울 수 있어요 삭제");
         // 해당 강좌의 이런걸 배울 수 있어요 삭제
         canLearnManagementService.deleteCanLearnsByCourseId(courseId);
+        log.debug("썸네일 이미지와 강좌커버이미지의 메타데이터 찾기");
         // 강좌Id로 썸네일 이미지들과 강좌커버이미지의 메타데이터 찾기
         List<FileMetadata> oldThumbnailImages = subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAILS");
         FileMetadata oldCourseCoverImages = subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER");
+       log.debug("해당 강좌의 메타데이터들과 s3파일들 모두 삭제");
         // 해당 강좌의 메타데이터들과 s3 파일들 모두 삭제
         for(FileMetadata data : oldThumbnailImages){
             s3Service.deleteFile(data);
@@ -95,8 +100,10 @@ public class CourseManagementServiceImpl implements CourseManagementService{
         s3Service.deleteFile(oldCourseCoverImages);
         subFileMetadataManagementService.deleteMetadataByEntitiy(oldCourseCoverImages);
 
+        log.debug("썸네일들과 강좌 커버 이미지 업로드");
         // 썸네일들과 강좌 커버 이미지 업로드
         uploadImagesWithCourseId(courseId, courseCoverImage,thumbnailImages);
+        log.debug("이런걸 배울 수 있어요 생성");
         // 이런걸 배울 수 있어요 저장
         canLearnManagementService.createCanLearnsWithCourseId(courseId, requestCourseInfo.getCanLearns());
 
@@ -134,7 +141,7 @@ public class CourseManagementServiceImpl implements CourseManagementService{
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강좌 ID 입니다."));
         course.setCourseStartDate(term.getStartDate());
         course.setCourseEndDate(term.getEndDate());
-
+        log.debug("강좌 등록 종료 시간 설정");
         course.setEnrollmentEndDate(LocalDateTime.of(term.getStartDate().minusDays(1), LocalTime.MAX));
         course.setEnrollmentEndDate(LocalDateTime.of(term.getStartDate().minusDays(1).minusWeeks(1), LocalTime.MAX));
     }
