@@ -54,7 +54,6 @@ class CourseManagementServiceImplTest {
     @Mock private CategoryQueryService categoryQueryService;
     @Mock private LevelManagementService levelManagementService;
 
-
     @InjectMocks
     private CourseManagementServiceImpl service;
 
@@ -177,9 +176,10 @@ class CourseManagementServiceImplTest {
             FileMetadata oldThumb2 = FileMetadata.builder().id(2L).relatedId(courseId).relatedType(RelatedType.THUMBNAIL).sequence(2).build();
             FileMetadata oldCover  = FileMetadata.builder().id(3L).relatedId(courseId).relatedType(RelatedType.COURSE_COVER).sequence(1).build();
 
-            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "thumbnail"))
+            // ✅ 서비스는 "THUMBNAILS" 로 호출하므로 테스트도 동일하게 스텁
+            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAILS"))
                     .thenReturn(List.of(oldThumb1, oldThumb2));
-            when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "course_cover"))
+            when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER"))
                     .thenReturn(oldCover);
 
             Long returnedId = service.updateCourseByCourseId(req, thumbnails, cover);
@@ -206,9 +206,10 @@ class CourseManagementServiceImplTest {
             when(courseQueryService.queryCourseById(courseId)).thenReturn(existing);
             when(courseRepository.save(any(Course.class))).thenAnswer(inv -> inv.getArgument(0));
 
-            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "thumbnail"))
+            // ✅ 여기 역시 "THUMBNAILS"
+            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAILS"))
                     .thenReturn(List.of());
-            when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "course_cover"))
+            when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER"))
                     .thenReturn(FileMetadata.builder().id(9L).relatedId(courseId).relatedType(RelatedType.COURSE_COVER).sequence(1).build());
 
             doThrow(new IOException("boom")).when(s3Service)
@@ -229,8 +230,10 @@ class CourseManagementServiceImplTest {
             when(courseRepository.save(any(Course.class))).thenAnswer(inv -> inv.getArgument(0));
 
             FileMetadata oldCover  = FileMetadata.builder().id(30L).relatedId(courseId).relatedType(RelatedType.COURSE_COVER).sequence(1).build();
-            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "thumbnail")).thenReturn(List.of());
-            when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "course_cover")).thenReturn(oldCover);
+
+            // ✅ "THUMBNAILS"
+            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAILS")).thenReturn(List.of());
+            when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER")).thenReturn(oldCover);
 
             Long returnedId = service.updateCourseByCourseId(req, thumbnails, cover);
             assertEquals(courseId, returnedId);
