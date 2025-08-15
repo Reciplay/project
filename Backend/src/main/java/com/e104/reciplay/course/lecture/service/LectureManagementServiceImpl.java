@@ -246,6 +246,11 @@ public class LectureManagementServiceImpl implements LectureManagementService{
 //        log.debug("todoResponse !! {}", todoResponse);
     }
 
+    @Override
+    public int deleteAllLecturesByCourseId(Long courseId) {
+        return lectureRepository.deleteByCourseId(courseId);
+    }
+
     void checkSequence(List<LectureRequest> requests) {
         requests.sort((i, j) -> i.getRequest().getSequence() - j.getRequest().getSequence());
         for(int i = 1; i < requests.size(); i++) {

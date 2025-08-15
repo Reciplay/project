@@ -39,8 +39,8 @@ public class TodoManagementServiceImpl implements TodoManagementService {
     }
 
     @Override
-    public void deleteAllTodos(Long chapterId) {
-        todoRepository.deleteByChapterId(chapterId);
+    public int deleteAllTodosByChapterIds(List<Long> ids) {
+        return todoRepository.deleteAllByChapterIdIn(ids);
     }
 
     @Override
