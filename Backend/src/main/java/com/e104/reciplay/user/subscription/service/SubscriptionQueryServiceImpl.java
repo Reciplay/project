@@ -20,7 +20,7 @@ public class SubscriptionQueryServiceImpl implements SubscriptionQueryService {
     }
 
     @Override
-    public Long countSubscribers(Long instructorId) {
+    public Integer countSubscribers(Long instructorId) {
         return subscriptionRepository.countByInstructorId(instructorId);
     }
 
