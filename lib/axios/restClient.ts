@@ -188,7 +188,7 @@ restClient.interceptors.request.use(
 
     config.baseURL =
       config.useCors === false
-        ? "http://i13e104.p.ssafy.io:8080/api/v1"
+        ? "https://i13e104.p.ssafy.io/api/v1"
         : "/api/rest";
 
     if (config.requireAuth) {
