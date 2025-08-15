@@ -203,11 +203,15 @@ public class InstructorQueryServiceImpl implements InstructorQueryService {
 
             log.debug("해당 강사의 사용자 아이디 조회");
             Long instructorUserId = instructorRepository.findById(s.getInstructorId()).get().getUserId();
-
-            log.debug("해당 강사의 userProfileFileMetadata 조회");
-            FileMetadata fileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructorUserId, USER_PROFILE);
-            log.debug("해당 강사의 responseFIleInfo 생성");
-            ResponseFileInfo responseFileInfo = s3Service.getResponseFileInfo(fileMetadata);
+            ResponseFileInfo responseFileInfo = null;
+            try {
+                log.debug("해당 강사의 userProfileFileMetadata 조회");
+                FileMetadata fileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructorUserId, USER_PROFILE);
+                log.debug("해당 강사의 responseFIleInfo 생성");
+                responseFileInfo = s3Service.getResponseFileInfo(fileMetadata);
+            }catch(RuntimeException e){
+                log.debug("프로필 조회중 오류 발생함. : {}", e.getMessage());
+            }
             item.setInstructorProfileFileInfo(responseFileInfo);
 
             item.setInstructorId(s.getInstructorId());

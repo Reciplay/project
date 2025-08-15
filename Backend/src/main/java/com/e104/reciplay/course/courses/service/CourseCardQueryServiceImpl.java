@@ -69,10 +69,8 @@ public class CourseCardQueryServiceImpl implements CourseCardQueryService{
                 FileMetadata fileMetadata = null;
                 log.debug("카드 관련 이미지 속성 추가");
                 if (cat.equals("special")) {
-//                        fileMetadata = subFileMetadataQueryService.queryMetadataByCondition(c.getId(), "COURSE_COVER");
                     fileMetadata = subFileMetadataQueryService.queryMetadataBySequenceCondition(c.getId(), "SPECIAL_BANNER", 1);
                 } else {
-//                    fileMetadata = subFileMetadataQueryService.queryMetadataByCondition(c.getId(), "THUMBNAIL");
                     fileMetadata = subFileMetadataQueryService.queryMetadataBySequenceCondition(c.getId(), "THUMBNAIL", 1);
                 }
                 try {
