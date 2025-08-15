@@ -26,6 +26,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -48,6 +49,11 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
     private final UserQueryService userQueryService;
 
+    private final com.e104.reciplay.user.security.service.SocialOAuth2UserService socialOAuth2UserService;
+    private final com.e104.reciplay.user.security.config.OAuth2SuccessHandler oAuth2SuccessHandler;
+
+    @Value("${app.oauth2.front-callback-url:http://localhost:3000/auth/social/callback}")
+    private String frontCallbackUrl;
     private String[] permittedUrls = {
             URL_PREFIX + "/user/auth/login", URL_PREFIX + "/user/auth/refresh-token",
             URL_PREFIX + "/user/auth/signup", "/h2-console/**", "/practice-ui.html",
@@ -110,6 +116,8 @@ public class SecurityConfig {
                         "/swagger-ui/**", // swagger-ui 관련 모든 경로 허용
                         "/api-docs/json/**",  // openapi v3 문서 경로 허용
                         "/swagger-resources/**",
+                        "/oauth2/**",
+                        "/user/api/v1/login/oauth/**",
                         URL_PREFIX + "/livekit/**",
                         URL_PREFIX + "/course/courses/**",
                         "/api/test/course/courses/lectures").permitAll()
@@ -125,7 +133,20 @@ public class SecurityConfig {
                 .requestMatchers(URL_PREFIX+"/livekit/instructor/token", URL_PREFIX+"/course/qna/answer/**").hasRole("INSTRUCTOR")
                 .requestMatchers(URL_PREFIX + "/admin").hasRole("ADMIN")
                 .anyRequest().authenticated());
-
+        http.oauth2Login(o -> o
+                .userInfoEndpoint(u -> u.userService(socialOAuth2UserService))
+                .redirectionEndpoint(r -> r.baseUri("/user/api/v1/login/oauth/*"))
+                .successHandler(oAuth2SuccessHandler)
+                .failureHandler((req, res, ex) -> {
+                    // 실패도 프론트 콜백으로 보내서 에러 메시지 표시
+                    String url = UriComponentsBuilder
+                            .fromUriString(frontCallbackUrl) // 동일한 콜백(/auth/social/callback)
+                            .queryParam("error", "oauth_failed")
+                            .queryParam("message", ex.getMessage())
+                            .build().toUriString();
+                    res.sendRedirect(url);
+                })
+        );
         http.formLogin(auth -> auth.disable());
 
         // 커스텀 필터를 addFilterAt 해줘야 함.
@@ -143,7 +164,13 @@ public class SecurityConfig {
         // 인증 필터에서 통과시킬 경로를 설정한다.
         Set<String> allowedUris = new HashSet<>();
         allowedUris.add(URL_PREFIX+"/user/auth/refresh-token");
-
+        // 소셜 시작/콜백 허용
+        allowedUris.add("/oauth2/authorization/naver");
+        allowedUris.add("/oauth2/authorization/kakao");
+        allowedUris.add("/oauth2/authorization/google");
+        allowedUris.add("/user/api/v1/login/oauth/naver");
+        allowedUris.add("/user/api/v1/login/oauth/kakao");
+        allowedUris.add("/user/api/v1/login/oauth/google");
         JWTFilter jwtFilter = new JWTFilter(jwtUtil, allowedUris, authService);
         http.addFilterBefore(jwtFilter, CustomLoginFilter.class);
 
