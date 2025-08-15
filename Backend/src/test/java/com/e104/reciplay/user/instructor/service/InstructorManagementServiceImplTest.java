@@ -50,11 +50,8 @@ class InstructorManagementServiceImplTest {
     }
 
     private LicenseItem licItem(Long id, String institution, LocalDate acq, String grade) {
-        // 서비스 코드가 getLicneseId(오타)를 호출하므로 주의!
         LicenseItem item = mock(LicenseItem.class);
         when(item.getLicenseId()).thenReturn(id);
-
-        // 경로에 따라 안 쓰일 수 있는 스텁 → lenient 처리
         lenient().when(item.getInstitution()).thenReturn(institution);
         lenient().when(item.getAcquisitionDate()).thenReturn(acq);
         lenient().when(item.getGrade()).thenReturn(grade);
@@ -72,7 +69,7 @@ class InstructorManagementServiceImplTest {
 
         @Test
         @DisplayName("registerInstructor: 저장 후 공통정보 생성(배너 업로드, 유효 라이선스/커리어 저장)")
-        void register_ok() throws Exception {
+        void register_ok() {
             Long userId = 11L;
 
             InstructorApplicationRequest req = mock(InstructorApplicationRequest.class);
@@ -97,8 +94,8 @@ class InstructorManagementServiceImplTest {
             assertThatCode(() -> service.registerInstructor(userId, req, banner()))
                     .doesNotThrowAnyException();
 
-            verify(s3Service).uploadFile(any(MultipartFile.class),
-                    eq(FileCategory.IMAGES), eq(RelatedType.INSTRUCTOR_BANNER), eq(100L), eq(1));
+            // verify(uploadFile) 호출을 IOException try/catch로 감싼 헬퍼 사용
+            verifyUploadCalled(100L);
 
             ArgumentCaptor<InstructorLicense> licCaptor = ArgumentCaptor.forClass(InstructorLicense.class);
             verify(instructorLicenseManagementService, times(1)).saveInstructorLicense(licCaptor.capture());
@@ -130,8 +127,7 @@ class InstructorManagementServiceImplTest {
                     .doesNotThrowAnyException();
 
             verify(instructorRepository).save(any(Instructor.class));
-            verify(s3Service).uploadFile(any(MultipartFile.class),
-                    eq(FileCategory.IMAGES), eq(RelatedType.INSTRUCTOR_BANNER), eq(200L), eq(1));
+            verifyUploadCalled(200L);
         }
     }
 
@@ -140,7 +136,7 @@ class InstructorManagementServiceImplTest {
 
         @Test
         @DisplayName("updateInstructor: 기존 배너/라이선스/커리어 삭제 후 공통정보 재생성")
-        void update_ok() throws Exception {
+        void update_ok() {
             Long instructorId = 77L;
 
             Instructor existing = Instructor.builder().id(instructorId).introduction("intro").build();
@@ -163,8 +159,7 @@ class InstructorManagementServiceImplTest {
             verify(instructorLicenseManagementService).deleteInstrutorLicensesByInstructorId(instructorId);
             verify(careerManagementService).deleteCareersByInstructorId(instructorId);
 
-            verify(s3Service).uploadFile(any(MultipartFile.class),
-                    eq(FileCategory.IMAGES), eq(RelatedType.INSTRUCTOR_BANNER), eq(instructorId), eq(1));
+            verifyUploadCalled(instructorId);
             verify(instructorLicenseManagementService).saveInstructorLicense(any(InstructorLicense.class));
             verify(careerManagementService).saveCareer(any(Career.class));
         }
@@ -196,6 +191,56 @@ class InstructorManagementServiceImplTest {
 
             verify(instructorLicenseManagementService, never()).saveInstructorLicense(any());
             verify(careerManagementService, times(1)).saveCareer(any(Career.class));
+        }
+
+        @Test
+        @DisplayName("updateInstructor: 기존 배너 삭제(deleteFile) 중 RuntimeException 발생해도 진행(try/catch 반영)")
+        void update_swallow_delete_runtime_exception() {
+            Long instructorId = 99L;
+            when(instructorQueryService.queryInstructorById(instructorId))
+                    .thenReturn(Instructor.builder().id(instructorId).build());
+
+            InstructorProfileUpdateRequest req = mock(InstructorProfileUpdateRequest.class);
+
+            LicenseItem licValid = licItem(3L, "기관", LocalDate.of(2022,2,2), "B");
+            License license3 = mock(License.class);
+            when(licenseQueryService.queryLicenseById(3L)).thenReturn(license3);
+            when(req.getLicenses()).thenReturn(List.of(licValid));
+
+            CareerItem cValid = careerItem("회사D");
+            when(req.getCareers()).thenReturn(List.of(cValid));
+
+            doThrow(new RuntimeException("no previous banner")).when(s3Service)
+                    .deleteFile(FileCategory.IMAGES, RelatedType.INSTRUCTOR_BANNER, instructorId, 1);
+
+            assertThatCode(() -> service.updateInstructor(instructorId, req, banner()))
+                    .doesNotThrowAnyException();
+
+            verify(s3Service).deleteFile(FileCategory.IMAGES, RelatedType.INSTRUCTOR_BANNER, instructorId, 1);
+            verify(instructorLicenseManagementService).deleteInstrutorLicensesByInstructorId(instructorId);
+            verify(careerManagementService).deleteCareersByInstructorId(instructorId);
+
+            verifyUploadCalled(instructorId);
+            verify(instructorLicenseManagementService).saveInstructorLicense(any(InstructorLicense.class));
+            verify(careerManagementService).saveCareer(any(Career.class));
+        }
+    }
+
+    /**
+     * verify(s3Service).uploadFile(...)는 시그니처상 IOException을 throws 하므로
+     * 컴파일러가 예외 처리를 요구합니다. 테스트에서 매번 try/catch 반복하지 않도록 헬퍼로 감쌉니다.
+     */
+    private void verifyUploadCalled(long instructorId) {
+        try {
+            verify(s3Service).uploadFile(
+                    any(MultipartFile.class),
+                    eq(FileCategory.IMAGES),
+                    eq(RelatedType.INSTRUCTOR_BANNER),
+                    eq(instructorId),
+                    eq(1)
+            );
+        } catch (IOException e) {
+            throw new AssertionError("verify(uploadFile) 중 IOException이 던져졌습니다.", e);
         }
     }
 }

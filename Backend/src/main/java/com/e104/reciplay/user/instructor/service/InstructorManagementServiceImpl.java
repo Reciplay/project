@@ -49,10 +49,16 @@ public class InstructorManagementServiceImpl implements InstructorManagementServ
     public void updateInstructor(Long instructorId, InstructorProfileUpdateRequest request, MultipartFile instructorBannerImage) {
         Instructor instructor = instructorQueryService.queryInstructorById(instructorId);
         instructor.setIntroduction(instructor.getIntroduction());
-        log.debug("강사 배너 이미지, 경력, 자격증 모두 삭제");
+        log.debug("기존의 강사 배너 이미지 삭제");
         // 기존 강사 배너 이미지, 경력, 자격증 모두 삭제
-        s3Service.deleteFile(FileCategory.IMAGES,RelatedType.INSTRUCTOR_BANNER,instructorId,1);
+        try {
+            s3Service.deleteFile(FileCategory.IMAGES, RelatedType.INSTRUCTOR_BANNER, instructorId, 1);
+        }catch(RuntimeException e){
+            log.debug("기존의 삭제할 파일이 없습니다.");
+        }
+        log.debug("기존 자격증 삭제");
         instructorLicenseManagementService.deleteInstrutorLicensesByInstructorId(instructorId);
+        log.debug("기존 경력 삭제");
         careerManagementService.deleteCareersByInstructorId(instructorId);
         log.debug("공통 강사 정보 생성");
         // 공통 강사 정보 생성( 강사 배너 이미지, 경력, 자격증 모두)
