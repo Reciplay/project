@@ -83,6 +83,9 @@ dependencies {
 	// oauth2.0 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
+	// OIDC(ID Token) 파싱/검증용 (구글 등): Nimbus 기반
+	implementation 'org.springframework.security:spring-security-oauth2-jose'
+
 	// webflux 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
