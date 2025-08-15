@@ -1,5 +1,9 @@
 package com.e104.reciplay.user.security.service;
 
+import com.e104.reciplay.entity.Category;
+import com.e104.reciplay.entity.Level;
+import com.e104.reciplay.repository.CategoryRepository;
+import com.e104.reciplay.repository.LevelRepository;
 import com.e104.reciplay.user.security.domain.User;
 import com.e104.reciplay.user.auth.dto.request.SignupRequest;
 import com.e104.reciplay.user.security.exception.DuplicateUserEmailException;
@@ -10,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor

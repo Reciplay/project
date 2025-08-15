@@ -1,11 +1,16 @@
 package com.e104.reciplay.admin.service;
 
 import com.e104.reciplay.admin.dto.request.ApprovalInfo;
+import com.e104.reciplay.course.courses.service.CanLearnManagementService;
+import com.e104.reciplay.course.courses.service.SubFileMetadataQueryService;
+import com.e104.reciplay.course.lecture.service.*;
 import com.e104.reciplay.entity.Course;
 import com.e104.reciplay.entity.Instructor;
 import com.e104.reciplay.livekit.service.depends.CourseQueryService;
 import com.e104.reciplay.livekit.service.depends.InstructorQueryService;
 import com.e104.reciplay.repository.CourseRepository;
+import com.e104.reciplay.s3.service.FileMetadataQueryService;
+import com.e104.reciplay.s3.service.S3Service;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -28,6 +33,25 @@ class AdCourseManagementServiceImplTest {
     @Mock CourseQueryService courseQueryService;
     @Mock CourseRepository courseRepository;
     @Mock MessageManagementService messageManagementService;
+
+    @Mock LectureQueryService lectureQueryService;
+    @Mock S3Service s3Service;
+
+    @Mock SubFileMetadataQueryService subFileMetadataQueryService;
+
+    @Mock FileMetadataQueryService fileMetadataQueryService;
+
+    @Mock ChapterQueryService chapterQueryService;
+
+    @Mock TodoQueryService todoQueryService;
+
+    @Mock CanLearnManagementService canLearnManagementService;
+
+    @Mock ChapterManagementService chapterManagementService;
+
+    @Mock TodoManagementService todoManagementService;
+
+    @Mock LectureManagementService lectureManagementService;
 
     @InjectMocks
     AdCourseManagementServiceImpl service;
@@ -116,7 +140,7 @@ class AdCourseManagementServiceImplTest {
         }
 
         @Test
-        @DisplayName("거절(false) 시: deleteById + 거절 사유 포함 메시지 전송, updateCourseApprovalById는 호출 안 됨")
+        @DisplayName("거절(false) 시: cleanCourseInfos 호출 및 거절 메시지 전송")
         void rejectFlow() {
             // given
             long adminUserId = 501L;
@@ -131,7 +155,8 @@ class AdCourseManagementServiceImplTest {
             given(info.getMessage()).willReturn("커리큘럼 보완 필요");
 
             Course course = mock(Course.class);
-            given(courseQueryService.queryCourseById(courseId)).willReturn(course); // 존재만 확인
+            given(course.getId()).willReturn(courseId);
+            given(courseQueryService.queryCourseById(courseId)).willReturn(course);
 
             Instructor instructor = mock(Instructor.class);
             given(instructor.getUserId()).willReturn(instructorUserId);
@@ -141,9 +166,17 @@ class AdCourseManagementServiceImplTest {
             service.updateCourseApproval(info, adminUserId);
 
             // then
+            // 1. cleanCourseInfos 내부의 모든 삭제 로직이 호출되었는지 검증
+            verify(canLearnManagementService, times(1)).deleteCanLearnsByCourseId(courseId);
+            verify(todoManagementService, times(1)).deleteAllTodosByChapterIds(any());
+            verify(chapterManagementService, times(1)).deleteAllChaptersByLectureIds(any());
+            verify(lectureManagementService, times(1)).deleteAllLecturesByCourseId(courseId);
             verify(courseRepository, times(1)).deleteById(courseId);
+
+            // 2. 승인 로직은 호출되지 않았는지 검증
             verify(courseRepository, never()).updateCourseApprovalById(anyLong());
 
+            // 3. 거절 메시지가 올바르게 전송되었는지 검증
             ArgumentCaptor<String> contentCap = ArgumentCaptor.forClass(String.class);
             verify(messageManagementService, times(1))
                     .createMessage(eq(adminUserId), eq(instructorUserId), contentCap.capture());

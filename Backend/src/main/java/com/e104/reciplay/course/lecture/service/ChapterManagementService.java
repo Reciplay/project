@@ -8,4 +8,6 @@ import java.util.Map;
 public interface ChapterManagementService {
     void registChaptersWithTodos(List<LectureRequest> requests, List<Long> lectureIds);
     void updateChapterWithTodos(Map<Long, LectureRequest> requestMap);
+
+    int deleteAllChaptersByLectureIds(List<Long> ids);
 }

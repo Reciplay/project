@@ -9,4 +9,5 @@ import java.util.List;
 public interface LectureRepository extends JpaRepository<Lecture, Long>, CustomLectureRepository {
     List<Lecture> findByCourseId(Long courseId);
     Long countByCourseId(Long courseId);
+    int deleteByCourseId(Long courseId);
 }
