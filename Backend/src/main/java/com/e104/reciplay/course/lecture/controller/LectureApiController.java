@@ -1,5 +1,6 @@
 package com.e104.reciplay.course.lecture.controller;
 
+import com.e104.reciplay.bot.dto.response.GeneratedLecture;
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 
@@ -8,6 +9,7 @@ import com.e104.reciplay.course.lecture.dto.LectureDetail;
 import com.e104.reciplay.course.lecture.dto.LectureSummary;
 import com.e104.reciplay.course.lecture.dto.request.LectureRequest;
 import com.e104.reciplay.course.lecture.dto.request.item.LectureUpdateRequest;
+import com.e104.reciplay.course.lecture.dto.request.item.LoughLectureInfo;
 import com.e104.reciplay.course.lecture.dto.response.CourseTerm;
 import com.e104.reciplay.course.lecture.service.LectureManagementService;
 import com.e104.reciplay.course.lecture.service.LectureQueryService;
@@ -150,5 +152,24 @@ public class LectureApiController {
         courseManagementService.setCourseTerm(term, courseId);
         log.debug("강의 기간 등록 성공.");
         return CommonResponseBuilder.create("강의 등록에 성공했습니다.", null);
+    }
+
+    @PostMapping("/todos")
+    @Operation(summary = "투두 리스트 자동생성용 API", description = """
+            투두 리스트를 자동 생성하는 API 입니다.
+            Chapter 정보를 나눠 전달해주는게 도움이 됩니다.
+            """)
+    public ResponseEntity<ResponseRoot<List<GeneratedLecture>>> generateTodoList(
+        @RequestPart("lecture") List<LoughLectureInfo> lectureInfos,
+        MultipartHttpServletRequest multipartRequest,
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        log.debug("투두 리스트 자동생성 요청 데이터: {}", lectureInfos);
+        List<LectureRequest> requests =  lectureManagementService.groupLectureAndMaterial(lectureInfos, multipartRequest);
+        log.debug("강의 데이터와 강의 자료를 묶음: {}", requests);
+
+        List<GeneratedLecture> result = lectureManagementService.generateTodos(requests);
+        log.debug("투두 리스트 생성 종료. {}", result);
+        return CommonResponseBuilder.create("투두 리스트 생성에 성공했습니다.", result);
     }
 }

@@ -89,16 +89,25 @@ public class CourseManagementServiceImpl implements CourseManagementService{
         canLearnManagementService.deleteCanLearnsByCourseId(courseId);
         log.debug("썸네일 이미지와 강좌커버이미지의 메타데이터 찾기");
         // 강좌Id로 썸네일 이미지들과 강좌커버이미지의 메타데이터 찾기
+
+        log.debug("해당 강좌의 메타데이터들과 s3파일들 모두 삭제");
+        try{
         List<FileMetadata> oldThumbnailImages = subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAILS");
-        FileMetadata oldCourseCoverImages = subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER");
-       log.debug("해당 강좌의 메타데이터들과 s3파일들 모두 삭제");
-        // 해당 강좌의 메타데이터들과 s3 파일들 모두 삭제
         for(FileMetadata data : oldThumbnailImages){
             s3Service.deleteFile(data);
             subFileMetadataManagementService.deleteMetadataByEntitiy(data);
+        }}catch(RuntimeException e){
+            log.debug("기존 썸네일 이미지가 없어서 예외 발생함. : {}", e.getMessage());
+
         }
-        s3Service.deleteFile(oldCourseCoverImages);
-        subFileMetadataManagementService.deleteMetadataByEntitiy(oldCourseCoverImages);
+        try {
+            FileMetadata oldCourseCoverImages = subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER");
+            // 해당 강좌의 메타데이터들과 s3 파일들 모두 삭제
+            s3Service.deleteFile(oldCourseCoverImages);
+            subFileMetadataManagementService.deleteMetadataByEntitiy(oldCourseCoverImages);
+        }catch(RuntimeException e){
+            log.debug("기존 강좌 커버 이미지가 없어서 예외 발생함. : {}", e.getMessage());
+        }
 
         log.debug("썸네일들과 강좌 커버 이미지 업로드");
         // 썸네일들과 강좌 커버 이미지 업로드
