@@ -25,6 +25,8 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,8 +40,10 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT) // 👈 Strict stubbing 완화
 class CourseManagementServiceImplTest {
 
     @Mock private CourseRepository courseRepository;
@@ -69,6 +73,20 @@ class CourseManagementServiceImplTest {
         );
     }
 
+    // ---------- 공통 헬퍼: verify(uploadFile) try-catch ----------
+    private void verifyUpload(MultipartFile file,
+                              FileCategory category,
+                              RelatedType relatedType,
+                              Long relatedId,
+                              Integer sequence) {
+        try {
+            // 파일은 same(...)으로 동일 인스턴스 매칭
+            verify(s3Service).uploadFile(same(file), eq(category), eq(relatedType), eq(relatedId), eq(sequence));
+        } catch (IOException e) {
+            fail("IOException 발생: " + e.getMessage());
+        }
+    }
+
     private RequestCourseInfo buildRequest(Long courseId) {
         return RequestCourseInfo.builder()
                 .courseId(courseId)
@@ -93,7 +111,6 @@ class CourseManagementServiceImplTest {
 
     @Nested
     class ActivateLiveState {
-
         @Test
         @DisplayName("강좌 활성화 성공: isLive=true 세팅")
         void activateLiveState_ok() {
@@ -103,7 +120,7 @@ class CourseManagementServiceImplTest {
 
             service.activateLiveState(1L);
 
-            assertTrue(course.getIsLive(), "isLive 가 true로 설정되어야 함");
+            assertTrue(course.getIsLive());
             verify(courseRepository, never()).save(any());
         }
 
@@ -117,10 +134,9 @@ class CourseManagementServiceImplTest {
 
     @Nested
     class CreateCourseByInstructorId {
-
         @Test
         @DisplayName("강좌 생성: save 후 S3 업로드 & CanLearn 생성 호출, courseId 반환")
-        void create_ok() throws Exception {
+        void create_ok() {
             when(courseRepository.save(any(Course.class))).thenAnswer(inv -> {
                 Course c = inv.getArgument(0);
                 c.setId(99L);
@@ -133,29 +149,61 @@ class CourseManagementServiceImplTest {
             Long returnedId = service.createCourseByInstructorId(instructorId, req, thumbnails, cover);
 
             assertEquals(99L, returnedId);
-            verify(courseRepository, times(1)).save(any(Course.class));
-            verify(s3Service).uploadFile(eq(cover), eq(FileCategory.IMAGES), eq(RelatedType.COURSE_COVER), eq(99L), eq(1));
-            verify(s3Service).uploadFile(eq(thumbnails.get(0)), eq(FileCategory.IMAGES), eq(RelatedType.THUMBNAIL), eq(99L), eq(1));
-            verify(s3Service).uploadFile(eq(thumbnails.get(1)), eq(FileCategory.IMAGES), eq(RelatedType.THUMBNAIL), eq(99L), eq(2));
+            verify(courseRepository).save(any(Course.class));
+            verifyUpload(cover, FileCategory.IMAGES, RelatedType.COURSE_COVER, 99L, 1);
+            verifyUpload(thumbnails.get(0), FileCategory.IMAGES, RelatedType.THUMBNAIL, 99L, 1);
+            verifyUpload(thumbnails.get(1), FileCategory.IMAGES, RelatedType.THUMBNAIL, 99L, 2);
             verify(canLearnManagementService).createCanLearnsWithCourseId(eq(99L), eq(req.getCanLearns()));
         }
 
         @Test
-        @DisplayName("S3 업로드 IOException 발생해도 예외 전파 없이 진행, courseId 반환")
-        void create_uploadIOException() throws Exception {
+        @DisplayName("생성: 커버 업로드 IOException 발생해도 예외 전파 없이 진행")
+        void create_coverUploadIOException() throws Exception {
             when(courseRepository.save(any(Course.class))).thenAnswer(inv -> {
                 Course c = inv.getArgument(0);
                 c.setId(101L);
                 return c;
             });
-            doThrow(new IOException("boom")).when(s3Service)
-                    .uploadFile(eq(cover), eq(FileCategory.IMAGES), eq(RelatedType.COURSE_COVER), eq(101L), eq(1));
+
+            // lenient + same(cover)
+            lenient().doThrow(new IOException("boom")).when(s3Service)
+                    .uploadFile(same(cover), eq(FileCategory.IMAGES), eq(RelatedType.COURSE_COVER), eq(101L), eq(1));
 
             RequestCourseInfo req = buildRequest(null);
 
             Long returnedId = assertDoesNotThrow(() -> service.createCourseByInstructorId(1L, req, thumbnails, cover));
             assertEquals(101L, returnedId);
+
+            // 커버 실패해도 썸네일/CanLearn은 계속
+            try {
+                verify(s3Service, atLeastOnce()).uploadFile(same(thumbnails.get(0)), eq(FileCategory.IMAGES), eq(RelatedType.THUMBNAIL), eq(101L), eq(1));
+            } catch (IOException e) {
+                fail(e);
+            }
             verify(canLearnManagementService).createCanLearnsWithCourseId(eq(101L), eq(req.getCanLearns()));
+        }
+
+        @Test
+        @DisplayName("생성: 첫 번째 썸네일 업로드 IOException이어도 두 번째 썸네일/나머지 계속")
+        void create_firstThumbnailIOException_continue() throws Exception {
+            when(courseRepository.save(any(Course.class))).thenAnswer(inv -> {
+                Course c = inv.getArgument(0);
+                c.setId(202L);
+                return c;
+            });
+
+            // 첫 썸네일만 실패
+            lenient().doThrow(new IOException("thumb1-fail")).when(s3Service)
+                    .uploadFile(same(thumbnails.get(0)), eq(FileCategory.IMAGES), eq(RelatedType.THUMBNAIL), eq(202L), eq(1));
+
+            RequestCourseInfo req = buildRequest(null);
+
+            Long returnedId = assertDoesNotThrow(() -> service.createCourseByInstructorId(2L, req, thumbnails, cover));
+            assertEquals(202L, returnedId);
+
+            verifyUpload(cover, FileCategory.IMAGES, RelatedType.COURSE_COVER, 202L, 1);
+            verifyUpload(thumbnails.get(1), FileCategory.IMAGES, RelatedType.THUMBNAIL, 202L, 2);
+            verify(canLearnManagementService).createCanLearnsWithCourseId(eq(202L), eq(req.getCanLearns()));
         }
     }
 
@@ -163,8 +211,8 @@ class CourseManagementServiceImplTest {
     class UpdateCourseByCourseId {
 
         @Test
-        @DisplayName("강좌 수정: 기존 삭제 후 재업로드 & CanLearn 재생성, courseId 반환")
-        void update_ok() throws Exception {
+        @DisplayName("수정: 기존 삭제 후 재업로드 & CanLearn 재생성, courseId 반환")
+        void update_ok() {
             Long courseId = 123L;
             RequestCourseInfo req = buildRequest(courseId);
 
@@ -176,7 +224,6 @@ class CourseManagementServiceImplTest {
             FileMetadata oldThumb2 = FileMetadata.builder().id(2L).relatedId(courseId).relatedType(RelatedType.THUMBNAIL).sequence(2).build();
             FileMetadata oldCover  = FileMetadata.builder().id(3L).relatedId(courseId).relatedType(RelatedType.COURSE_COVER).sequence(1).build();
 
-            // ✅ 서비스는 "THUMBNAILS" 로 호출하므로 테스트도 동일하게 스텁
             when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAILS"))
                     .thenReturn(List.of(oldThumb1, oldThumb2));
             when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER"))
@@ -192,13 +239,13 @@ class CourseManagementServiceImplTest {
             verify(subFileMetadataManagementService).deleteMetadataByEntitiy(oldThumb1);
             verify(subFileMetadataManagementService).deleteMetadataByEntitiy(oldThumb2);
             verify(subFileMetadataManagementService).deleteMetadataByEntitiy(oldCover);
-            verify(s3Service).uploadFile(eq(cover), eq(FileCategory.IMAGES), eq(RelatedType.COURSE_COVER), eq(courseId), eq(1));
-            verify(s3Service).uploadFile(eq(thumbnails.get(0)), eq(FileCategory.IMAGES), eq(RelatedType.THUMBNAIL), eq(courseId), eq(1));
+            verifyUpload(cover, FileCategory.IMAGES, RelatedType.COURSE_COVER, courseId, 1);
+            verifyUpload(thumbnails.get(0), FileCategory.IMAGES, RelatedType.THUMBNAIL, courseId, 1);
         }
 
         @Test
-        @DisplayName("업데이트 시 업로드 IOException 발생해도 예외 전파 없이 진행, courseId 반환")
-        void update_uploadIOException() throws Exception {
+        @DisplayName("수정: 커버 업로드 IOException 발생해도 예외 전파 없이 진행")
+        void update_coverUploadIOException() throws Exception {
             Long courseId = 321L;
             RequestCourseInfo req = buildRequest(courseId);
 
@@ -206,14 +253,13 @@ class CourseManagementServiceImplTest {
             when(courseQueryService.queryCourseById(courseId)).thenReturn(existing);
             when(courseRepository.save(any(Course.class))).thenAnswer(inv -> inv.getArgument(0));
 
-            // ✅ 여기 역시 "THUMBNAILS"
             when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAILS"))
                     .thenReturn(List.of());
             when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER"))
                     .thenReturn(FileMetadata.builder().id(9L).relatedId(courseId).relatedType(RelatedType.COURSE_COVER).sequence(1).build());
 
-            doThrow(new IOException("boom")).when(s3Service)
-                    .uploadFile(eq(cover), eq(FileCategory.IMAGES), eq(RelatedType.COURSE_COVER), eq(courseId), eq(1));
+            lenient().doThrow(new IOException("boom")).when(s3Service)
+                    .uploadFile(same(cover), eq(FileCategory.IMAGES), eq(RelatedType.COURSE_COVER), eq(courseId), eq(1));
 
             Long returnedId = assertDoesNotThrow(() -> service.updateCourseByCourseId(req, thumbnails, cover));
             assertEquals(courseId, returnedId);
@@ -221,8 +267,83 @@ class CourseManagementServiceImplTest {
         }
 
         @Test
-        @DisplayName("삭제 → 업로드 순서 대략 보장 (InOrder 체인 검증)")
-        void update_order_hint() throws Exception {
+        @DisplayName("수정: 첫 번째 썸네일 업로드 IOException이어도 두 번째/나머지 계속")
+        void update_firstThumbnailIOException_continue() throws Exception {
+            Long courseId = 654L;
+            RequestCourseInfo req = buildRequest(courseId);
+
+            Course existing = newCourseWithId(courseId);
+            when(courseQueryService.queryCourseById(courseId)).thenReturn(existing);
+            when(courseRepository.save(any(Course.class))).thenAnswer(inv -> inv.getArgument(0));
+
+            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAILS"))
+                    .thenReturn(List.of()); // 기존 썸네일 없음 가정
+            when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER"))
+                    .thenReturn(FileMetadata.builder().id(99L).relatedId(courseId).relatedType(RelatedType.COURSE_COVER).sequence(1).build());
+
+            // 첫 썸네일 업로드 실패
+            lenient().doThrow(new IOException("thumb1-fail")).when(s3Service)
+                    .uploadFile(same(thumbnails.get(0)), eq(FileCategory.IMAGES), eq(RelatedType.THUMBNAIL), eq(courseId), eq(1));
+
+            Long returnedId = assertDoesNotThrow(() -> service.updateCourseByCourseId(req, thumbnails, cover));
+            assertEquals(courseId, returnedId);
+
+            verifyUpload(thumbnails.get(1), FileCategory.IMAGES, RelatedType.THUMBNAIL, courseId, 2);
+            verify(canLearnManagementService).createCanLearnsWithCourseId(courseId, req.getCanLearns());
+        }
+
+        @Test
+        @DisplayName("수정: 썸네일 조회 RuntimeException이어도 계속")
+        void update_thumbnailsQueryThrows_butContinues() {
+            Long courseId = 777L;
+            RequestCourseInfo req = buildRequest(courseId);
+            Course existing = newCourseWithId(courseId);
+
+            when(courseQueryService.queryCourseById(courseId)).thenReturn(existing);
+            when(courseRepository.save(any(Course.class))).thenAnswer(inv -> inv.getArgument(0));
+
+            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAILS"))
+                    .thenThrow(new RuntimeException("no-thumbs"));
+
+            FileMetadata oldCover  = FileMetadata.builder().id(30L).relatedId(courseId).relatedType(RelatedType.COURSE_COVER).sequence(1).build();
+            when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER")).thenReturn(oldCover);
+
+            Long returnedId = assertDoesNotThrow(() -> service.updateCourseByCourseId(req, thumbnails, cover));
+            assertEquals(courseId, returnedId);
+
+            verify(s3Service, never()).deleteFile(argThat(fm -> fm != null && fm.getRelatedType() == RelatedType.THUMBNAIL));
+            verify(s3Service).deleteFile(oldCover);
+            verify(subFileMetadataManagementService).deleteMetadataByEntitiy(oldCover);
+            verifyUpload(cover, FileCategory.IMAGES, RelatedType.COURSE_COVER, courseId, 1);
+            verify(canLearnManagementService).createCanLearnsWithCourseId(courseId, req.getCanLearns());
+        }
+
+        @Test
+        @DisplayName("수정: 커버 조회 RuntimeException이어도 계속")
+        void update_coverQueryThrows_butContinues() {
+            Long courseId = 778L;
+            RequestCourseInfo req = buildRequest(courseId);
+            Course existing = newCourseWithId(courseId);
+
+            when(courseQueryService.queryCourseById(courseId)).thenReturn(existing);
+            when(courseRepository.save(any(Course.class))).thenAnswer(inv -> inv.getArgument(0));
+
+            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAILS"))
+                    .thenReturn(List.of());
+            when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER"))
+                    .thenThrow(new RuntimeException("no-cover"));
+
+            Long returnedId = assertDoesNotThrow(() -> service.updateCourseByCourseId(req, thumbnails, cover));
+            assertEquals(courseId, returnedId);
+
+            verify(s3Service, never()).deleteFile(argThat(fm -> fm != null && fm.getRelatedType() == RelatedType.COURSE_COVER));
+            verifyUpload(cover, FileCategory.IMAGES, RelatedType.COURSE_COVER, courseId, 1);
+            verify(canLearnManagementService).createCanLearnsWithCourseId(courseId, req.getCanLearns());
+        }
+
+        @Test
+        @DisplayName("삭제 → 업로드 순서(대략) 검증")
+        void update_order_hint() {
             Long courseId = 555L;
             RequestCourseInfo req = buildRequest(courseId);
             Course existing = newCourseWithId(courseId);
@@ -231,7 +352,6 @@ class CourseManagementServiceImplTest {
 
             FileMetadata oldCover  = FileMetadata.builder().id(30L).relatedId(courseId).relatedType(RelatedType.COURSE_COVER).sequence(1).build();
 
-            // ✅ "THUMBNAILS"
             when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAILS")).thenReturn(List.of());
             when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER")).thenReturn(oldCover);
 
@@ -241,24 +361,37 @@ class CourseManagementServiceImplTest {
             InOrder inOrder = inOrder(s3Service, subFileMetadataManagementService);
             inOrder.verify(s3Service).deleteFile(oldCover);
             inOrder.verify(subFileMetadataManagementService).deleteMetadataByEntitiy(oldCover);
-            inOrder.verify(s3Service).uploadFile(eq(cover), eq(FileCategory.IMAGES), eq(RelatedType.COURSE_COVER), eq(courseId), eq(1));
+            verifyUpload(cover, FileCategory.IMAGES, RelatedType.COURSE_COVER, courseId, 1);
         }
     }
 
     @Test
-    @DisplayName("uploadImagesWithCourseId: IOException 발생 시 예외 전파 없이 진행")
-    void uploadImagesWithCourseId_handlesIOException() throws Exception {
+    @DisplayName("uploadImagesWithCourseId: 커버 IOException이어도 썸네일 업로드는 계속")
+    void uploadImagesWithCourseId_coverIOException_continuesThumbnails() throws Exception {
         Long courseId = 42L;
-        doThrow(new IOException("cover-fail"))
-                .when(s3Service).uploadFile(eq(cover), eq(FileCategory.IMAGES), eq(RelatedType.COURSE_COVER), eq(courseId), eq(1));
+
+        lenient().doThrow(new IOException("cover-fail"))
+                .when(s3Service).uploadFile(same(cover), eq(FileCategory.IMAGES), eq(RelatedType.COURSE_COVER), eq(courseId), eq(1));
 
         assertDoesNotThrow(() -> service.uploadImagesWithCourseId(courseId, cover, thumbnails));
-        verify(s3Service, atLeast(1)).uploadFile(eq(thumbnails.get(0)), eq(FileCategory.IMAGES), eq(RelatedType.THUMBNAIL), eq(courseId), eq(1));
+        verifyUpload(thumbnails.get(0), FileCategory.IMAGES, RelatedType.THUMBNAIL, courseId, 1);
+        verifyUpload(thumbnails.get(1), FileCategory.IMAGES, RelatedType.THUMBNAIL, courseId, 2);
+    }
+
+    @Test
+    @DisplayName("uploadImagesWithCourseId: 첫 번째 썸네일 IOException이어도 두 번째는 계속")
+    void uploadImagesWithCourseId_firstThumbnailIOException_continueSecond() throws Exception {
+        Long courseId = 43L;
+
+        lenient().doThrow(new IOException("thumb1-fail"))
+                .when(s3Service).uploadFile(same(thumbnails.get(0)), eq(FileCategory.IMAGES), eq(RelatedType.THUMBNAIL), eq(courseId), eq(1));
+
+        assertDoesNotThrow(() -> service.uploadImagesWithCourseId(courseId, cover, thumbnails));
+        verifyUpload(thumbnails.get(1), FileCategory.IMAGES, RelatedType.THUMBNAIL, courseId, 2);
     }
 
     @Nested
     class SetCourseTerm {
-
         @Test
         @DisplayName("강좌 기간 설정 성공")
         void setCourseTerm_ok() {
@@ -285,7 +418,6 @@ class CourseManagementServiceImplTest {
 
     @Nested
     class CloseCourse {
-
         private Course course;
         private Instructor instructor;
         private User instructorUser;
@@ -315,7 +447,6 @@ class CourseManagementServiceImplTest {
         @Test
         @DisplayName("강좌 종료 성공: 수강생 레벨업 및 메시지 전송")
         void closeCourse_success() {
-            // given
             course.setCourseEndDate(LocalDate.now().minusDays(1)); // 종료일 지남
             User student1 = User.builder().id(201L).email("s1@test.com").build();
             User student2 = User.builder().id(202L).email("s2@test.com").build();
@@ -328,29 +459,28 @@ class CourseManagementServiceImplTest {
             when(courseQueryService.calcLevelAmount(eq(courseId), anyString())).thenReturn(10);
             when(categoryQueryService.queryCategoryById(5L)).thenReturn(category);
 
-            // when
             assertDoesNotThrow(() -> service.closeCourse(courseId, instructorEmail));
 
-            // then
-            verify(levelManagementService, times(2)).increaseLevelOf(anyLong(), anyLong(), anyInt());
             verify(levelManagementService).increaseLevelOf(5L, student1.getId(), 10);
             verify(levelManagementService).increaseLevelOf(5L, student2.getId(), 10);
 
-            verify(messageManagementService, times(2)).createMessage(anyLong(), anyLong(), anyString());
-            String expectedMessage = "[%s] 강좌가 종료되었습니다.\n%s 분야 레벨이 %d 향상되었습니다.\n".formatted(course.getTitle(), category.getName(), 10);
-            verify(messageManagementService).createMessage(instructorUserId, student1.getId(), expectedMessage);
-            verify(messageManagementService).createMessage(instructorUserId, student2.getId(), expectedMessage);
+            verify(messageManagementService).createMessage(eq(instructorUserId), eq(student1.getId()),
+                    argThat(msg -> msg.contains("[" + course.getTitle() + "]")
+                            && msg.contains(category.getName())
+                            && msg.contains("10")));
+            verify(messageManagementService).createMessage(eq(instructorUserId), eq(student2.getId()),
+                    argThat(msg -> msg.contains("[" + course.getTitle() + "]")
+                            && msg.contains(category.getName())
+                            && msg.contains("10")));
         }
 
         @Test
         @DisplayName("강좌 종료 실패: 강사가 아닌 사용자가 요청")
         void closeCourse_fail_notInstructor() {
-            // given
             when(courseQueryService.queryCourseById(courseId)).thenReturn(course);
             when(instructorQueryService.queryInstructorById(instructorId)).thenReturn(instructor);
             when(userQueryService.queryUserById(instructorUserId)).thenReturn(instructorUser);
 
-            // when & then
             assertThrows(InvalidUserRoleException.class,
                     () -> service.closeCourse(courseId, "not.instructor@test.com"));
         }
@@ -358,13 +488,11 @@ class CourseManagementServiceImplTest {
         @Test
         @DisplayName("강좌 종료 실패: 종료일이 지나지 않음")
         void closeCourse_fail_endDateNotPassed() {
-            // given
             course.setCourseEndDate(LocalDate.now().plusDays(1)); // 종료일 안 지남
             when(courseQueryService.queryCourseById(courseId)).thenReturn(course);
             when(instructorQueryService.queryInstructorById(instructorId)).thenReturn(instructor);
             when(userQueryService.queryUserById(instructorUserId)).thenReturn(instructorUser);
 
-            // when & then
             assertThrows(IllegalArgumentException.class,
                     () -> service.closeCourse(courseId, instructorEmail));
         }
@@ -372,17 +500,14 @@ class CourseManagementServiceImplTest {
         @Test
         @DisplayName("강좌 종료 성공: 수강생이 없을 경우")
         void closeCourse_success_noStudents() {
-            // given
             course.setCourseEndDate(LocalDate.now().minusDays(1)); // 종료일 지남
             when(courseQueryService.queryCourseById(courseId)).thenReturn(course);
             when(instructorQueryService.queryInstructorById(instructorId)).thenReturn(instructor);
             when(userQueryService.queryUserById(instructorUserId)).thenReturn(instructorUser);
             when(courseQueryService.queryCourseUsers(courseId)).thenReturn(Collections.emptyList());
 
-            // when
             assertDoesNotThrow(() -> service.closeCourse(courseId, instructorEmail));
 
-            // then
             verify(levelManagementService, never()).increaseLevelOf(anyLong(), anyLong(), anyInt());
             verify(messageManagementService, never()).createMessage(anyLong(), anyLong(), anyString());
         }

@@ -140,29 +140,30 @@ public class CourseQueryServiceImpl implements CourseQueryService{
         log.debug("카테고리 이름 조회");
         String category = categoryQueryService.queryNameByCourseId(courseId);
 
-        //5. 해당 강좌의 섬네일들과 커버이미지 조회
+        log.debug("썸네일 인스턴스 선언");
         List<FileMetadata> thumbnails = List.of();
-        FileMetadata courseCover = null;
-        try {
-            thumbnails = subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAIL");
-            courseCover = subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER");
-        } catch (Exception e) {
-            log.debug("이미지 파일을 찾지 못했습니다.");
-        }
-        // 해당 강좌의 썸네일과 커버이미지 ResponseFileInfo  조회
         List<ResponseFileInfo> thumbnailFileInfos = new ArrayList<>();
-        for(FileMetadata data : thumbnails){
-            thumbnailFileInfos.add(s3Service.getResponseFileInfo(data));
-        }
 
+        log.debug("강좌커버 인스턴스 선언");
+        FileMetadata courseCover = null;
         ResponseFileInfo courseCoverFileInfo = null;
 
-        try {
-            courseCoverFileInfo = s3Service.getResponseFileInfo(courseCover);
-        } catch (Exception e) {
-            log.debug("강좌 커버 이미지를 찾지 못했습니다.");
+        log.debug("썸네일 조회");
+        try{
+            thumbnails = subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAIL");
+            for(FileMetadata data : thumbnails){
+            thumbnailFileInfos.add(s3Service.getResponseFileInfo(data));
+            }
+        }catch(RuntimeException e){
+            log.debug("썸네일이 null이기 떄문에 조회할 수 없음. : {}", e.getMessage());
         }
-
+        log.debug("강좌 커버 조회");
+        try{
+            subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER");
+            courseCoverFileInfo = s3Service.getResponseFileInfo(courseCover);
+        }catch(RuntimeException e){
+            log.debug("강좌 커버이미지가 null이기 떄문에 조회할 수 없음. : {}", e.getMessage());
+        }
         courseDetail.setCanLearns(canLearns);
         courseDetail.setReviewCount(reviewCount);
         courseDetail.setAverageReviewScore(avgStars);
