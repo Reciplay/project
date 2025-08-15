@@ -141,26 +141,22 @@ class InstructorQueryServiceImplTest {
         Long instructorId = 10L;
         Long userId = 20L;
 
-        // instructor.getUserId() 사용
         Long instructorUserId = 999L;
         Instructor inst = buildInstructor(instructorId, instructorUserId);
         when(instructorRepository.findById(instructorId)).thenReturn(Optional.of(inst));
 
-        // 프로필: relatedId = instructorUserId, key="USER_PROFILE"
         FileMetadata profileMeta = FileMetadata.builder().relatedId(instructorUserId).sequence(1).build();
         when(subFileMetadataQueryService.queryMetadataByCondition(instructorUserId, "USER_PROFILE"))
                 .thenReturn(profileMeta);
         ResponseFileInfo profileInfo = mock(ResponseFileInfo.class);
         when(s3Service.getResponseFileInfo(profileMeta)).thenReturn(profileInfo);
 
-        // 배너: relatedId = instructorId, key="INSTRUCTOR_BANNER"
         FileMetadata bannerMeta = FileMetadata.builder().relatedId(instructorId).sequence(2).build();
         when(subFileMetadataQueryService.queryMetadataByCondition(instructorId, "INSTRUCTOR_BANNER"))
                 .thenReturn(bannerMeta);
         ResponseFileInfo bannerInfo = mock(ResponseFileInfo.class);
         when(s3Service.getResponseFileInfo(bannerMeta)).thenReturn(bannerInfo);
 
-        // 라이선스/커리어/구독
         InstructorLicense lic1 = InstructorLicense.builder()
                 .instructorId(instructorId)
                 .licenseId(1L)
@@ -183,7 +179,7 @@ class InstructorQueryServiceImplTest {
                 .thenReturn(List.of(career));
 
         when(subscriptionQueryService.isSubscribedInstructor(instructorId, userId)).thenReturn(true);
-        when(subscriptionQueryService.countSubscribers(instructorId)).thenReturn(321L);
+        when(subscriptionQueryService.countSubscribers(instructorId)).thenReturn(321);
 
         when(instructorRepository.findNameById(instructorId)).thenReturn("김셰프");
 
@@ -216,18 +212,15 @@ class InstructorQueryServiceImplTest {
     void queryInstructorStatistic_ok() {
         Long instructorId = 77L;
 
-        // 집계 값
         when(instructorStatQueryService.queryTotalStudents(instructorId)).thenReturn(1000);
         when(instructorStatQueryService.queryAvgStars(instructorId)).thenReturn(4.7);
         when(instructorStatQueryService.queryTotalReviewCount(instructorId)).thenReturn(222);
         when(instructorStatQueryService.querySubsciberCount(instructorId)).thenReturn(555);
 
-        // 서비스 구현: instructor = this.queryInstructorById(instructorId) -> instructor.getUserId() 사용
         Long instructorUserId = 7000L;
         when(instructorRepository.findById(instructorId))
                 .thenReturn(Optional.of(buildInstructor(instructorId, instructorUserId)));
 
-        // 프로필 메타데이터 조회 키는 instructorUserId 이어야 함
         FileMetadata profileMeta = FileMetadata.builder().relatedId(instructorUserId).sequence(1).build();
         when(subFileMetadataQueryService.queryMetadataByCondition(instructorUserId, "USER_PROFILE"))
                 .thenReturn(profileMeta);
@@ -235,7 +228,6 @@ class InstructorQueryServiceImplTest {
         ResponseFileInfo fileInfo = mock(ResponseFileInfo.class);
         when(s3Service.getResponseFileInfo(profileMeta)).thenReturn(fileInfo);
 
-        // 새 질문
         InstructorQuestion q1 = InstructorQuestion.builder()
                 .id(1L).courseId(10L).courseName("한식A")
                 .title("질문1").questionAt(LocalDateTime.now()).build();
@@ -271,13 +263,11 @@ class InstructorQueryServiceImplTest {
         given(subscriptionQueryService.querySubscriptionsByUserId(userId))
                 .willReturn(List.of(sub1, sub2));
 
-        // 강사 100, 200의 userId
         Instructor inst100 = buildInstructor(100L, 1000L);
         Instructor inst200 = buildInstructor(200L, 2000L);
         given(instructorRepository.findById(100L)).willReturn(Optional.of(inst100));
         given(instructorRepository.findById(200L)).willReturn(Optional.of(inst200));
 
-        // 프로필 메타/이미지 (USER_PROFILE 대문자)
         FileMetadata fm100 = FileMetadata.builder().relatedId(1000L).sequence(1).build();
         FileMetadata fm200 = FileMetadata.builder().relatedId(2000L).sequence(1).build();
         given(subFileMetadataQueryService.queryMetadataByCondition(1000L, "USER_PROFILE")).willReturn(fm100);
@@ -288,11 +278,10 @@ class InstructorQueryServiceImplTest {
         given(s3Service.getResponseFileInfo(fm100)).willReturn(r100);
         given(s3Service.getResponseFileInfo(fm200)).willReturn(r200);
 
-        // 이름, 구독자 수
         given(instructorRepository.findNameById(100L)).willReturn("Alice");
         given(instructorRepository.findNameById(200L)).willReturn("Bob");
-        given(subscriptionHistoryService.querySubscriberCount(100L)).willReturn(11);
-        given(subscriptionHistoryService.querySubscriberCount(200L)).willReturn(22);
+        given(subscriptionQueryService.countSubscribers(100L)).willReturn(11);
+        given(subscriptionQueryService.countSubscribers(200L)).willReturn(22);
 
         List<SubscribedInstructorItem> list = service.queryUserSubscriptionsByUserId(userId);
 
@@ -302,12 +291,12 @@ class InstructorQueryServiceImplTest {
 
         assertThat(i1.getInstructorId()).isEqualTo(100L);
         assertThat(i1.getInstructorName()).isEqualTo("Alice");
-        assertThat(i1.getSubscriberCount()).isEqualTo(11L);
+        assertThat(i1.getSubscriberCount()).isEqualTo(11);
         assertThat(i1.getInstructorProfileFileInfo()).isSameAs(r100);
 
         assertThat(i2.getInstructorId()).isEqualTo(200L);
         assertThat(i2.getInstructorName()).isEqualTo("Bob");
-        assertThat(i2.getSubscriberCount()).isEqualTo(22L);
+        assertThat(i2.getSubscriberCount()).isEqualTo(22);
         assertThat(i2.getInstructorProfileFileInfo()).isSameAs(r200);
 
         verify(subscriptionQueryService).querySubscriptionsByUserId(userId);
@@ -319,8 +308,8 @@ class InstructorQueryServiceImplTest {
         verify(s3Service).getResponseFileInfo(fm200);
         verify(instructorRepository).findNameById(100L);
         verify(instructorRepository).findNameById(200L);
-        verify(subscriptionHistoryService).querySubscriberCount(100L);
-        verify(subscriptionHistoryService).querySubscriberCount(200L);
+        verify(subscriptionQueryService).countSubscribers(100L);
+        verify(subscriptionQueryService).countSubscribers(200L);
     }
 
     @Test
@@ -342,7 +331,6 @@ class InstructorQueryServiceImplTest {
         Long instructorId = 10L;
         LocalDate today = LocalDate.now();
 
-        // 1. criteria = "day" → 지난 1달간 매일
         String criteria = "day";
         List<LocalDate> expectedDates = new ArrayList<>();
         LocalDate from = today.minusMonths(1);

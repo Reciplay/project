@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface SubscriptionQueryService {
     List<Subscription> querySubscriptionsByUserId(Long userId);
-    Long countSubscribers(Long instructorId);
+    Integer countSubscribers(Long instructorId);
     boolean isSubscribedInstructor(Long instructorId, Long userId);
 
 }
