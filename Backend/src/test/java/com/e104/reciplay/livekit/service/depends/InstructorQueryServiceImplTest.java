@@ -8,13 +8,18 @@ import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import com.e104.reciplay.s3.service.S3Service;
 import com.e104.reciplay.user.instructor.dto.response.InstructorProfile;
 import com.e104.reciplay.user.instructor.dto.response.InstructorStat;
+import com.e104.reciplay.user.instructor.dto.response.TrendPoint;
+import com.e104.reciplay.user.instructor.dto.response.TrendResponse;
 import com.e104.reciplay.user.instructor.dto.response.item.InstructorQuestion;
-import com.e104.reciplay.user.instructor.service.*;
+import com.e104.reciplay.user.instructor.service.CareerQueryService;
+import com.e104.reciplay.user.instructor.service.InstructorLicenseQueryService;
+import com.e104.reciplay.user.instructor.service.InstructorStatQueryService;
+import com.e104.reciplay.user.instructor.service.LicenseQueryService;
 import com.e104.reciplay.user.security.domain.User;
 import com.e104.reciplay.user.security.exception.EmailNotFoundException;
 import com.e104.reciplay.user.security.service.UserQueryService;
 import com.e104.reciplay.user.subscription.dto.SubscribedInstructorItem;
-import com.e104.reciplay.user.subscription.service.SubscriptionHistoryService;
+import com.e104.reciplay.user.subscription.service.SubscriptionHistoryQueryService;
 import com.e104.reciplay.user.subscription.service.SubscriptionQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,7 +52,7 @@ class InstructorQueryServiceImplTest {
     @Mock private SubscriptionQueryService subscriptionQueryService;
     @Mock private InstructorStatQueryService instructorStatQueryService;
     @Mock private QnaQueryService qnaQueryService;
-    @Mock private SubscriptionHistoryService subscriptionHistoryService;
+    @Mock private SubscriptionHistoryQueryService subscriptionHistoryService;
 
     @InjectMocks
     private InstructorQueryServiceImpl service;
@@ -319,6 +325,38 @@ class InstructorQueryServiceImplTest {
         assertThat(list).isEmpty();
         verify(subscriptionQueryService).querySubscriptionsByUserId(userId);
         verifyNoInteractions(instructorRepository, subFileMetadataQueryService, s3Service, subscriptionHistoryService);
+    }
+
+    @Test
+    @DisplayName("querySubscriberTrends - day/week/month 별 targetDates 및 TrendPoint 목록 생성")
+    void querySubscriberTrends_ok() {
+        Long instructorId = 10L;
+        LocalDate today = LocalDate.now();
+
+        // 1. criteria = "day" → 지난 1달간 매일
+        String criteria = "day";
+        List<LocalDate> expectedDates = new ArrayList<>();
+        LocalDate from = today.minusMonths(1);
+        for (LocalDate d = from; !d.isAfter(today); d = d.plusDays(1)) {
+            expectedDates.add(d);
+        }
+
+        List<TrendPoint> mockPoints = expectedDates.stream()
+                .map(date -> new TrendPoint(date, 100L))
+                .toList();
+
+        when(subscriptionHistoryService.queryTrendPoints(instructorId, expectedDates)).thenReturn(mockPoints);
+
+        TrendResponse response = service.querySubscriberTrends(criteria, instructorId);
+
+        assertThat(response.getCriteria()).isEqualTo("day");
+        assertThat(response.getFrom()).isEqualTo(from);
+        assertThat(response.getTo()).isEqualTo(today);
+        assertThat(response.getSeries()).hasSize(expectedDates.size());
+        assertThat(response.getSeries().get(0).getT()).isInstanceOf(LocalDate.class); // 👈 여기가 포인트
+        assertThat(response.getSeries().get(0).getSubscribers()).isEqualTo(100L);
+
+        verify(subscriptionHistoryService).queryTrendPoints(instructorId, expectedDates);
     }
 
     private Instructor buildInstructor(Long instructorId, Long userId) {
