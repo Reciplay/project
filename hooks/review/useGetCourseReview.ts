@@ -27,7 +27,6 @@ type UseGetCourseReviewResult = {
 export function useGetCourseReview(
   courseId?: number,
   pageSize = 5,
-  sort: string[] = ["createdAt,desc"],
 ): UseGetCourseReviewResult {
   const [list, setList] = useState<CourseReview[]>([]);
   const [loading, setLoading] = useState(false);
@@ -37,8 +36,6 @@ export function useGetCourseReview(
   const pageRef = useRef(0);
   const inFlightRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
-
-  const stringifiedSort = JSON.stringify(sort);
 
   const fetchPage = useCallback(
     async (pageNum: number) => {
@@ -92,7 +89,7 @@ export function useGetCourseReview(
         setLoading(false);
       }
     },
-    [courseId, pageSize, stringifiedSort],
+    [courseId, pageSize],
   );
 
   // 최초 로드

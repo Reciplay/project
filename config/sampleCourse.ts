@@ -456,6 +456,9 @@ export const sampleCourseDetail: CourseDetail = {
     "뇨끼 반죽과 소스 조합",
     "리조또 완성도 높이는 비법",
   ],
+  instructorEmail: "chef@example.com", // ✅ 추가
+  instructorName: "김밀란", // ✅ 추가
+  instructorNickname: "밀란셰프", // ✅ 추가
   lectureSummaryList: [
     {
       sequence: 1,

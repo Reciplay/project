@@ -20,13 +20,9 @@ export default function EmptyState({
   secondaryText,
   onPrimary,
   onSecondary,
-  illustrationSrc = "/images/empty_subscriptions.png",
 }: Props) {
   return (
     <div className={styles.wrapper}>
-      {/* <div className={styles.illustration}>
-        <Image src={illustrationSrc} alt="" fill sizes="96px" />
-      </div> */}
       <h3 className={styles.title}>{title}</h3>
       {description && <p className={styles.desc}>{description}</p>}
       <div className={styles.actions}>
