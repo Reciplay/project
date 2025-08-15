@@ -2,12 +2,13 @@ package com.e104.reciplay.user.instructor.controller;
 
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
+import com.e104.reciplay.entity.Instructor;
 import com.e104.reciplay.livekit.service.depends.InstructorQueryService;
 import com.e104.reciplay.user.instructor.dto.request.InstructorApplicationRequest;
 import com.e104.reciplay.user.instructor.dto.request.InstructorProfileUpdateRequest;
 import com.e104.reciplay.user.instructor.dto.response.InstructorProfile;
 import com.e104.reciplay.user.instructor.dto.response.InstructorStat;
-import com.e104.reciplay.user.instructor.dto.response.item.SubscriberHistory;
+import com.e104.reciplay.user.instructor.dto.response.TrendResponse;
 import com.e104.reciplay.user.instructor.service.InstructorManagementService;
 import com.e104.reciplay.user.security.service.UserQueryService;
 import com.e104.reciplay.user.security.util.AuthenticationUtil;
@@ -19,9 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Tag(name = "강사 관련 API", description = "강사에 대한 데이터를 조회하거나 강사 데이터 수정을 위한 API를 제공합니다.")
 @RestController
@@ -62,6 +60,7 @@ public class InstructorApiController {
             ) {
         String email = AuthenticationUtil.getSessionUsername();
         Long instructorId = instructorQueryService.queryInstructorIdByEmail(email);
+        log.debug("강좌 정보 수정 시작");
         instructorManagementService.updateInstructor(instructorId, request, instructorBannerImage);
 
         return CommonResponseBuilder.success("강사 정보 수정에 성공했습니다.", null);
@@ -79,6 +78,7 @@ public class InstructorApiController {
         log.debug("요청자 {}", AuthenticationUtil.getSessionUsername());
         String email = AuthenticationUtil.getSessionUsername();
         Long userId = userQueryService.queryUserByEmail(email).getId();
+        log.debug("강사 등록 시작");
         instructorManagementService.registerInstructor(userId, request, instructorBannerImage);
 
         return CommonResponseBuilder.success("강사 등록 신청에 성공했습니다.", null);
@@ -106,19 +106,19 @@ public class InstructorApiController {
     @Operation(summary = "강사 구독자 추이 조회", description = "강사의 통계합니다.")
     @ApiResponse(responseCode = "200", description = "강사 통계 정보 조회 성공")
     @ApiResponse(responseCode = "403", description = "강사가 아닌 사용자가 시도")
-    public ResponseEntity<ResponseRoot<List<SubscriberHistory>>> getInstructorSubscriberStat(
-            @RequestParam("criteris") String subscriberChartCriteria
+    public ResponseEntity<ResponseRoot<TrendResponse>> getInstructorSubscriberStat(
+            @RequestParam("criteris") String criteria
     ) {
-            List<SubscriberHistory> subscriberHistories = List.of(
-                    new SubscriberHistory(LocalDate.of(2025, 8, 1), 120),
-                    new SubscriberHistory(LocalDate.of(2025, 8, 2), 125),
-                    new SubscriberHistory(LocalDate.of(2025, 8, 3), 130),
-                    new SubscriberHistory(LocalDate.of(2025, 8, 4), 140),
-                    new SubscriberHistory(LocalDate.of(2025, 8, 5), 150)
-            );
+        log.debug("creiteris는 {}", criteria);
+        String email = AuthenticationUtil.getSessionUsername();
+        Instructor instructor = instructorQueryService.queryInstructorByEmail(email);
+        if (!Boolean.TRUE.equals(instructor.getIsApproved())) {
+            throw new RuntimeException("승인되지 않은 강사입니다.");
+        }
+        log.debug("구독자 추이 응답데이터 생성하는 매서드 실행");
+        TrendResponse trendResponse = instructorQueryService.querySubscriberTrends(criteria, instructor.getId());
 
-
-        return CommonResponseBuilder.success("강사 통계 정보 조회에 성공했습니다.",subscriberHistories);
+        return CommonResponseBuilder.success("강사 통계 정보 조회에 성공했습니다.",trendResponse);
     }
 
 
