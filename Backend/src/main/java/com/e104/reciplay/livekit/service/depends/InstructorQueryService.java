@@ -3,6 +3,7 @@ package com.e104.reciplay.livekit.service.depends;
 import com.e104.reciplay.entity.Instructor;
 import com.e104.reciplay.user.instructor.dto.response.InstructorProfile;
 import com.e104.reciplay.user.instructor.dto.response.InstructorStat;
+import com.e104.reciplay.user.instructor.dto.response.TrendResponse;
 import com.e104.reciplay.user.subscription.dto.SubscribedInstructorItem;
 
 import java.util.List;
@@ -25,4 +26,5 @@ public interface InstructorQueryService {
     List<SubscribedInstructorItem> queryUserSubscriptionsByUserId(Long userId);
 
     Boolean existsByUserId(Long userId);
+    TrendResponse querySubscriberTrends(String criteria, Long instructorId);
 }

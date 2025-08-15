@@ -41,6 +41,7 @@ public class AdminApiController{
     public ResponseEntity<ResponseRoot<List<AdInstructorSummary>>> getInstructorSummaries(
             @RequestParam Boolean isApprove
     ) {
+        log.debug("강사 요약 정보 리스트 조회");
         List<AdInstructorSummary> summaries = adInstructorQueryService.queryAdInstructorSummary(isApprove);
         return CommonResponseBuilder.success("강사 요약 정보 리스트 조회에 성공하였습니다.",
                 summaries);
@@ -55,6 +56,7 @@ public class AdminApiController{
     public ResponseEntity<ResponseRoot<AdInstructorDetail>> getInstructorDetail(
             @RequestParam Long instructorId
     ){
+        log.debug("강사 상세 정보 조회");
         AdInstructorDetail detail = adInstructorQueryService.queryInstructorDetail(instructorId);
 
         return CommonResponseBuilder.success("강사 상세 정보 조회에 성공하였습니다.", detail);
@@ -71,6 +73,7 @@ public class AdminApiController{
     ){
         String email = AuthenticationUtil.getSessionUsername();
         Long adminUserId = userQueryService.queryUserByEmail(email).getId();
+        log.debug("강사 등록 수락/거절 및 알림 처리");
         adInstructorManagementService.updateInstructorApproval(approvalInfo, adminUserId);
         return CommonResponseBuilder.success("강사 등록 수락/거절 및 알림 처리에 성공하였습니다.", null);
     }
@@ -83,6 +86,7 @@ public class AdminApiController{
     public ResponseEntity<ResponseRoot<List<AdCourseSummary>>> getCourseSummaries(
             @RequestParam Boolean isApprove
     ) {
+        log.debug("강좌 요약 정보 리스트 조회");
         List<AdCourseSummary> summaries = adCourseQueryService.queryAdCourseSummary(isApprove);
         return CommonResponseBuilder.success("강좌 요약 정보 리스트 조회에 성공하였습니다.",
                 summaries);
@@ -97,6 +101,7 @@ public class AdminApiController{
     public ResponseEntity<ResponseRoot<AdCourseDetail>> getCourseDetail(
             @RequestParam Long courseId
     ){
+        log.debug("강좌 상세 정보 조회");
         AdCourseDetail detail = adCourseQueryService.queryCourseDetail(courseId);
         return CommonResponseBuilder.success("강좌 상세 정보 조회에 성공하였습니다.", detail);
     }
@@ -112,6 +117,7 @@ public class AdminApiController{
     ){
         String email = AuthenticationUtil.getSessionUsername();
         Long adminUserId = userQueryService.queryUserByEmail(email).getId();
+        log.debug("강좌 등록 수록/거절 및 알림 처리");
         adCourseManagementService.updateCourseApproval(approvalInfo, adminUserId);
 
         return CommonResponseBuilder.success("강좌 등록 수락/거절 및 알림 처리에 성공하였습니다.", null);
@@ -124,6 +130,7 @@ public class AdminApiController{
     @Operation(summary = "일반 회원 요약 정보 리스트 조회 API", description = "일반 회원 요약 정보 신청 리스트 조회")
     public ResponseEntity<ResponseRoot<List<AdUserSummary>>> getUserSummaries(
     ) {
+        log.debug("일반 회원 요약 정보 리스트 조회");
         List<AdUserSummary> adUserSummaries = adUserQueryService.queryUserSummaries();
         return CommonResponseBuilder.success("일반 회원 요약 정보 리스트 조회에 성공하였습니다.",
                 adUserSummaries);
@@ -138,6 +145,7 @@ public class AdminApiController{
     public ResponseEntity<ResponseRoot<AdUserDetail>> getUserDetail(
             @RequestParam Long userId
     ){
+        log.debug("일반 회원 상세 정보 조회");
         AdUserDetail adUserDetail = adUserQueryService.queryUserDetail(userId);
         return CommonResponseBuilder.success("일반 회원 상세 정보 조회에 성공하였습니다.", adUserDetail);
     }
@@ -151,6 +159,7 @@ public class AdminApiController{
     public ResponseEntity<ResponseRoot<Object>> DeleteUser(
             @RequestParam Long userId
     ){
+        log.debug("회원 탈퇴");
         adUserManagementService.deleteUser(userId);
         return CommonResponseBuilder.success("회원 탈퇴에 성공하였습니다.", null);
     }
