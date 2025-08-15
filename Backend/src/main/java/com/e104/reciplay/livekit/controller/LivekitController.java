@@ -64,7 +64,7 @@ public class LivekitController {
             ) {
         log.debug("라이브 강의 종료 API 호출, 데이터 {}", request);
         log.debug("라이브 강의 종료 API 호출, 사용자 {}", userDetails);
-        livekitOpenService.closeLiveRoom(request, userDetails.getPassword());
+        livekitOpenService.closeLiveRoom(request, userDetails.getUsername());
         return CommonResponseBuilder.success("라이브 종료에 성공했습니다.", null);
     }
 }
