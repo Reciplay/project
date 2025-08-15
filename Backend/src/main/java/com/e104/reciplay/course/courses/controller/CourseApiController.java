@@ -145,7 +145,6 @@ public class CourseApiController {
             @RequestPart List<MultipartFile> thumbnailImages,
             @RequestPart MultipartFile courseCoverImage
     ){
-
         log.debug("강좌 등록 API 요청됨 ");
         log.debug("요청 데이터 {}", requestCourseInfo);
         String email = AuthenticationUtil.getSessionUsername();
