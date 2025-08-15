@@ -146,20 +146,21 @@ class InstructorQueryServiceImplTest {
         Instructor inst = buildInstructor(instructorId, instructorUserId);
         when(instructorRepository.findById(instructorId)).thenReturn(Optional.of(inst));
 
-        // 프로필: relatedId = instructorUserId, key="USER_PROFILE" (대문자)
+        // 프로필: relatedId = instructorUserId, key="USER_PROFILE"
         FileMetadata profileMeta = FileMetadata.builder().relatedId(instructorUserId).sequence(1).build();
         when(subFileMetadataQueryService.queryMetadataByCondition(instructorUserId, "USER_PROFILE"))
                 .thenReturn(profileMeta);
         ResponseFileInfo profileInfo = mock(ResponseFileInfo.class);
         when(s3Service.getResponseFileInfo(profileMeta)).thenReturn(profileInfo);
 
-        // 배너: relatedId = instructorId, key="INSTRUCTOR_BANNER" (대문자)
+        // 배너: relatedId = instructorId, key="INSTRUCTOR_BANNER"
         FileMetadata bannerMeta = FileMetadata.builder().relatedId(instructorId).sequence(2).build();
         when(subFileMetadataQueryService.queryMetadataByCondition(instructorId, "INSTRUCTOR_BANNER"))
                 .thenReturn(bannerMeta);
         ResponseFileInfo bannerInfo = mock(ResponseFileInfo.class);
         when(s3Service.getResponseFileInfo(bannerMeta)).thenReturn(bannerInfo);
 
+        // 라이선스/커리어/구독
         InstructorLicense lic1 = InstructorLicense.builder()
                 .instructorId(instructorId)
                 .licenseId(1L)
@@ -198,8 +199,8 @@ class InstructorQueryServiceImplTest {
         assertThat(profile.getCareers()).hasSize(1);
 
         verify(instructorRepository).findById(instructorId);
-        verify(subFileMetadataQueryService).queryMetadataByCondition(instructorUserId, "USER_PROFILE");       // ✅ 대문자
-        verify(subFileMetadataQueryService).queryMetadataByCondition(instructorId, "INSTRUCTOR_BANNER");      // ✅ 대문자
+        verify(subFileMetadataQueryService).queryMetadataByCondition(instructorUserId, "USER_PROFILE");
+        verify(subFileMetadataQueryService).queryMetadataByCondition(instructorId, "INSTRUCTOR_BANNER");
         verify(s3Service).getResponseFileInfo(profileMeta);
         verify(s3Service).getResponseFileInfo(bannerMeta);
         verify(instructorLicenseQueryService).queryLicensesByInstructorId(instructorId);
@@ -214,26 +215,33 @@ class InstructorQueryServiceImplTest {
     @DisplayName("queryInstructorStatistic - 총 수강생/평점/리뷰/구독/프로필이미지/새 질문 목록")
     void queryInstructorStatistic_ok() {
         Long instructorId = 77L;
-        Long userId = 1L;
 
+        // 집계 값
         when(instructorStatQueryService.queryTotalStudents(instructorId)).thenReturn(1000);
         when(instructorStatQueryService.queryAvgStars(instructorId)).thenReturn(4.7);
         when(instructorStatQueryService.queryTotalReviewCount(instructorId)).thenReturn(222);
         when(instructorStatQueryService.querySubsciberCount(instructorId)).thenReturn(555);
 
-        // 구현은 instructorId + "USER_PROFILE"
-        FileMetadata profileMeta = FileMetadata.builder().relatedId(instructorId).sequence(1).build();
-        when(subFileMetadataQueryService.queryMetadataByCondition(userId, "USER_PROFILE"))
+        // 서비스 구현: instructor = this.queryInstructorById(instructorId) -> instructor.getUserId() 사용
+        Long instructorUserId = 7000L;
+        when(instructorRepository.findById(instructorId))
+                .thenReturn(Optional.of(buildInstructor(instructorId, instructorUserId)));
+
+        // 프로필 메타데이터 조회 키는 instructorUserId 이어야 함
+        FileMetadata profileMeta = FileMetadata.builder().relatedId(instructorUserId).sequence(1).build();
+        when(subFileMetadataQueryService.queryMetadataByCondition(instructorUserId, "USER_PROFILE"))
                 .thenReturn(profileMeta);
+
         ResponseFileInfo fileInfo = mock(ResponseFileInfo.class);
         when(s3Service.getResponseFileInfo(profileMeta)).thenReturn(fileInfo);
 
+        // 새 질문
         InstructorQuestion q1 = InstructorQuestion.builder()
                 .id(1L).courseId(10L).courseName("한식A")
                 .title("질문1").questionAt(LocalDateTime.now()).build();
         when(qnaQueryService.queryQuestionsByInstructorId(instructorId))
                 .thenReturn(List.of(q1));
-        when(instructorRepository.findById(any())).thenReturn(Optional.of(Instructor.builder().id(instructorId).userId(userId).build()));
+
         InstructorStat stat = service.queryInstructorStatistic(instructorId);
 
         assertThat(stat.getTotalStudents()).isEqualTo(1000);
@@ -247,7 +255,8 @@ class InstructorQueryServiceImplTest {
         verify(instructorStatQueryService).queryAvgStars(instructorId);
         verify(instructorStatQueryService).queryTotalReviewCount(instructorId);
         verify(instructorStatQueryService).querySubsciberCount(instructorId);
-        verify(subFileMetadataQueryService).queryMetadataByCondition(userId, "USER_PROFILE"); // ✅ 대문자
+        verify(instructorRepository).findById(instructorId);
+        verify(subFileMetadataQueryService).queryMetadataByCondition(instructorUserId, "USER_PROFILE");
         verify(s3Service).getResponseFileInfo(profileMeta);
         verify(qnaQueryService).queryQuestionsByInstructorId(instructorId);
     }
@@ -304,8 +313,8 @@ class InstructorQueryServiceImplTest {
         verify(subscriptionQueryService).querySubscriptionsByUserId(userId);
         verify(instructorRepository).findById(100L);
         verify(instructorRepository).findById(200L);
-        verify(subFileMetadataQueryService).queryMetadataByCondition(1000L, "USER_PROFILE"); // ✅ 대문자
-        verify(subFileMetadataQueryService).queryMetadataByCondition(2000L, "USER_PROFILE"); // ✅ 대문자
+        verify(subFileMetadataQueryService).queryMetadataByCondition(1000L, "USER_PROFILE");
+        verify(subFileMetadataQueryService).queryMetadataByCondition(2000L, "USER_PROFILE");
         verify(s3Service).getResponseFileInfo(fm100);
         verify(s3Service).getResponseFileInfo(fm200);
         verify(instructorRepository).findNameById(100L);
@@ -353,7 +362,7 @@ class InstructorQueryServiceImplTest {
         assertThat(response.getFrom()).isEqualTo(from);
         assertThat(response.getTo()).isEqualTo(today);
         assertThat(response.getSeries()).hasSize(expectedDates.size());
-        assertThat(response.getSeries().get(0).getT()).isInstanceOf(LocalDate.class); // 👈 여기가 포인트
+        assertThat(response.getSeries().get(0).getT()).isInstanceOf(LocalDate.class);
         assertThat(response.getSeries().get(0).getSubscribers()).isEqualTo(100L);
 
         verify(subscriptionHistoryService).queryTrendPoints(instructorId, expectedDates);
