@@ -1,6 +1,6 @@
 "use client";
 
-import ChatBot from "@/components/chatbot/ChatBot";
+import ChatBot from "@/components/chatbot/chatBot";
 import restClient from "@/lib/axios/restClient";
 import { useSession } from "next-auth/react";
 import { useState } from "react";

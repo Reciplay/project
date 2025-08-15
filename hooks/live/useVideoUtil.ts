@@ -7,8 +7,8 @@ import { useEffect, useRef, useState } from "react";
 
 export function useVideoUtil(
   track: Track,
-  onNodesDetected: (_nodes: Landmark[][]) => void,
-  setGesture?: (_gesture: string) => void,
+  onNodesDetected: (nodes: Landmark[][]) => void,
+  setGesture?: (gesture: string) => void,
 ) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);

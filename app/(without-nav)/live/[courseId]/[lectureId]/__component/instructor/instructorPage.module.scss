@@ -1,8 +1,11 @@
 .container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh; /* Use viewport height */
   background-color: #1c1d1f;
+  padding-bottom: 100px; /* Add padding for the header */
+  box-sizing: border-box;
+  position: relative;
 }
 
 .header {
@@ -36,97 +39,60 @@
   display: flex;
 }
 
-.videoSection {
-  flex: 2;
+.videoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 16px;
+  flex: 3; /* Adjusted flex value */
+}
+
+.videoTile {
+  background-color: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 aspect ratio */
+}
+
+/* This ensures the VideoSection component fills the tile */
+.videoTile > :global(div) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-
-  .liveLabel {
-    color: red;
-    font-weight: bold;
-    font-size: 18px;
-  }
-
-  .stepBox {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-
-    h3 {
-      margin-bottom: 12px;
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-
-      li {
-        margin-bottom: 8px;
-      }
-    }
-  }
-
-  .instructorArea {
-    position: relative;
-    background-color: #000;
-    border-radius: 12px;
-    width: 100%;
-    /* use internal wrapper to maintain aspect ratio */
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-
-    .videoWrapper {
-      position: relative;
-      width: 100%;
-      padding-top: 56.25%;
-      /* 16:9 aspect ratio */
-      background: #000;
-      border-radius: 12px;
-      overflow: hidden;
-
-      /* make any child (e.g., VideoApp) fill the wrapper */
-      & > * {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 12px;
-      }
-    }
-
-    .localVideoOverlay {
-      position: absolute;
-      bottom: 12px;
-      right: 12px;
-      width: 25%;
-      max-width: 240px;
-      aspect-ratio: 16 / 9;
-      background-color: #111;
-      border: 2px solid white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-      z-index: 10;
-
-      /* ensure its child fills it */
-      & > * {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 6px;
-      }
-    }
-  }
+  align-items: center;
+  justify-content: center;
+  background-color: #2a2a2a;
+  color: white;
+  font-size: 1.2rem;
 }
 
 .checklistSection {
+  width: 571px;
+  height: 590px;
+}
+
+.rightContainer {
+  display: flex;
+  flex-direction: column;
   flex: 1;
+  gap: 24px;
+}
+
+.chatBot {
+  width: 571px;
+  height: 300px;
 }
 
 // .checklistSection {
@@ -196,3 +162,17 @@
 //     }
 //   }
 // }
+
+.timerOverlay {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 16px;
+  font-size: 3rem;
+  font-weight: bold;
+  z-index: 100;
+  font-family: "monospace";
+}

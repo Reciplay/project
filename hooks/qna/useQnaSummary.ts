@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { sampleQna } from '@/config/sampleQna';
-import { getErrorMessage } from '@/lib/axios/error';
-import restClient from '@/lib/axios/restClient';
-import type { ApiResponse } from '@/types/apiResponse';
-import type { QnA } from '@/types/qna';
-import { useCallback, useEffect, useState } from 'react';
+import { sampleQna } from "@/config/sampleQna";
+import { getErrorMessage } from "@/lib/axios/error";
+import restClient from "@/lib/axios/restClient";
+import type { ApiResponse } from "@/types/apiResponse";
+import type { QnA } from "@/types/qna";
+import { useCallback, useEffect, useState } from "react";
 
 type UseQnaSummaryResult = {
   list: QnA[];
@@ -30,7 +30,7 @@ export function useQnaSummary(
 
   const fetchAll = useCallback(async () => {
     if (!courseId) {
-      setMessage('유효하지 않은 강좌 ID입니다.');
+      setMessage("유효하지 않은 강좌 ID입니다.");
       return;
     }
     setLoading(true);
@@ -38,7 +38,7 @@ export function useQnaSummary(
 
     try {
       const res = await restClient.get<ApiResponse<QnA[]>>(
-        '/course/qna/summaries',
+        "/course/qna/summaries",
         {
           params: { courseId: Number(courseId) },
           requireAuth: true,
@@ -51,15 +51,15 @@ export function useQnaSummary(
         setTotalPages(Math.ceil(data.length / pageSize));
         setPage(1); // 첫 페이지
       } else {
-        setMessage(res.data?.message ?? 'Q&A 정보를 불러올 수 없습니다.');
+        setMessage(res.data?.message ?? "Q&A 정보를 불러올 수 없습니다.");
         setAllData([]);
       }
     } catch (e) {
-      setMessage(getErrorMessage(e, '네트워크 오류가 발생했습니다.'));
+      setMessage(getErrorMessage(e, "네트워크 오류가 발생했습니다."));
       setAllData([]);
     } finally {
       setLoading(false);
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         setAllData(sampleQna);
         setTotalPages(Math.ceil(sampleQna.length / pageSize));
       }
@@ -78,5 +78,13 @@ export function useQnaSummary(
     setList(allData.slice(start, end));
   }, [page, allData, pageSize]);
 
-  return { list, loading, message, page, totalPages, setPage, reload: fetchAll };
+  return {
+    list,
+    loading,
+    message,
+    page,
+    totalPages,
+    setPage,
+    reload: fetchAll,
+  };
 }

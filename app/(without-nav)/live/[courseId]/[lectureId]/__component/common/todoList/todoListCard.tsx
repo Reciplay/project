@@ -5,7 +5,7 @@ import { Card, Empty, Timeline } from "antd";
 import type { TimelineItemProps } from "antd/es/timeline/TimelineItem";
 import { useEffect, useMemo } from "react";
 
-// type TodoType = 'NORMAL' | 'TIMER'
+// type TodoType = "NORMAL" | "TIMER"; !태욱 사용하지 않는 변수라서 주석처리함
 
 type TodoItem = {
   title: string;
@@ -32,51 +32,6 @@ const formatSeconds = (seconds?: number | null) => {
   return m > 0 ? `${m}분 ${s}초` : `${s}초`;
 };
 
-// const DEFAULT_CHAPTER = {
-//   chapterSequence: 1,
-//   chapterName: "테스트 챕터",
-//   numOfTodos: 2,
-//   todos: [
-//     {
-//       title: "재료 손질하기",
-//       type: "NORMAL" as const,
-//       seconds: null,
-//       sequence: 1,
-//     },
-//     {
-//       title: "5분간 끓이기",
-//       type: "TIMER" as const,
-//       seconds: 300,
-//       sequence: 2,
-//     },
-//     {
-//       title: "양념 만들기",
-//       type: "NORMAL" as const,
-//       seconds: null,
-//       sequence: 3,
-//     },
-//     {
-//       title: "10분간 재우기",
-//       type: "TIMER" as const,
-//       seconds: 600,
-//       sequence: 4,
-//     },
-//     {
-//       title: "팬 예열하기",
-//       type: "NORMAL" as const,
-//       seconds: null,
-//       sequence: 5,
-//     },
-//     { title: "고기 굽기", type: "TIMER" as const, seconds: 420, sequence: 6 },
-//     {
-//       title: "야채 넣고 볶기",
-//       type: "NORMAL" as const,
-//       seconds: null,
-//       sequence: 7,
-//     },
-//   ],
-// };
-
 export default function TodoListCard(props: TodoListCardProps) {
   useEffect(() => {
     console.log(props);
@@ -101,45 +56,20 @@ export default function TodoListCard(props: TodoListCardProps) {
   // 임시 데이터 (없을 때만)
   const effective = props.chapterCard ?? {
     chapterSequence: 1,
-    chapterName: "테스트 챕터",
-    numOfTodos: 2,
+    chapterName: "챕터를 불러오는 중입니다...",
+    numOfTodos: 1,
     todos: [
       {
-        title: "재료 손질하기",
+        title: "Todo List를 불러오는 중입니다...",
         type: "NORMAL" as const,
         seconds: null,
         sequence: 1,
       },
       {
-        title: "5분간 끓이기",
+        title: "Todo List를 불러오는 중입니다...",
         type: "TIMER" as const,
         seconds: 300,
         sequence: 2,
-      },
-      {
-        title: "양념 만들기",
-        type: "NORMAL" as const,
-        seconds: null,
-        sequence: 3,
-      },
-      {
-        title: "10분간 재우기",
-        type: "TIMER" as const,
-        seconds: 600,
-        sequence: 4,
-      },
-      {
-        title: "팬 예열하기",
-        type: "NORMAL" as const,
-        seconds: null,
-        sequence: 5,
-      },
-      { title: "고기 굽기", type: "TIMER" as const, seconds: 420, sequence: 6 },
-      {
-        title: "야채 넣고 볶기",
-        type: "NORMAL" as const,
-        seconds: null,
-        sequence: 7,
       },
     ],
   };
@@ -179,7 +109,7 @@ export default function TodoListCard(props: TodoListCardProps) {
 
   return (
     <Card
-      title={`현재 챕터: #${effective.chapterSequence} — ${effective.chapterName}`}
+      title={`${effective.chapterName}`}
       extra={<span>할 일 {effective.numOfTodos}개</span>}
     >
       <Timeline items={items} />

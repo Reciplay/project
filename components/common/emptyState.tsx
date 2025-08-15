@@ -20,7 +20,6 @@ export default function EmptyState({
   secondaryText,
   onPrimary,
   onSecondary,
-  illustrationSrc = "/images/empty_subscriptions.png",
 }: Props) {
   return (
     <div className={styles.wrapper}>

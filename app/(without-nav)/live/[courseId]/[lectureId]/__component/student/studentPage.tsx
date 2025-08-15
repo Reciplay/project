@@ -1,74 +1,84 @@
 "use client";
 
-import { recognizeGesture } from "@/components/live/gestureRecognizer";
+// import ChatBot from "@/components/chatbot/chatBot";
 import VideoSection from "@/components/live/videoSection";
+// import { useGestureRecognition } from "@/hooks/live/features/useGestureRecognition";
+// import { useStudentActions } from "@/hooks/live/features/useStudentActions";
+import ChatBot from "@/components/chatbot/chatBot";
+import { useGestureRecognition } from "@/hooks/live/features/useGestureRecognition";
+import { useStudentActions } from "@/hooks/live/features/useStudentActions";
 import useLivekitConnection from "@/hooks/live/useLivekitConnection";
 import useLiveSocket from "@/hooks/live/useLiveSocket";
+import { Track } from "livekit-client";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Header from "../common/header/header";
 import type { ChapterCard } from "../common/todoList/todoListCard";
 import TodoListCard from "../common/todoList/todoListCard";
+import { TodosResponse } from "../instructor/instructorPage";
 import styles from "./studentPage.module.scss";
 
-type ServerTodoItem = {
-  title: string;
-  type: "NORMAL" | "TIMER";
-  seconds: number | null;
-  sequence: number;
-};
-
+// Type Definitions
 export type ChapterTodoResponse = {
   type?: "chapter-issue";
   chapterId: number;
   chapterSequence: number;
   chapterName: string;
   numOfTodos: number;
-  todos: ServerTodoItem[];
+  todos: TodosResponse[];
 };
 
+// Component
 export default function StudentPage() {
+  // 1. Library Hooks
   const { data: session } = useSession();
-
   const params = useParams();
   const courseId = params.courseId as string;
+  const lectureId = params.lectureId as string;
 
-  // TODO: 실제 라우팅 사용할 때 주석 해제
-  // const lectureId = params.lectureId as string;
-  const lectureId = String(1) as string;
-
-  // 역할은 학생이므로 세 번째 인자를 "student"로 두는 것을 권장
-  const { roomId, stompClient, sendChapterIssue, roomInfo, todo, sendHelp } =
-    useLiveSocket(courseId, lectureId, "student");
-
-  const { joinRoom, leaveRoom, localTrack, remoteTracks } =
-    useLivekitConnection();
-
+  // 2. State and Refs
   const [role, setRole] = useState<string | null>(null);
   const [userId, setUserId] = useState("");
 
-  // 세션에서 role/id 읽기 (deps: session)
-  useEffect(() => {
-    const roleFromSession = (session?.role as string | null) ?? null;
-    setRole(roleFromSession);
-    setUserId(session?.user?.id ?? "");
-  }, [session]);
+  // !태욱 setIsTimerRunning이 사용되지 않아서 임시로 없앴음
+  // const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
 
-  // role 준비되면 입장/퇴장 (deps: joinRoom, leaveRoom 포함)
-  useEffect(() => {
-    if (!role) return;
-    joinRoom(courseId, lectureId, role);
-    return () => {
-      leaveRoom();
-    };
-  }, [courseId, lectureId, role, joinRoom, leaveRoom]);
+  const [isTimerRunning] = useState<boolean>(false);
+  const [todoSequence, setTodoSequence] = useState<number | null>(0);
 
+  // 3. Custom Hooks for Live Logic
+  const liveSocketData = useLiveSocket(courseId, lectureId, "student");
+
+  //!태욱 챕터만 의존성 가지기 위해 수정
+  const { chapter } = liveSocketData;
+
+  const { joinRoom, leaveRoom, localTrack, remoteTracks } =
+    useLivekitConnection();
+  const {
+    handGesture,
+    recognizedPose,
+    handleHandGesture,
+    handleNodesDetected,
+  } = useGestureRecognition();
+
+  useStudentActions({
+    recognizedPose,
+    handGesture,
+    isTimerRunning,
+    todoSequence,
+    setTodoSequence,
+    liveSocketData,
+    lectureId,
+  });
+
+  // 4. Memoized Values
   const parsedChapterCard = useMemo<ChapterCard | undefined>(() => {
-    if (!todo || typeof todo !== "object" || !("chapterId" in todo)) {
+    // const { chapter } = liveSocketData;
+    if (!chapter || typeof chapter !== "object" || !("chapterId" in chapter)) {
       return undefined;
     }
-    const data = todo as ChapterTodoResponse;
+    const data = chapter as ChapterTodoResponse;
     return {
       chapterId: data.chapterId,
       chapterSequence: data.chapterSequence,
@@ -81,93 +91,62 @@ export default function StudentPage() {
         sequence: t.sequence,
       })),
     };
-  }, [todo]);
+  }, [chapter]);
+  //!태욱 챕터만 의존성 가지기 위해 수정
+  // }, [liveSocketData.chapter]);
 
-  const [handGesture, setHandGesture] = useState("");
-  const lastHandGestureCheck = useRef(0);
+  const instructorTrack = useMemo(() => {
+    return remoteTracks.find(
+      (track) =>
+        track.participantIdentity === liveSocketData.instructorEmail &&
+        track.trackPublication.source === Track.Source.Camera,
+    );
+  }, [remoteTracks, liveSocketData.instructorEmail]);
 
-  const handleHandGesture = useCallback((value: string) => {
-    const now = Date.now();
-    if (now - lastHandGestureCheck.current > 1000) {
-      lastHandGestureCheck.current = now;
-      setHandGesture((prev) => (prev === value ? prev : value));
-      if (value && value !== "None") {
-        console.log("Hand Gesture recognized:", value);
-      }
-    }
-  }, []);
-
-  const lastGestureCheck = useRef(0);
-  const [recognizedPose, setPose] = useState("");
-
-  // ✅ any 제거: 알 수 없는 배열로 받고 우리 로직에서 좁히기
-  const handleNodesDetected = useCallback((nodes: ReadonlyArray<unknown>) => {
-    const now = Date.now();
-    if (now - lastGestureCheck.current > 1000) {
-      lastGestureCheck.current = now;
-      if (Array.isArray(nodes) && nodes.length > 0) {
-        const newGesture = recognizeGesture(nodes[0]);
-        if (newGesture) {
-          console.log("Gesture recognized:", newGesture);
-          setPose(newGesture);
-        }
-      }
-    }
-  }, []);
-
-  // issuer 메모 (deps: roomInfo?.email)
-  const issuer = useMemo(() => roomInfo?.email ?? "", [roomInfo?.email]);
-
-  // 제스처 전송 (필요한 의존성 모두 명시)
+  // 5. Effects
   useEffect(() => {
-    if (!stompClient || !issuer || !roomId) return;
-
-    if (recognizedPose === "Clap") {
-      console.log("박수실행됨==================================");
-      sendChapterIssue(stompClient, {
-        type: "chapter-issue",
-        issuer,
-        lectureId: Number(lectureId),
-        roomId,
-        chapterSequence: 1,
-      });
+    if (session) {
+      setRole(session.role ?? null);
+      setUserId(session.user?.id ?? "");
     }
+  }, [session]);
 
-    if (handGesture === "Closed_Fist") {
-      console.log("Closed_Fist==================================");
-      sendHelp(stompClient, {
-        type: "help",
-        nickname: "별명",
-        issuer,
-        lectureId,
-        roomId,
-      });
+  useEffect(() => {
+    if (role) {
+      joinRoom(courseId, lectureId, role);
     }
-  }, [
-    stompClient,
-    issuer,
-    roomId,
-    recognizedPose,
-    handGesture,
-    sendChapterIssue,
-    sendHelp,
-    lectureId,
-  ]);
+    return () => {
+      leaveRoom();
+    };
+  }, [courseId, lectureId, role, joinRoom, leaveRoom]);
 
+  // 6. Render
   return (
     <div className={styles.container}>
       <Header
         lectureName="한식강의"
-        startTime={new Date("2025-08-02T14:00:00+09:00")}
-        onLeave={() => {
+        courseName={`강의 ID: ${lectureId}`}
+        onExit={() => {
           console.log("강의 떠나기");
         }}
       />
-
       <div className={styles.main}>
-        <div className={styles.videoSection}>
-          <div style={{ padding: 24 }}>
-            {/* 로컬 비디오 */}
+        <div className={styles.videoGrid}>
+          <div className={styles.videoTile}>
+            {instructorTrack?.trackPublication?.videoTrack != null ? (
+              <VideoSection
+                videoTrack={instructorTrack.trackPublication.videoTrack}
+                audioTrack={instructorTrack.trackPublication.audioTrack}
+                participantIdentity={instructorTrack.participantIdentity}
+              />
+            ) : (
+              <div className={styles.placeholder}>
+                <p>강사 화면을 기다리고 있습니다...</p>
+              </div>
+            )}
+          </div>
+
+          <div className={styles.videoTile}>
             {localTrack ? (
               <VideoSection
                 videoTrack={localTrack}
@@ -176,48 +155,20 @@ export default function StudentPage() {
                 setGesture={handleHandGesture}
               />
             ) : (
-              <p>비디오 연결 중...</p>
+              <div className={styles.placeholder}>
+                <p>내 비디오 연결 중...</p>
+              </div>
             )}
-
-            {/* 원격 비디오 */}
-            <div>
-              {remoteTracks.map((remoteTrack) => {
-                const video = remoteTrack.trackPublication.videoTrack;
-                const audio = remoteTrack.trackPublication.audioTrack;
-
-                console.log("🔍 remote remoteTrack:", remoteTrack);
-                console.log("🎥 remote videoTrack:", video);
-                console.log("🔊 remote audioTrack:", audio);
-
-                if (!video) {
-                  console.warn(
-                    `⚠️ videoTrack 없음 → publication: ${remoteTrack.trackPublication.trackName}`,
-                  );
-                  return null;
-                }
-
-                return (
-                  <VideoSection
-                    key={remoteTrack.trackPublication.trackSid}
-                    videoTrack={video}
-                    audioTrack={audio}
-                    participantIdentity={remoteTrack.participantIdentity}
-                  />
-                );
-              })}
-            </div>
           </div>
         </div>
 
-        <div className={styles.checklistSection}>
-          {parsedChapterCard ? (
+        <div className={styles.rightContainer}>
+          <div className={styles.checklistSection}>
             <TodoListCard chapterCard={parsedChapterCard} />
-          ) : (
-            <div>
-              <p>챕터 정보를 기다리고 있습니다...</p>
-            </div>
-          )}
-          <TodoListCard chapterCard={parsedChapterCard} />
+          </div>
+          <div className={styles.chatBot}>
+            <ChatBot />
+          </div>
         </div>
       </div>
     </div>
