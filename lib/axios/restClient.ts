@@ -175,7 +175,7 @@ export function extractAxiosErrorMessage(
  * Axios 인스턴스
  * ────────────────────────────── */
 const restClient = axios.create({
-  baseURL: "/api/rest",
+  baseURL: "https://i13e104.p.ssafy.io/api/v1", // 배포 서버
   timeout: 10000,
 });
 
@@ -202,8 +202,16 @@ restClient.interceptors.request.use(
         config.headers.set("Authorization", accessToken);
       }
     }
+    if (config.useCors === false) {
+      // CORS 직접 호출
+      config.baseURL = "https://i13e104.p.ssafy.io/api/v1";
+    } else {
+      // 프록시 경유 (Next.js API Route)
+      config.baseURL = "/api/rest";
+    }
 
-    await logRequest(config);
+    logRequest(config);
+
     return config;
   },
 );
@@ -213,12 +221,10 @@ restClient.interceptors.request.use(
  * ────────────────────────────── */
 restClient.interceptors.response.use(
   async (response) => {
-    // ✅ 정상 응답 로깅
     logResponse(response);
     return response;
   },
   async (error: AxiosError) => {
-    // ✅ 로깅
     logError(error);
 
     const originalRequest = error.config as RetryableRequestConfig;
@@ -228,26 +234,42 @@ restClient.interceptors.response.use(
 
       if (session?.refreshToken) {
         try {
-          const { data } = await axios.post("/api/rest/refresh-token", {
-            refreshToken: session.refreshToken,
-          });
+          // ✅ GET + refresh-token 헤더
+          const res = await axios.get(
+            `${process.env.NEXT_PUBLIC_API_BASE}/user/auth/refresh-token`,
+            {
+              headers: {
+                "refresh-token": session.refreshToken,
+              },
+              withCredentials: true,
+            },
+          );
 
-          const newAccessToken = data.accessToken;
+          const newAccessToken = res.headers?.authorization;
+          if (!newAccessToken) throw new Error("No access token from refresh");
+
+          // ✅ 세션 갱신 (NextAuth)
           await signIn("credentials", {
             redirect: false,
+            tokenLogin: "1",
+            email: session.user?.email,
             accessToken: newAccessToken,
             refreshToken: session.refreshToken,
+            role: session.role,
+            required: String(session.required),
           });
 
+          // ✅ 원래 요청 헤더 수정
           if (originalRequest.headers) {
             const headers = originalRequest.headers as AxiosRequestHeaders;
             if ("set" in headers && typeof headers.set === "function") {
-              headers.set("Authorization", `Bearer ${newAccessToken}`);
+              headers.set("Authorization", newAccessToken);
             } else {
-              headers.Authorization = `Bearer ${newAccessToken}`;
+              headers.Authorization = newAccessToken;
             }
           }
-
+          console.log("리프레쉬 성공");
+          // ✅ 원래 요청 재시도
           return restClient(originalRequest);
         } catch (refreshError) {
           console.error("Session refresh failed:", refreshError);

@@ -57,7 +57,7 @@ export default function useSignupValidation() {
 
     try {
       const res = await restClient.get<ApiResponse<boolean>>(
-        `/api/v1/user/auth/dup-email`,
+        `/user/auth/dup-email`,
         { params: { email } },
       );
 

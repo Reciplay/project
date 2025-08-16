@@ -13,7 +13,7 @@ interface StudentActionsProps {
 }
 
 export const useStudentActions = ({
-  recognizedPose,
+  // recognizedPose,
   handGesture,
   isTimerRunning,
   todoSequence,

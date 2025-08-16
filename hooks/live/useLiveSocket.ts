@@ -62,7 +62,9 @@ export default function useLiveSocket(
   role: "instructor" | "student",
 ) {
   const [roomId, setRoomId] = useState<string | null>(null);
-  const [socket, setSocket] = useState<SockJS | null>(null);
+  const [socket, setSocket] = useState<InstanceType<typeof SockJS> | null>(
+    null,
+  );
   const [stompClient, setStompClient] = useState<Client | null>(null);
   const [subscriptions, setSubscriptions] = useState<StompSubscription[]>([]);
   const [roomInfo, setRoomInfo] = useState<RoomInfo | null>(null);
@@ -81,9 +83,9 @@ export default function useLiveSocket(
         { requireAuth: true },
       );
 
-      if (res.data.status !== "success") {
-        throw new Error(`Failed to get token: ${res.data.message}`);
-      }
+      // if (res.data.status !== "success") {
+      //   throw new Error(`Failed to get token: ${res.data.message}`);
+      // }
 
       const info = res.data.data;
       console.log("roomInfo raw:", info);
@@ -225,13 +227,29 @@ export default function useLiveSocket(
               }
             }
 
-            const isChapterIssue = (data): data is ChapterTodoResponse => {
+            // const isChapterIssue = (data:): data is ChapterTodoResponse => {
+            //   return (
+            //     (data?.type === "chapter-issue" || data?.chapterId) &&
+            //     typeof data?.chapterId === "number" &&
+            //     typeof data?.chapterSequence === "number" &&
+            //     typeof data?.numOfTodos === "number" &&
+            //     Array.isArray(data?.todos)
+            //   );
+            // };
+
+            // !태욱 위 코드 수정
+            const isChapterIssue = (
+              data: unknown,
+            ): data is ChapterTodoResponse => {
+              if (typeof data !== "object" || data === null) return false;
+
+              const obj = data as Partial<ChapterTodoResponse>;
               return (
-                (data?.type === "chapter-issue" || data?.chapterId) &&
-                typeof data?.chapterId === "number" &&
-                typeof data?.chapterSequence === "number" &&
-                typeof data?.numOfTodos === "number" &&
-                Array.isArray(data?.todos)
+                (obj.type === "chapter-issue" || !!obj.chapterId) &&
+                typeof obj.chapterId === "number" &&
+                typeof obj.chapterSequence === "number" &&
+                typeof obj.numOfTodos === "number" &&
+                Array.isArray(obj.todos)
               );
             };
 

@@ -12,19 +12,32 @@ function calculateAngle(a: Landmark, b: Landmark, c: Landmark): number {
   return angle;
 }
 
+function isValidPoint(p?: Landmark): p is Landmark {
+  return !!p && Number.isFinite(p.x) && Number.isFinite(p.y);
+}
+
 export function recognizeGesture(landmarks: Landmark[]): string {
-  if (!landmarks || landmarks.length < 17) {
-    return "";
+  // 1) 필요한 키포인트 인덱스
+  const NEED = [2, 5, 11, 12, 13, 14, 15, 16] as const;
+
+  // 2) 존재/숫자 여부 검증 (noUncheckedIndexedAccess 대응)
+  for (const i of NEED) {
+    if (!isValidPoint(landmarks[i])) return "";
   }
 
-  const leftEye = landmarks[2];
-  const rightEye = landmarks[5];
-  const leftShoulder = landmarks[11];
-  const rightShoulder = landmarks[12];
-  const leftElbow = landmarks[13];
-  const rightElbow = landmarks[14];
-  const leftWrist = landmarks[15];
-  const rightWrist = landmarks[16];
+  // if (!landmarks || landmarks.length < 17) {
+  //   return "";
+  // }
+
+  // 3) 여기부터는 non-null 단언 사용 (검증을 통과했으므로 안전)
+  const leftEye = landmarks[2]!;
+  const rightEye = landmarks[5]!;
+  const leftShoulder = landmarks[11]!;
+  const rightShoulder = landmarks[12]!;
+  const leftElbow = landmarks[13]!;
+  const rightElbow = landmarks[14]!;
+  const leftWrist = landmarks[15]!;
+  const rightWrist = landmarks[16]!;
 
   const leftArmAngle = calculateAngle(leftShoulder, leftElbow, leftWrist);
   const rightArmAngle = calculateAngle(rightShoulder, rightElbow, rightWrist);
