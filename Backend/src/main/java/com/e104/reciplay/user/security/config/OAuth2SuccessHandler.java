@@ -35,7 +35,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     @Value("${spring.jwt.refresh-token.expiration}")
     private long REFRESH_TOKEN_EXPIRATION;
 
-    @Value("${app.oauth2.front-callback-url:http://localhost:3000/auth/social/callback}")
+    @Value("${app.oauth2.front-callback-url:https://i13e104.p.ssafy.io/auth/social/callback}")
     private String frontCallbackUrl;
 
     @Override
