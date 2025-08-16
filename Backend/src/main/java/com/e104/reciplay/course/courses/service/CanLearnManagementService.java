@@ -5,5 +5,5 @@ import java.util.List;
 public interface CanLearnManagementService {
     void createCanLearnsWithCourseId(Long courseId, List<String> canLearns);
 
-    void deleteCanLearnsByCourseId(Long courseId);
+    int deleteCanLearnsByCourseId(Long courseId);
 }

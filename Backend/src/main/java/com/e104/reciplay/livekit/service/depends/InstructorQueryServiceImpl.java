@@ -139,11 +139,11 @@ public class InstructorQueryServiceImpl implements InstructorQueryService {
         instructorProfile.setCareers(careerItems);
         log.debug("licneseItems 설정");
         instructorProfile.setLicenses(licenseItems);
-        log.debug("licneseItems 설정");
+        log.debug("해당 유저 구독했는지 변수 설정");
         instructorProfile.setIsSubscribed(subscriptionQueryService.isSubscribedInstructor(instructorId, userId));
-        log.debug("해당 유저 구독했는지 변수 설정");
-        instructorProfile.setSubscriberCount(subscriptionQueryService.countSubscribers(instructorId).intValue());
-        log.debug("해당 유저 구독했는지 변수 설정");
+        log.debug("해당 강사 구독자수 변수 설정");
+        instructorProfile.setSubscriberCount(subscriptionQueryService.countSubscribers(instructorId));
+        log.debug("강사 이름 변수 설정");
         instructorProfile.setName(instructorRepository.findNameById(instructorId));
         log.debug("강사 소개 변수 설정");
         instructorProfile.setIntroduction(instructor.getIntroduction());
@@ -218,7 +218,7 @@ public class InstructorQueryServiceImpl implements InstructorQueryService {
             log.debug("해당 강사의 이름 조회 후 subscriptionInfo에 대입");
             item.setInstructorName(instructorRepository.findNameById(s.getInstructorId()));
             log.debug("해당 강사의 구독자 수 조회 후 subscriptionInfo에 대입");
-            item.setSubscriberCount(subscriptionHistoryService.querySubscriberCount(s.getInstructorId()));
+            item.setSubscriberCount(subscriptionQueryService.countSubscribers(s.getInstructorId()));
 
             subscribedInstructorItems.add(item);
         }
