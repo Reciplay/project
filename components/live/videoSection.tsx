@@ -35,11 +35,6 @@ export default function VideoSection({
         setGesture={setGesture}
       />
 
-      {/* 닉네임 오버레이 */}
-      <div className={styles.nicknameOverlay}>
-        <p>{participantIdentity}</p>
-      </div>
-
       {audioTrack instanceof RemoteAudioTrack && (
         <StreamAudio track={audioTrack} />
       )}
