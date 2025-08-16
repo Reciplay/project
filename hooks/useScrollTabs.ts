@@ -69,7 +69,10 @@ export function useScrollTabs(
         if (scrollContainerRef?.current) {
           // Scroll within the provided container
           const container = scrollContainerRef.current;
-          const targetOffsetTop = node.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop;
+          const targetOffsetTop =
+            node.getBoundingClientRect().top -
+            container.getBoundingClientRect().top +
+            container.scrollTop;
           container.scrollTo({
             top: targetOffsetTop - offset, // Apply offset
             behavior: scrollBehavior,
