@@ -1,105 +1,64 @@
 .header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 12px 20px;
-  gap: 16px;
+  align-items: center;
+  padding: 1rem;
+  background-color: #202124;
   color: white;
+  width: 100%;
+  z-index: 10; // Ensure it's above other content
+  min-height: 80px;
 }
 
-.left {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-.course {
-  background: #f5c400;
-  color: #1f2a44;
-  padding: 0.4rem 1.2rem;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 1.6rem;
-  display: inline-block;
-}
-
-.lecture {
-  font-size: 2rem;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-top: 2px;
-}
-
-.center {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-}
-
-.timer {
-  background: rgba(255, 255, 255, 0.08);
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-family: monospace;
-  font-size: 0.9rem;
-  letter-spacing: 1px;
-}
-
-.right {
+.info {
   display: flex;
   align-items: center;
+  gap: 0.5rem;
+  font-size: 1.2rem;
 }
 
-.leaveButton {
-  background: transparent;
-  border: 1px solid #ff6b6b;
-  color: #ff6b6b;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  position: relative;
-  overflow: hidden;
-  backdrop-filter: blur(4px);
+.separator {
+  color: #5f6368;
 }
 
-.leaveButton:hover {
-  background: #ff6b6b;
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 11;
+}
+
+.controlButton {
+  background-color: #3c4043;
+  border: none;
+  border-radius: 50%;
   color: white;
-  box-shadow: 0 8px 24px rgba(255, 107, 107, 0.6);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  width: 48px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #5f6368;
+  }
+
+  &.off {
+    background-color: #ea4335;
+    &:hover {
+      background-color: #d93025;
+    }
+  }
 }
 
-.leaveButton:active {
-  transform: scale(0.97);
-}
-
-/* 반응형: 좁은 화면에서 정렬 조정 */
-@media (max-width: 800px) {
-  .header {
-    flex-wrap: wrap;
-    row-gap: 10px;
-  }
-
-  .center {
-    order: 3;
-    width: 100%;
-    justify-content: flex-start;
-  }
-
-  .timer {
-    margin-left: 0;
-  }
-
-  .left {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .right {
-    order: 2;
+.exit {
+  background-color: #ea4335;
+  &:hover {
+    background-color: #d93025;
   }
 }

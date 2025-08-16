@@ -1,123 +1,18 @@
-// import axios from "axios";
-// import FormData from "form-data";
-// import NextAuth from "next-auth";
-// import CredentialsProvider from "next-auth/providers/credentials";
-// import GoogleProvider from "next-auth/providers/google";
-// import KakaoProvider from "next-auth/providers/kakao";
-// import NaverProvider from "next-auth/providers/naver";
-
-// const handler = NextAuth({
-//   providers: [
-//     CredentialsProvider({
-//       name: "Credentials",
-//       credentials: {
-//         email: { label: "Email", type: "text" },
-//         password: { label: "Password", type: "password" },
-//       },
-//       async authorize(credentials) {
-//         if (!credentials) {
-//           return null;
-//         }
-
-//         try {
-//           const formdata = new FormData();
-//           formdata.append("username", credentials.email);
-//           formdata.append("password", credentials.password);
-//           const res = await axios.post(
-//             "http://i13e104.p.ssafy.io:8080/api/v1/user/auth/login",
-//             formdata,
-//             {
-//               headers: {
-//                 ...formdata.getHeaders(),
-//               },
-//             },
-//           );
-
-//           const accessToken = res.headers.authorization;
-//           const cookieString = res.headers["set-cookie"][0];
-//           console.log(cookieString);
-//           const refreshToken = cookieString.split("=")[1].split(";")[0];
-//           const role = res.data.role;
-//           const required = res.data.required;
-//           const expires = res.headers.expires;
-
-//           if (accessToken || refreshToken) {
-//             const user = {
-//               id: credentials.email,
-//               email: credentials.email,
-//               accessToken: accessToken,
-//               refreshToken: refreshToken,
-//               accessTokenExpires: expires,
-//               role: role,
-//               required: required,
-//             };
-//             return user;
-//           } else {
-//             return null;
-//           }
-//         } catch (error) {
-//           console.error("Error during authorization:", error);
-//           return null;
-//         }
-//       },
-//     }),
-//     GoogleProvider({
-//       clientId: process.env.GOOGLE_CLIENT_ID!,
-//       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-//     }),
-//     KakaoProvider({
-//       clientId: process.env.KAKAO_CLIENT_ID!,
-//       clientSecret: process.env.KAKAO_CLIENT_SECRET!,
-//     }),
-//     NaverProvider({
-//       clientId: process.env.NAVER_CLIENT_ID!,
-//       clientSecret: process.env.NAVER_CLIENT_SECRET!,
-//     }),
-//   ],
-//   callbacks: {
-//     async jwt({ token, user }) {
-//       if (user) {
-//         token.accessToken = user.accessToken;
-//         token.refreshToken = user.refreshToken;
-//         token.role = user.role;
-//         token.required = user.required;
-//       }
-//       return token;
-//     },
-//     async session({ session, token }) {
-//       session.accessToken = token.accessToken as string;
-//       session.refreshToken = token.refreshToken as string;
-//       session.role = token.role as string;
-//       session.required = token.required as boolean;
-//       if (token.email) {
-//         session.user.email = token.email;
-//       }
-//       return session;
-//     },
-//   },
-//   pages: {
-//     signIn: "/auth/login/",
-//   },
-//   secret: process.env.NEXTAUTH_SECRET,
-// });
-
-// export { handler as GET, handler as POST };
-// ===== NextAuth Handler =====
+// app/api/auth/[...nextauth]/route.ts
 import axios from "axios";
 import FormData from "form-data";
-import NextAuth, { type User } from "next-auth";
+import NextAuth, { Session, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
-import KakaoProvider from "next-auth/providers/kakao";
-import NaverProvider from "next-auth/providers/naver";
 
-// function parseExpiresToEpoch(expires?: string | string[]): number {
-//   // 예: 'Wed, 14 Aug 2025 12:34:56 GMT'
-//   if (!expires) return Date.now() + 60 * 60 * 1000; // 1h fallback
-//   const s = Array.isArray(expires) ? expires[0] : expires;
-//   const t = Date.parse(s);
-//   return Number.isFinite(t) ? t : Date.now() + 60 * 60 * 1000;
-// }
+const BACKEND = process.env.NEXT_PUBLIC_API_BASE;
+
+// 쿠키에서 refresh-token 추출
+function pickRefreshToken(setCookie?: string[] | string) {
+  if (!setCookie) return undefined;
+  const arr = Array.isArray(setCookie) ? setCookie : [setCookie];
+  const hit = arr.find((c) => c.toLowerCase().startsWith("refresh-token="));
+  return hit?.split(";")[0]?.split("=")[1];
+}
 
 const handler = NextAuth({
   providers: [
@@ -126,82 +21,85 @@ const handler = NextAuth({
       credentials: {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
+        tokenLogin: { label: "Token Login", type: "text" },
+        accessToken: { label: "Access Token", type: "text" },
+        refreshToken: { label: "Refresh Token", type: "text" },
+        role: { label: "Role", type: "text" },
+        required: { label: "Required", type: "text" },
       },
-
-      // ✅ 시그니처: (credentials, req)
       async authorize(credentials) {
         if (!credentials) return null;
 
-        const formdata = new FormData();
-        formdata.append("username", credentials.email);
-        formdata.append("password", credentials.password);
+        // ① 소셜 콜백에서 programmatic 로그인
+        if (credentials.tokenLogin === "1") {
+          const email = credentials.email;
+          const accessToken = credentials.accessToken;
+          const refreshToken = credentials.refreshToken;
+          const role = credentials.role;
+          const required =
+            credentials.required === "true" || credentials.required === "1";
 
-        try {
-          const res = await axios.post(
-            "http://i13e104.p.ssafy.io:8080/api/v1/user/auth/login",
-            formdata,
-            { headers: formdata.getHeaders() },
-          );
+          if (!email || !accessToken || !refreshToken) return null;
 
-          // ── 토큰/역할/만료 추출 ──────────────────────────────
-          const accessToken = res.headers?.authorization; // 'Bearer ...' 예상
-          const setCookie = res.headers?.["set-cookie"]; // [ 'refreshToken=...; Path=/; ...' ] 예상
-          const refreshToken = Array.isArray(setCookie)
-            ? setCookie[0]?.split(";")[0]?.split("=")[1]
-            : undefined;
-
-          const role = String(res.data?.role ?? "");
-          const required = Boolean(res.data?.required ?? false);
-          const accessTokenExpires = res.headers.expires;
-
-          // ── 필수 값 검증 ─────────────────────────────────────
-          if (!accessToken || !refreshToken) {
-            // 필수 키가 없으면 로그인 실패로 처리
-            return null;
-          }
-
-          // ✅ User 타입을 정확히 만족하도록 반환
-          const user: User = {
-            id: credentials.email,
-            email: credentials.email,
+          return {
+            id: email,
+            email,
             accessToken,
             refreshToken,
-            accessTokenExpires,
             role,
             required,
-          };
+            accessTokenExpires: Date.now() + 1000 * 60 * 15,
+          } as User;
+        }
 
-          return user;
-        } catch (err) {
-          console.error("Error during authorization:", err);
+        // ② 기존 아이디/비번 로그인
+        const form = new FormData();
+        form.append("username", credentials.email);
+        form.append("password", credentials.password);
+        console.log("요청 URL:", `${BACKEND}/user/auth/login`);
+        try {
+          const res = await axios.post(`${BACKEND}/user/auth/login`, form, {
+            headers: form.getHeaders(),
+            withCredentials: true,
+          });
+
+          const accessToken = res.headers?.authorization; // 'Bearer ...'
+          const refreshToken = pickRefreshToken(res.headers?.["set-cookie"]);
+          const role = String(res.data?.role ?? "");
+          const required = Boolean(res.data?.required ?? false);
+
+          if (!accessToken || !refreshToken) return null;
+
+          return {
+            id: credentials.email as string,
+            email: credentials.email as string,
+            accessToken,
+            refreshToken,
+            role,
+            required,
+            accessTokenExpires: Date.now() + 1000 * 60 * 15,
+          } as User;
+        } catch (e) {
+          console.error("credentials login failed:", e);
           return null;
         }
       },
     }),
-
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-    KakaoProvider({
-      clientId: process.env.KAKAO_CLIENT_ID!,
-      clientSecret: process.env.KAKAO_CLIENT_SECRET!,
-    }),
-    NaverProvider({
-      clientId: process.env.NAVER_CLIENT_ID!,
-      clientSecret: process.env.NAVER_CLIENT_SECRET!,
-    }),
   ],
-
   callbacks: {
     async jwt({ token, user }) {
-      // 로그인 시점에만 user 존재
       if (user) {
-        token.accessToken = user.accessToken;
-        token.refreshToken = user.refreshToken;
-        token.role = user.role;
-        token.required = user.required;
-        token.accessTokenExpires = user.accessTokenExpires;
+        token.accessToken = (
+          user as User & { accessToken: string }
+        ).accessToken;
+        token.refreshToken = (
+          user as User & { refreshToken: string }
+        ).refreshToken;
+        token.accessTokenExpires = (
+          user as User & { accessTokenExpires: number }
+        ).accessTokenExpires;
+        token.role = (user as User & { role?: string }).role;
+        token.required = (user as User & { required?: boolean }).required;
         token.user = {
           id: user.id,
           name: user.name ?? null,
@@ -211,39 +109,29 @@ const handler = NextAuth({
       }
       return token;
     },
+    async session({ session, token }): Promise<Session> {
+      (session as Session & { accessToken?: string }).accessToken =
+        token.accessToken as string;
+      (session as Session & { refreshToken?: string }).refreshToken =
+        token.refreshToken as string;
+      (session as Session & { role?: string }).role = token.role as string;
+      (session as Session & { required?: boolean }).required =
+        token.required as boolean;
+      (session as Session & { error?: string }).error = token.error as string;
 
-    async session({ session, token }) {
-      session.accessToken = token.accessToken ?? undefined;
-      session.refreshToken = token.refreshToken ?? undefined;
-      session.role = token.role ?? undefined;
-      session.required = token.required ?? undefined;
-
-      // ✅ user가 없을 때 타입을 만족하도록 id를 넣어 초기화
       session.user ??= {
         id:
-          (typeof token.user?.id === "string" && token.user.id) ||
+          token.user?.id ??
           (typeof token.email === "string" ? token.email : ""),
-      };
-
-      // 이후 필요한 필드들 채워넣기
-      if (typeof token.email === "string") {
-        session.user.email = token.email;
-      }
-      if (typeof token.user?.name === "string") {
-        session.user.name = token.user.name;
-      }
-      if (typeof token.user?.image === "string") {
-        session.user.image = token.user.image;
-      }
+      } as Session["user"];
+      if (typeof token.email === "string") session.user.email = token.email;
+      if (token.user?.name) session.user.name = token.user.name;
+      if (token.user?.image) session.user.image = token.user.image;
 
       return session;
     },
   },
-
-  pages: {
-    signIn: "/auth/login/",
-  },
-
+  pages: { signIn: "/auth/login/" },
   secret: process.env.NEXTAUTH_SECRET,
 });
 

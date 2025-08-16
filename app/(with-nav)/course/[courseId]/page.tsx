@@ -2,9 +2,11 @@
 
 import CustomButton from "@/components/button/customButton";
 import ScrollTabs from "@/components/tab/scrollTabs";
+import { ScrollContainerContext } from "@/contexts/ScrollContainerContext";
 import { useCourseInfo } from "@/hooks/course/useCourseInfo";
 import { useScrollTabs } from "@/hooks/useScrollTabs";
 import { useParams } from "next/navigation";
+import { useContext } from "react";
 import Notices from "./__components/notices/notices";
 import Overview from "./__components/overview/overview";
 import QnA from "./__components/qna/qna";
@@ -18,8 +20,12 @@ import styles from "./page.module.scss";
 export default function Page() {
   const { courseId } = useParams<{ courseId: string }>();
   const tabTitles = ["강의상세", "강의 시간표", "공지사항", "Q&A", "리뷰"];
+
+  const mainRef = useContext(ScrollContainerContext);
+
   const { activeIdx, handleScrollTo, sectionRefs } = useScrollTabs(
     tabTitles.length,
+    { scrollContainerRef: mainRef },
   );
   const { handleEnroll, handleZzim, courseDetail, message, loading } =
     useCourseInfo(courseId);
@@ -28,7 +34,6 @@ export default function Page() {
   if (!courseDetail)
     return <div>{message ?? "강좌 정보를 불러오지 못했습니다."}</div>;
 
-  console.log(courseDetail);
   return (
     <div className={styles.container}>
       <div className={styles.content}>

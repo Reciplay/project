@@ -8,7 +8,7 @@ import { useState } from "react";
 import styles from "../page.module.scss";
 
 export default function DashboardChart() {
-  const [period, setPeriod] = useState<SubscriptionCriteria>("daily");
+  const [period, setPeriod] = useState<SubscriptionCriteria>("day");
   const { trendData, loading, error } = useSubscriptionTrend(period);
 
   if (loading) {
@@ -34,9 +34,9 @@ export default function DashboardChart() {
         <h3 className={styles.cardTitle}>구독자 추이</h3>
         <Segmented
           options={[
-            { label: "일간", value: "daily" },
-            { label: "월간", value: "monthly" },
-            { label: "연간", value: "yearly" },
+            { label: "일간", value: "day" },
+            { label: "주간", value: "week" },
+            { label: "월간", value: "month" },
           ]}
           value={period}
           onChange={(value) => setPeriod(value as SubscriptionCriteria)}
@@ -44,9 +44,9 @@ export default function DashboardChart() {
       </div>
       <div className={styles.chartArea}>
         <SmoothLineChart
-          data={trendData}
+          data={trendData!}
           timeUnit={
-            period === "daily" ? "day" : period === "monthly" ? "month" : "year"
+            period === "day" ? "day" : period === "week" ? "week" : "month"
           }
         />
       </div>

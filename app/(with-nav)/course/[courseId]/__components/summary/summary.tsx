@@ -57,7 +57,6 @@ export default function Summary({ courseDetail }: SummaryProps) {
             src={thumb}
             fill
             alt={`${courseDetail.title} 썸네일`}
-            sizes="(max-width: 768px) 100vw, 560px"
             priority={false}
           />
         </div>

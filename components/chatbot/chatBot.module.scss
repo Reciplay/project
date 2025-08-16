@@ -1,0 +1,132 @@
+/* --- 전체 --- */
+.chatbot {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 18px;
+  background: #393939; /* 다크 배경 */
+  border: 2px solid white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  color: #111827; /* 다크그레이 텍스트 */
+  overflow: hidden;
+  gap: 1.6rem;
+}
+
+/* --- 메시지 영역 --- */
+.chatbot__messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  // padding: 16px;
+  overflow-y: auto;
+  // background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  scroll-behavior: smooth;
+}
+
+/* --- 메시지 공통 --- */
+.chatbot__message {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  animation: floatIn 0.25s ease both;
+}
+
+.chatbot__bubble {
+  padding: 10px 14px;
+  max-width: 60%;
+  font-size: 14px;
+  line-height: 1.5;
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* --- 내 메시지 (오른쪽) --- */
+.chatbot__message--user {
+  justify-content: flex-end;
+
+  .chatbot__bubble {
+    background: #3b82f6; /* 파랑 */
+    color: #fff;
+    border-radius: 16px 16px 0 16px;
+    order: 1;
+  }
+
+  .chatbot__avatar {
+    order: 2;
+    background: #2563eb; /* 진한 파랑 */
+  }
+}
+
+/* --- 챗봇 메시지 (왼쪽) --- */
+.chatbot__message--bot {
+  justify-content: flex-start;
+
+  .chatbot__avatar {
+    order: 1;
+    background: #e5e7eb; /* 연회색 */
+  }
+
+  .chatbot__bubble {
+    background: #f3f4f6; /* 밝은 회색 */
+    color: #111827;
+    border-radius: 16px 16px 16px 0;
+    order: 2;
+  }
+}
+
+/* --- 아바타 --- */
+.chatbot__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+/* --- 입력창 --- */
+.chatbot__inputbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  // padding: 12px;
+  // background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+}
+
+.chatbot__input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #f9fafb;
+  color: #111827;
+  outline: none;
+
+  &:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+  }
+}
+
+.chatbot__send {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #3b82f6;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
+
+  &:hover {
+    background: #2563eb;
+  }
+}

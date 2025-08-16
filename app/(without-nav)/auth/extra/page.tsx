@@ -5,7 +5,7 @@ import CustomDatePicker from "@/components/calendar/customDatePicker";
 import CustomInput from "@/components/input/customInput";
 import GenderPicker from "@/components/radio/genderPicker";
 import useExtraForm from "@/hooks/auth/useExtraForm";
-import LogoWithDesc from "../../../../../components/text/logoWithDesc/logoWithDesc";
+import LogoWithDesc from "../../../../components/text/logoWithDesc/logoWithDesc";
 import AuthImage from "../__components/authImage/authImage";
 import styles from "./page.module.scss";
 

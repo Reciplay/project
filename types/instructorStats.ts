@@ -14,6 +14,13 @@ export type InstructorStats = {
 };
 
 export type SubscriptionPoint = {
-  date: string; // "YYYY-MM-DD"
-  subscriber: number;
+  criteria: string;
+  from: string;
+  to: string;
+  series: PeriodSubscription[];
+};
+
+export type PeriodSubscription = {
+  t: string; // yyyy-mm-dd
+  subscribers: number;
 };

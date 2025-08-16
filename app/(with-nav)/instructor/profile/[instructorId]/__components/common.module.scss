@@ -78,3 +78,15 @@
 .section.license .title {
   color: #0f6;
 } /* 취향에 맞게 조정 */
+
+.loading,
+.error,
+.emptyMessage {
+  padding: 48px 0;
+  text-align: center;
+  color: #666;
+  font-size: 1.6rem;
+  border: 1px dashed #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}

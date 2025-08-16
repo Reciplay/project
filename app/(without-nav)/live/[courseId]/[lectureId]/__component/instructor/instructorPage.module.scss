@@ -1,8 +1,9 @@
 .container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh; /* Use viewport height */
   background-color: #1c1d1f;
+  box-sizing: border-box;
 }
 
 .header {
@@ -29,170 +30,219 @@
 }
 
 .main {
-  display: flex;
+  display: grid;
+  grid-template-columns: 4fr 1fr; /* 왼쪽 넓게, 오른쪽 좁게 */
+  gap: 24px;
   flex: 1;
   padding: 20px;
-  gap: 24px;
-  display: flex;
+  overflow: hidden; /* Prevent main content from overflowing */
 }
 
-.videoSection {
-  flex: 2;
+.videoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-gap: 16px;
+  justify-items: center; /* ✅ 셀 안에서 중앙 정렬 */
+  align-items: center; /* ✅ 세로 중앙 */
+  height: 100%; /* Fill available height in grid cell */
+  overflow-y: auto; /* Enable vertical scrolling if content overflows */
+}
+
+.videoTile {
+  background-color: #353535;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 100%; /* ✅ 높이를 grid 셀에 맞춤 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  // aspect-ratio: 16 / 9; /* ✅ 비율 유지 */
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.identityOverlay {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgb(42, 42, 42);
+  color: white;
+  font-size: 1rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.identityOverlay {
+  p {
+    margin: 0;
+  }
+}
+
+.muteIndicators {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #2a2a2a;
+  color: white;
+  font-size: 1.2rem;
+}
+
+.rightContainer {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 20px;
+  height: 100%; /* Fill available height in grid cell */
+  overflow-y: auto; /* Enable vertical scrolling if content overflows */
+}
+.currentTodoSection {
+  position: relative;
+  border-radius: 12px;
+  padding: 20px;
+  background: #393939; /* 다크 배경 */
+  border: 3px solid transparent;
+  z-index: 0;
+  color: white;
 
-  .liveLabel {
-    color: red;
-    font-weight: bold;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    padding: 3px; /* border 두께 */
+    background: linear-gradient(
+      90deg,
+      #ff4dff,
+      #8b5cf6,
+      #22d3ee,
+      #34d399,
+      #fde047,
+      #ff4dff
+    );
+    background-size: 300% 100%;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: rainbowFlow 6s linear infinite;
+    z-index: -1;
+  }
+
+  h2 {
     font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: white;
   }
 
-  .stepBox {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-
-    h3 {
-      margin-bottom: 12px;
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-
-      li {
-        margin-bottom: 8px;
-      }
-    }
+  p {
+    font-size: 15px;
+    font-weight: 400;
+    margin: 6px 0;
+    color: #f3f4f6; /* 기본 밝은 회색 */
   }
 
-  .instructorArea {
-    position: relative;
-    background-color: #000;
-    border-radius: 12px;
-    width: 100%;
-    /* use internal wrapper to maintain aspect ratio */
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-
-    .videoWrapper {
-      position: relative;
-      width: 100%;
-      padding-top: 56.25%;
-      /* 16:9 aspect ratio */
-      background: #000;
-      border-radius: 12px;
-      overflow: hidden;
-
-      /* make any child (e.g., VideoApp) fill the wrapper */
-      & > * {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 12px;
-      }
-    }
-
-    .localVideoOverlay {
-      position: absolute;
-      bottom: 12px;
-      right: 12px;
-      width: 25%;
-      max-width: 240px;
-      aspect-ratio: 16 / 9;
-      background-color: #111;
-      border: 2px solid white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-      z-index: 10;
-
-      /* ensure its child fills it */
-      & > * {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 6px;
-      }
-    }
+  p:first-of-type {
+    font-size: 16px;
+    font-weight: 500;
+    color: #ffffff; /* 현재 해야 할 일 강조 */
   }
 }
 
-.checklistSection {
-  flex: 1;
+@keyframes rainbowFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+@keyframes rainbowFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+@keyframes rainbowFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+.checklistSection,
+.chatBot {
+  flex: 4; /* 각각 절반 차지 */
+  // background: #fff;
+  border-radius: 12px;
+  // border: 1px solid #e5e5e5;
+  // padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-// .checklistSection {
-//   flex: 1;
-//   display: flex;
-//   flex-direction: column;
+.timerOverlay {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 16px;
+  font-size: 3rem;
+  font-weight: bold;
+  z-index: 100;
+  font-family: "monospace";
+}
 
-//   .checklistBox {
-//     background: white;
-//     padding: 20px;
-//     border-radius: 12px;
-//     height: 100%;
-//     overflow-y: auto;
+.localVideoOverlay {
+  position: absolute;
+  bottom: 120px; /* Positioned above the bottom header area */
+  left: 40px;
+  width: 320px;
+  height: 180px;
+  z-index: 100;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+.headerRow {
+  display: flex;
+  gap: 2rem;
+  // justify-content: space-between; /* 좌측 제목, 우측 타이머 */
+  align-items: center;
+  margin-bottom: 12px;
 
-//     h4 {
-//       font-size: 17px;
-//       font-weight: bold;
-//       margin-bottom: 6px;
-//     }
-
-//     ul {
-//       list-style: none;
-//       padding: 0;
-
-//       li {
-//         position: relative;
-//         padding-left: 20px;
-//         margin-bottom: 8px;
-
-//         &::before {
-//           content: "✅";
-//           position: absolute;
-//           left: 0;
-//         }
-//       }
-//     }
-//   }
-
-//   .chapter {
-//     display: flex;
-//     align-items: flex-start;
-//     gap: 8px;
-//     margin-bottom: 24px;
-
-//     .dot {
-//       width: 12px;
-//       height: 12px;
-//       background-color: yellow;
-//       border-radius: 50%;
-//       margin-top: 8px;
-//     }
-
-//     .chapterContent {
-//       h4 {
-//         margin-bottom: 8px;
-//         font-size: 16px;
-//       }
-
-//       ul {
-//         list-style: none;
-//         padding: 0;
-
-//         li {
-//           margin-bottom: 6px;
-//         }
-//       }
-//     }
-//   }
-// }
+  h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+  }
+  .timer {
+    font-size: 18px;
+    font-weight: 600;
+  }
+}

@@ -5,20 +5,22 @@ import { useEffect, useRef } from "react";
 
 interface StreamAudioProps {
   track: LocalAudioTrack | RemoteAudioTrack;
+  isMuted?: boolean; // Added isMuted prop
 }
 
-export default function StreamAudio({ track }: StreamAudioProps) {
+export default function StreamAudio({ track, isMuted }: StreamAudioProps) {
   const audioElement = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    if (audioElement.current) {
+    if (audioElement.current && !isMuted) {
+      // Only attach if not muted
       track.attach(audioElement.current);
     }
 
     return () => {
       track.detach();
     };
-  }, [track]);
+  }, [track, isMuted]); // Add isMuted to dependency array
 
-  return <audio ref={audioElement} id={track.sid} />;
+  return isMuted ? null : <audio ref={audioElement} id={track.sid} />;
 }

@@ -1,101 +1,112 @@
 "use client";
 
+import { useWhisperStt } from "@/hooks/live/features/useWhisperStt";
 import { useChatbotStore } from "@/stores/chatBotStore";
-import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
+import styles from "./chatBot.module.scss";
 
-export default function ChatBot() {
-  const { messages, addMessage, clearMessages } = useChatbotStore();
+interface ChatBotProps {
+  isSttActive: boolean;
+  onSttFinished: () => void;
+}
+
+export default function ChatBot({ isSttActive, onSttFinished }: ChatBotProps) {
+  const { messages, addMessage } = useChatbotStore();
   const [input, setInput] = useState("");
-  const [isChatOpen, setIsChatOpen] = useState(false);
   const socketRef = useRef<WebSocket | null>(null);
-  const { data: session } = useSession();
 
-  const setupWebSocket = () => {
-    if (
-      socketRef.current &&
-      socketRef.current.readyState !== WebSocket.CLOSED
-    ) {
-      return;
-    }
+  const { isRecording, startRecording } = useWhisperStt({
+    onFinished: (transcript) => {
+      onSttFinished(); // STT 프로세스 종료 알림
+      if (transcript) {
+        setInput(transcript); // 인식된 텍스트를 입력창에 표시
+        sendMessage(transcript); // 메시지 즉시 전송
+      }
+    },
+  });
 
-    if (!session?.user?.email) {
-      console.error("User not logged in. Cannot open chat.");
-      setIsChatOpen(false);
-      return;
-    }
-    const email = session.user.email;
-
-    const ws = new WebSocket(`ws://localhost:8000/chat/${email}`);
-
-    ws.onopen = () => {
-      console.log("WebSocket connected");
-    };
-
-    ws.onmessage = (event) => {
-      addMessage(event.data);
-    };
-
-    ws.onclose = () => {
-      console.log("WebSocket disconnected");
-    };
-
-    socketRef.current = ws;
-  };
-
-  const closeWebSocket = () => {
-    socketRef.current?.close();
-    socketRef.current = null;
-  };
-
-  const toggleChat = () => {
-    const newIsChatOpen = !isChatOpen;
-    setIsChatOpen(newIsChatOpen);
-
-    if (newIsChatOpen) {
-      setupWebSocket();
-    } else {
-      closeWebSocket();
-      clearMessages(); // Clear messages when closing
-    }
-  };
-
-  // Cleanup WebSocket connection on component unmount
   useEffect(() => {
-    return () => {
-      socketRef.current?.close();
-    };
-  }, []);
+    if (isSttActive) {
+      setInput("");
+      startRecording();
+    }
+  }, [isSttActive, startRecording]);
 
-  const sendMessage = () => {
-    if (input && socketRef.current?.readyState === WebSocket.OPEN) {
-      addMessage(`You: ${input}`);
-      socketRef.current.send(input);
+  useEffect(() => {
+    const host = "wss://i13e104.p.ssafy.io";
+    const email = "test@mail.com";
+    const url = `${host}/chat/${encodeURIComponent(email)}`;
+
+    const ws = new WebSocket(url);
+
+    ws.onopen = () => console.log("WebSocket connected");
+    ws.onmessage = (event) => addMessage(event.data);
+    ws.onclose = () => console.log("WebSocket disconnected");
+    ws.onerror = (e) => console.error("WebSocket error", e);
+
+    ws.addEventListener("close", (e) => {
+      console.log("WS close", e.code, e.reason);
+    });
+    socketRef.current = ws;
+    return () => ws.close();
+  }, [addMessage]);
+
+  const sendMessage = (messageToSend?: string) => {
+    const message = messageToSend ?? input;
+    if (message && socketRef.current?.readyState === WebSocket.OPEN) {
+      socketRef.current.send(message);
+      addMessage(`You: ${message}`);
+
       setInput("");
     }
   };
+
   return (
-    <div>
-      <button onClick={toggleChat}>
-        {isChatOpen ? "Close Chat" : "Open Chat"}
-      </button>
-      {isChatOpen && (
-        <div>
-          <h2>Chat</h2>
-          <div id="messages">
-            {messages.map((msg, i) => (
-              <div key={i}>{msg}</div>
-            ))}
-          </div>
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-          />
-          <button onClick={sendMessage}>Send</button>
-        </div>
-      )}
+    <div className={styles.chatbot}>
+      <div className={styles.chatbot__messages}>
+        {messages.map((m, i) => {
+          const isUser = m.startsWith("You:");
+          return (
+            <div
+              key={i}
+              className={`${styles.chatbot__message} ${
+                isUser
+                  ? styles["chatbot__message--user"]
+                  : styles["chatbot__message--bot"]
+              }`}
+            >
+              {isUser ? (
+                <>
+                  <div className={styles.chatbot__bubble}>{m}</div>
+                  <div className={styles.chatbot__avatar}>🙂</div>
+                </>
+              ) : (
+                <>
+                  <div className={styles.chatbot__avatar}>🤖</div>
+                  <div className={styles.chatbot__bubble}>{m}</div>
+                </>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className={styles.chatbot__inputbar}>
+        <input
+          className={styles.chatbot__input}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder={
+            isRecording
+              ? "듣고 있어요..."
+              : "레시피에서 궁금한 점을 물어보세요!"
+          }
+          disabled={isRecording}
+        />
+        <button className={styles.chatbot__send} onClick={() => sendMessage()}>
+          보내기
+        </button>
+      </div>
     </div>
   );
 }

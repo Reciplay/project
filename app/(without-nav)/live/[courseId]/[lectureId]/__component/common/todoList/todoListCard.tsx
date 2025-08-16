@@ -1,16 +1,13 @@
 "use client";
 
-import { ClockCircleOutlined } from "@ant-design/icons";
-import { Card, Empty, Timeline } from "antd";
-import type { TimelineItemProps } from "antd/es/timeline/TimelineItem";
-import { useEffect, useMemo } from "react";
-
-// type TodoType = 'NORMAL' | 'TIMER'
+import { IconClock } from "@tabler/icons-react"; // ✅ Tabler 아이콘
+import { useMemo } from "react";
+import styles from "./todoListCard.module.scss";
 
 type TodoItem = {
   title: string;
   type: "NORMAL" | "TIMER";
-  seconds: number | null; // 수정된 부분: null 허용
+  seconds: number | null;
   sequence: number;
 };
 
@@ -23,8 +20,10 @@ export type ChapterCard = {
 };
 
 type TodoListCardProps = {
-  chapterCard?: ChapterCard; // 수정된 부분: optional로 변경
+  chapterCard?: ChapterCard;
+  currentTodoSequence?: number | null;
 };
+
 const formatSeconds = (seconds?: number | null) => {
   if (seconds == null) return "";
   const m = Math.floor(seconds / 60);
@@ -32,157 +31,81 @@ const formatSeconds = (seconds?: number | null) => {
   return m > 0 ? `${m}분 ${s}초` : `${s}초`;
 };
 
-// const DEFAULT_CHAPTER = {
-//   chapterSequence: 1,
-//   chapterName: "테스트 챕터",
-//   numOfTodos: 2,
-//   todos: [
-//     {
-//       title: "재료 손질하기",
-//       type: "NORMAL" as const,
-//       seconds: null,
-//       sequence: 1,
-//     },
-//     {
-//       title: "5분간 끓이기",
-//       type: "TIMER" as const,
-//       seconds: 300,
-//       sequence: 2,
-//     },
-//     {
-//       title: "양념 만들기",
-//       type: "NORMAL" as const,
-//       seconds: null,
-//       sequence: 3,
-//     },
-//     {
-//       title: "10분간 재우기",
-//       type: "TIMER" as const,
-//       seconds: 600,
-//       sequence: 4,
-//     },
-//     {
-//       title: "팬 예열하기",
-//       type: "NORMAL" as const,
-//       seconds: null,
-//       sequence: 5,
-//     },
-//     { title: "고기 굽기", type: "TIMER" as const, seconds: 420, sequence: 6 },
-//     {
-//       title: "야채 넣고 볶기",
-//       type: "NORMAL" as const,
-//       seconds: null,
-//       sequence: 7,
-//     },
-//   ],
-// };
-
-export default function TodoListCard(props: TodoListCardProps) {
-  useEffect(() => {
-    console.log(props);
-  }, [props]);
-
-  // if (!props.chapter) {
-  // props.chapter = {
-  //     chapterSequence: 1,
-  //     chapterName: '테스트 챕터',
-  //     numOfTodos: 2,
-  //     todos: [
-  //         { title: '재료 손질하기', type: 'NORMAL' as const, seconds: null, sequence: 1 },
-  //         { title: '5분간 끓이기', type: 'TIMER' as const, seconds: 300, sequence: 2 },
-  //         { title: '양념 만들기', type: 'NORMAL' as const, seconds: null, sequence: 3 },
-  //         { title: '10분간 재우기', type: 'TIMER' as const, seconds: 600, sequence: 4 },
-  //         { title: '팬 예열하기', type: 'NORMAL' as const, seconds: null, sequence: 5 },
-  //         { title: '고기 굽기', type: 'TIMER' as const, seconds: 420, sequence: 6 },
-  //         { title: '야채 넣고 볶기', type: 'NORMAL' as const, seconds: null, sequence: 7 },
-  //     ]
-  // }    }
-
-  // 임시 데이터 (없을 때만)
-  const effective = props.chapterCard ?? {
+export default function TodoListCard({
+  chapterCard,
+  currentTodoSequence,
+}: TodoListCardProps) {
+  const effective = chapterCard ?? {
     chapterSequence: 1,
-    chapterName: "테스트 챕터",
+    chapterName: "챕터를 불러오는 중입니다...",
     numOfTodos: 2,
     todos: [
       {
-        title: "재료 손질하기",
+        title: "Todo List를 불러오는 중입니다...",
         type: "NORMAL" as const,
         seconds: null,
         sequence: 1,
       },
       {
-        title: "5분간 끓이기",
+        title: "Todo List를 불러오는 중입니다...",
         type: "TIMER" as const,
         seconds: 300,
         sequence: 2,
       },
-      {
-        title: "양념 만들기",
-        type: "NORMAL" as const,
-        seconds: null,
-        sequence: 3,
-      },
-      {
-        title: "10분간 재우기",
-        type: "TIMER" as const,
-        seconds: 600,
-        sequence: 4,
-      },
-      {
-        title: "팬 예열하기",
-        type: "NORMAL" as const,
-        seconds: null,
-        sequence: 5,
-      },
-      { title: "고기 굽기", type: "TIMER" as const, seconds: 420, sequence: 6 },
-      {
-        title: "야채 넣고 볶기",
-        type: "NORMAL" as const,
-        seconds: null,
-        sequence: 7,
-      },
     ],
   };
-  const items = useMemo<TimelineItemProps[]>(
-    () =>
-      (effective?.todos ?? [])
-        .slice()
-        .sort((a, b) => a.sequence - b.sequence)
-        .map((todo) => {
-          const isTimer = todo.type === "TIMER";
-          const hasSeconds =
-            typeof todo.seconds === "number" && todo.seconds >= 0;
-          const timeText =
-            isTimer && hasSeconds
-              ? ` • ${formatSeconds(todo.seconds as number)}`
-              : "";
 
-          return {
-            key: String(todo.sequence),
-            color: isTimer ? "red" : "blue",
-            dot: isTimer ? <ClockCircleOutlined /> : undefined,
-            children: (
-              <div>
-                <strong>{todo.title}</strong>
-                {timeText}
-              </div>
-            ),
-          } as TimelineItemProps; // 수정된 부분: 명시적 캐스팅(안전하게 타입 맞춤)
-        }),
-    // 수정된 부분: 의존성은 todos만 두는 게 불필요 렌더 줄이는 데 유리
-    [effective?.todos],
-  );
+  const items = useMemo(() => {
+    return (effective?.todos ?? [])
+      .slice()
+      .sort((a, b) => a.sequence - b.sequence)
+      .map((todo) => {
+        const isTimer = todo.type === "TIMER";
+        const hasSeconds =
+          typeof todo.seconds === "number" && todo.seconds >= 0;
+        const timeText =
+          isTimer && hasSeconds ? ` • ${formatSeconds(todo.seconds)}` : "";
+        const isActive = todo.sequence === currentTodoSequence;
+        const isPast =
+          currentTodoSequence != null && todo.sequence < currentTodoSequence;
 
-  if (!effective || effective.todos.length === 0) {
-    return <Empty description="체크리스트가 없습니다" />;
-  }
+        return {
+          ...todo,
+          timeText,
+          isActive,
+          isPast,
+        };
+      });
+  }, [effective?.todos, currentTodoSequence]);
 
   return (
-    <Card
-      title={`현재 챕터: #${effective.chapterSequence} — ${effective.chapterName}`}
-      extra={<span>할 일 {effective.numOfTodos}개</span>}
-    >
-      <Timeline items={items} />
-    </Card>
+    <div className={styles.timeline}>
+      <div className={styles.header}>
+        <h3>{effective.chapterName}</h3>
+        <span>할 일 {effective.numOfTodos}개</span>
+      </div>
+
+      {items.map((todo) => (
+        <div
+          key={todo.sequence}
+          className={`${styles.item} ${todo.isActive ? styles.active : ""} ${
+            todo.isPast ? styles.past : ""
+          } ${todo.type === "TIMER" ? styles.timer : styles.normal}`}
+        >
+          {todo.type === "TIMER" ? (
+            <IconClock size={16} color={todo.isActive ? "#ff4d4f" : "#888"} />
+          ) : (
+            <div className={styles.dot} />
+          )}
+
+          <div className={styles.content}>
+            <span className={styles.title}>{todo.title}</span>
+            {todo.timeText && (
+              <span className={styles.time}>{todo.timeText}</span>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }

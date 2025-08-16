@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   eslint: { ignoreDuringBuilds: false },
   typescript: { ignoreBuildErrors: false },
   output: "standalone",
@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/api/rest/:path*",
-        destination: "http://i13e104.p.ssafy.io:8080/api/v1/:path*",
+        destination: "https://i13e104.p.ssafy.io/api/v1/:path*",
       },
       {
         source: "/test/local/:path*",

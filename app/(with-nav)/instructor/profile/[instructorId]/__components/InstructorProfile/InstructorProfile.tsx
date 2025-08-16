@@ -9,6 +9,8 @@ import Careers from "../careers/careers";
 import Courses from "../courses/courses";
 import Licenses from "../licenses/licenses";
 import styles from "./instructorProfile.module.scss";
+import { useContext } from "react";
+import { ScrollContainerContext } from "@/contexts/ScrollContainerContext";
 
 interface InstructorProfileProps {
   instructor: Instructor;
@@ -20,8 +22,12 @@ export default function InstructorProfile({
   instructorId,
 }: InstructorProfileProps) {
   const tabTitles = ["경력", "자격증", "강좌목록"];
+
+  const mainRef = useContext(ScrollContainerContext);
+
   const { activeIdx, handleScrollTo, sectionRefs } = useScrollTabs(
     tabTitles.length,
+    { scrollContainerRef: mainRef },
   );
 
   return (
@@ -35,7 +41,7 @@ export default function InstructorProfile({
           jobDescription: instructor.careers?.[0]?.jobDescription ?? "",
           companyName: instructor.careers?.[0]?.companyName ?? "",
           // 이거 있나..?
-          isSubscribed: false,
+          isSubscribed: instructor.isSubscribed,
           instructorId: Number(instructorId),
         }}
       />

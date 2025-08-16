@@ -6,6 +6,7 @@ interface Props {
   size?: number;
   filled?: boolean; // filled prop 추가
   className?: string;
+  color?: string;
 }
 
 export default function TablerIcon({
@@ -13,6 +14,7 @@ export default function TablerIcon({
   size = 20,
   filled = false,
   className,
+  color,
 }: Props) {
   const iconKey = `Icon${name}${
     filled ? "Filled" : ""
@@ -23,5 +25,5 @@ export default function TablerIcon({
     console.warn(`❗Icon not found: ${iconKey}`);
     return null;
   }
-  return Icon ? <Icon size={size} className={className} /> : null;
+  return Icon ? <Icon size={size} className={className} color={color} /> : null;
 }

@@ -1,74 +1,155 @@
 "use client";
 
-import { recognizeGesture } from "@/components/live/gestureRecognizer";
+import ChatBot from "@/components/chatbot/chatBot";
 import VideoSection from "@/components/live/videoSection";
+import SetTimer from "@/components/timer/setTimer";
+import { useGestureRecognition } from "@/hooks/live/features/useGestureRecognition";
+import { useParticipantActions } from "@/hooks/live/features/useParticipantActions";
+import { useStudentActions } from "@/hooks/live/features/useStudentActions";
 import useLivekitConnection from "@/hooks/live/useLivekitConnection";
-import useLiveSocket from "@/hooks/live/useLiveSocket";
+import useLiveSocket, { SendIssueArgs } from "@/hooks/live/useLiveSocket";
+import { Track } from "livekit-client";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Header from "../common/header/header";
 import type { ChapterCard } from "../common/todoList/todoListCard";
 import TodoListCard from "../common/todoList/todoListCard";
+import { TodosResponse } from "../instructor/instructorPage";
 import styles from "./studentPage.module.scss";
 
-type ServerTodoItem = {
-  title: string;
-  type: "NORMAL" | "TIMER";
-  seconds: number | null;
-  sequence: number;
-};
-
+// Type Definitions
 export type ChapterTodoResponse = {
   type?: "chapter-issue";
   chapterId: number;
   chapterSequence: number;
   chapterName: string;
   numOfTodos: number;
-  todos: ServerTodoItem[];
+  todos: TodosResponse[];
 };
 
+// Component
 export default function StudentPage() {
+  // 1. Library Hooks
   const { data: session } = useSession();
-
+  console.log("Session user name:", session?.user?.name);
   const params = useParams();
   const courseId = params.courseId as string;
+  const lectureId = params.lectureId as string;
 
-  // TODO: 실제 라우팅 사용할 때 주석 해제
-  // const lectureId = params.lectureId as string;
-  const lectureId = String(1) as string;
-
-  // 역할은 학생이므로 세 번째 인자를 "student"로 두는 것을 권장
-  const { roomId, stompClient, sendChapterIssue, roomInfo, todo, sendHelp } =
-    useLiveSocket(courseId, lectureId, "student");
-
-  const { joinRoom, leaveRoom, localTrack, remoteTracks } =
-    useLivekitConnection();
-
+  // 2. State and Refs
   const [role, setRole] = useState<string | null>(null);
   const [userId, setUserId] = useState("");
 
-  // 세션에서 role/id 읽기 (deps: session)
-  useEffect(() => {
-    const roleFromSession = (session?.role as string | null) ?? null;
-    setRole(roleFromSession);
-    setUserId(session?.user?.id ?? "");
-  }, [session]);
+  const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false); // Modified
+  const [todoSequence, setTodoSequence] = useState<number | null>(null);
 
-  // role 준비되면 입장/퇴장 (deps: joinRoom, leaveRoom 포함)
-  useEffect(() => {
-    if (!role) return;
-    joinRoom(courseId, lectureId, role);
-    return () => {
-      leaveRoom();
-    };
-  }, [courseId, lectureId, role, joinRoom, leaveRoom]);
+  const [isMicMuted, setIsMicMuted] = useState<boolean>(false);
+  const [isCameraOff, setIsCameraOff] = useState<boolean>(false);
 
+  const [isSttActive, setIsSttActive] = useState(false); // STT 활성화 상태 추가
+
+  // 3. Custom Hooks for Live Logic
+  const liveSocketData = useLiveSocket(courseId, lectureId, "student");
+
+  //!태욱 챕터만 의존성 가지기 위해 수정
+  const { chapter, stompClient, roomInfo, roomId, sendTodoCheck } =
+    liveSocketData; // Destructure stompClient, roomInfo, roomId, sendTodoCheck
+
+  const { joinRoom, leaveRoom, localTrack, localAudioTrack, remoteTracks } =
+    useLivekitConnection();
+  const {
+    handGesture,
+    recognizedPose,
+    handleHandGesture,
+    handleNodesDetected,
+  } = useGestureRecognition();
+
+  useStudentActions({
+    recognizedPose,
+    handGesture,
+    isTimerRunning,
+    todoSequence,
+    setTodoSequence,
+    liveSocketData,
+    lectureId,
+    sessionUserName: session?.user?.name || undefined, // Pass session.user.name
+  });
+
+  // New: Call useParticipantActions hook
+  const { muteAudio, unMuteAudio, muteVideo, unMuteVideo } =
+    useParticipantActions({
+      roomId: liveSocketData.roomId,
+      email: liveSocketData.roomInfo?.email,
+      lectureId,
+    });
+
+  const toggleMic = useCallback(async () => {
+    if (isMicMuted) {
+      await unMuteAudio();
+    } else {
+      await muteAudio();
+    }
+    setIsMicMuted(!isMicMuted);
+  }, [isMicMuted, muteAudio, unMuteAudio]);
+
+  const toggleCamera = useCallback(async () => {
+    if (isCameraOff) {
+      await unMuteVideo();
+    } else {
+      await muteVideo();
+    }
+    setIsCameraOff(!isCameraOff);
+  }, [isCameraOff, muteVideo, unMuteVideo]);
+  const handleTimerCompletion = useCallback(() => {
+    // Added handleTimerCompletion
+    if (
+      stompClient &&
+      roomInfo?.email &&
+      roomId &&
+      chapter?.todos &&
+      todoSequence !== null
+    ) {
+      const sendData: SendIssueArgs = {
+        issuer: roomInfo.email,
+        chapter: chapter.chapterSequence,
+        todoSequence: todoSequence,
+        lectureId: lectureId,
+        roomId: roomId,
+      };
+      sendTodoCheck(stompClient, sendData);
+
+      const currentTodoIndex = chapter.todos.findIndex(
+        (todo) => todo.sequence === todoSequence,
+      );
+      if (
+        currentTodoIndex > -1 &&
+        currentTodoIndex < chapter.todos.length - 1
+      ) {
+        const nextTodoSequence = chapter.todos[currentTodoIndex + 1]!.sequence;
+        setTodoSequence(nextTodoSequence);
+      } else {
+        console.log("All todos for this chapter are complete.");
+      }
+    }
+  }, [
+    stompClient,
+    roomInfo,
+    roomId,
+    chapter,
+    todoSequence,
+    lectureId,
+    sendTodoCheck,
+    setTodoSequence,
+  ]);
+
+  // 4. Memoized Values
   const parsedChapterCard = useMemo<ChapterCard | undefined>(() => {
-    if (!todo || typeof todo !== "object" || !("chapterId" in todo)) {
+    // const { chapter } = liveSocketData;
+    if (!chapter || typeof chapter !== "object" || !("chapterId" in chapter)) {
       return undefined;
     }
-    const data = todo as ChapterTodoResponse;
+    const data = chapter as ChapterTodoResponse;
     return {
       chapterId: data.chapterId,
       chapterSequence: data.chapterSequence,
@@ -81,145 +162,147 @@ export default function StudentPage() {
         sequence: t.sequence,
       })),
     };
-  }, [todo]);
+  }, [chapter]);
+  //!태욱 챕터만 의존성 가지기 위해 수정
+  // }, [liveSocketData.chapter]);
 
-  const [handGesture, setHandGesture] = useState("");
-  const lastHandGestureCheck = useRef(0);
+  const instructorTrack = useMemo(() => {
+    console.log("Debugging instructorTrack:");
+    console.log(
+      "liveSocketData.instructorEmail:",
+      liveSocketData.instructorEmail,
+    );
+    console.log("remoteTracks:", remoteTracks);
+    const foundTrack = remoteTracks.find(
+      (track) =>
+        track.participantIdentity === liveSocketData.instructorEmail &&
+        track.trackPublication.source === Track.Source.Camera,
+    );
+    console.log("foundTrack:", foundTrack);
+    return foundTrack;
+  }, [remoteTracks, liveSocketData.instructorEmail]);
 
-  const handleHandGesture = useCallback((value: string) => {
-    const now = Date.now();
-    if (now - lastHandGestureCheck.current > 1000) {
-      lastHandGestureCheck.current = now;
-      setHandGesture((prev) => (prev === value ? prev : value));
-      if (value && value !== "None") {
-        console.log("Hand Gesture recognized:", value);
-      }
+  const timerTodo = useMemo(() => {
+    // Added timerTodo
+    if (parsedChapterCard && todoSequence !== null) {
+      return parsedChapterCard.todos.find(
+        (todo) => todo.sequence === todoSequence && todo.type === "TIMER",
+      );
     }
-  }, []);
+    return undefined;
+  }, [parsedChapterCard, todoSequence]);
 
-  const lastGestureCheck = useRef(0);
-  const [recognizedPose, setPose] = useState("");
-
-  // ✅ any 제거: 알 수 없는 배열로 받고 우리 로직에서 좁히기
-  const handleNodesDetected = useCallback((nodes: ReadonlyArray<unknown>) => {
-    const now = Date.now();
-    if (now - lastGestureCheck.current > 1000) {
-      lastGestureCheck.current = now;
-      if (Array.isArray(nodes) && nodes.length > 0) {
-        const newGesture = recognizeGesture(nodes[0]);
-        if (newGesture) {
-          console.log("Gesture recognized:", newGesture);
-          setPose(newGesture);
-        }
-      }
+  const currentTodo = useMemo(() => {
+    // Added currentTodo
+    if (parsedChapterCard && todoSequence !== null) {
+      return parsedChapterCard.todos.find(
+        (todo) => todo.sequence === todoSequence,
+      );
     }
-  }, []);
+    return undefined;
+  }, [parsedChapterCard, todoSequence]);
 
-  // issuer 메모 (deps: roomInfo?.email)
-  const issuer = useMemo(() => roomInfo?.email ?? "", [roomInfo?.email]);
-
-  // 제스처 전송 (필요한 의존성 모두 명시)
+  // 5. Effects
   useEffect(() => {
-    if (!stompClient || !issuer || !roomId) return;
-
-    if (recognizedPose === "Clap") {
-      console.log("박수실행됨==================================");
-      sendChapterIssue(stompClient, {
-        type: "chapter-issue",
-        issuer,
-        lectureId: Number(lectureId),
-        roomId,
-        chapterSequence: 1,
-      });
+    if (session) {
+      setRole(session.role ?? null);
+      setUserId(session.user?.id ?? "");
     }
+  }, [session]);
 
-    if (handGesture === "Closed_Fist") {
-      console.log("Closed_Fist==================================");
-      sendHelp(stompClient, {
-        type: "help",
-        nickname: "별명",
-        issuer,
-        lectureId,
-        roomId,
-      });
+  useEffect(() => {
+    if (role) {
+      joinRoom(courseId, lectureId, role);
     }
-  }, [
-    stompClient,
-    issuer,
-    roomId,
-    recognizedPose,
-    handGesture,
-    sendChapterIssue,
-    sendHelp,
-    lectureId,
-  ]);
+    return () => {
+      leaveRoom();
+    };
+  }, [courseId, lectureId, role, joinRoom, leaveRoom]);
 
+  // 6. Render
   return (
     <div className={styles.container}>
-      <Header
-        lectureName="한식강의"
-        startTime={new Date("2025-08-02T14:00:00+09:00")}
-        onLeave={() => {
-          console.log("강의 떠나기");
-        }}
-      />
-
       <div className={styles.main}>
-        <div className={styles.videoSection}>
-          <div style={{ padding: 24 }}>
-            {/* 로컬 비디오 */}
-            {localTrack ? (
+        <div className={styles.videoGrid}>
+          <div className={styles.videoTile}>
+            {instructorTrack?.trackPublication?.videoTrack != null ? (
               <VideoSection
-                videoTrack={localTrack}
-                participantIdentity={userId}
-                onNodesDetected={handleNodesDetected}
-                setGesture={handleHandGesture}
+                videoTrack={instructorTrack.trackPublication.videoTrack}
+                audioTrack={instructorTrack.trackPublication.audioTrack}
+                participantIdentity={instructorTrack.participantIdentity}
               />
             ) : (
-              <p>비디오 연결 중...</p>
+              <div className={styles.placeholder}>
+                <p>강사 화면을 기다리고 있습니다...</p>
+              </div>
             )}
-
-            {/* 원격 비디오 */}
-            <div>
-              {remoteTracks.map((remoteTrack) => {
-                const video = remoteTrack.trackPublication.videoTrack;
-                const audio = remoteTrack.trackPublication.audioTrack;
-
-                console.log("🔍 remote remoteTrack:", remoteTrack);
-                console.log("🎥 remote videoTrack:", video);
-                console.log("🔊 remote audioTrack:", audio);
-
-                if (!video) {
-                  console.warn(
-                    `⚠️ videoTrack 없음 → publication: ${remoteTrack.trackPublication.trackName}`,
-                  );
-                  return null;
-                }
-
-                return (
-                  <VideoSection
-                    key={remoteTrack.trackPublication.trackSid}
-                    videoTrack={video}
-                    audioTrack={audio}
-                    participantIdentity={remoteTrack.participantIdentity}
-                  />
-                );
-              })}
-            </div>
           </div>
         </div>
-
-        <div className={styles.checklistSection}>
-          {parsedChapterCard ? (
-            <TodoListCard chapterCard={parsedChapterCard} />
+        <div className={styles.localVideoOverlay}>
+          {localTrack ? (
+            <VideoSection
+              videoTrack={localTrack}
+              audioTrack={localAudioTrack}
+              participantIdentity={userId}
+              onNodesDetected={handleNodesDetected}
+              setGesture={handleHandGesture}
+              onWakeWordDetected={() => setIsSttActive(true)}
+            />
           ) : (
-            <div>
-              <p>챕터 정보를 기다리고 있습니다...</p>
+            <div className={styles.placeholder}>
+              <p>비디오 연결 중...</p>
             </div>
           )}
-          <TodoListCard chapterCard={parsedChapterCard} />
+        </div>
+
+        <div className={styles.rightContainer}>
+          <div className={styles.currentTodoSection}>
+            <div className={styles.headerRow}>
+              <h2>지금 해야 할 일</h2>
+              {currentTodo ? ( // Modified conditional rendering
+                <p>{currentTodo.title}</p>
+              ) : (
+                <p>강사님을 기다려 주세요</p>
+              )}
+              {currentTodo?.type === "TIMER" &&
+                timerTodo && ( // Modified conditional rendering
+                  <div className={styles.timer}>
+                    <SetTimer
+                      minutes={Math.floor((timerTodo.seconds ?? 0) / 60)}
+                      seconds={(timerTodo.seconds ?? 0) % 60}
+                      isRunning={isTimerRunning}
+                      onFinish={() => {
+                        setIsTimerRunning(false);
+                        handleTimerCompletion();
+                      }}
+                    />
+                  </div>
+                )}
+            </div>
+          </div>
+
+          <div className={styles.checklistSection}>
+            <TodoListCard
+              chapterCard={parsedChapterCard}
+              currentTodoSequence={todoSequence}
+            />
+          </div>
+
+          <div className={styles.chatBot}>
+            <ChatBot
+              isSttActive={isSttActive}
+              onSttFinished={() => setIsSttActive(false)}
+            />
+          </div>
         </div>
       </div>
+      <Header
+        lectureName="한식강의"
+        courseName={`강의 ID: ${lectureId}`}
+        onExit={leaveRoom}
+        onToggleMic={toggleMic}
+        onToggleCamera={toggleCamera}
+      />
     </div>
   );
 }

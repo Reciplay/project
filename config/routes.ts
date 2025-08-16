@@ -44,9 +44,9 @@ export const ROUTES = {
   // EXTRA DATA가 있는 지 확인 후 없다고 판단 시 EXTRA 페이지로
 
   AUTH: {
-    LOGIN: "/api/auth/login",
-    SIGNUP: "/api/auth/signup",
-    EXTRA: "/api/auth/extra",
+    LOGIN: "/auth/login",
+    SIGNUP: "/auth/signup",
+    EXTRA: "/auth/extra",
   },
 
   // 로그인 필요 + 모든 역할 가능

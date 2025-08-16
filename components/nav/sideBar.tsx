@@ -13,9 +13,11 @@ import classNames from "classnames";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 import BaseButton from "../button/baseButton";
 import CustomIcon from "../icon/customIcon";
 import styles from "./sideBar.module.scss";
+
 interface LinkItemProps {
   href: string;
   icon: string;
@@ -26,8 +28,6 @@ interface LinkItemProps {
 function LinkItem({ href, icon, title, isOpen }: LinkItemProps) {
   const pathname = usePathname();
   const isActive = pathname === href;
-
-  // 컴포넌트 내부
 
   return (
     <Link
@@ -44,7 +44,6 @@ function LinkItem({ href, icon, title, isOpen }: LinkItemProps) {
             className={styles.icon}
             filled={isActive}
           />
-
           <span className={styles.title}>{title}</span>
         </div>
       ) : (
@@ -60,10 +59,17 @@ function LinkItem({ href, icon, title, isOpen }: LinkItemProps) {
 }
 
 export default function SideBar() {
-  const { isOpen } = useSidebarStore();
+  const { isOpen, setOpen } = useSidebarStore();
   const { data: session, status } = useSession();
   const { logout } = useLogout();
   const width = useWindowWidth();
+  const isMobile = width <= 1400;
+
+  useEffect(() => {
+    if (isMobile) {
+      setOpen(false);
+    }
+  }, [isMobile, setOpen]);
 
   const role = session?.role || "ROLE_STUDENT";
 
@@ -76,44 +82,62 @@ export default function SideBar() {
     sidebarMenu = userSidebarMenus;
   }
 
-  return (
-    <aside
-      className={classNames(styles.sidebar, {
-        [styles.closed as string]: !isOpen,
-      })}
-    >
-      {sidebarMenu.map((section, idx) => (
-        <div className={styles.section} key={idx}>
-          {isOpen && (
-            <div className={styles.sectionTitle}>
-              <span>{section.section}</span>
-            </div>
-          )}
-          <div className={styles.sectionList}>
-            {section.children.map((item, subIdx) => (
-              <LinkItem
-                key={subIdx}
-                href={item.href}
-                icon={item.icon}
-                title={item.title}
-                isOpen={isOpen}
-              />
-            ))}
-          </div>
-        </div>
-      ))}
+  const handleClose = () => setOpen(false);
 
-      {status === "authenticated" && (
-        <div>
-          {width > 1400 && isOpen ? (
-            <BaseButton title="로그아웃" onClick={logout} />
-          ) : (
-            <div className={styles.section} onClick={logout}>
-              <CustomIcon name="Logout" className={styles.iconOnly} size={20} />
-            </div>
-          )}
-        </div>
+  return (
+    <>
+      {isMobile && isOpen && (
+        <div className={styles.overlay} onClick={handleClose} />
       )}
-    </aside>
+      <aside
+        className={classNames(styles.sidebar, {
+          [styles.closed as string]: !isOpen,
+          [styles.mobile as string]: isMobile,
+        })}
+      >
+        <div className={styles.menuSection}>
+          {sidebarMenu.map((section, idx) => (
+            <div className={styles.section} key={idx}>
+              {isOpen && (
+                <div className={styles.sectionTitle}>
+                  <span>{section.section}</span>
+                </div>
+              )}
+              <div className={styles.sectionList}>
+                {section.children.map((item, subIdx) => (
+                  <LinkItem
+                    key={subIdx}
+                    href={item.href}
+                    icon={item.icon}
+                    title={item.title}
+                    isOpen={isOpen}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {status === "authenticated" && (
+          <div className={styles.logoutSection}>
+            {isOpen ? (
+              <BaseButton
+                title="로그아웃"
+                onClick={logout}
+                className={styles.logoutButton}
+              />
+            ) : (
+              <div onClick={logout} className={styles.logoutIcon}>
+                <CustomIcon
+                  name="Logout"
+                  className={styles.iconOnly}
+                  size={20}
+                />
+              </div>
+            )}
+          </div>
+        )}
+      </aside>
+    </>
   );
 }

@@ -56,7 +56,9 @@ export default function NavBar() {
       {/* 오른쪽 */}
       <div className={styles.right}>
         <Link href={ROUTES.SEARCH.ROOT}>
-          <TablerIcon name="Search" size={28} />
+          <div className={styles.circle}>
+            <TablerIcon name="Search" size={28} />
+          </div>
         </Link>
         {isLogin ? (
           <>

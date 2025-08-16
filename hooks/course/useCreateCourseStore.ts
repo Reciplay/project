@@ -115,7 +115,7 @@ export function buildLectureFormData(lectures: Lecture[]) {
 
 export async function uploadLectures(courseId: number, lectures: Lecture[]) {
   const formData = buildLectureFormData(lectures);
-  return await restClient.post("/api/v1/course/lecture", formData, {
+  return await restClient.post("/course/lecture", formData, {
     requireAuth: true,
     params: { courseId },
   });

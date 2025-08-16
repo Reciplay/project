@@ -5,10 +5,10 @@ import { SubscriptionPoint } from "@/types/instructorStats";
 import qs from "qs";
 import { useCallback, useEffect, useState } from "react";
 
-export type SubscriptionCriteria = "daily" | "weekly" | "monthly" | "yearly";
+export type SubscriptionCriteria = "day" | "week" | "month";
 
 export const useSubscriptionTrend = (criteris: SubscriptionCriteria) => {
-  const [trendData, setTrendData] = useState<SubscriptionPoint[]>([]);
+  const [trendData, setTrendData] = useState<SubscriptionPoint | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,7 +17,7 @@ export const useSubscriptionTrend = (criteris: SubscriptionCriteria) => {
     setError(null);
     try {
       const params = qs.stringify({ criteris: criteris }, { encode: true });
-      const res = await restClient.get<ApiResponse<SubscriptionPoint[]>>(
+      const res = await restClient.get<ApiResponse<SubscriptionPoint>>(
         `/user/instructor/subscriber?${params}`,
         { requireAuth: true, useCors: false },
       );

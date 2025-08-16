@@ -1,5 +1,6 @@
 "use client";
 
+import { SubscriptionPoint } from "@/types/instructorStats";
 import {
   Chart as ChartJS,
   Filler,
@@ -13,7 +14,6 @@ import {
 import "chartjs-adapter-date-fns";
 import { ko } from "date-fns/locale";
 import { Line } from "react-chartjs-2";
-import { SubscriptionPoint } from "@/types/instructorStats";
 
 ChartJS.register(
   TimeScale,
@@ -25,8 +25,8 @@ ChartJS.register(
 );
 
 interface SmoothLineChartProps {
-  data: SubscriptionPoint[];
-  timeUnit: "day" | "month" | "year";
+  data: SubscriptionPoint;
+  timeUnit: "day" | "week" | "month";
 }
 
 export default function SmoothLineChart({
@@ -37,9 +37,9 @@ export default function SmoothLineChart({
     datasets: [
       {
         label: "구독자 추이",
-        data: trendData.map((point) => ({
-          x: point.date,
-          y: point.subscriber,
+        data: trendData.series.map((point) => ({
+          x: point.t,
+          y: point.subscribers,
         })),
         fill: true,
         borderColor: "#2a73ff",
@@ -52,8 +52,8 @@ export default function SmoothLineChart({
 
   const timeFormats = {
     day: "MM월 dd일",
+    week: "MM월 dd일",
     month: "yyyy년 MM월",
-    year: "yyyy년",
   };
 
   const options: ChartOptions<"line"> = {
