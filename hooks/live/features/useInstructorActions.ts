@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getSession } from "next-auth/react";
 import { Dispatch, SetStateAction, useCallback, useEffect } from "react";
 import useLiveSocket, { SendIssueArgs } from "../useLiveSocket"; // 경로 수정 필요
 
@@ -177,6 +178,14 @@ export const useInstructorActions = ({
   const toggleSelfMute = useCallback(async () => {
     if (!roomId || !roomInfo?.email || !lectureId) return;
     try {
+      const session = await getSession(); // Get session
+      const accessToken = session?.accessToken; // Extract accessToken
+      console.log(accessToken);
+      if (!accessToken) {
+        console.error("Access token not found.");
+        return;
+      }
+
       await axios.get("https://i13e104.p.ssafy.io/ws/v1/live/mute-audio", {
         params: {
           roomId,
@@ -184,6 +193,9 @@ export const useInstructorActions = ({
           lectureId: Number(lectureId),
         },
         withCredentials: true,
+        headers: {
+          Authorization: `${accessToken}`,
+        },
       });
       console.log("Mute/unmute API call successful");
     } catch (error) {
@@ -191,5 +203,33 @@ export const useInstructorActions = ({
     }
   }, [roomId, roomInfo?.email, lectureId]);
 
-  return { handleTimerCompletion, toggleSelfMute };
+  const toggleSelfVideo = useCallback(async () => {
+    if (!roomId || !roomInfo?.email || !lectureId) return;
+    try {
+      const session = await getSession(); // Get session
+      const accessToken = session?.accessToken; // Extract accessToken
+      console.log(accessToken);
+      if (!accessToken) {
+        console.error("Access token not found.");
+        return;
+      }
+
+      await axios.get("https://i13e104.p.ssafy.io/ws/v1/live/mute-video", {
+        params: {
+          roomId,
+          targetEmail: roomInfo.email,
+          lectureId: Number(lectureId),
+        },
+        withCredentials: true,
+        headers: {
+          Authorization: `${accessToken}`,
+        },
+      });
+      console.log("Mute/unmute API call successful");
+    } catch (error) {
+      console.error("Failed to toggle mute:", error);
+    }
+  }, [roomId, roomInfo?.email, lectureId]);
+
+  return { handleTimerCompletion, toggleSelfMute, toggleSelfVideo };
 };

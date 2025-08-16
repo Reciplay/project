@@ -61,16 +61,17 @@ export default function InstructorPage() {
     handleNodesDetected,
   } = useGestureRecognition();
 
-  const { handleTimerCompletion, toggleSelfMute } = useInstructorActions({
-    recognizedPose,
-    handGesture,
-    isTimerRunning,
-    setIsTimerRunning,
-    todoSequence,
-    setTodoSequence,
-    liveSocketData,
-    lectureId,
-  });
+  const { handleTimerCompletion, toggleSelfMute, toggleSelfVideo } =
+    useInstructorActions({
+      recognizedPose,
+      handGesture,
+      isTimerRunning,
+      setIsTimerRunning,
+      todoSequence,
+      setTodoSequence,
+      liveSocketData,
+      lectureId,
+    });
 
   // 4. Memoized Values
   const parsedChapterCard = useMemo<ChapterCard | undefined>(() => {
@@ -211,6 +212,7 @@ export default function InstructorPage() {
         courseName={`강의 ID: ${lectureId}`}
         onExit={leaveRoom}
         onToggleMic={toggleSelfMute}
+        onToggleCamera={toggleSelfVideo}
       />
     </div>
   );
