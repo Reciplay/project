@@ -63,15 +63,13 @@ export default function SideBar() {
   const { data: session, status } = useSession();
   const { logout } = useLogout();
   const width = useWindowWidth();
-
-  console.log("Session Status:", status);
-  console.log("Session Data:", session);
+  const isMobile = width <= 1400;
 
   useEffect(() => {
-    if (width <= 1400) {
+    if (isMobile) {
       setOpen(false);
     }
-  }, [width, setOpen]);
+  }, [isMobile, setOpen]);
 
   const role = session?.role || "ROLE_STUDENT";
 
@@ -84,50 +82,62 @@ export default function SideBar() {
     sidebarMenu = userSidebarMenus;
   }
 
+  const handleClose = () => setOpen(false);
+
   return (
-    <aside
-      className={classNames(styles.sidebar, {
-        [styles.closed as string]: !isOpen,
-      })}
-    >
-      <div className={styles.menuSection}>
-        {sidebarMenu.map((section, idx) => (
-          <div className={styles.section} key={idx}>
-            {isOpen && (
-              <div className={styles.sectionTitle}>
-                <span>{section.section}</span>
+    <>
+      {isMobile && isOpen && (
+        <div className={styles.overlay} onClick={handleClose} />
+      )}
+      <aside
+        className={classNames(styles.sidebar, {
+          [styles.closed as string]: !isOpen,
+          [styles.mobile as string]: isMobile,
+        })}
+      >
+        <div className={styles.menuSection}>
+          {sidebarMenu.map((section, idx) => (
+            <div className={styles.section} key={idx}>
+              {isOpen && (
+                <div className={styles.sectionTitle}>
+                  <span>{section.section}</span>
+                </div>
+              )}
+              <div className={styles.sectionList}>
+                {section.children.map((item, subIdx) => (
+                  <LinkItem
+                    key={subIdx}
+                    href={item.href}
+                    icon={item.icon}
+                    title={item.title}
+                    isOpen={isOpen}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {status === "authenticated" && (
+          <div className={styles.logoutSection}>
+            {isOpen ? (
+              <BaseButton
+                title="로그아웃"
+                onClick={logout}
+                className={styles.logoutButton}
+              />
+            ) : (
+              <div onClick={logout} className={styles.logoutIcon}>
+                <CustomIcon
+                  name="Logout"
+                  className={styles.iconOnly}
+                  size={20}
+                />
               </div>
             )}
-            <div className={styles.sectionList}>
-              {section.children.map((item, subIdx) => (
-                <LinkItem
-                  key={subIdx}
-                  href={item.href}
-                  icon={item.icon}
-                  title={item.title}
-                  isOpen={isOpen}
-                />
-              ))}
-            </div>
           </div>
-        ))}
-      </div>
-
-      {status === "authenticated" && (
-        <div className={styles.logoutSection}>
-          {isOpen ? (
-            <BaseButton
-              title="로그아웃"
-              onClick={logout}
-              className={styles.logoutButton}
-            />
-          ) : (
-            <div onClick={logout} className={styles.logoutIcon}>
-              <CustomIcon name="Logout" className={styles.iconOnly} size={20} />
-            </div>
-          )}
-        </div>
-      )}
-    </aside>
+        )}
+      </aside>
+    </>
   );
 }
