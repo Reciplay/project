@@ -67,4 +67,9 @@ public class ChapterManagementServiceImpl implements ChapterManagementService{
             todoManagementService.updateTodos(itemMap);
         }
     }
+
+    @Override
+    public int deleteAllChaptersByLectureIds(List<Long> ids) {
+        return this.chapterRepository.deleteAllByLectureIdIn(ids);
+    }
 }

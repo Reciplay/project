@@ -9,7 +9,6 @@ import java.util.Queue;
 
 public interface TodoManagementService {
     void registerTodoItems(List<LectureRequest> requests, Queue<Long> chapterIds);
-    void deleteAllTodos(Long chapterId);
-
+    int deleteAllTodosByChapterIds(List<Long> chapterId);
     void updateTodos(Map<Long, ChapterItem> chapterItemMap);
 }

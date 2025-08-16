@@ -19,4 +19,6 @@ public interface LectureManagementService {
     CourseTerm registerLectures(List<LectureRequest> requests, Long courseId, String email);
 
     List<GeneratedLecture> generateTodos(List<LectureRequest> requests);
+
+    int deleteAllLecturesByCourseId(Long courseId);
 }

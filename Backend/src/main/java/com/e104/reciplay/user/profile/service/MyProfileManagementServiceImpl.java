@@ -1,6 +1,10 @@
 package com.e104.reciplay.user.profile.service;
 
+import com.e104.reciplay.entity.Category;
 import com.e104.reciplay.entity.FileMetadata;
+import com.e104.reciplay.entity.Level;
+import com.e104.reciplay.repository.CategoryRepository;
+import com.e104.reciplay.repository.LevelRepository;
 import com.e104.reciplay.s3.enums.FileCategory;
 import com.e104.reciplay.s3.enums.RelatedType;
 import com.e104.reciplay.s3.exception.FileMetadataNotFoundException;
@@ -17,6 +21,7 @@ import com.e104.reciplay.user.security.domain.User;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +31,9 @@ public class MyProfileManagementServiceImpl implements MyProfileManagementServic
     private final FileMetadataManagementService fileMetadataManagementService;
     private final S3Service s3Service;
     private final FileMetadataQueryService fileMetadataQueryService;
+    private final LevelRepository levelRepository;
+    private final CategoryRepository categoryRepository;
+
 
     @Override
     @Transactional
@@ -36,6 +44,11 @@ public class MyProfileManagementServiceImpl implements MyProfileManagementServic
         user.setGender(request.getGender());
         user.setBirthDate(request.getBirthDate());
         user.setJob(request.getJob());
+
+        List<Category> categoryList = categoryRepository.findAll();
+        for(Category category : categoryList) {
+            levelRepository.save(new Level(null, user.getId(), category.getId(), 0));
+        }
     }
 
     @Override

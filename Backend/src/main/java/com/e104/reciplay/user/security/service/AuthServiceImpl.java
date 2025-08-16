@@ -47,8 +47,14 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void refresh(HttpServletRequest request, HttpServletResponse response) {
-//
         String token = request.getHeader("Refresh-Token");
+        if(token == null) token = request.getHeader("refresh-token");
+        if(token == null) token = request.getHeader("REFESH-TOKEN");
+        if(token == null) token = request.getHeader("REFESHTOKEN");
+        if(token == null) token = request.getHeader("RefreshToken");
+        if(token == null) token = request.getHeader("refreshtoken");
+        if(token == null) token = request.getHeader("refreshToken");
+
         try {
             String username = jwtUtil.getUsername(token);
             if (!jwtUtil.isExpired(token) && tokenRepository.isValidToken(token, username, "REFRESH")) {
