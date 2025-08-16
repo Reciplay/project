@@ -174,7 +174,7 @@ public class LiveController {
     //   라이브 제어용 API
     /////////////////////////////////////
 
-
+    // email, type
     // 강사만 접근 가능.
     @GetMapping("/remove")
     public ResponseEntity<ResponseRoot<Object>> removeParticipant(
@@ -284,4 +284,5 @@ public class LiveController {
 
         return CommonResponseBuilder.success("비디오 송출에 성공했습니다.", null);
     }
+
 }

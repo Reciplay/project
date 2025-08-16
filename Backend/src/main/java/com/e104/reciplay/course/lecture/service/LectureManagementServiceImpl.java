@@ -161,7 +161,7 @@ public class LectureManagementServiceImpl implements LectureManagementService{
         for(int i = 0; i < requests.size(); i++) {
             Long lectureId = lectureIds.get(i);
             MultipartFile file = requests.get(i).getMaterial();
-            log.debug("강좌 아이디 = {}, file = {}", lectureId, file);
+            log.debug("강의 아이디 = {}, file = {}", lectureId, file);
 
             try {
                 log.debug("파일 업로드 합니다. {}", file);
