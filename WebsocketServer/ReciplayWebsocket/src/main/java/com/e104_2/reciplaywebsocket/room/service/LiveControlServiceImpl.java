@@ -151,6 +151,13 @@ public class LiveControlServiceImpl implements LiveControlService{
         return userQueryService.queryUserById(instructor.getUserId()).getEmail();
     }
 
+    @Override
+    public boolean isInstructorOfLecture(String email, Long lectureId) {
+        Course course = courseQueryService.queryCourseOfLecture(lectureId);
+        Instructor instructor = instructorQueryService.queryInstructorByEmail(email);
+        return course.getInstructorId().equals(instructor.getId());
+    }
+
     public void verifyPrivilege(Long lectureId, String email, String userEmail, String msg) {
         if(test) return;
         if(userEmail.equals(adminKey)) return; // admin 권한으로 강제 퇴장.

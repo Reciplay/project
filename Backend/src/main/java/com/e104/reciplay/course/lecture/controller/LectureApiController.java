@@ -1,6 +1,7 @@
 package com.e104.reciplay.course.lecture.controller;
 
 import com.e104.reciplay.bot.dto.response.GeneratedLecture;
+import com.e104.reciplay.common.exception.InvalidUserRoleException;
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 
@@ -13,8 +14,16 @@ import com.e104.reciplay.course.lecture.dto.request.item.LoughLectureInfo;
 import com.e104.reciplay.course.lecture.dto.response.CourseTerm;
 import com.e104.reciplay.course.lecture.service.LectureManagementService;
 import com.e104.reciplay.course.lecture.service.LectureQueryService;
+import com.e104.reciplay.entity.FileMetadata;
+import com.e104.reciplay.entity.Lecture;
+import com.e104.reciplay.livekit.service.depends.CourseHistoryQueryService;
 import com.e104.reciplay.livekit.service.depends.CourseManagementService;
+import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
+import com.e104.reciplay.s3.service.FileMetadataQueryService;
+import com.e104.reciplay.s3.service.S3Service;
+import com.e104.reciplay.user.security.domain.User;
 import com.e104.reciplay.user.security.dto.CustomUserDetails;
+import com.e104.reciplay.user.security.service.UserQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,6 +33,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import retrofit2.Response;
 
 import java.io.IOException;
 import java.util.List;
@@ -37,6 +47,10 @@ public class LectureApiController {
     private final LectureQueryService lectureQueryService;
     private final LectureManagementService lectureManagementService;
     private final CourseManagementService courseManagementService;
+    private final FileMetadataQueryService fileMetadataQueryService;
+    private final S3Service s3Service;
+    private final CourseHistoryQueryService courseHistoryQueryService;
+    private final UserQueryService userQueryService;
 
 
     //// ✅
@@ -171,5 +185,33 @@ public class LectureApiController {
         List<GeneratedLecture> result = lectureManagementService.generateTodos(requests);
         log.debug("투두 리스트 생성 종료. {}", result);
         return CommonResponseBuilder.create("투두 리스트 생성에 성공했습니다.", result);
+    }
+
+    @GetMapping("/material")
+    @Operation(summary = "강의 자료를 요청합니다.", description = "강의자료의 presigned url을 반환받습니다.")
+    @ApiResponse(responseCode = "200", description = "성공적으로 파일을 반환 받음.")
+    public ResponseEntity<ResponseRoot<ResponseFileInfo>> getMaterial(
+            @RequestParam("lectureId") Long lectureId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        ResponseFileInfo fileInfo = null;
+        log.debug("강의 자료 요청이 들어옴 강의번호 : {}", lectureId);
+        log.debug("요청자 정보, 이메일 = {}", userDetails.getUsername());
+
+        Lecture lecture = lectureQueryService.queryLectureById(lectureId);
+        User user = userQueryService.queryUserByEmail(userDetails.getUsername());
+
+        if(!courseHistoryQueryService.enrolled(user.getId(), lecture.getCourseId())) {
+            throw new InvalidUserRoleException("강좌 수강 신청을 하지 않아 조회할 수 없습니다.");
+        }
+
+        try {
+            FileMetadata metadata = fileMetadataQueryService.queryLectureMaterial(lectureId);
+            fileInfo = s3Service.getResponseFileInfo(metadata);
+        } catch (Exception e) {
+            log.debug("파일 정보 조회중 에러 발생 : {}", e.getMessage());
+        }
+
+        return CommonResponseBuilder.success("파일 조회에 성공했습니다.", fileInfo);
     }
 }
