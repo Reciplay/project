@@ -184,10 +184,18 @@ public class LiveController {
     {
         log.debug("강제퇴장 요청 데이터. {}", request);
         log.debug("강제퇴장 요청 사용자. {}", user);
+        if(!user.getAuthorities().iterator().next().getAuthority().equals("ROLE_INSTRUCTOR")) {
+            return CommonResponseBuilder.forbidden("강사가 아니라면 강퇴할 수 없습니다.");
+        }
 
         String userEmail = user.getUsername();
+        if(!liveControlService.isInstructorOfLecture(userEmail, request.getLectureId())) {
+            return CommonResponseBuilder.forbidden("현재 강의의 강사가 아니므로 강퇴 권한이 없습니다.");
+        }
+
         liveControlService.removeParticipant(request, userEmail);
-        Map<String, String> result = Map.of("message", request.getTargetEmail()+"님께서 강제퇴장 되셨습니다.");
+        Map<String, String> result = getControlReturnMessage("remove", request.getTargetEmail(),
+                request.getTargetEmail()+"님께서 강퇴 되셨습니다.");
 
         log.debug("강제퇴장 STOMP 메세지. {}", result);
 
@@ -206,11 +214,15 @@ public class LiveController {
 
         log.debug("음소거 요청 데이터. {}", request);
         log.debug("음소거 요청 사용자. {}", user);
+        if(!request.getTargetEmail().equals(user.getUsername())) {
+            return CommonResponseBuilder.forbidden("타인을 음소거할 수 없습니다.");
+        }
+
         String userEmail = user.getUsername();
 
         liveControlService.muteAudio(request, userEmail);
-        Map<String, String> result = Map.of("message", request.getTargetEmail()+"님께서 음소거 되셨습니다.");
-
+        Map<String, String> result = getControlReturnMessage("mute-video", request.getTargetEmail(),
+                request.getTargetEmail()+"님께서 오디오를 차단하셨습니다.");
         log.debug("음소거 STOMP 메세지. {}", result);
 
 
@@ -227,10 +239,14 @@ public class LiveController {
     ) throws IOException {
         log.debug("음소거 해제 요청 데이터. {}", request);
         log.debug("음소거 해제 요청 사용자. {}", user);
+        if(!request.getTargetEmail().equals(user.getUsername())) {
+            return CommonResponseBuilder.forbidden("타인을 음소거 해제할 수 없습니다.");
+        }
         String userEmail = user.getUsername();
 
         liveControlService.unmuteAudio(request, userEmail);
-        Map<String, String> result = Map.of("message", request.getTargetEmail()+"님께서 음소거 해제 되셨습니다.");
+        Map<String, String> result = getControlReturnMessage("unmute-audio", request.getTargetEmail(),
+                request.getTargetEmail()+"님께서 오디오 차단을 해제하셨습니다.");
 
         log.debug("음소거 해제 STOMP 메세지. {}", result);
 
@@ -247,10 +263,15 @@ public class LiveController {
     ) throws IOException {
         log.debug("비디오 차단 요청 데이터. {}", request);
         log.debug("비디오 차단 요청 사용자. {}", user);
+        if(!request.getTargetEmail().equals(user.getUsername())) {
+            return CommonResponseBuilder.forbidden("타인의 영상을 차단할 수 없습니다.");
+        }
+        
         String userEmail = user.getUsername();
 
         liveControlService.muteVideo(request, userEmail);
-        Map<String, String> result = Map.of("message", request.getTargetEmail()+"님께서 비디오 차단 되셨습니다.");
+        Map<String, String> result = getControlReturnMessage("mute-video", request.getTargetEmail(),
+                request.getTargetEmail()+"님께서 영상을 차단하셨습니다.");
 
         log.debug("비디오 차단 STOMP 메세지. {}", result);
 
@@ -269,11 +290,15 @@ public class LiveController {
     ) throws IOException {
         log.debug("비디오 차단 해제 요청 데이터. {}", request);
         log.debug("비디오 차단 해제 요청 사용자. {}", user);
-
+        if(!request.getTargetEmail().equals(user.getUsername())) {
+            return CommonResponseBuilder.forbidden("타인 영상을 차단해제할 수 없습니다.");
+        }
+        
         String userEmail = user.getUsername();
 
         liveControlService.unmuteVideo(request, userEmail);
-        Map<String, String> result = Map.of("message", request.getTargetEmail()+"님께서 비디오 송출 되셨습니다.");
+        Map<String, String> result = getControlReturnMessage("unmute-video", request.getTargetEmail(),
+                request.getTargetEmail()+"님께서 영상 차단을 해제하셨습니다.");
 
         log.debug("비디오 차단 해제 STOMP 메세지. {}", result);
 
@@ -285,4 +310,7 @@ public class LiveController {
         return CommonResponseBuilder.success("비디오 송출에 성공했습니다.", null);
     }
 
+    private Map<String, String> getControlReturnMessage(String type, String target, String message) {
+        return Map.of("type", type, "target", target, "message", message);
+    }
 }

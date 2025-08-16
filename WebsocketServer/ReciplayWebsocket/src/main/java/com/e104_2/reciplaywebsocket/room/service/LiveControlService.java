@@ -25,5 +25,6 @@ public interface LiveControlService {
 
     String getLiveInstructorIdentity(Long lectureId);
 
+    boolean isInstructorOfLecture(String email, Long lectureId);
 
 }

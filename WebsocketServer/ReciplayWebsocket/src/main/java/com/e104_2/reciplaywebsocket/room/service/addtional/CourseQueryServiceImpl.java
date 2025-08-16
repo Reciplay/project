@@ -12,10 +12,13 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CourseQueryServiceImpl implements CourseQueryService{
     private final CourseRepository courseRepository;
+    private final LectureQueryService lectureQueryService;
 
     @Override
     public Course queryCourseOfLecture(Long lectureId) {
-        return null;
+        Long courseId = lectureQueryService.queryLectureById(lectureId).getCourseId();
+        return courseRepository.findById(courseId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강좌 입니다. "+courseId));
     }
 
     @Override

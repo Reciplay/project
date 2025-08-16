@@ -7,10 +7,14 @@ import com.e104.reciplay.course.lecture.controller.LectureApiController;
 import com.e104.reciplay.course.lecture.dto.TodoInfo;
 import com.e104.reciplay.course.lecture.service.LectureManagementService;
 import com.e104.reciplay.course.lecture.service.LectureQueryService;
+import com.e104.reciplay.livekit.service.depends.CourseHistoryQueryService;
 import com.e104.reciplay.livekit.service.depends.CourseManagementService;
+import com.e104.reciplay.s3.service.FileMetadataQueryService;
+import com.e104.reciplay.s3.service.S3Service;
 import com.e104.reciplay.user.security.domain.User;
 import com.e104.reciplay.user.security.dto.CustomUserDetails;
 import com.e104.reciplay.user.security.repository.UserRepository;
+import com.e104.reciplay.user.security.service.UserQueryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +53,19 @@ class CourseSubApiControllerTest {
 
     @MockitoBean
     private CourseManagementService courseManagementService;
+
+    @MockitoBean
+    private FileMetadataQueryService fileMetadataQueryService;
+
+    @MockitoBean
+    private S3Service s3Service;
+
+    @MockitoBean
+    private CourseHistoryQueryService courseHistoryQueryService;
+
+    @MockitoBean
+    private UserQueryService userQueryService;
+
 
     @Autowired
     private MockMvc mockMvc;
