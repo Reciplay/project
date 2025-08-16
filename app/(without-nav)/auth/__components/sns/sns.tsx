@@ -5,7 +5,7 @@ import { AUTH } from "@/config/const";
 import Image from "next/image";
 import styles from "./sns.module.scss";
 
-const BACKEND = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8080";
+const BACKEND = process.env.NEXT_PUBLIC_API_BASE;
 interface SNSProps {
   props: {
     isLogin: boolean;

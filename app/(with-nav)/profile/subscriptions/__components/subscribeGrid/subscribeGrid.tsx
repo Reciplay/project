@@ -22,8 +22,8 @@ export default function SubscribeGrid({
           <Link href={ROUTES.INSTRUCTOR.PROFILE(String(1))} key={1}>
             <div className={styles.item}>
               <CircleAvatar
-                alt={ins.instructorProfileFileInfo.name}
-                src={ins.instructorProfileFileInfo.presignedUrl}
+                alt={ins.instructorProfileFileInfo?.name ?? ""}
+                src={ins.instructorProfileFileInfo?.presignedUrl}
               />
               <div className={styles.name}>{ins.instructorName}</div>
               <div className={styles.subscribeNum}>
