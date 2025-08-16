@@ -14,12 +14,15 @@ interface HeaderProps {
   lectureName: string;
   courseName: string;
   onExit: () => void;
+  onToggleMic: () => void;
+  onToggleCamera?: () => void; // Optional for now
 }
 
 export default function Header({
   lectureName,
-  // courseName, !태욱 사용하지 않는 변수라서 주석처리함
   onExit,
+  onToggleMic,
+  onToggleCamera,
 }: HeaderProps) {
   const [time, setTime] = useState("");
   const [isMicOn, setIsMicOn] = useState(true);
@@ -35,8 +38,17 @@ export default function Header({
     return () => clearInterval(timer);
   }, []);
 
-  const toggleMic = () => setIsMicOn(!isMicOn);
-  const toggleCamera = () => setIsCameraOn(!isCameraOn);
+  const handleToggleMic = () => {
+    setIsMicOn(!isMicOn);
+    onToggleMic();
+  };
+
+  const handleToggleCamera = () => {
+    setIsCameraOn(!isCameraOn);
+    if (onToggleCamera) {
+      onToggleCamera();
+    }
+  };
 
   return (
     <header className={styles.header}>
@@ -47,7 +59,7 @@ export default function Header({
       </div>
       <div className={styles.controls}>
         <button
-          onClick={toggleMic}
+          onClick={handleToggleMic}
           className={`${styles.controlButton} ${!isMicOn ? styles.off : ""}`}
         >
           {isMicOn ? (
@@ -57,7 +69,7 @@ export default function Header({
           )}
         </button>
         <button
-          onClick={toggleCamera}
+          onClick={handleToggleCamera}
           className={`${styles.controlButton} ${!isCameraOn ? styles.off : ""}`}
         >
           {isCameraOn ? <IconVideo size={24} /> : <IconVideoOff size={24} />}

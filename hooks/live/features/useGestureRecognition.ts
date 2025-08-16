@@ -8,8 +8,6 @@ export const useGestureRecognition = () => {
   const lastHandGestureCheck = useRef(0);
 
   const handleHandGesture = useCallback((value: string) => {
-    console.log(123);
-
     const now = Date.now();
     if (now - lastHandGestureCheck.current > 1000) {
       lastHandGestureCheck.current = now;
