@@ -64,6 +64,7 @@ public class CourseApiController {
         } catch (Exception e) {
             log.debug("존재하지 않는 이메일 입니다.");
         }
+        log.debug("강좌 카드 정보 리스트 페이지 조회");
         PagedResponse<CourseCard> pagedResponse = courseCardQueryService.queryCardsByCardCondtion(courseCardCondition, pageable, userId);
         return CommonResponseBuilder.success("강좌 카드 정보 리스트 조회에 성공하였습니다.",
                 pagedResponse);
@@ -145,7 +146,6 @@ public class CourseApiController {
             @RequestPart List<MultipartFile> thumbnailImages,
             @RequestPart MultipartFile courseCoverImage
     ){
-
         log.debug("강좌 등록 API 요청됨 ");
         log.debug("요청 데이터 {}", requestCourseInfo);
         String email = AuthenticationUtil.getSessionUsername();

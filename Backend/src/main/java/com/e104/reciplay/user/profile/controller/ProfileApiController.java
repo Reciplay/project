@@ -55,7 +55,11 @@ public class ProfileApiController {
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         log.debug("정보 수정 요청");
-        return this.setProfileInfos(request, userDetails);
+        log.debug("정보 수정 요청 데이터 {}", request);
+        log.debug("요청자 정보 {}", userDetails);
+        myProfileManagementService.updateMyProfile(userDetails.getUsername(), request);
+
+        return CommonResponseBuilder.success("정보 기입에 성공했습니다.", null);
     }
 
     @GetMapping("")

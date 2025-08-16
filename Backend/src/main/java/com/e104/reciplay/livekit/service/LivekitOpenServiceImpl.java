@@ -1,5 +1,6 @@
 package com.e104.reciplay.livekit.service;
 
+import com.e104.reciplay.bot.service.ChatBotService;
 import com.e104.reciplay.common.exception.InvalidUserRoleException;
 import com.e104.reciplay.course.lecture.service.LectureQueryService;
 import com.e104.reciplay.entity.*;
@@ -39,7 +40,7 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
     private final BlacklistQueryService blacklistQueryService;
     private final LiveRoomQueryService liveRoomQueryService;
     private final RoomRedisService roomRedisService;
-
+    private final ChatBotService chatBotService;
     private final LectureHistoryRepository lectureHistoryRepository;
 
     @Value("${livekit.api.key}")
@@ -185,6 +186,11 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
     }
 
     @Override
+    public void prepareChatbot(Long lectureId) {
+        chatBotService.setLiveRoomChatbot(lectureId);
+    }
+
+    @Override
     @Transactional
     public void closeLiveRoom(CloseLiveRequest request, String email) {
         log.debug("강의실 종료 API. 호출됨.");
@@ -230,6 +236,8 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
         }
         else {
             log.debug("새로운 강의실 ID를 저장함.");
+            log.debug("챗봇을 준비한다.");
+            this.prepareChatbot(lectureId);
             return roomRedisService.addRoomId(lectureName, lectureId);
         }
     }

@@ -91,12 +91,14 @@ public class CourseQueryServiceImpl implements CourseQueryService{
 
     public Boolean isClosedCourse(Long courseId) {
         Course course = this.queryCourseById(courseId);
+        log.debug("종료된 강좌인지 여부 반환");
         return (LocalDate.now().isBefore(course.getCourseStartDate()) || LocalDate.now().isAfter(course.getCourseEndDate())) || !course.getIsApproved();
     }
 
     @Override
     public Boolean isInstructorOf(Long userId, Long courseId) {
         Instructor instructor = instructorQueryService.queryInstructorByUserId(userId);
+        log.debug("해당 강사인지 여부 반환");
         return this.queryCourseById(courseId).getInstructorId().equals(
                 instructor.getId()
         );
@@ -105,12 +107,14 @@ public class CourseQueryServiceImpl implements CourseQueryService{
 
     @Override
     public Boolean isStartedCourse(Long courseId) {
+        log.debug("시작한 강좌인지 여부 반환");
         return queryCourseById(courseId).getCourseStartDate().isBefore(LocalDate.now());
     }
 
     @Override
     public Boolean isInEnrollmentTerm(Long courseId) {
         Course course = queryCourseById(courseId);
+        log.debug("course 찾기 성공");
         return course.getEnrollmentStartDate().isBefore(LocalDateTime.now())
                 && course.getEnrollmentEndDate().isAfter(LocalDateTime.now());
     }
@@ -118,6 +122,7 @@ public class CourseQueryServiceImpl implements CourseQueryService{
     @Override
     public Boolean isFullyEnrolledCourse(Long courseId) {
         Course course = queryCourseById(courseId);
+        log.debug("course 찾기 성공");
         return course.getMaxEnrollments() <= (courseHistoryQueryService.countEnrollmentsOf(courseId).intValue());
     }
 
@@ -126,34 +131,39 @@ public class CourseQueryServiceImpl implements CourseQueryService{
     public CourseDetail collectCourseDetailWithCommonFields(Course course) {
         Long courseId = course.getId();
         CourseDetail courseDetail = new CourseDetail(course);
+        log.debug("이런걸 배울 수 있어요 리스트 조회");
         List<String> canLearns = canLearnQueryService.queryContentsByCourseId(courseId);
+        log.debug("총 리뷰 수 조회");
         Integer reviewCount = reviewQueryService.countReviewsByCourseId(courseId);
+        log.debug("평균 별점 조회");
         Double avgStars = reviewQueryService.avgStarsByCourseId(courseId);
+        log.debug("카테고리 이름 조회");
         String category = categoryQueryService.queryNameByCourseId(courseId);
 
-        //5. 해당 강좌의 섬네일들과 커버이미지 조회
+        log.debug("썸네일 인스턴스 선언");
         List<FileMetadata> thumbnails = List.of();
-        FileMetadata courseCover = null;
-        try {
-            thumbnails = subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAIL");
-            courseCover = subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER");
-        } catch (Exception e) {
-            log.debug("이미지 파일을 찾지 못했습니다.");
-        }
-        // 해당 강좌의 썸네일과 커버이미지 ResponseFileInfo  조회
         List<ResponseFileInfo> thumbnailFileInfos = new ArrayList<>();
-        for(FileMetadata data : thumbnails){
-            thumbnailFileInfos.add(s3Service.getResponseFileInfo(data));
-        }
 
+        log.debug("강좌커버 인스턴스 선언");
+        FileMetadata courseCover = null;
         ResponseFileInfo courseCoverFileInfo = null;
 
-        try {
-            courseCoverFileInfo = s3Service.getResponseFileInfo(courseCover);
-        } catch (Exception e) {
-            log.debug("강좌 커버 이미지를 찾지 못했습니다.");
+        log.debug("썸네일 조회");
+        try{
+            thumbnails = subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAIL");
+            for(FileMetadata data : thumbnails){
+            thumbnailFileInfos.add(s3Service.getResponseFileInfo(data));
+            }
+        }catch(RuntimeException e){
+            log.debug("썸네일이 null이기 떄문에 조회할 수 없음. : {}", e.getMessage());
         }
-
+        log.debug("강좌 커버 조회");
+        try{
+            subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER");
+            courseCoverFileInfo = s3Service.getResponseFileInfo(courseCover);
+        }catch(RuntimeException e){
+            log.debug("강좌 커버이미지가 null이기 떄문에 조회할 수 없음. : {}", e.getMessage());
+        }
         courseDetail.setCanLearns(canLearns);
         courseDetail.setReviewCount(reviewCount);
         courseDetail.setAverageReviewScore(avgStars);
@@ -166,6 +176,7 @@ public class CourseQueryServiceImpl implements CourseQueryService{
 
     @Override
     public List<User> queryCourseUsers(Long courseId) {
+        log.debug("해당 강좌 수강생들 조회");
         return courseHistoryQueryService.queryCourseHistories(courseId).stream().map(
                 c -> userQueryService.queryUserById(c.getUserId())
         ).toList();
@@ -173,6 +184,7 @@ public class CourseQueryServiceImpl implements CourseQueryService{
 
     @Override
     public int calcLevelAmount(Long courseId, String email) {
+        log.debug("강좌 진행도 계산");
         double progress = personalStatService.calcCourseProgress(courseId, email);
         Course course = this.queryCourseById(courseId);
         return (int)((course.getLevel() * progress) * 0.1);

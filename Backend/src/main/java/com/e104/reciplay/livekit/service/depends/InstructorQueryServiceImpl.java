@@ -8,6 +8,8 @@ import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import com.e104.reciplay.s3.service.S3Service;
 import com.e104.reciplay.user.instructor.dto.response.InstructorProfile;
 import com.e104.reciplay.user.instructor.dto.response.InstructorStat;
+import com.e104.reciplay.user.instructor.dto.response.TrendPoint;
+import com.e104.reciplay.user.instructor.dto.response.TrendResponse;
 import com.e104.reciplay.user.instructor.dto.response.item.CareerItem;
 import com.e104.reciplay.user.instructor.dto.response.item.InstructorQuestion;
 import com.e104.reciplay.user.instructor.dto.response.item.LicenseItem;
@@ -19,12 +21,14 @@ import com.e104.reciplay.user.security.domain.User;
 import com.e104.reciplay.user.security.exception.EmailNotFoundException;
 import com.e104.reciplay.user.security.service.UserQueryService;
 import com.e104.reciplay.user.subscription.dto.SubscribedInstructorItem;
-import com.e104.reciplay.user.subscription.service.SubscriptionHistoryService;
+import com.e104.reciplay.user.subscription.service.SubscriptionHistoryQueryService;
 import com.e104.reciplay.user.subscription.service.SubscriptionQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +46,7 @@ public class InstructorQueryServiceImpl implements InstructorQueryService {
     private final SubscriptionQueryService subscriptionQueryService;
     private final InstructorStatQueryService instructorStatQueryService;
     private final QnaQueryService qnaQueryService;
-    private final SubscriptionHistoryService subscriptionHistoryService;
+    private final SubscriptionHistoryQueryService subscriptionHistoryService;
     private static final String USER_PROFILE = "USER_PROFILE";
     private static final String INSTRUCTOR_BANNER = "INSTRUCTOR_BANNER";
 
@@ -135,11 +139,11 @@ public class InstructorQueryServiceImpl implements InstructorQueryService {
         instructorProfile.setCareers(careerItems);
         log.debug("licneseItems 설정");
         instructorProfile.setLicenses(licenseItems);
-        log.debug("licneseItems 설정");
+        log.debug("해당 유저 구독했는지 변수 설정");
         instructorProfile.setIsSubscribed(subscriptionQueryService.isSubscribedInstructor(instructorId, userId));
-        log.debug("해당 유저 구독했는지 변수 설정");
-        instructorProfile.setSubscriberCount(subscriptionQueryService.countSubscribers(instructorId).intValue());
-        log.debug("해당 유저 구독했는지 변수 설정");
+        log.debug("해당 강사 구독자수 변수 설정");
+        instructorProfile.setSubscriberCount(subscriptionQueryService.countSubscribers(instructorId));
+        log.debug("강사 이름 변수 설정");
         instructorProfile.setName(instructorRepository.findNameById(instructorId));
         log.debug("강사 소개 변수 설정");
         instructorProfile.setIntroduction(instructor.getIntroduction());
@@ -199,18 +203,22 @@ public class InstructorQueryServiceImpl implements InstructorQueryService {
 
             log.debug("해당 강사의 사용자 아이디 조회");
             Long instructorUserId = instructorRepository.findById(s.getInstructorId()).get().getUserId();
-
-            log.debug("해당 강사의 userProfileFileMetadata 조회");
-            FileMetadata fileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructorUserId, USER_PROFILE);
-            log.debug("해당 강사의 responseFIleInfo 생성");
-            ResponseFileInfo responseFileInfo = s3Service.getResponseFileInfo(fileMetadata);
+            ResponseFileInfo responseFileInfo = null;
+            try {
+                log.debug("해당 강사의 userProfileFileMetadata 조회");
+                FileMetadata fileMetadata = subFileMetadataQueryService.queryMetadataByCondition(instructorUserId, USER_PROFILE);
+                log.debug("해당 강사의 responseFIleInfo 생성");
+                responseFileInfo = s3Service.getResponseFileInfo(fileMetadata);
+            }catch(RuntimeException e){
+                log.debug("프로필 조회중 오류 발생함. : {}", e.getMessage());
+            }
             item.setInstructorProfileFileInfo(responseFileInfo);
 
             item.setInstructorId(s.getInstructorId());
             log.debug("해당 강사의 이름 조회 후 subscriptionInfo에 대입");
             item.setInstructorName(instructorRepository.findNameById(s.getInstructorId()));
             log.debug("해당 강사의 구독자 수 조회 후 subscriptionInfo에 대입");
-            item.setSubscriberCount(subscriptionHistoryService.querySubscriberCount(s.getInstructorId()));
+            item.setSubscriberCount(subscriptionQueryService.countSubscribers(s.getInstructorId()));
 
             subscribedInstructorItems.add(item);
         }
@@ -221,4 +229,48 @@ public class InstructorQueryServiceImpl implements InstructorQueryService {
     public Boolean existsByUserId(Long userId) {
         return instructorRepository.existsByUserId(userId);
     }
+
+    @Override
+    public TrendResponse querySubscriberTrends(String criteria, Long instructorId) {
+        LocalDate today = LocalDate.now();
+        List<LocalDate> targetDates = new ArrayList<>();
+        LocalDate from = null;
+
+        log.debug("criteria 별로 from 설정 및 targetDates 설정");
+        switch (criteria) {
+            case "day" -> {
+                from = today.minusMonths(1);
+                for (LocalDate d = from; !d.isAfter(today); d = d.plusDays(1)) {
+                    targetDates.add(d);
+                }
+                log.debug("day의 from 설정 및 targetDates 설정 완료");
+            }
+            case "week" -> {
+                from = today.minusMonths(3);
+                LocalDate weekPointer = from.with(DayOfWeek.MONDAY);
+                while (!weekPointer.isAfter(today)) {
+                    targetDates.add(weekPointer);
+                    weekPointer = weekPointer.plusWeeks(1);
+                }
+                log.debug("week의 from 설정 및 targetDates 설정 완료");
+            }
+            case "month" -> {
+                from = today.minusYears(1).withDayOfMonth(1);
+                LocalDate monthPointer = from;
+                while (!monthPointer.isAfter(today)) {
+                    targetDates.add(monthPointer);
+                    monthPointer = monthPointer.plusMonths(1);
+                }
+                log.debug("month의 from 설정 및 targetDates 설정 완료");
+            }
+            default -> throw new IllegalArgumentException("Invalid criteria: " + criteria);
+        }
+        log.debug("TrendPoint 리스트 생성");
+        List<TrendPoint> series = subscriptionHistoryService.queryTrendPoints(instructorId, targetDates);
+
+        log.debug("TrendResponse 생성");
+        return new TrendResponse(criteria, from, today, series);
+    }
+
+
 }

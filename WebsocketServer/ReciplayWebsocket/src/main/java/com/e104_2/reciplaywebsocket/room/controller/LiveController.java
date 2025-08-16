@@ -41,7 +41,7 @@ import java.util.Map;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/live")
+@RequestMapping("/ws/v1/live")
 public class LiveController {
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -154,7 +154,7 @@ public class LiveController {
         log.debug("userDetails {}", userDetail);
 
         if(!principal.getName().equals(message.getIssuer()) || !userDetails.getAuthorities().iterator().next().getAuthority().equals("ROLE_INSTRUCTOR")) {
-            messagingTemplate.convertAndSendToUser(message.getIssuer(), URL_PREFIX+"/queue/"+message.getRoomId(), Map.of("status", "refused", "message", "라이브룸 강사 권한이 없습니다."));
+            messagingTemplate.convertAndSendToUser(message.getIssuer(), "/queue/"+message.getRoomId(), Map.of("status", "refused", "message", "라이브룸 강사 권한이 없습니다."));
             return;
         }
         ChapterTodoResponse response = null;

@@ -16,7 +16,7 @@ public class CanLearnManagementServiceImpl implements CanLearnManagementService{
     }
 
     @Override
-    public void deleteCanLearnsByCourseId(Long courseId) {
-        canLearnRepository.deleteAllByCourseId(courseId);
+    public int deleteCanLearnsByCourseId(Long courseId) {
+        return canLearnRepository.deleteAllByCourseId(courseId);
     }
 }

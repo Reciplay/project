@@ -1,5 +1,6 @@
 package com.e104.reciplay.course.lecture.service;
 
+import com.e104.reciplay.bot.dto.response.GeneratedLecture;
 import com.e104.reciplay.course.lecture.dto.LectureControlRequest;
 import com.e104.reciplay.course.lecture.dto.request.item.LectureRegisterRequest;
 import com.e104.reciplay.course.lecture.dto.request.LectureRequest;
@@ -16,4 +17,8 @@ public interface LectureManagementService {
     List<LectureRequest> groupLectureAndMaterial(List<? extends LectureControlRequest> lectureRequestList, MultipartHttpServletRequest multipartHttpServletRequest);
 
     CourseTerm registerLectures(List<LectureRequest> requests, Long courseId, String email);
+
+    List<GeneratedLecture> generateTodos(List<LectureRequest> requests);
+
+    int deleteAllLecturesByCourseId(Long courseId);
 }

@@ -1,15 +1,20 @@
 package com.e104.reciplay.course.lecture.service;
 
+import com.e104.reciplay.bot.dto.request.item.LectureAndMaterial;
+import com.e104.reciplay.bot.dto.request.item.LectureForTodo;
+import com.e104.reciplay.bot.dto.response.GeneratedLecture;
+import com.e104.reciplay.bot.service.ChatBotService;
 import com.e104.reciplay.common.exception.InvalidUserRoleException;
 import com.e104.reciplay.course.lecture.dto.LectureControlRequest;
-import com.e104.reciplay.course.lecture.dto.request.item.LectureRegisterRequest;
 import com.e104.reciplay.course.lecture.dto.request.LectureRequest;
 import com.e104.reciplay.course.lecture.dto.request.item.LectureUpdateRequest;
+import com.e104.reciplay.course.lecture.dto.request.item.LoughLectureInfo;
 import com.e104.reciplay.course.lecture.dto.response.CourseTerm;
 import com.e104.reciplay.entity.FileMetadata;
 import com.e104.reciplay.entity.Lecture;
 import com.e104.reciplay.livekit.service.depends.CourseQueryService;
 import com.e104.reciplay.repository.LectureRepository;
+import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import com.e104.reciplay.s3.enums.FileCategory;
 import com.e104.reciplay.s3.enums.RelatedType;
 import com.e104.reciplay.s3.exception.FileUploadFailureException;
@@ -39,6 +44,8 @@ public class LectureManagementServiceImpl implements LectureManagementService{
     private final CourseQueryService courseQueryService;
     private final LectureQueryService lectureQueryService;
     private final FileMetadataQueryService fileMetadataQueryService;
+    private final ChatBotService chatBotService;
+
 
     @Transactional
     @Override
@@ -174,6 +181,74 @@ public class LectureManagementServiceImpl implements LectureManagementService{
 
         log.debug("강의 입력 완료.");
         return new CourseTerm(startDate, endDate);
+    }
+
+    @Override
+    public List<GeneratedLecture> generateTodos(List<LectureRequest> requests) {
+        log.debug("투두 리스트 생성하기 메서드 호출됨.");
+        List<LectureAndMaterial> todoRequests = new ArrayList<>();
+        List<Long> listToDelete = new ArrayList<>();
+
+        for(LectureRequest request : requests) {
+            log.debug("강의 정보 {}", request);
+            LectureAndMaterial todoRequest = new LectureAndMaterial();
+            LectureForTodo lectureForTodo = new LectureForTodo();
+
+
+            LoughLectureInfo lectureInfo = (LoughLectureInfo) request.getRequest();
+            lectureForTodo.setTitle(lectureInfo.getTitle());
+            lectureForTodo.setSummary(lectureInfo.getSummary() +
+                    """
+                    \n준비물 : %s \n
+                    요구 챕터 목록 : %s
+                    """.formatted(lectureInfo.getMaterials(), lectureInfo.getChapters())
+            );
+
+            todoRequest.setLecture(lectureForTodo);
+            MultipartFile file = request.getMaterial();
+            if(file != null) {
+                log.debug("파일 있음.");
+                try {
+                    long tempId = (new Random().nextLong());
+                    if(tempId > 0) tempId *= -1;
+
+                    // 랜덤한 음수를 키값으로 부여함.
+                    listToDelete.add(tempId);
+                    log.debug("임시 ID = {}", tempId);
+                    s3Service.uploadFile(file, FileCategory.MATERIALS, RelatedType.LECTURE, tempId, 1);
+                    log.debug("파일 저장함.");
+                    FileMetadata metadata = fileMetadataQueryService.queryLectureMaterial(tempId);
+                    ResponseFileInfo responseFileInfo = s3Service.getResponseFileInfo(metadata);
+
+                    todoRequest.setMaterial(responseFileInfo.getPresignedUrl());
+                } catch (Exception e) {
+                    log.debug("S3로 강의자료 업로드중 에러 발생함 : TODO 리스트 생성용 기능 동작중 발생 {}", e.getMessage());
+                }
+            }
+
+            log.debug("만들이전 리퀘스트 {}", todoRequest);
+            todoRequests.add(todoRequest);
+        }
+        log.debug("투두 리퀘스트 전달 {}", todoRequests);
+        List<GeneratedLecture> result = chatBotService.generateTodoList(todoRequests);
+
+
+        log.debug("임시 저장 파일 삭제.");
+        for(Long tempId : listToDelete) {
+            try {
+                s3Service.deleteFile(FileCategory.MATERIALS, RelatedType.LECTURE, tempId, 1);
+            } catch (Exception e) {
+                log.debug("파일 삭제 중 예외 발생함 {}, {}", e.getMessage(), tempId);
+            }
+        }
+        return result;
+//        String todoResponse = chatBotService.generateTodoList(todoRequests);
+//        log.debug("todoResponse !! {}", todoResponse);
+    }
+
+    @Override
+    public int deleteAllLecturesByCourseId(Long courseId) {
+        return lectureRepository.deleteByCourseId(courseId);
     }
 
     void checkSequence(List<LectureRequest> requests) {
