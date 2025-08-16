@@ -75,7 +75,7 @@ export default function VerticalTab<T>({
   if (loading) {
     return (
       <div className={styles.loadingWrap}>
-        <Spin tip="불러오는 중..." />
+        <Spin tip="불러오는 중..."><div /></Spin>
       </div>
     );
   }
