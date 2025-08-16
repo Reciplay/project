@@ -21,7 +21,7 @@ export default function Card({ data, onClick }: CourseCardProps) {
     <div className={styles.card} onClick={onClick} role="button" tabIndex={0}>
       <div className={styles.imageWrapper}>
         <ImageWrapper
-          src={data.responseFileInfo.presignedUrl}
+          src={data.responseFileInfo?.presignedUrl ?? "/images/404.jpg"}
           alt={data.title}
           type={IMAGETYPE.HORIZONTAL_CARD}
           className={styles.image}
