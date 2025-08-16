@@ -9,4 +9,5 @@ import java.io.IOException;
 public interface MyProfileManagementService {
     void setupMyProfile(String email, ProfileInfoRequest request);
     void updateProfileImage(MultipartFile image, String userEmail);
+    void updateMyProfile(String email, ProfileInfoRequest request);
 }
