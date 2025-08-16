@@ -19,7 +19,7 @@ export type SendChapterIssueArgs = {
 export interface RoomInfo {
   token: string;
   roomId: string;
-  nickname: string;
+  nickname: string | null; // Changed to allow null
   email: string;
   lectureId: number;
 }
@@ -69,10 +69,21 @@ export default function useLiveSocket(
   const [subscriptions, setSubscriptions] = useState<StompSubscription[]>([]);
   const [roomInfo, setRoomInfo] = useState<RoomInfo | null>(null);
   const [chapter, setChapter] = useState<ChapterTodoResponse | null>(null);
+  const [participantMuteStatus, setParticipantMuteStatus] = useState<
+    Map<string, { audio: boolean; video: boolean }>
+  >(new Map()); // Added
   // const [instructorEmail, setInstructorEmail] = useState<string>(
   //   "InstructorEmail Initial Value",
   // );
-  const [instructorEmail, setInstructorEmail] = useState<string>("");
+  const [instructorEmail, setInstructorEmail] = useState<string>(""); // Keep initial state as empty for students
+
+  // Set instructorEmail based on role if it's an instructor
+  useEffect(() => {
+    if (role === "instructor" && roomInfo?.email) {
+      setInstructorEmail(roomInfo.email);
+    }
+  }, [role, roomInfo?.email]);
+
   /** 1. roomId & roomInfo 가져오기 */
   const fetchRoomId = useCallback(async () => {
     try {
@@ -100,10 +111,12 @@ export default function useLiveSocket(
   /** 2. join 메시지 발송 */
   const sendJoin = useCallback(
     (client: Client, id: string, role: string) => {
-      if (!roomInfo || !roomInfo.nickname) {
-        console.error("❌ nickname 없음, join 전송 취소");
+      if (!roomInfo) {
+        // Only check if roomInfo exists
+        console.error("❌ roomInfo 없음, join 전송 취소");
         return;
       }
+      // If nickname is null, it will be sent as an empty string due to ?? ""
       // console.log(`내부 클로저 specialRole, ${specialRole}`);
 
       // if (typeof specialRole !== "string" || specialRole.trim() === "") {
@@ -116,7 +129,7 @@ export default function useLiveSocket(
         type: "join",
         issuer: roomInfo.email,
         receiver: null,
-        nickname: "roomInfo.nickname",
+        nickname: roomInfo.nickname ?? "",
         lectureId: Number(lectureId),
         roomId: id,
         state: ["noting"],
@@ -134,10 +147,12 @@ export default function useLiveSocket(
 
   const sendRejoin = useCallback(
     (client: Client, id: string, receiver: string, role: string) => {
-      if (!roomInfo || !roomInfo.nickname) {
-        console.error("❌ nickname 없음, join 전송 취소");
+      if (!roomInfo) {
+        // Only check if roomInfo exists
+        console.error("❌ roomInfo 없음, join 전송 취소");
         return;
       }
+      // If nickname is null, it will be sent as an empty string due to ?? ""
 
       if (roomInfo.email === receiver) {
         console.log(
@@ -150,7 +165,7 @@ export default function useLiveSocket(
         type: "re-join",
         issuer: roomInfo.email,
         receiver: receiver,
-        nickname: "roomInfo.nickname",
+        nickname: roomInfo.nickname ?? "",
         lectureId: Number(lectureId),
         roomId: id,
         state: ["video-on", "audio-off"],
@@ -192,9 +207,9 @@ export default function useLiveSocket(
             ? token
             : `Bearer ${token}`,
         },
-        debug: (str) => {
-          console.log("%c[STOMP DEBUG]", "color: orange;", str);
-        },
+        // debug: (str) => {
+        //   console.log("%c[STOMP DEBUG]", "color: orange;", str);
+        // },
       });
 
       client.onConnect = (frame) => {
@@ -223,7 +238,7 @@ export default function useLiveSocket(
               );
               if (client && id) {
                 sendRejoin(client, id, data.issuer, "ROLE_INSTRUCTOR");
-                setInstructorEmail(data.issuer);
+                // Removed: setInstructorEmail(data.issuer); // This was incorrect
               }
             }
 
@@ -260,6 +275,37 @@ export default function useLiveSocket(
               );
               setChapter(data);
               console.log("📝 ChapterTodoResponse 저장:", data);
+            } else if (
+              data.type === "mute-audio" ||
+              data.type === "unmute-audio" ||
+              data.type === "mute-video" ||
+              data.type === "unmute-video"
+            ) {
+              const targetEmail = data.target;
+              setParticipantMuteStatus((prevStatus) => {
+                const newStatus = new Map(prevStatus);
+                const currentStatus = newStatus.get(targetEmail) || {
+                  audio: true,
+                  video: true,
+                };
+
+                if (data.type === "mute-audio") {
+                  currentStatus.audio = false;
+                } else if (data.type === "unmute-audio") {
+                  currentStatus.audio = true;
+                } else if (data.type === "mute-video") {
+                  currentStatus.video = false;
+                } else if (data.type === "unmute-video") {
+                  currentStatus.video = true;
+                }
+                newStatus.set(targetEmail, currentStatus);
+                console.log(
+                  `🔊 비디오/오디오 상태 업데이트 [${source}]:`,
+                  targetEmail,
+                  currentStatus,
+                );
+                return newStatus;
+              });
             } else {
               console.log(`📩 메시지 수신 [${source}]`, data);
             }
@@ -402,5 +448,6 @@ export default function useLiveSocket(
     sendRejoin,
     instructorEmail,
     sendTodoCheck,
+    participantMuteStatus, // Added
   };
 }

@@ -1,16 +1,18 @@
 "use client";
 
 import ChatBot from "@/components/chatbot/chatBot";
+import TablerIcon from "@/components/icon/tablerIcon"; // Added TablerIcon import
 import VideoSection from "@/components/live/videoSection";
 import { useGestureRecognition } from "@/hooks/live/features/useGestureRecognition";
 import { useInstructorActions } from "@/hooks/live/features/useInstructorActions";
+import { useParticipantActions } from "@/hooks/live/features/useParticipantActions";
 
 import SetTimer from "@/components/timer/setTimer";
 import useLivekitConnection from "@/hooks/live/useLivekitConnection";
 import useLiveSocket from "@/hooks/live/useLiveSocket";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Header from "../common/header/header";
 import type { ChapterCard } from "../common/todoList/todoListCard";
 import TodoListCard from "../common/todoList/todoListCard";
@@ -45,12 +47,14 @@ export default function InstructorPage() {
   const [userId, setUserId] = useState("");
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
   const [todoSequence, setTodoSequence] = useState<number | null>(null);
+  const [isMicMuted, setIsMicMuted] = useState<boolean>(false);
+  const [isCameraOff, setIsCameraOff] = useState<boolean>(false);
 
   // 3. Custom Hooks for Live Logic
   const liveSocketData = useLiveSocket(courseId, lectureId, "instructor");
 
   //!태욱 챕터만 의존성 가지기 위해 수정
-  const { chapter } = liveSocketData;
+  const { chapter, participantMuteStatus } = liveSocketData; // Added participantMuteStatus
 
   const { joinRoom, leaveRoom, localTrack, remoteTracks } =
     useLivekitConnection();
@@ -61,17 +65,41 @@ export default function InstructorPage() {
     handleNodesDetected,
   } = useGestureRecognition();
 
-  const { handleTimerCompletion, toggleSelfMute, toggleSelfVideo } =
-    useInstructorActions({
-      recognizedPose,
-      handGesture,
-      isTimerRunning,
-      setIsTimerRunning,
-      todoSequence,
-      setTodoSequence,
-      liveSocketData,
+  const { handleTimerCompletion } = useInstructorActions({
+    recognizedPose,
+    handGesture,
+    isTimerRunning,
+    setIsTimerRunning,
+    todoSequence,
+    setTodoSequence,
+    liveSocketData,
+    lectureId,
+  });
+
+  const { muteAudio, unMuteAudio, muteVideo, unMuteVideo } =
+    useParticipantActions({
+      roomId: liveSocketData.roomId,
+      email: liveSocketData.roomInfo?.email,
       lectureId,
     });
+
+  const toggleMic = useCallback(async () => {
+    if (isMicMuted) {
+      await unMuteAudio();
+    } else {
+      await muteAudio();
+    }
+    setIsMicMuted(!isMicMuted);
+  }, [isMicMuted, muteAudio, unMuteAudio]);
+
+  const toggleCamera = useCallback(async () => {
+    if (isCameraOff) {
+      await unMuteVideo();
+    } else {
+      await muteVideo();
+    }
+    setIsCameraOff(!isCameraOff);
+  }, [isCameraOff, muteVideo, unMuteVideo]);
 
   // 4. Memoized Values
   const parsedChapterCard = useMemo<ChapterCard | undefined>(() => {
@@ -98,6 +126,15 @@ export default function InstructorPage() {
     if (parsedChapterCard && todoSequence !== null) {
       return parsedChapterCard.todos.find(
         (todo) => todo.sequence === todoSequence && todo.type === "TIMER",
+      );
+    }
+    return undefined;
+  }, [parsedChapterCard, todoSequence]);
+
+  const currentTodo = useMemo(() => {
+    if (parsedChapterCard && todoSequence !== null) {
+      return parsedChapterCard.todos.find(
+        (todo) => todo.sequence === todoSequence,
       );
     }
     return undefined;
@@ -145,23 +182,28 @@ export default function InstructorPage() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.timerOverlay}>
-        <SetTimer
-          minutes={Math.floor((timerTodo?.seconds ?? 0) / 60)}
-          seconds={(timerTodo?.seconds ?? 0) % 60}
-          isRunning={isTimerRunning}
-          onFinish={() => {
-            setIsTimerRunning(false);
-            handleTimerCompletion();
-          }}
-        />
-      </div>
       <div className={styles.main}>
         <div className={styles.videoGrid}>
           {remoteTracks.map((remoteTrack) => {
             const video = remoteTrack.trackPublication.videoTrack;
             const audio = remoteTrack.trackPublication.audioTrack;
+            const participantEmail = remoteTrack.participantIdentity; // Assuming participantIdentity is the email
+
+            const status = participantMuteStatus.get(participantEmail);
+            const isAudioMuted =
+              status?.audio !== undefined
+                ? !status.audio
+                : (audio?.isMuted ?? false);
+
+            console.log(status?.video);
+            // console.log(!status.video);
+            const isVideoMuted =
+              status?.video !== undefined
+                ? !status.video
+                : (video?.isMuted ?? false);
+
             if (!video) return null;
+
             return (
               <div
                 key={remoteTrack.trackPublication.trackSid}
@@ -171,9 +213,19 @@ export default function InstructorPage() {
                   videoTrack={video}
                   audioTrack={audio}
                   participantIdentity={remoteTrack.participantIdentity}
+                  isAudioMuted={isAudioMuted}
+                  isVideoMuted={isVideoMuted}
                 />
                 <div className={styles.identityOverlay}>
                   <p>{remoteTrack.participantIdentity}</p>
+                </div>
+                <div className={styles.muteIndicators}>
+                  {isAudioMuted && (
+                    <TablerIcon name="MicrophoneOff" size={24} color="white" />
+                  )}
+                  {isVideoMuted && (
+                    <TablerIcon name="VideoOff" size={24} color="white" />
+                  )}
                 </div>
               </div>
             );
@@ -186,6 +238,7 @@ export default function InstructorPage() {
               participantIdentity={userId}
               onNodesDetected={handleNodesDetected}
               setGesture={handleHandGesture}
+              isVideoMuted={isCameraOff} // Pass isCameraOff for local video
             />
           ) : (
             <div className={styles.placeholder}>
@@ -195,6 +248,31 @@ export default function InstructorPage() {
         </div>
 
         <div className={styles.rightContainer}>
+          <div className={styles.currentTodoSection}>
+            <div className={styles.headerRow}>
+              <h2>지금 해야 할 일</h2>
+              {currentTodo?.type === "TIMER" && timerTodo && (
+                <div className={styles.timer}>
+                  <SetTimer
+                    minutes={Math.floor((timerTodo.seconds ?? 0) / 60)}
+                    seconds={(timerTodo.seconds ?? 0) % 60}
+                    isRunning={isTimerRunning}
+                    onFinish={() => {
+                      setIsTimerRunning(false);
+                      handleTimerCompletion();
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+
+            {currentTodo ? (
+              <p>{currentTodo.title}</p>
+            ) : (
+              <p>강사님을 기다려 주세요</p>
+            )}
+          </div>
+
           <div className={styles.checklistSection}>
             <TodoListCard
               chapterCard={parsedChapterCard}
@@ -203,7 +281,7 @@ export default function InstructorPage() {
           </div>
 
           <div className={styles.chatBot}>
-            <ChatBot />
+            <ChatBot isSttActive={false} onSttFinished={() => {}} />
           </div>
         </div>
       </div>
@@ -211,8 +289,8 @@ export default function InstructorPage() {
         lectureName="한식강의"
         courseName={`강의 ID: ${lectureId}`}
         onExit={leaveRoom}
-        onToggleMic={toggleSelfMute}
-        onToggleCamera={toggleSelfVideo}
+        onToggleMic={toggleMic}
+        onToggleCamera={toggleCamera}
       />
     </div>
   );

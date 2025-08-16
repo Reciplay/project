@@ -1,5 +1,3 @@
-import axios from "axios";
-import { getSession } from "next-auth/react";
 import { Dispatch, SetStateAction, useCallback, useEffect } from "react";
 import useLiveSocket, { SendIssueArgs } from "../useLiveSocket"; // 경로 수정 필요
 
@@ -31,7 +29,6 @@ export const useInstructorActions = ({
     roomId,
     chapter,
     sendChapterIssue,
-    sendHelp,
     sendTodoCheck,
   } = liveSocketData;
 
@@ -57,24 +54,24 @@ export const useInstructorActions = ({
     chapter?.chapterSequence,
   ]);
 
-  // 'Closed_Fist' 제스처 처리 -> 도움 요청
-  useEffect(() => {
-    if (
-      handGesture === "Closed_Fist" &&
-      stompClient &&
-      roomInfo?.email &&
-      roomId
-    ) {
-      console.log("주먹 제스처: 도움 요청");
-      sendHelp(stompClient, {
-        type: "help",
-        nickname: roomInfo.nickname,
-        issuer: roomInfo.email,
-        lectureId: lectureId,
-        roomId: roomId,
-      });
-    }
-  }, [handGesture, stompClient, roomInfo, roomId, lectureId, sendHelp]);
+  // // 'Closed_Fist' 제스처 처리 -> 도움 요청
+  // useEffect(() => {
+  //   if (
+  //     handGesture === "Closed_Fist" &&
+  //     stompClient &&
+  //     roomInfo?.email &&
+  //     roomId
+  //   ) {
+  //     console.log("주먹 제스처: 도움 요청");
+  //     sendHelp(stompClient, {
+  //       type: "help",
+  //       nickname: roomInfo.nickname,
+  //       issuer: roomInfo.email,
+  //       lectureId: lectureId,
+  //       roomId: roomId,
+  //     });
+  //   }
+  // }, [handGesture, stompClient, roomInfo, roomId, lectureId, sendHelp]);
 
   // 'ThumbsUp' 제스처 처리 -> 할 일 체크 / 타이머 시작
   useEffect(() => {
@@ -175,61 +172,5 @@ export const useInstructorActions = ({
     setTodoSequence,
   ]);
 
-  const toggleSelfMute = useCallback(async () => {
-    if (!roomId || !roomInfo?.email || !lectureId) return;
-    try {
-      const session = await getSession(); // Get session
-      const accessToken = session?.accessToken; // Extract accessToken
-      console.log(accessToken);
-      if (!accessToken) {
-        console.error("Access token not found.");
-        return;
-      }
-
-      await axios.get("https://i13e104.p.ssafy.io/ws/v1/live/mute-audio", {
-        params: {
-          roomId,
-          targetEmail: roomInfo.email,
-          lectureId: Number(lectureId),
-        },
-        withCredentials: true,
-        headers: {
-          Authorization: `${accessToken}`,
-        },
-      });
-      console.log("Mute/unmute API call successful");
-    } catch (error) {
-      console.error("Failed to toggle mute:", error);
-    }
-  }, [roomId, roomInfo?.email, lectureId]);
-
-  const toggleSelfVideo = useCallback(async () => {
-    if (!roomId || !roomInfo?.email || !lectureId) return;
-    try {
-      const session = await getSession(); // Get session
-      const accessToken = session?.accessToken; // Extract accessToken
-      console.log(accessToken);
-      if (!accessToken) {
-        console.error("Access token not found.");
-        return;
-      }
-
-      await axios.get("https://i13e104.p.ssafy.io/ws/v1/live/mute-video", {
-        params: {
-          roomId,
-          targetEmail: roomInfo.email,
-          lectureId: Number(lectureId),
-        },
-        withCredentials: true,
-        headers: {
-          Authorization: `${accessToken}`,
-        },
-      });
-      console.log("Mute/unmute API call successful");
-    } catch (error) {
-      console.error("Failed to toggle mute:", error);
-    }
-  }, [roomId, roomInfo?.email, lectureId]);
-
-  return { handleTimerCompletion, toggleSelfMute, toggleSelfVideo };
+  return { handleTimerCompletion };
 };

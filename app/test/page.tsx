@@ -1,6 +1,5 @@
 "use client";
 
-import ChatBot from "@/components/chatbot/chatBot";
 import restClient from "@/lib/axios/restClient";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -50,7 +49,7 @@ export default function TestPage() {
     <div>
       <h1>Test Page</h1>
 
-      <ChatBot />
+      {/* <ChatBot /> */}
 
       <hr />
 

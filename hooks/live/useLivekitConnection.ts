@@ -1,5 +1,6 @@
 import restClient from "@/lib/axios/restClient";
 import {
+  LocalAudioTrack,
   LocalVideoTrack,
   RemoteParticipant,
   RemoteTrack,
@@ -24,7 +25,12 @@ export default function useLivekitConnection() {
   const [localTrack, setLocalTrack] = useState<LocalVideoTrack | undefined>(
     undefined,
   );
+  const [localAudioTrack, setLocalAudioTrack] = useState<
+    LocalAudioTrack | undefined
+  >(undefined);
+
   const [remoteTracks, setRemoteTracks] = useState<TrackInfo[]>([]);
+  const [nickname, setNickname] = useState<string | null>(null);
 
   const getToken = useCallback(
     async (courseId: string, lectureId: string, role: string) => {
@@ -40,8 +46,8 @@ export default function useLivekitConnection() {
         throw new Error(`Failed to get token: ${error}`);
       }
       const data = res.data.data;
-      console.log(`token:${res.data.data}`);
-      return data.token;
+      console.log(`token:${res.data.data.token}`); // Log only the token
+      return data; // Return the entire data object
     },
     [],
   );
@@ -97,13 +103,18 @@ export default function useLivekitConnection() {
         const permission = await getLocalMedia();
         if (!permission) throw new Error("Media access denied");
 
-        const token = await getToken(courseId, lectureId, role);
+        const { token, nickname } = await getToken(courseId, lectureId, role);
 
         await newRoom.connect(LIVEKIT_URL, token);
+        setNickname(nickname); // Set the nickname state
         await newRoom.localParticipant.enableCameraAndMicrophone();
         setLocalTrack(
           newRoom.localParticipant.videoTrackPublications.values().next().value
             ?.videoTrack,
+        );
+        setLocalAudioTrack(
+          newRoom.localParticipant.audioTrackPublications.values().next().value
+            ?.audioTrack,
         );
       } catch (error) {
         console.log(
@@ -121,8 +132,17 @@ export default function useLivekitConnection() {
     await roomRef.current?.disconnect();
     setRoom(undefined);
     setLocalTrack(undefined);
+    setLocalAudioTrack(undefined);
     setRemoteTracks([]);
   }, []);
 
-  return { room, localTrack, remoteTracks, joinRoom, leaveRoom };
+  return {
+    room,
+    localTrack,
+    localAudioTrack,
+    remoteTracks,
+    joinRoom,
+    leaveRoom,
+    nickname,
+  };
 }

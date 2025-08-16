@@ -10,6 +10,7 @@ interface StudentActionsProps {
   setTodoSequence: Dispatch<SetStateAction<number | null>>;
   liveSocketData: ReturnType<typeof useLiveSocket>;
   lectureId: string;
+  sessionUserName?: string; // Added sessionUserName prop
 }
 
 export const useStudentActions = ({
@@ -20,12 +21,19 @@ export const useStudentActions = ({
   setTodoSequence,
   liveSocketData,
   lectureId,
+  sessionUserName, // Destructure sessionUserName
 }: StudentActionsProps) => {
   const { stompClient, roomInfo, roomId, chapter, sendHelp, sendTodoCheck } =
     liveSocketData;
 
   // 'Closed_Fist' 제스처 처리 -> 도움 요청
   useEffect(() => {
+    console.log("[Closed_Fist DEBUG] handGesture:", handGesture);
+    console.log("[Closed_Fist DEBUG] stompClient:", !!stompClient);
+    console.log("[Closed_Fist DEBUG] roomInfo?.email:", roomInfo?.email);
+    console.log("[Closed_Fist DEBUG] roomInfo.nickname:", roomInfo?.nickname);
+    console.log("[Closed_Fist DEBUG] roomId:", roomId);
+
     if (
       handGesture === "Closed_Fist" &&
       stompClient &&
@@ -35,7 +43,7 @@ export const useStudentActions = ({
       console.log("주먹 제스처: 도움 요청");
       sendHelp(stompClient, {
         type: "help",
-        nickname: roomInfo.nickname, // 실제 닉네임 사용
+        nickname: roomInfo.nickname || sessionUserName || "익명 사용자", // Use roomInfo.nickname or sessionUserName
         issuer: roomInfo.email,
         lectureId: lectureId,
         roomId: roomId,

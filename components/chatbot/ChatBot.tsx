@@ -1,13 +1,36 @@
 "use client";
 
+import { useWhisperStt } from "@/hooks/live/features/useWhisperStt";
 import { useChatbotStore } from "@/stores/chatBotStore";
 import { useEffect, useRef, useState } from "react";
 import styles from "./chatBot.module.scss";
 
-export default function ChatBot() {
+interface ChatBotProps {
+  isSttActive: boolean;
+  onSttFinished: () => void;
+}
+
+export default function ChatBot({ isSttActive, onSttFinished }: ChatBotProps) {
   const { messages, addMessage } = useChatbotStore();
   const [input, setInput] = useState("");
   const socketRef = useRef<WebSocket | null>(null);
+
+  const { isRecording, startRecording } = useWhisperStt({
+    onFinished: (transcript) => {
+      onSttFinished(); // STT 프로세스 종료 알림
+      if (transcript) {
+        setInput(transcript); // 인식된 텍스트를 입력창에 표시
+        sendMessage(transcript); // 메시지 즉시 전송
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (isSttActive) {
+      setInput("");
+      startRecording();
+    }
+  }, [isSttActive, startRecording]);
 
   useEffect(() => {
     const host = "wss://i13e104.p.ssafy.io";
@@ -28,10 +51,12 @@ export default function ChatBot() {
     return () => ws.close();
   }, [addMessage]);
 
-  const sendMessage = () => {
-    if (input && socketRef.current?.readyState === WebSocket.OPEN) {
-      socketRef.current.send(input);
-      addMessage(`You: ${input}`);
+  const sendMessage = (messageToSend?: string) => {
+    const message = messageToSend ?? input;
+    if (message && socketRef.current?.readyState === WebSocket.OPEN) {
+      socketRef.current.send(message);
+      addMessage(`You: ${message}`);
+
       setInput("");
     }
   };
@@ -39,18 +64,31 @@ export default function ChatBot() {
   return (
     <div className={styles.chatbot}>
       <div className={styles.chatbot__messages}>
-        {messages.map((m, i) => (
-          <div
-            key={i}
-            className={`${styles.chatbot__message} ${
-              m.startsWith("You:")
-                ? styles["chatbot__message--user"]
-                : styles["chatbot__message--bot"]
-            }`}
-          >
-            <div className={styles.chatbot__bubble}>{m}</div>
-          </div>
-        ))}
+        {messages.map((m, i) => {
+          const isUser = m.startsWith("You:");
+          return (
+            <div
+              key={i}
+              className={`${styles.chatbot__message} ${
+                isUser
+                  ? styles["chatbot__message--user"]
+                  : styles["chatbot__message--bot"]
+              }`}
+            >
+              {isUser ? (
+                <>
+                  <div className={styles.chatbot__bubble}>{m}</div>
+                  <div className={styles.chatbot__avatar}>🙂</div>
+                </>
+              ) : (
+                <>
+                  <div className={styles.chatbot__avatar}>🤖</div>
+                  <div className={styles.chatbot__bubble}>{m}</div>
+                </>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       <div className={styles.chatbot__inputbar}>
@@ -58,9 +96,14 @@ export default function ChatBot() {
           className={styles.chatbot__input}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="레시피에서 궁금한 점을 물어보세요!"
+          placeholder={
+            isRecording
+              ? "듣고 있어요..."
+              : "레시피에서 궁금한 점을 물어보세요!"
+          }
+          disabled={isRecording}
         />
-        <button className={styles.chatbot__send} onClick={sendMessage}>
+        <button className={styles.chatbot__send} onClick={() => sendMessage()}>
           보내기
         </button>
       </div>

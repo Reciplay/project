@@ -1,83 +1,119 @@
-// .activeTodo {
-//   font-weight: bold;
-//   background-color: rgba(0, 0, 255, 0.05);
-//   border-radius: 4px;
-//   padding: 4px 8px; /* Add some padding for better visual separation */
-//   margin: -4px -8px; /* Counteract padding to maintain alignment */
-// }
 .timeline {
+  // background: #fff;
+  background: #393939; /* 다크 배경 */
+  border-radius: 12px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
+  height: 100%;
+  border: white 2px solid;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+  color: white;
 
   h3 {
+    font-size: 18px;
+    font-weight: 600;
     margin: 0;
-    font-size: 1.1rem;
   }
 
   span {
-    font-size: 0.9rem;
-    color: #aaa;
+    font-size: 16px;
+    color: white;
   }
 }
 
 .item {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
   position: relative;
-  padding-left: 28px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px 10px 32px;
+  border-radius: 8px;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #fafafa;
+  }
 
   .dot {
     position: absolute;
-    left: 6px;
-    top: 6px;
-    width: 12px;
-    height: 12px;
+    left: 10px;
+    width: 10px;
+    height: 10px;
+    background: #bbb;
     border-radius: 50%;
-    background: #666;
-    z-index: 1;
   }
 
   .content {
-    font-size: 14px;
+    display: flex;
+    flex-direction: column;
 
-    span {
-      display: inline-block;
-      transition: color 0.2s;
-      padding: 2px 4px;
-      border-radius: 4px;
+    .title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .time {
+      font-size: 12px;
+      color: #888;
     }
   }
 
-  &.normal .dot {
-    background: #4b9fff;
-  }
-
-  &.timer .dot {
-    display: none; /* 점 숨기고 아이콘으로 대체 */
-  }
-
-  &.active {
-    .content span {
-      font-weight: bold;
-      background-color: rgba(255, 235, 59, 0.3); // 파스텔 노랑 하이라이트
-    }
-  }
-
+  /* 상태별 */
   &.past {
-    .content span {
+    .title {
       color: #aaa;
       text-decoration: line-through;
     }
     .dot {
-      background: #555;
+      background: #aaa;
+    }
+  }
+
+  &.active {
+    border: 1px solid #ff4d4f;
+    background: #fff4f4;
+
+    .title {
+      color: #ff4d4f;
+      font-weight: 600;
+    }
+  }
+
+  /* 타입별 */
+  &.normal {
+    .dot {
+      background: #4caf50; /* 초록 dot */
+    }
+  }
+
+  &.timer {
+    padding-left: 32px;
+
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    svg {
+      flex-shrink: 0;
+    }
+
+    &.active {
+      background: #fff0f0;
+      .title {
+        color: #ff4d4f;
+      }
     }
   }
 }
