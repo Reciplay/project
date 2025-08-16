@@ -5,6 +5,7 @@ import VideoSection from "@/components/live/videoSection";
 import { useGestureRecognition } from "@/hooks/live/features/useGestureRecognition";
 import { useInstructorActions } from "@/hooks/live/features/useInstructorActions";
 
+import SetTimer from "@/components/timer/setTimer";
 import useLivekitConnection from "@/hooks/live/useLivekitConnection";
 import useLiveSocket from "@/hooks/live/useLiveSocket";
 import { useSession } from "next-auth/react";
@@ -43,7 +44,7 @@ export default function InstructorPage() {
   const [role, setRole] = useState<string | null>(null);
   const [userId, setUserId] = useState("");
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
-  const [todoSequence, setTodoSequence] = useState<number | null>(0);
+  const [todoSequence, setTodoSequence] = useState<number | null>(null);
 
   // 3. Custom Hooks for Live Logic
   const liveSocketData = useLiveSocket(courseId, lectureId, "instructor");
@@ -60,7 +61,7 @@ export default function InstructorPage() {
     handleNodesDetected,
   } = useGestureRecognition();
 
-  useInstructorActions({
+  const { handleTimerCompletion, toggleSelfMute } = useInstructorActions({
     recognizedPose,
     handGesture,
     isTimerRunning,
@@ -91,6 +92,15 @@ export default function InstructorPage() {
       })),
     };
   }, [chapter]);
+
+  const timerTodo = useMemo(() => {
+    if (parsedChapterCard && todoSequence !== null) {
+      return parsedChapterCard.todos.find(
+        (todo) => todo.sequence === todoSequence && todo.type === "TIMER",
+      );
+    }
+    return undefined;
+  }, [parsedChapterCard, todoSequence]);
   //!태욱 챕터만 의존성 가지기 위해 수정
   // }, [liveSocketData.chapter]);
 
@@ -111,25 +121,42 @@ export default function InstructorPage() {
     };
   }, [courseId, lectureId, role, joinRoom, leaveRoom]);
 
+  useEffect(() => {
+    // 챕터 데이터가 로드되고, 시퀀스가 아직 설정되지 않았을 때
+    // 첫 번째 투두의 시퀀스로 초기화합니다.
+    if (
+      chapter &&
+      chapter.todos &&
+      chapter.todos.length > 0 &&
+      todoSequence === null
+    ) {
+      setTodoSequence(chapter.todos[0]!.sequence);
+    }
+  }, [chapter, todoSequence]);
+
   // 6. Render
+  console.log("[InstructorPage DEBUG]", {
+    todoSequence,
+    isTimerRunning,
+    timerTodo,
+    chapterTodos: parsedChapterCard?.todos,
+  });
+
   return (
     <div className={styles.container}>
+      <div className={styles.timerOverlay}>
+        <SetTimer
+          minutes={Math.floor((timerTodo?.seconds ?? 0) / 60)}
+          seconds={(timerTodo?.seconds ?? 0) % 60}
+          isRunning={isTimerRunning}
+          onFinish={() => {
+            setIsTimerRunning(false);
+            handleTimerCompletion();
+          }}
+        />
+      </div>
       <div className={styles.main}>
         <div className={styles.videoGrid}>
-          <div className={styles.videoTile}>
-            {localTrack ? (
-              <VideoSection
-                videoTrack={localTrack}
-                participantIdentity={userId}
-                onNodesDetected={handleNodesDetected}
-                setGesture={handleHandGesture}
-              />
-            ) : (
-              <div className={styles.placeholder}>
-                <p>비디오 연결 중...</p>
-              </div>
-            )}
-          </div>
           {remoteTracks.map((remoteTrack) => {
             const video = remoteTrack.trackPublication.videoTrack;
             const audio = remoteTrack.trackPublication.audioTrack;
@@ -144,7 +171,6 @@ export default function InstructorPage() {
                   audioTrack={audio}
                   participantIdentity={remoteTrack.participantIdentity}
                 />
-                {/* 닉네임 오버레이 */}
                 <div className={styles.identityOverlay}>
                   <p>{remoteTrack.participantIdentity}</p>
                 </div>
@@ -152,9 +178,27 @@ export default function InstructorPage() {
             );
           })}
         </div>
+        <div className={styles.localVideoOverlay}>
+          {localTrack ? (
+            <VideoSection
+              videoTrack={localTrack}
+              participantIdentity={userId}
+              onNodesDetected={handleNodesDetected}
+              setGesture={handleHandGesture}
+            />
+          ) : (
+            <div className={styles.placeholder}>
+              <p>비디오 연결 중...</p>
+            </div>
+          )}
+        </div>
+
         <div className={styles.rightContainer}>
           <div className={styles.checklistSection}>
-            <TodoListCard chapterCard={parsedChapterCard} />
+            <TodoListCard
+              chapterCard={parsedChapterCard}
+              currentTodoSequence={todoSequence}
+            />
           </div>
 
           <div className={styles.chatBot}>
@@ -165,9 +209,8 @@ export default function InstructorPage() {
       <Header
         lectureName="한식강의"
         courseName={`강의 ID: ${lectureId}`}
-        onExit={() => {
-          console.log("강의 떠나기");
-        }}
+        onExit={leaveRoom}
+        onToggleMic={toggleSelfMute}
       />
     </div>
   );

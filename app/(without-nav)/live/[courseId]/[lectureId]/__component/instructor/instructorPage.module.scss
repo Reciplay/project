@@ -32,11 +32,11 @@
 }
 
 .main {
-  display: flex;
+  display: grid;
+  grid-template-columns: 4fr 1fr; /* 왼쪽 넓게, 오른쪽 좁게 */
+  gap: 24px;
   flex: 1;
   padding: 20px;
-  gap: 24px;
-  display: flex;
 }
 
 .videoGrid {
@@ -44,6 +44,8 @@
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 16px;
   flex: 3; /* Adjusted flex value */
+  justify-items: center; /* ✅ 셀 안에서 중앙 정렬 */
+  align-items: center; /* ✅ 세로 중앙 */
 }
 
 .videoTile {
@@ -52,18 +54,22 @@
   overflow: hidden;
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9; /* ✅ 비율 고정 */
+  height: 100%; /* ✅ 높이를 grid 셀에 맞춤 */
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9; /* ✅ 비율 유지 */
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.videoTile video {
+.videoTile :global(video) {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* ✅ 꽉 차게 */
+  object-fit: cover; /* 셀 꽉 차게 */
 }
-
 /* This ensures the VideoSection component fills the tile */
 .videoTile :global(video) {
   width: 100%;
@@ -72,13 +78,19 @@
 }
 .identityOverlay {
   position: absolute;
-  bottom: 8px;
+  top: 8px;
   left: 8px;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgb(42, 42, 42);
   color: white;
-  font-size: 0.9rem;
+  font-size: 1rem;
   padding: 4px 8px;
   border-radius: 4px;
+}
+
+.identityOverlay {
+  p {
+    margin: 0;
+  }
 }
 
 .placeholder {
@@ -114,39 +126,17 @@
 .rightContainer {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  gap: 24px;
-
-  // 데스크탑 이상에서는 TodoListCard와 ChatBot이 나란히
-  // @media (min-width: 1024px) {
-  //   flex-direction: row;
-  //   align-items: stretch;
-  // }
+  gap: 20px;
 }
 
 .checklistSection,
 .chatBot {
-  flex: 1;
-  min-height: 280px; // 모바일에서도 최소 높이 확보
-  background: white;
+  flex: 1; /* 각각 절반 차지 */
+  background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-  }
-}
-
-/* 카드 내부 반응형 패딩 */
-.checklistSection {
-  // padding: 16px;
-  // @media (min-width: 768px) {
-  //   padding: 0.6rem;
-  // }
+  border: 1px solid #e5e5e5;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .chatBot {
@@ -166,4 +156,17 @@
   font-weight: bold;
   z-index: 100;
   font-family: "monospace";
+}
+
+.localVideoOverlay {
+  position: absolute;
+  bottom: 120px; /* Positioned above the bottom header area */
+  left: 40px;
+  width: 320px;
+  height: 180px;
+  z-index: 100;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }

@@ -1,4 +1,5 @@
-import { Dispatch, SetStateAction, useEffect } from "react";
+import axios from "axios";
+import { Dispatch, SetStateAction, useCallback, useEffect } from "react";
 import useLiveSocket, { SendIssueArgs } from "../useLiveSocket"; // 경로 수정 필요
 
 // useInstructorActions 훅의 인자 타입을 정의합니다.
@@ -42,9 +43,8 @@ export const useInstructorActions = ({
         issuer: roomInfo.email,
         lectureId: lectureId,
         roomId: roomId,
-        chapterSequence: chapter?.chapterSequence ?? 0, // 현재 챕터 시퀀스를 기반으로 다음 챕터 결정
+        chapterSequence: chapter?.chapterSequence ?? 0,
       });
-      setTodoSequence(0); // 새 챕터의 첫 할 일부터 시작
     }
   }, [
     recognizedPose,
@@ -54,10 +54,9 @@ export const useInstructorActions = ({
     lectureId,
     sendChapterIssue,
     chapter?.chapterSequence,
-    setTodoSequence,
   ]);
 
-  // 'Closed_Fist' 제스처 처리 -> 도움 요청 (강사도 도움 요청 가능)
+  // 'Closed_Fist' 제스처 처리 -> 도움 요청
   useEffect(() => {
     if (
       handGesture === "Closed_Fist" &&
@@ -68,7 +67,7 @@ export const useInstructorActions = ({
       console.log("주먹 제스처: 도움 요청");
       sendHelp(stompClient, {
         type: "help",
-        nickname: roomInfo.nickname, // 실제 닉네임 사용
+        nickname: roomInfo.nickname,
         issuer: roomInfo.email,
         lectureId: lectureId,
         roomId: roomId,
@@ -78,12 +77,6 @@ export const useInstructorActions = ({
 
   // 'ThumbsUp' 제스처 처리 -> 할 일 체크 / 타이머 시작
   useEffect(() => {
-    console.log("엄지척 훅 발동!!!!!!!!!!!!!!!!!!!!!!!!");
-    console.log(stompClient);
-    console.log(roomInfo?.email);
-    console.log(roomId);
-    console.log(chapter?.todos);
-
     if (
       handGesture === "Thumb_Up" &&
       stompClient &&
@@ -92,30 +85,37 @@ export const useInstructorActions = ({
       chapter?.todos &&
       todoSequence !== null
     ) {
-      console.log("엄지척 제스처: 할 일 체크");
-      const currentTodo = chapter.todos[todoSequence];
+      const currentTodo = chapter.todos.find(
+        (todo) => todo.sequence === todoSequence,
+      );
       if (!currentTodo) return;
 
-      const sendData: SendIssueArgs = {
-        issuer: roomInfo.email,
-        chapter: chapter.chapterSequence,
-        todoSequence: todoSequence,
-        lectureId: lectureId,
-        roomId: roomId,
-      };
-
       if (currentTodo.type === "NORMAL") {
+        const sendData: SendIssueArgs = {
+          issuer: roomInfo.email,
+          chapter: chapter.chapterSequence,
+          todoSequence: todoSequence,
+          lectureId: lectureId,
+          roomId: roomId,
+        };
         sendTodoCheck(stompClient, sendData);
-        setTodoSequence((prev) => (prev !== null ? prev + 1 : 0));
-      } else if (currentTodo.type === "TIMER") {
-        if (isTimerRunning) {
-          sendTodoCheck(stompClient, sendData);
-          setIsTimerRunning(false);
-          setTodoSequence((prev) => (prev !== null ? prev + 1 : 0));
+
+        const currentTodoIndex = chapter.todos.findIndex(
+          (todo) => todo.sequence === todoSequence,
+        );
+        if (
+          currentTodoIndex > -1 &&
+          currentTodoIndex < chapter.todos.length - 1
+        ) {
+          const nextTodoSequence =
+            chapter.todos[currentTodoIndex + 1]!.sequence;
+          setTodoSequence(nextTodoSequence);
         } else {
-          setIsTimerRunning(true);
-          // 실제 타이머 로직은 페이지 컴포넌트나 별도 타이머 훅에서 관리합니다.
+          console.log("All todos for this chapter are complete.");
         }
+      } else if (currentTodo.type === "TIMER" && !isTimerRunning) {
+        // 타이머가 실행중이 아닐 때만 타이머를 시작합니다.
+        setIsTimerRunning(true);
       }
     }
   }, [
@@ -126,9 +126,70 @@ export const useInstructorActions = ({
     lectureId,
     chapter,
     todoSequence,
-    isTimerRunning,
     sendTodoCheck,
     setIsTimerRunning,
     setTodoSequence,
+    isTimerRunning, // isTimerRunning을 다시 의존성에 추가하여 정확한 상태를 참조하도록 합니다.
   ]);
+
+  // 타이머 종료 시 호출될 함수
+  const handleTimerCompletion = useCallback(() => {
+    if (
+      stompClient &&
+      roomInfo?.email &&
+      roomId &&
+      chapter?.todos &&
+      todoSequence !== null
+    ) {
+      const sendData: SendIssueArgs = {
+        issuer: roomInfo.email,
+        chapter: chapter.chapterSequence,
+        todoSequence: todoSequence,
+        lectureId: lectureId,
+        roomId: roomId,
+      };
+      sendTodoCheck(stompClient, sendData);
+
+      const currentTodoIndex = chapter.todos.findIndex(
+        (todo) => todo.sequence === todoSequence,
+      );
+      if (
+        currentTodoIndex > -1 &&
+        currentTodoIndex < chapter.todos.length - 1
+      ) {
+        const nextTodoSequence = chapter.todos[currentTodoIndex + 1]!.sequence;
+        setTodoSequence(nextTodoSequence);
+      } else {
+        console.log("All todos for this chapter are complete.");
+      }
+    }
+  }, [
+    stompClient,
+    roomInfo,
+    roomId,
+    chapter,
+    todoSequence,
+    lectureId,
+    sendTodoCheck,
+    setTodoSequence,
+  ]);
+
+  const toggleSelfMute = useCallback(async () => {
+    if (!roomId || !roomInfo?.email || !lectureId) return;
+    try {
+      await axios.get("https://i13e104.p.ssafy.io/ws/v1/live/mute-audio", {
+        params: {
+          roomId,
+          targetEmail: roomInfo.email,
+          lectureId: Number(lectureId),
+        },
+        withCredentials: true,
+      });
+      console.log("Mute/unmute API call successful");
+    } catch (error) {
+      console.error("Failed to toggle mute:", error);
+    }
+  }, [roomId, roomInfo?.email, lectureId]);
+
+  return { handleTimerCompletion, toggleSelfMute };
 };
