@@ -13,6 +13,7 @@ import com.e104.reciplay.entity.Instructor;
 import com.e104.reciplay.livekit.service.depends.CourseManagementService;
 import com.e104.reciplay.livekit.service.depends.CourseQueryService;
 import com.e104.reciplay.livekit.service.depends.InstructorQueryService;
+import com.e104.reciplay.user.security.domain.User;
 import com.e104.reciplay.user.security.dto.CustomUserDetails;
 import com.e104.reciplay.user.security.service.UserQueryService;
 import com.e104.reciplay.user.security.util.AuthenticationUtil;
@@ -95,9 +96,16 @@ public class CourseApiController {
     @ApiResponse(responseCode = "404", description = "조회할 강좌를 찾을 수 없음")
     @Operation(summary = "강좌 상세 정보 조회  API", description = "강좌 상세 정보 조회")
     public ResponseEntity<ResponseRoot<CourseDetail>> getCourseDetail(
-            @RequestParam Long courseId
+            @RequestParam Long courseId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ){
-        if (!Boolean.TRUE.equals(courseQueryService.queryCourseById(courseId).getIsApproved())) {
+        boolean isOwner = false;
+        if(userDetails != null && userDetails.getUser() != null) {
+            User user = userQueryService.queryUserByEmail(userDetails.getUsername());
+            isOwner = courseQueryService.isInstructorOf(user.getId(), courseId);
+        }
+
+        if (!isOwner && Boolean.FALSE.equals(courseQueryService.queryCourseById(courseId).getIsApproved())) {
             throw new RuntimeException("승인되지 않은 강좌입니다.");
         }
 
