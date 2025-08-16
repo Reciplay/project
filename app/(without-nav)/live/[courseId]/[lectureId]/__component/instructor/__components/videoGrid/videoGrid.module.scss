@@ -1,0 +1,29 @@
+// /* app/(without-nav)/live/[courseId]/[lectureId]/__component/instructor/__components/videoGrid/videoGrid.module.scss */
+// .videoGridContainer {
+//   display: grid;
+//   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); // Adjust minmax as needed
+//   gap: 16px; // Gap between video tiles
+//   width: 100%;
+//   height: 100%;
+//   overflow-y: auto; // Enable scrolling if content overflows
+//   padding: 16px; // Add some padding
+//   box-sizing: border-box; // Include padding in width/height
+// }
+
+// .videoTile {
+//   position: relative;
+//   width: 100%;
+//   padding-top: 75%; // 4:3 aspect ratio (height is 75% of width)
+//   background-color: #333; // Placeholder background
+//   border-radius: 8px;
+//   overflow: hidden;
+
+//   video {
+//     position: absolute;
+//     top: 0;
+//     left: 0;
+//     width: 100%;
+//     height: 100%;
+//     object-fit: cover;
+//   }
+// }

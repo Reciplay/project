@@ -37,22 +37,6 @@ export default function TodoListCard(props: TodoListCardProps) {
     console.log(props);
   }, [props]);
 
-  // if (!props.chapter) {
-  // props.chapter = {
-  //     chapterSequence: 1,
-  //     chapterName: '테스트 챕터',
-  //     numOfTodos: 2,
-  //     todos: [
-  //         { title: '재료 손질하기', type: 'NORMAL' as const, seconds: null, sequence: 1 },
-  //         { title: '5분간 끓이기', type: 'TIMER' as const, seconds: 300, sequence: 2 },
-  //         { title: '양념 만들기', type: 'NORMAL' as const, seconds: null, sequence: 3 },
-  //         { title: '10분간 재우기', type: 'TIMER' as const, seconds: 600, sequence: 4 },
-  //         { title: '팬 예열하기', type: 'NORMAL' as const, seconds: null, sequence: 5 },
-  //         { title: '고기 굽기', type: 'TIMER' as const, seconds: 420, sequence: 6 },
-  //         { title: '야채 넣고 볶기', type: 'NORMAL' as const, seconds: null, sequence: 7 },
-  //     ]
-  // }    }
-
   // 임시 데이터 (없을 때만)
   const effective = props.chapterCard ?? {
     chapterSequence: 1,

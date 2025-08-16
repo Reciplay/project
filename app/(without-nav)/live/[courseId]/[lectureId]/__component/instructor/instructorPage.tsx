@@ -144,6 +144,10 @@ export default function InstructorPage() {
                   audioTrack={audio}
                   participantIdentity={remoteTrack.participantIdentity}
                 />
+                {/* 닉네임 오버레이 */}
+                <div className={styles.identityOverlay}>
+                  <p>{remoteTrack.participantIdentity}</p>
+                </div>
               </div>
             );
           })}
@@ -152,6 +156,7 @@ export default function InstructorPage() {
           <div className={styles.checklistSection}>
             <TodoListCard chapterCard={parsedChapterCard} />
           </div>
+
           <div className={styles.chatBot}>
             <ChatBot />
           </div>

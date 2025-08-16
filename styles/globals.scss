@@ -98,3 +98,51 @@ a {
 :root {
   --sticky-offset: 88px;
 }
+
+// --- antd 디자인
+.timelineContent {
+  padding-left: 12px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.timelineClockIcon {
+  font-size: 18px;
+  color: #ef4444; // 빨강 느낌 더 강조
+}
+
+.ant-timeline-item-head {
+  background: #fff;
+  border: 2px solid #94a3b8; // 기본 그레이
+}
+
+.ant-timeline-item-head-red {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.ant-timeline-item-head-blue {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.ant-timeline-item-content {
+  margin: 0 0 12px 12px;
+}
+
+.ant-card {
+  border-radius: 14px !important;
+  overflow: hidden;
+}
+
+.ant-card-head {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: rgb(255, 0, 0) !important;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.ant-card-extra {
+  color: #e2e8f0;
+  font-size: 14px;
+}
