@@ -10,6 +10,7 @@ import com.e104.reciplay.repository.SubSubscriptionRepository;
 import com.e104.reciplay.user.security.domain.User;
 import com.e104.reciplay.user.security.service.UserQueryService;
 import com.google.protobuf.DescriptorProtos;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,7 @@ public class SubscriptionManagementServiceImpl implements SubscriptionManagement
     }
 
     @Override
+    @Transactional
     public void cancleSubscription(Long instructorId, String email) {
         User user = userQueryService.queryUserByEmail(email);
         // 존재하는 강사인지 확인.

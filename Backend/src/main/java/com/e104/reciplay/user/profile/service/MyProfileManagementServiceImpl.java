@@ -68,4 +68,14 @@ public class MyProfileManagementServiceImpl implements MyProfileManagementServic
             log.warn("S3 업로드 과정에서 문제가 발생했습니다. : {}", e.getMessage());
         }
     }
+
+    @Override
+    @Transactional
+    public void updateMyProfile(String email, ProfileInfoRequest request) {
+        User user = userQueryService.queryUserByEmail(email);
+        user.setName(request.getName());
+        user.setGender(request.getGender());
+        user.setBirthDate(request.getBirthDate());
+        user.setJob(request.getJob());
+    }
 }
