@@ -1,0 +1,71 @@
+.scrollStackScroller {
+  position: relative;
+  width: 100%;
+  height: 700px; /* 👈 여기 vh로 줘야 스크롤이 발생 */
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+.scrollStackInner {
+  padding: 20vh 5rem 50vh; /* 위/아래 여백 줘야 스크롤 여유 생김 */
+  min-height: 100vh;
+}
+
+.scrollStackCard {
+     position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  transform-origin: top center;
+  will-change: transform, filter;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+  height: 50rem;
+  width: 100%;
+  margin: 30px 0;
+  padding: 3rem;
+  border-radius: 40px;
+  background: rgb(102, 219, 203); /* 👈 테스트용 배경 */
+  color: white;
+  text-align: center;
+  font-size: 4rem;
+  font-weight: bold;
+}
+
+.cardBg {
+  position: absolute;   /* 중요 */
+  inset: 0;             /* 중요: top/right/bottom/left: 0 */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  filter: saturate(0.95) brightness(0.98);
+}
+
+/* 어둡게 오버레이 */ /* 수정된 부분 */
+.cardBgDim {
+  position: absolute;
+  inset: 0;
+  /* 필요 시 강도를 더 높이려면 rgba(0,0,0,0.5~0.65)로 올려보세요 */
+  background:
+    radial-gradient(120% 120% at 50% 25%, rgba(0,0,0,0.30), rgba(0,0,0,0.65)), /* 수정된 부분: 강도 ↑ */
+    linear-gradient(0deg, rgba(0, 0, 0, 0.753), rgba(0, 0, 0, 0.691));
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* 내용 레이어 */ /* 수정된 부분 */
+.cardInner {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6); /* 대비 보강 */
+}
+
+.scrollStackEnd {
+  width: 100%;
+  height: 1px;
+}

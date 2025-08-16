@@ -1,0 +1,74 @@
+/* scrollVelocity.module.scss */
+.parallax {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: clamp(96px, 14vw, 240px);  /* 수정된 부분: 반응형 높이 */
+  display: flex;                     /* 수정된 부분 */
+  align-items: center;               /* 수정된 부분 */
+  justify-content: center;           /* 수정된 부분 */
+  pointer-events: none;              /* 텍스트 드래그 방지 (선택) */
+}
+
+.scroller {
+  display: inline-flex;              /* 수정된 부분: inline-flex로 가운데 정렬 안정화 */
+  align-items: center;               /* 수정된 부분 */
+  white-space: nowrap;
+  text-align: center;
+  font-size: clamp(2rem, 6vw, 5rem); /* 수정된 부분: 반응형 폰트 */
+  line-height: 1.05;                 /* 수정된 부분 */
+  font-weight: 800;                  /* 수정된 부분 */
+  letter-spacing: -0.02em;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
+  color: #f3f6ff; /* aliceblue보다 살짝 또렷 */
+  gap: 2rem;                         /* 수정된 부분: 아이템 간격 */
+}
+
+.scroller span {
+  display: inline-block;             /* 수정된 부분 */
+  flex-shrink: 0;
+  padding: 0 1.25rem;                /* 수정된 부분 */
+}
+
+.parallax::before,
+.parallax::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 10%;
+  pointer-events: none;
+}
+
+.parallax::before {
+  left: 0;
+  background: linear-gradient(90deg, rgba(0,0,0,0.35), transparent);
+}
+.parallax::after {
+  right: 0;
+  background: linear-gradient(270deg, rgba(0,0,0,0.35), transparent);
+}
+
+
+@media (min-width: 768px) {
+  .scroller {
+    font-size: 5rem;
+    line-height: 5rem;
+  }
+}
+
+.velocityWrap {
+  background: #0c0c14;              /* 수정된 부분 */
+  border-radius: 20px;               /* 수정된 부분 */
+  padding: clamp(16px, 3vw, 32px);   /* 수정된 부분 */
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* 페이지 전용 가운데 박스(히어로 영역) */
+.velocityHero {
+  /* 수정된 부분: 히어로 오버레이 안에서도 정확히 가운데 정렬 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: clamp(120px, 16vw, 280px);
+}
