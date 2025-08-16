@@ -10,17 +10,18 @@ export type CardVariant = "vertical" | "horizontal";
 export interface CourseCardProps {
   data: CourseCard;
   variant?: CardVariant; // optional로 하고 기본값은 vertical
+  onClick?: () => void;
 }
 
-export default function Card({ data }: CourseCardProps) {
+export default function Card({ data, onClick }: CourseCardProps) {
   const filledStars = Math.floor(data.averageReviewScore);
   const emptyStars = 5 - filledStars;
 
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={onClick} role="button" tabIndex={0}>
       <div className={styles.imageWrapper}>
         <ImageWrapper
-          src="/images/cook2.jpg"
+          src={data.responseFileInfo.presignedUrl}
           alt={data.title}
           type={IMAGETYPE.HORIZONTAL_CARD}
           className={styles.image}

@@ -1,10 +1,14 @@
 "use client";
 
+import CustomCard from "@/components/card/customCard";
 import ListCard from "@/components/card/listCard";
 import Pagination from "@/components/pagination/pagination";
+import { ROUTES } from "@/config/routes";
 import { buildQuery, fetchCards } from "@/hooks/course/useCommonUtils";
 import useDebounce from "@/hooks/useDebounce";
+import { useWindowWidth } from "@/hooks/useWindowSize";
 import { CourseCard } from "@/types/course";
+import classNames from "classnames";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./page.module.scss";
@@ -27,6 +31,9 @@ export default function Page() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const abortRef = useRef<AbortController | null>(null);
+
+  const width = useWindowWidth();
+  const isDesktop = width > 1024;
 
   // Function to update URL parameters
   const updateUrlParams = useCallback(
@@ -132,10 +139,32 @@ export default function Page() {
       {!loading && data.length === 0 && debouncedSearchInput.trim() && (
         <p className={styles.noResultsText}>검색 결과가 없습니다.</p>
       )}
-      <div className={styles.slide}>
-        {data.map((course, index) => (
-          <ListCard key={index} data={course} variant="horizontal" />
-        ))}
+      <div
+        className={classNames({
+          [styles.slide as string]: isDesktop,
+          [styles.grid as string]: !isDesktop,
+        })}
+      >
+        {data.map((course, index) =>
+          isDesktop ? (
+            <ListCard
+              key={index}
+              data={course}
+              variant="horizontal"
+              onClick={() =>
+                router.push(ROUTES.COURSE.DETAIL(String(course.courseId)))
+              }
+            />
+          ) : (
+            <CustomCard
+              key={index}
+              data={course}
+              onClick={() =>
+                router.push(ROUTES.COURSE.DETAIL(String(course.courseId)))
+              }
+            />
+          ),
+        )}
       </div>
       {totalPages > 0 && (
         <Pagination

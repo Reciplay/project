@@ -54,29 +54,41 @@ export default function CustomCard({ data, type, onClick }: CardProps) {
       role="button"
       tabIndex={0}
     >
-      {/* 썸네일 */}
-      <div className={styles.thumb}>
-        <Image
-          src={data?.responseFileInfo?.presignedUrl ?? "/images/404.jpg"}
-          alt={data.title}
-          fill
-          sizes="(max-width: 768px) 100vw, 320px"
-          className={styles.image}
-          priority={false}
-        />
-        {/* 상태 뱃지 */}
-        <span
-          className={classNames(styles.statusBadge, {
-            [styles.recruiting as string]: status.key === "recruiting",
-            [styles.ongoing as string]: status.key === "ongoing",
-            [styles.ended as string]: status.key === "ended",
-            [styles.unknown as string]: status.key === "unknown",
-          })}
-        >
-          <strong>{status.label}</strong>
-          {status.dText && <em className={styles.dText}>{status.dText}</em>}
-        </span>
-      </div>
+      {
+        /* 썸네일 */
+        <div className={styles.thumb}>
+          <Image
+            src={data?.responseFileInfo?.presignedUrl ?? "/images/404.jpg"}
+            alt={data.title}
+            fill
+            sizes="(max-width: 768px) 100vw, 320px"
+            className={styles.image}
+            priority={false}
+          />
+          {/* 상태 뱃지 */}
+          <span
+            className={classNames(styles.statusBadge, {
+              [styles.recruiting as string]: status.key === "recruiting",
+              [styles.ongoing as string]: status.key === "ongoing",
+              [styles.ended as string]: status.key === "ended",
+              [styles.unknown as string]: status.key === "unknown",
+            })}
+          >
+            <strong>{status.label}</strong>
+            {status.dText && <em className={styles.dText}>{status.dText}</em>}
+          </span>
+          {/* 정보 오버레이 */}
+          <div className={styles.overlay}>
+            <div className={styles.overlayText}>
+              {data.summary.split("\n").map((line, idx) => (
+                <div key={idx}>{line}</div>
+              ))}
+              <br />
+              <span>난이도 {data.level}</span>
+            </div>
+          </div>
+        </div>
+      }
 
       {/* 본문 */}
       <div className={styles.body}>

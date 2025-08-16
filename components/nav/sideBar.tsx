@@ -13,9 +13,11 @@ import classNames from "classnames";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 import BaseButton from "../button/baseButton";
 import CustomIcon from "../icon/customIcon";
 import styles from "./sideBar.module.scss";
+
 interface LinkItemProps {
   href: string;
   icon: string;
@@ -26,8 +28,6 @@ interface LinkItemProps {
 function LinkItem({ href, icon, title, isOpen }: LinkItemProps) {
   const pathname = usePathname();
   const isActive = pathname === href;
-
-  // 컴포넌트 내부
 
   return (
     <Link
@@ -44,7 +44,6 @@ function LinkItem({ href, icon, title, isOpen }: LinkItemProps) {
             className={styles.icon}
             filled={isActive}
           />
-
           <span className={styles.title}>{title}</span>
         </div>
       ) : (
@@ -60,10 +59,19 @@ function LinkItem({ href, icon, title, isOpen }: LinkItemProps) {
 }
 
 export default function SideBar() {
-  const { isOpen } = useSidebarStore();
+  const { isOpen, setOpen } = useSidebarStore();
   const { data: session, status } = useSession();
   const { logout } = useLogout();
   const width = useWindowWidth();
+
+  console.log("Session Status:", status);
+  console.log("Session Data:", session);
+
+  useEffect(() => {
+    if (width <= 1400) {
+      setOpen(false);
+    }
+  }, [width, setOpen]);
 
   const role = session?.role || "ROLE_STUDENT";
 
@@ -82,33 +90,39 @@ export default function SideBar() {
         [styles.closed as string]: !isOpen,
       })}
     >
-      {sidebarMenu.map((section, idx) => (
-        <div className={styles.section} key={idx}>
-          {isOpen && (
-            <div className={styles.sectionTitle}>
-              <span>{section.section}</span>
+      <div className={styles.menuSection}>
+        {sidebarMenu.map((section, idx) => (
+          <div className={styles.section} key={idx}>
+            {isOpen && (
+              <div className={styles.sectionTitle}>
+                <span>{section.section}</span>
+              </div>
+            )}
+            <div className={styles.sectionList}>
+              {section.children.map((item, subIdx) => (
+                <LinkItem
+                  key={subIdx}
+                  href={item.href}
+                  icon={item.icon}
+                  title={item.title}
+                  isOpen={isOpen}
+                />
+              ))}
             </div>
-          )}
-          <div className={styles.sectionList}>
-            {section.children.map((item, subIdx) => (
-              <LinkItem
-                key={subIdx}
-                href={item.href}
-                icon={item.icon}
-                title={item.title}
-                isOpen={isOpen}
-              />
-            ))}
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
 
       {status === "authenticated" && (
-        <div>
-          {width > 1400 && isOpen ? (
-            <BaseButton title="로그아웃" onClick={logout} />
+        <div className={styles.logoutSection}>
+          {isOpen ? (
+            <BaseButton
+              title="로그아웃"
+              onClick={logout}
+              className={styles.logoutButton}
+            />
           ) : (
-            <div className={styles.section} onClick={logout}>
+            <div onClick={logout} className={styles.logoutIcon}>
               <CustomIcon name="Logout" className={styles.iconOnly} size={20} />
             </div>
           )}
