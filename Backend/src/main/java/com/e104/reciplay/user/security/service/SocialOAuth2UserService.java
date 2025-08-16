@@ -14,17 +14,20 @@ import org.springframework.stereotype.Service;
 
 import com.e104.reciplay.user.security.repository.UserRepository;
 import com.e104.reciplay.user.security.domain.User;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class SocialOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+public class
+SocialOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public OAuth2User loadUser(OAuth2UserRequest request) throws OAuth2AuthenticationException {
         DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();
         OAuth2User loaded = delegate.loadUser(request);
@@ -60,26 +63,25 @@ public class SocialOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             throw new OAuth2AuthenticationException("Email scope/consent is required");
         }
 
-        // upsert
-        User user = userRepository.findByEmail(email).orElseGet(() -> {
-            User u = User.builder()
-                    .email(email)
-                    .nickname(Objects.toString(flat.getOrDefault("name", email.split("@")[0])))
-                    .name(Objects.toString(flat.getOrDefault("name", "")))
-                    .isActivated(true)
-                    .role("ROLE_STUDENT")
-                    .build();
-            return userRepository.save(u);
-        });
+        // upsert: find user or create a new one, then save to insert/update
+        User user = userRepository.findByEmail(email)
+                .orElse(User.builder().email(email).build());
 
-        boolean changed = false;
-        if (user.getName() == null && flat.get("name") != null) { user.setName(Objects.toString(flat.get("name"))); changed = true; }
-        if (user.getNickname() == null && flat.get("name") != null) { user.setNickname(Objects.toString(flat.get("name"))); changed = true; }
-        if (user.getIsActivated() == null) { user.setIsActivated(true); changed = true; }
-        if (user.getRole() == null) { user.setRole("ROLE_STUDENT"); changed = true; }
-        if (changed) userRepository.save(user);
+        // Update user's info from social provider data
+        if (user.getName() == null || user.getName().isEmpty()) {
+            user.setName(Objects.toString(flat.getOrDefault("name", "")));
+        }
+        if (user.getNickname() == null || user.getNickname().isEmpty()) {
+            user.setNickname(Objects.toString(flat.getOrDefault("name", email.split("@")[0])));
+        }
+        user.setIsActivated(true); // Always ensure user is active on social login
+        if (user.getRole() == null) {
+            user.setRole("ROLE_STUDENT");
+        }
 
-        Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRole()));
+        User savedUser = userRepository.save(user);
+
+        Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(savedUser.getRole()));
         // nameAttributeKey를 email로: principal.getName() == email
         return new DefaultOAuth2User(authorities, flat, "email");
     }
