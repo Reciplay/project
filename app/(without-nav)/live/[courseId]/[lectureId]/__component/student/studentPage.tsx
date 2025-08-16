@@ -46,14 +46,15 @@ export default function StudentPage() {
 
   const [isTimerRunning] = useState<boolean>(false);
   const [todoSequence, setTodoSequence] = useState<number | null>(0);
-
+  const [isMicEnabled, setIsMicEnabled] = useState(true); // Assuming mic is enabled by default
+  console.log(isMicEnabled);
   // 3. Custom Hooks for Live Logic
   const liveSocketData = useLiveSocket(courseId, lectureId, "student");
 
   //!태욱 챕터만 의존성 가지기 위해 수정
   const { chapter } = liveSocketData;
 
-  const { joinRoom, leaveRoom, localTrack, remoteTracks } =
+  const { joinRoom, leaveRoom, localTrack, remoteTracks, room } =
     useLivekitConnection();
   const {
     handGesture,
@@ -71,6 +72,14 @@ export default function StudentPage() {
     liveSocketData,
     lectureId,
   });
+
+  const handleToggleMic = async () => {
+    if (room && room.localParticipant) {
+      const currentMicState = room.localParticipant.isMicrophoneEnabled;
+      await room.localParticipant.setMicrophoneEnabled(!currentMicState);
+      setIsMicEnabled(!currentMicState);
+    }
+  };
 
   // 4. Memoized Values
   const parsedChapterCard = useMemo<ChapterCard | undefined>(() => {
@@ -129,6 +138,7 @@ export default function StudentPage() {
         onExit={() => {
           console.log("강의 떠나기");
         }}
+        onToggleMic={handleToggleMic}
       />
       <div className={styles.main}>
         <div className={styles.videoGrid}>
