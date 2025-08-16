@@ -41,4 +41,4 @@ out/
 
 # Spring profile-specific configs (ignore anywhere)
 **/application-local.properties
-**/application-test.properties
+**/application-local-secret.properties
