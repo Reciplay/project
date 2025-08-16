@@ -40,4 +40,3 @@ out/
 /src/main/resources/application.properties
 
 # Spring profile-specific configs (ignore anywhere)
-**/application-local.properties
