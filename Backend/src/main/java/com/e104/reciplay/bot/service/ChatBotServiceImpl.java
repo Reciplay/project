@@ -3,7 +3,6 @@ package com.e104.reciplay.bot.service;
 import com.e104.reciplay.bot.dto.request.LecturePreparation;
 import com.e104.reciplay.bot.dto.request.item.LectureAndMaterial;
 import com.e104.reciplay.bot.dto.response.GeneratedLecture;
-import com.e104.reciplay.bot.dto.response.item.GeneratedTodo;
 import com.e104.reciplay.entity.FileMetadata;
 import com.e104.reciplay.s3.dto.response.ResponseFileInfo;
 import com.e104.reciplay.s3.service.FileMetadataQueryService;
@@ -53,13 +52,17 @@ public class ChatBotServiceImpl implements ChatBotService{
         if(fileInfo != null) {
             lecturePackage.setMaterialUrl(fileInfo.getPresignedUrl());
         }
-        Map<String, String> data = Map.of("FileUrl", fileInfo.getPresignedUrl());
-        Mono<Void> mono = webClient.post()
-                .uri(BASE_URL+"/chatbot/file/download")
-                .bodyValue(data)
-                .retrieve().bodyToMono(Void.class);
+        try {
+            Map<String, String> data = Map.of("FileUrl", fileInfo.getPresignedUrl());
+            Mono<Void> mono = webClient.post()
+                    .uri(BASE_URL + "/chatbot/file/download")
+                    .bodyValue(data)
+                    .retrieve().bodyToMono(Void.class);
 
-        mono.subscribe(); // 비동기 호출함.
+            mono.subscribe(); // 비동기 호출함.
+        } catch (Exception e) {
+            log.debug("강의 자료가 없는 경우 NPE 발생합니다. {}", e.getMessage());
+        }
     }
 
     @Override
