@@ -10,3 +10,6 @@ turn:
 
 keys:
   devkey: sooeixnaheiqh4h3h1589eesaf89dah53489hred89q43h2iqlred8s9qfewqh5432uiqy5r
+
+room:
+  enable_remote_unmute: true
