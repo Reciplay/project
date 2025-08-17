@@ -107,9 +107,11 @@
   li {
     padding: 8px 12px;
     cursor: pointer;
+    list-style-type: none;
 
     .name {
       font-weight: 600;
+      font-size: 1.6rem;
     }
 
     .institution {

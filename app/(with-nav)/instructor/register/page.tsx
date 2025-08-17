@@ -146,8 +146,6 @@ export default function Page() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.coverImage}></div>
-
       <div className={styles.infoContainer}>
         <ProfileForm value={basicProfile} />
 

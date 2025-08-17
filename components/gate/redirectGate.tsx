@@ -35,18 +35,6 @@ function useGuards() {
     [],
   );
 
-  // 🔻 이 블록은 사용되지 않으므로 제거
-  // const INSTRUCTOR_PROTECTED_ROUTES = useMemo(
-  //   () =>
-  //     new Set<string>([
-  //       ROUTES.INSTRUCTOR.DASHBOARD,
-  //       ROUTES.INSTRUCTOR.CREATECOURSE,
-  //       ROUTES.INSTRUCTOR.EDIT,
-  //       ROUTES.INSTRUCTOR.MANAGE,
-  //     ]),
-  //   [],
-  // );
-
   const MATCH = useMemo(() => {
     const isInstructorRoot = pathname === "/instructor";
     const isPublicInstructorProfile = pathname.startsWith(
@@ -113,7 +101,6 @@ export default function RedirectGate({
     MATCH.isHome ||
     MATCH.isGuide ||
     MATCH.isSearch ||
-    MATCH.isCourseDetail ||
     MATCH.isPublicInstructorProfile ||
     MATCH.isInstructorRegister ||
     MATCH.isAuthLogin ||
@@ -121,7 +108,8 @@ export default function RedirectGate({
     MATCH.isAuthExtra;
 
   // 보호 라우트
-  const requiresLoginCommon = MATCH.isProfile || MATCH.isLive;
+  const requiresLoginCommon =
+    MATCH.isProfile || MATCH.isLive || MATCH.isCourseDetail;
   const requiresInstructor =
     MATCH.isInstructorDashboard ||
     MATCH.isInstructorCreate ||

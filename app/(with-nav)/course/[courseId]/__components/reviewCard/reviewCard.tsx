@@ -1,4 +1,4 @@
-import IconWithText from "@/components/text/iconWithText";
+import RatingStarsReadonly from "@/components/ratingStars/ratingStarsReadonly";
 import styles from "./reviewCard.module.scss";
 
 interface ReviewCardProps {
@@ -30,10 +30,7 @@ export default function ReviewCard({
         </div>
       </div>
 
-      <div className={styles.stars}>
-        ⭐⭐⭐⭐⭐
-        <span>{rating}</span>
-      </div>
+      <RatingStarsReadonly value={rating} />
 
       <div className={styles.content}>
         {content.split("\n").map((line, i) => (
@@ -41,9 +38,9 @@ export default function ReviewCard({
         ))}
       </div>
 
-      <div className={styles.upButton}>
+      {/* <div className={styles.upButton}>
         <IconWithText iconName="thumb" title={likeCount.toString()} />
-      </div>
+      </div> */}
     </div>
   );
 }

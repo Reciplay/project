@@ -1,6 +1,5 @@
 "use client";
 
-import { sampleQna } from "@/config/sampleQna";
 import { getErrorMessage } from "@/lib/axios/error";
 import restClient from "@/lib/axios/restClient";
 import type { ApiResponse } from "@/types/apiResponse";
@@ -59,10 +58,10 @@ export function useQnaSummary(
       setAllData([]);
     } finally {
       setLoading(false);
-      if (process.env.NODE_ENV === "development") {
-        setAllData(sampleQna);
-        setTotalPages(Math.ceil(sampleQna.length / pageSize));
-      }
+      // if (process.env.NODE_ENV === "development") {
+      //   setAllData(sampleQna);
+      //   setTotalPages(Math.ceil(sampleQna.length / pageSize));
+      // }
     }
   }, [courseId, pageSize]);
 

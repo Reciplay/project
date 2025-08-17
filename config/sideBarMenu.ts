@@ -30,11 +30,6 @@ export const userSidebarMenus: MenuSection[] = [
         href: "/profile/subscriptions",
       },
       {
-        title: "이력/찜",
-        icon: "History",
-        href: "/profile/history",
-      },
-      {
         title: "강사 등록",
         icon: "Mood-Edit",
         href: "/instructor/register",
@@ -72,11 +67,6 @@ export const instructorSideBarMenus: MenuSection[] = [
         icon: "Heart",
         href: "/profile/subscriptions",
       },
-      {
-        title: "이력/찜",
-        icon: "History",
-        href: "/profile/history",
-      },
     ],
   },
   {
@@ -101,7 +91,7 @@ export const instructorSideBarMenus: MenuSection[] = [
       {
         title: "정보 수정",
         icon: "User-Edit",
-        href: "/instructor/register",
+        href: "/instructor/edit",
       },
     ],
   },
@@ -135,11 +125,6 @@ export const adminSideBarMenus: MenuSection[] = [
         title: "구독",
         icon: "Heart",
         href: "/profile/subscriptions",
-      },
-      {
-        title: "이력/찜",
-        icon: "History",
-        href: "/profile/history",
       },
     ],
   },

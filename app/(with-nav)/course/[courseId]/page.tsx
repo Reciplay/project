@@ -4,6 +4,8 @@ import CustomButton from "@/components/button/customButton";
 import ScrollTabs from "@/components/tab/scrollTabs";
 import { ScrollContainerContext } from "@/contexts/ScrollContainerContext";
 import { useCourseInfo } from "@/hooks/course/useCourseInfo";
+import { useGetLectures } from "@/hooks/course/useGetLectures";
+import { useGetLevel } from "@/hooks/course/useGetLevel";
 import { useGetLive } from "@/hooks/course/useGetLive";
 import { useScrollTabs } from "@/hooks/useScrollTabs";
 import { useParams, useRouter } from "next/navigation";
@@ -31,6 +33,9 @@ export default function Page() {
   const { handleEnroll, handleZzim, courseDetail, message, loading } =
     useCourseInfo(courseId);
 
+  const { data: level } = useGetLevel(Number(courseId));
+  const { data: lectures } = useGetLectures(Number(courseId));
+
   const { data: liveLink } = useGetLive(Number(courseId));
   const router = useRouter();
 
@@ -38,15 +43,13 @@ export default function Page() {
   if (!courseDetail)
     return <div>{message ?? "강좌 정보를 불러오지 못했습니다."}</div>;
 
-  console.log(courseDetail.isEnrolled);
-
   return (
     <div className={styles.container}>
       <div className={styles.content}>
         <div className={styles.category}>{courseDetail.category}</div>
         <Summary courseDetail={courseDetail} />
-        <Review />
-        <Status />
+        <Review onClickReviewButton={() => handleScrollTo(4)} />
+        <Status level={level} />
 
         <div className={styles.tab}>
           <ScrollTabs
@@ -62,7 +65,7 @@ export default function Page() {
           </section>
 
           <section ref={sectionRefs[1]} className={styles.section}>
-            <Schedule courseDetail={courseDetail} />
+            <Schedule lectures={lectures} />
           </section>
 
           <section ref={sectionRefs[2]} className={styles.section}>

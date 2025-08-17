@@ -1,6 +1,7 @@
 "use client";
 
 import type { CourseDetail } from "@/types/course";
+import { LectureSummary } from "@/types/lecture";
 import type { CalendarApi } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -94,7 +95,7 @@ function hasValidStart(
 export default function Calendar({
   lectures,
 }: {
-  lectures: Lecture[] | undefined;
+  lectures: LectureSummary[] | undefined;
 }) {
   const calendarRef = useRef<CalendarApi | null>(null);
 

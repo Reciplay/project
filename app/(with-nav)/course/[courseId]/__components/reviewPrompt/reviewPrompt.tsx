@@ -1,7 +1,13 @@
 import BaseButton from "@/components/button/baseButton";
 import styles from "./reviewPrompt.module.scss";
 
-export default function ReviewPrompt() {
+interface ReviewPromptProps {
+  onClickReviewButton: () => void;
+}
+
+export default function ReviewPrompt({
+  onClickReviewButton,
+}: ReviewPromptProps) {
   return (
     <div className={styles.review}>
       <div className={styles.reviewBox}>
@@ -11,7 +17,11 @@ export default function ReviewPrompt() {
           간단한 피드백을 남겨주세요.
         </div>
       </div>
-      <BaseButton title="수강평 남기기" color="black" />
+      <BaseButton
+        title="수강평 남기기"
+        color="black"
+        onClick={onClickReviewButton}
+      />
     </div>
   );
 }

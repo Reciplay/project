@@ -7,6 +7,7 @@ interface IconWithTextProps {
   left?: boolean;
   size?: number;
   editable?: boolean;
+  placeholder?: string;
   onChange?: (value: string) => void;
   onClick?: (event: React.MouseEvent<HTMLDivElement>) => void; // 수정
   value?: string;
@@ -18,6 +19,7 @@ export default function IconWithText({
   left = true,
   size = 20,
   editable = false,
+  placeholder = "",
   onChange,
   onClick,
   value,
@@ -28,6 +30,7 @@ export default function IconWithText({
       className={styles.input} // ✅ 기존 디자인 유지
       value={value !== undefined ? value : title} // ✅ form value가 없으면 title fallback
       onChange={(e) => onChange?.(e.target.value)}
+      placeholder={placeholder}
     />
   ) : (
     <div className={styles.title}>{title}</div>

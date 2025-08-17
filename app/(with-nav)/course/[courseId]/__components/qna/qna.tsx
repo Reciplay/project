@@ -89,7 +89,6 @@ const QnaDetailView = ({ qnaId }: { qnaId: number }) => {
       </div>
       <div className={styles.modalBody}>
         <div className={styles.questionSection}>
-          <h4>질문</h4>
           <p>{data.questionContent}</p>
         </div>
         {data.answerContent && (
