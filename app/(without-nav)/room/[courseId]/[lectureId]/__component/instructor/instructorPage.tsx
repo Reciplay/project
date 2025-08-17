@@ -173,6 +173,13 @@ export default function InstructorPage() {
     }
   }, [chapter, todoSequence]);
 
+  useEffect(() => {
+    if (recognizedPose === "Crossed_Arms" && helpRequestInfo) {
+      console.log("Crossed Arms gesture detected. Clearing help request.");
+      clearHelpRequest();
+    }
+  }, [recognizedPose, helpRequestInfo, clearHelpRequest]);
+
   // 6. Render
   console.log("[InstructorPage DEBUG]", {
     todoSequence,
