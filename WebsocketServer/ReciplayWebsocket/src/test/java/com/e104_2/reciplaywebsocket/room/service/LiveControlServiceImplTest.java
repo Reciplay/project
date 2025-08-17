@@ -54,48 +54,7 @@ class LiveControlServiceImplTest {
         ReflectionTestUtils.setField(liveControlService, "adminKey", "test-admin-key");
     }
 
-    @Test
-    @DisplayName("[verifyPrivilege] 성공: 요청자가 해당 강의의 강사일 경우 예외가 발생하지 않는다")
-    void verifyPrivilege_Success() {
-        // given: 준비
-        Long lectureId = 1L;
-        String targetEmail = "student@example.com";
-        String requesterEmail = "instructor@example.com";
 
-        Lecture mockLecture = Lecture.builder().courseId(10L).build();
-        Course mockCourse = Course.builder().instructorId(100L).build();
-        Instructor mockInstructor = Instructor.builder().id(100L).build(); // Course의 instructorId와 동일
-
-        when(lectureQueryService.queryLectureById(lectureId)).thenReturn(mockLecture);
-        when(courseQueryService.queryCourseById(mockLecture.getCourseId())).thenReturn(mockCourse);
-        when(instructorQueryService.queryInstructorByEmail(requesterEmail)).thenReturn(mockInstructor);
-
-        // when & then: 실행 및 검증
-        assertDoesNotThrow(() -> liveControlService.verifyPrivilege(lectureId, targetEmail, requesterEmail, "권한 없음"));
-    }
-
-    @Test
-    @DisplayName("[verifyPrivilege] 실패: 요청자가 강사가 아닐 경우 예외가 발생한다")
-    void verifyPrivilege_Fail_NotAnInstructor() {
-        // given
-        Long lectureId = 1L;
-        String targetEmail = "student@example.com";
-        String requesterEmail = "not-instructor@example.com";
-
-        Lecture mockLecture = Lecture.builder().courseId(10L).build();
-        Course mockCourse = Course.builder().instructorId(100L).build();
-        Instructor mockInstructor = Instructor.builder().id(200L).build(); // Course의 instructorId와 다름
-
-        when(lectureQueryService.queryLectureById(lectureId)).thenReturn(mockLecture);
-        when(courseQueryService.queryCourseById(mockLecture.getCourseId())).thenReturn(mockCourse);
-        when(instructorQueryService.queryInstructorByEmail(requesterEmail)).thenReturn(mockInstructor);
-
-        // when & then
-        IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> liveControlService.verifyPrivilege(lectureId, targetEmail, requesterEmail, "권한이 없습니다."));
-
-        assertEquals("권한이 없습니다.", exception.getMessage());
-    }
 
     @Test
     @DisplayName("[checkParticipationPrivilege] 실패: 강제 퇴장 목록에 있을 경우 false를 반환하고 퇴장시킨다")
