@@ -224,7 +224,7 @@ class CourseManagementServiceImplTest {
             FileMetadata oldThumb2 = FileMetadata.builder().id(2L).relatedId(courseId).relatedType(RelatedType.THUMBNAIL).sequence(2).build();
             FileMetadata oldCover  = FileMetadata.builder().id(3L).relatedId(courseId).relatedType(RelatedType.COURSE_COVER).sequence(1).build();
 
-            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAILS"))
+            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAIL"))
                     .thenReturn(List.of(oldThumb1, oldThumb2));
             when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER"))
                     .thenReturn(oldCover);
@@ -253,7 +253,7 @@ class CourseManagementServiceImplTest {
             when(courseQueryService.queryCourseById(courseId)).thenReturn(existing);
             when(courseRepository.save(any(Course.class))).thenAnswer(inv -> inv.getArgument(0));
 
-            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAILS"))
+            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAIL"))
                     .thenReturn(List.of());
             when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER"))
                     .thenReturn(FileMetadata.builder().id(9L).relatedId(courseId).relatedType(RelatedType.COURSE_COVER).sequence(1).build());
@@ -276,7 +276,7 @@ class CourseManagementServiceImplTest {
             when(courseQueryService.queryCourseById(courseId)).thenReturn(existing);
             when(courseRepository.save(any(Course.class))).thenAnswer(inv -> inv.getArgument(0));
 
-            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAILS"))
+            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAIL"))
                     .thenReturn(List.of()); // 기존 썸네일 없음 가정
             when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER"))
                     .thenReturn(FileMetadata.builder().id(99L).relatedId(courseId).relatedType(RelatedType.COURSE_COVER).sequence(1).build());
@@ -302,7 +302,7 @@ class CourseManagementServiceImplTest {
             when(courseQueryService.queryCourseById(courseId)).thenReturn(existing);
             when(courseRepository.save(any(Course.class))).thenAnswer(inv -> inv.getArgument(0));
 
-            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAILS"))
+            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAIL"))
                     .thenThrow(new RuntimeException("no-thumbs"));
 
             FileMetadata oldCover  = FileMetadata.builder().id(30L).relatedId(courseId).relatedType(RelatedType.COURSE_COVER).sequence(1).build();
@@ -328,7 +328,7 @@ class CourseManagementServiceImplTest {
             when(courseQueryService.queryCourseById(courseId)).thenReturn(existing);
             when(courseRepository.save(any(Course.class))).thenAnswer(inv -> inv.getArgument(0));
 
-            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAILS"))
+            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAIL"))
                     .thenReturn(List.of());
             when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER"))
                     .thenThrow(new RuntimeException("no-cover"));
@@ -352,7 +352,7 @@ class CourseManagementServiceImplTest {
 
             FileMetadata oldCover  = FileMetadata.builder().id(30L).relatedId(courseId).relatedType(RelatedType.COURSE_COVER).sequence(1).build();
 
-            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAILS")).thenReturn(List.of());
+            when(subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAIL")).thenReturn(List.of());
             when(subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER")).thenReturn(oldCover);
 
             Long returnedId = service.updateCourseByCourseId(req, thumbnails, cover);
