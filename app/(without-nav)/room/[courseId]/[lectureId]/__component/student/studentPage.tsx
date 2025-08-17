@@ -149,6 +149,7 @@ export default function StudentPage() {
     if (!chapter || typeof chapter !== "object" || !("chapterId" in chapter)) {
       return undefined;
     }
+    setTodoSequence(1);
     const data = chapter as ChapterTodoResponse;
     return {
       chapterId: data.chapterId,
