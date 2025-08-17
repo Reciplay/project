@@ -69,6 +69,7 @@ export default function StudentPage() {
     recognizedPose,
     handGesture,
     isTimerRunning,
+    setIsTimerRunning,
     todoSequence,
     setTodoSequence,
     liveSocketData,

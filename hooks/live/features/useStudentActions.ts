@@ -6,6 +6,7 @@ interface StudentActionsProps {
   recognizedPose: string;
   handGesture: string;
   isTimerRunning: boolean;
+  setIsTimerRunning: (isRunning: boolean) => void;
   todoSequence: number | null;
   setTodoSequence: Dispatch<SetStateAction<number | null>>;
   liveSocketData: ReturnType<typeof useLiveSocket>;
@@ -17,6 +18,7 @@ export const useStudentActions = ({
   // recognizedPose,
   handGesture,
   isTimerRunning,
+  setIsTimerRunning,
   todoSequence,
   setTodoSequence,
   liveSocketData,
@@ -69,28 +71,59 @@ export const useStudentActions = ({
       chapter?.todos &&
       todoSequence !== null
     ) {
-      console.log("엄지척 제스처: 할 일 체크");
-
-      const currentTodo = chapter.todos[todoSequence];
+      const currentTodo = chapter.todos.find(
+        (todo) => todo.sequence === todoSequence,
+      );
       if (!currentTodo) return;
 
-      const sendData: SendIssueArgs = {
-        issuer: roomInfo.email,
-        chapter: chapter.chapterSequence,
-        todoSequence: todoSequence,
-        lectureId: lectureId,
-        roomId: roomId,
-        // roomId: "fb26f3c1-d0cf-420a-9e3f-76912c69d2ce",
-      };
+      // const sendData: SendIssueArgs = {
+      //   issuer: roomInfo.email,
+      //   chapter: chapter.chapterSequence,
+      //   todoSequence: todoSequence,
+      //   lectureId: lectureId,
+      //   roomId: roomId,
+      //   // roomId: "fb26f3c1-d0cf-420a-9e3f-76912c69d2ce",
+      // };
 
       if (currentTodo.type === "NORMAL") {
+        const sendData: SendIssueArgs = {
+          issuer: roomInfo.email,
+          chapter: chapter.chapterSequence,
+          todoSequence: todoSequence,
+          lectureId: lectureId,
+          roomId: roomId,
+        };
         sendTodoCheck(stompClient, sendData);
-        setTodoSequence((prev) => (prev !== null ? prev + 1 : 0));
-      } else if (currentTodo.type === "TIMER" && isTimerRunning) {
-        // 타이머 기반 할 일은 강사가 타이머를 실행했을 때만 체크 가능
-        sendTodoCheck(stompClient, sendData);
-        setTodoSequence((prev) => (prev !== null ? prev + 1 : 0));
+
+        const currentTodoIndex = chapter.todos.findIndex(
+          (todo) => todo.sequence === todoSequence,
+        );
+
+        if (
+          currentTodoIndex > -1 &&
+          currentTodoIndex < chapter.todos.length - 1
+        ) {
+          const nextTodoSequence =
+            chapter.todos[currentTodoIndex + 1]!.sequence;
+          setTodoSequence(nextTodoSequence);
+          sendTodoCheck(stompClient, sendData);
+        } else {
+          console.log("All todos for this chapter are complete.");
+        }
+      } else if (currentTodo.type === "TIMER" && !isTimerRunning) {
+        // 타이머가 실행중이 아닐 때만 타이머를 시작합니다.
+        setIsTimerRunning(true);
       }
+      // }
+
+      // if (currentTodo.type === "NORMAL") {
+      //   sendTodoCheck(stompClient, sendData);
+      //   setTodoSequence((prev) => (prev !== null ? prev + 1 : 0));
+      // } else if (currentTodo.type === "TIMER" && isTimerRunning) {
+      //   // 타이머 기반 할 일은 강사가 타이머를 실행했을 때만 체크 가능
+      //   sendTodoCheck(stompClient, sendData);
+      //   setTodoSequence((prev) => (prev !== null ? prev + 1 : 0));
+      // }
     }
   }, [
     handGesture,

@@ -83,6 +83,7 @@ export const useInstructorActions = ({
         const currentTodoIndex = chapter.todos.findIndex(
           (todo) => todo.sequence === todoSequence,
         );
+
         if (
           currentTodoIndex > -1 &&
           currentTodoIndex < chapter.todos.length - 1

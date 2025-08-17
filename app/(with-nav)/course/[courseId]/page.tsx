@@ -4,8 +4,9 @@ import CustomButton from "@/components/button/customButton";
 import ScrollTabs from "@/components/tab/scrollTabs";
 import { ScrollContainerContext } from "@/contexts/ScrollContainerContext";
 import { useCourseInfo } from "@/hooks/course/useCourseInfo";
+import { useGetLive } from "@/hooks/course/useGetLive";
 import { useScrollTabs } from "@/hooks/useScrollTabs";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useContext } from "react";
 import Notices from "./__components/notices/notices";
 import Overview from "./__components/overview/overview";
@@ -30,9 +31,14 @@ export default function Page() {
   const { handleEnroll, handleZzim, courseDetail, message, loading } =
     useCourseInfo(courseId);
 
+  const { data: liveLink } = useGetLive(Number(courseId));
+  const router = useRouter();
+
   if (loading) return <div>로딩중…</div>;
   if (!courseDetail)
     return <div>{message ?? "강좌 정보를 불러오지 못했습니다."}</div>;
+
+  console.log(courseDetail.isEnrolled);
 
   return (
     <div className={styles.container}>
@@ -75,13 +81,35 @@ export default function Page() {
 
       <div className={styles.interaction}>
         <div className={styles.box}>
-          <CustomButton
-            title="수강 신청"
-            onClick={handleEnroll}
-            size="md"
-            variant="custom"
-            color="green"
-          />
+          {courseDetail.isEnrolled ? (
+            liveLink === null ? (
+              <CustomButton
+                title="신청 완료"
+                onClick={handleEnroll}
+                size="md"
+                variant="custom"
+                color="green"
+                disabled
+              />
+            ) : (
+              <CustomButton
+                title="라이브 참여"
+                onClick={() => router.push(liveLink)}
+                size="md"
+                variant="custom"
+                color="green"
+              />
+            )
+          ) : (
+            <CustomButton
+              title="수강 신청"
+              onClick={handleEnroll}
+              size="md"
+              variant="custom"
+              color="green"
+            />
+          )}
+
           <CustomButton
             title="찜하기"
             onClick={handleZzim}

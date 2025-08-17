@@ -160,18 +160,6 @@ export default function InstructorPage() {
     return undefined;
   }, [parsedChapterCard, todoSequence]);
 
-  // const helpRequesterTrack = useMemo(() => {
-  //   if (!helpRequestInfo) return null;
-  //   const foundTrack = remoteTracks.find(
-  //     (track) =>
-  //       track.participantIdentity === helpRequestInfo.issuer &&
-  //       track.trackPublication.videoTrack, // Ensure videoTrack exists
-  //   );
-  //   return foundTrack;
-  // }, [helpRequestInfo, remoteTracks]);
-  //!태욱 챕터만 의존성 가지기 위해 수정
-  // }, [liveSocketData.chapter]);
-
   useEffect(() => {
     if (session) {
       setRole(session.role ?? null);
@@ -242,8 +230,6 @@ export default function InstructorPage() {
                   ? !status.audio
                   : (audio?.isMuted ?? false);
 
-              console.log(status?.video);
-              // console.log(!status.video);
               const isVideoMuted =
                 status?.video !== undefined
                   ? !status.video
@@ -251,11 +237,7 @@ export default function InstructorPage() {
 
               const todoCheckEvent = todoCheckEvents[participantEmail];
 
-              // console.log(`12312312312313131 - ${JSON.stringify(video)}`);
-
               if (!video) return null;
-
-              console.log(isQuestioner);
 
               return (
                 <div

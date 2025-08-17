@@ -132,7 +132,7 @@ export interface CourseDetail {
   averageReviewScore: number;
   summary: string;
   maxEnrollments: number;
-  isEnrollment: boolean;
+  isEnrolled: boolean;
   description: string;
   level: number;
   isZzim: boolean;
