@@ -27,6 +27,7 @@ import com.e104.reciplay.user.security.service.UserQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.websocket.OnError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,7 @@ import retrofit2.Response;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "강의 관리 API", description = "강의 관리")
 @RestController
@@ -214,4 +216,19 @@ public class LectureApiController {
 
         return CommonResponseBuilder.success("파일 조회에 성공했습니다.", fileInfo);
     }
+
+    @GetMapping("/coming")
+    @Operation(summary = "진행할 라이브 강의가 있는지 조회하는 API")
+    public ResponseEntity<ResponseRoot<Object>> getComingLiveLecture(
+            @RequestParam("courseId") Long courseId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        log.debug("곧 있을 강의 조회하는 API");
+        log.debug("코스 아이디 = {}", courseId);
+        log.debug("요청자 ID = {}", userDetails.getUsername());
+
+        Long id = lectureQueryService.getComingLecture(courseId, userDetails.getUsername());
+        return CommonResponseBuilder.success("곧 있을 강의 아이디 조회에 성공했습니다.", Map.of("lectureId", id));
+    }
+
 }

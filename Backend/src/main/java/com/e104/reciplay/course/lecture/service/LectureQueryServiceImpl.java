@@ -5,6 +5,7 @@ import com.e104.reciplay.common.exception.LectureNotFoundException;
 import com.e104.reciplay.course.lecture.dto.LectureDetail;
 import com.e104.reciplay.course.lecture.dto.ChapterInfo;
 import com.e104.reciplay.course.lecture.dto.LectureSummary;
+import com.e104.reciplay.entity.Course;
 import com.e104.reciplay.entity.FileMetadata;
 import com.e104.reciplay.entity.Lecture;
 import com.e104.reciplay.repository.ChapterRepository;
@@ -23,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -95,6 +97,18 @@ public class LectureQueryServiceImpl implements LectureQueryService{
     @Override
     public Long queryCountByCourseId(Long courseId) {
         return lectureRepository.countByCourseId(courseId);
+    }
+
+    @Override
+    public Long getComingLecture(Long courseId, String email) {
+        List<Lecture> lectures = lectureRepository.findByCourseId(courseId);
+        LocalDateTime now =  LocalDateTime.now();
+        for(Lecture lecture : lectures) {
+            if(lecture.getStartedAt().minusHours(3).isBefore(now) && lecture.getStartedAt().isAfter(now)) {
+                return lecture.getId();
+            }
+        }
+        return null;
     }
 
     private ResponseFileInfo getLectureMaterial(Long lectureId) {

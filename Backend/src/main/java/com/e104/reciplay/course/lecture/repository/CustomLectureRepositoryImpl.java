@@ -4,6 +4,7 @@ import com.e104.reciplay.course.lecture.dto.LectureDetail;
 import com.e104.reciplay.course.lecture.dto.LectureSummary;
 import com.e104.reciplay.course.lecture.dto.QLectureSummary;
 import com.e104.reciplay.course.lecture.dto.QLectureDetail;
+import com.e104.reciplay.entity.Lecture;
 import com.e104.reciplay.entity.QLecture;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomLectureRepositoryImpl implements CustomLectureRepository {
     private final JPAQueryFactory queryFactory;
+    private final QLecture lecture = QLecture.lecture;
     @Override
     public List<LectureSummary> findLectureSummariesByCourseId(Long courseId) {
         QLecture lecture = QLecture.lecture;
@@ -70,4 +72,5 @@ public class CustomLectureRepositoryImpl implements CustomLectureRepository {
                 .where(lecture.courseId.eq(courseId))
                 .fetch();
     }
+
 }
