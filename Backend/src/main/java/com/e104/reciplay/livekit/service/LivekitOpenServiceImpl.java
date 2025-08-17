@@ -145,7 +145,8 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
         String email = AuthenticationUtil.getSessionUsername();
         log.debug("참여중인 라이브가 있는지 검사함");
         if(liveParticipationQueryService.isInAnyLiveRoom(email)) {
-            throw new CanNotParticipateInLiveRoomException("이미 참여중인 라이브 방송이 존재합니다.");
+            LiveParticipation participation = liveParticipationQueryService.queryLiveParticipationOf(lectureId, email);
+            if(participation == null) throw new CanNotParticipateInLiveRoomException("참여 라이브 에러가 발생했습니다. 현재 방송 참여가 아닙니다.");
         }
 
         User user = userQueryService.queryUserByEmail(email);
