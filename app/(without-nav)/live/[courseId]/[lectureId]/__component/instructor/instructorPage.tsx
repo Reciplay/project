@@ -1,6 +1,6 @@
 "use client";
 
-import ChatBot from "@/components/chatbot/ChatBot";
+import ChatBot from "@/components/chatbot/chatBot";
 import TablerIcon from "@/components/icon/tablerIcon"; // Added TablerIcon import
 import VideoSection from "@/components/live/videoSection";
 import { useGestureRecognition } from "@/hooks/live/features/useGestureRecognition";
@@ -13,9 +13,13 @@ import useLiveSocket from "@/hooks/live/useLiveSocket";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Header from "../common/header/header";
-import type { ChapterCard } from "../common/todoList/todoListCard";
-import TodoListCard from "../common/todoList/todoListCard";
+// import Header from "../common/header/header";
+// import type { ChapterCard } from "../common/todoList/todoListCard";
+// import TodoListCard from "../common/todoList/todoListCard";
+import Header from "@/app/(without-nav)/room/[courseId]/[lectureId]/__component/common/header/header";
+import TodoListCard, {
+  ChapterCard,
+} from "@/app/(without-nav)/room/[courseId]/[lectureId]/__component/common/todoList/todoListCard";
 import styles from "./instructorPage.module.scss";
 // Type Definitions (Assuming these are shared or defined elsewhere)
 export type ChapterTodoResponse = {

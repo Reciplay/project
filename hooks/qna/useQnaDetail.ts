@@ -24,6 +24,7 @@ export function useQnaDetail(qnaId: number) {
         `/course/qna`,
         {
           params: { qnaId: id },
+          requireAuth: true,
           useCors: false,
         },
       );

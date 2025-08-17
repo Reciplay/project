@@ -1,6 +1,6 @@
 "use client";
 
-import ChatBot from "@/components/chatbot/ChatBot";
+import ChatBot from "@/components/chatbot/chatBot";
 import VideoSection from "@/components/live/videoSection";
 import SetTimer from "@/components/timer/setTimer";
 import { useGestureRecognition } from "@/hooks/live/features/useGestureRecognition";
