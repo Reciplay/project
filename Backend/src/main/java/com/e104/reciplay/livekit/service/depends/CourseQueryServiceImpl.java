@@ -55,6 +55,8 @@ public class CourseQueryServiceImpl implements CourseQueryService{
             case "end": courses = courseRepository.findEndedCourseByInstructorId(instructorId); break;
             default: throw new IllegalArgumentException("잘못된 courseStatus 값입니다. (soon / ongoing / end 중 하나여야 함)");
         }
+//        courses = courses.stream().filter(Course::getIsApproved).toList();
+
         List<CourseDetail> courseDetails = new ArrayList<>();
         for(Course c : courses){
             log.debug("courses를 courseDetails에 삽입");
