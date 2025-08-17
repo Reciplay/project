@@ -76,7 +76,7 @@ export default function VideoSection({
         );
         setPorcupineHandle(handle);
       } catch (error) {
-        console.error("Failed to initialize Porcupine:", error);
+        // console.error("Failed to initialize Porcupine:", error);
       }
     };
 

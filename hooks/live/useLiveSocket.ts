@@ -81,10 +81,9 @@ export default function useLiveSocket(
   const [participantMuteStatus, setParticipantMuteStatus] = useState<
     Map<string, { audio: boolean; video: boolean }>
   >(new Map()); // Added
-  const [helpRequestInfo, setHelpRequestInfo] = useState<HelpRequestInfo | null>(null);
-  // const [instructorEmail, setInstructorEmail] = useState<string>(
-  //   "InstructorEmail Initial Value",
-  // );
+  const [helpRequestInfo, setHelpRequestInfo] =
+    useState<HelpRequestInfo | null>(null);
+
   const [instructorEmail, setInstructorEmail] = useState<string>(""); // Keep initial state as empty for students
 
   // Set instructorEmail based on role if it's an instructor
@@ -318,6 +317,7 @@ export default function useLiveSocket(
               });
             } else if (data.type === "help") {
               console.log(`📩 메시지 수신 [${source}]`, data);
+              console.log("DEBUG: handleMessage received help data", data); // Add this line
               setHelpRequestInfo(data as HelpRequestInfo);
             } else {
               console.log(`📩 메시지 수신 [${source}]`, data);
@@ -393,6 +393,7 @@ export default function useLiveSocket(
       body: JSON.stringify(payload),
     });
     console.log("➡️ Sent /ws/v1/app/help:", payload);
+    console.log("DEBUG: sendHelp payload", payload);
   }, []);
 
   const sendTodoCheck = useCallback((client: Client, args: SendIssueArgs) => {
