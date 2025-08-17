@@ -89,7 +89,7 @@ public class LiveControlServiceImpl implements LiveControlService{
 
     @Override
     public void verifyRemovePrivilege(Long lectureId, String email, String userEmail) {
-        verifyPrivilege(lectureId, email, userEmail, "강의의 지도 강사가 아니라면 강퇴할 수 업습니다.");
+//        verifyPrivilege(lectureId, email, userEmail, "강의의 지도 강사가 아니라면 강퇴할 수 업습니다.");
     }
 
     @Override
@@ -100,7 +100,7 @@ public class LiveControlServiceImpl implements LiveControlService{
 
     @Override
     public void verifyAudioMutePrivilege(Long lectureId, String email, String userEmail) {
-        verifyPrivilege(lectureId, email, userEmail, "오디오 제어 권한이 업습니다.");
+//        verifyPrivilege(lectureId, email, userEmail, "오디오 제어 권한이 업습니다.");
     }
 
     @Override
@@ -124,18 +124,20 @@ public class LiveControlServiceImpl implements LiveControlService{
 
     @Override
     public void verifyVideoMutePrivilege(Long lectureId, String email, String userEmail) {
-        verifyPrivilege(lectureId, email, userEmail, "비디오 송출 제어 권한이 없습니다.");
+//        verifyPrivilege(lectureId, email, userEmail, "비디오 송출 제어 권한이 없습니다.");
     }
 
     @Override
     public void mutePublishedChannel(String roomName, String identity, LivekitModels.TrackType type, boolean mute) throws IOException{
         Call<LivekitModels.ParticipantInfo> call = roomServiceClient.getParticipant(roomName, identity);
         Response<LivekitModels.ParticipantInfo> response = call.execute();
+        log.debug("발견한 사용자 정보 : {}", response);
 
         assert response.body() != null;
 
         for(LivekitModels.TrackInfo trackInfo : response.body().getTracksList()) {
             if(trackInfo.getType() == type) {
+                log.debug("제어할 트랙 : {}, {}, {}", trackInfo.getType(), trackInfo.getSid(), mute);
                 String sid = trackInfo.getSid();
                 Call<LivekitModels.TrackInfo> muteCall = roomServiceClient.mutePublishedTrack(roomName, identity, sid, mute);
                 muteCall.execute();
@@ -158,14 +160,15 @@ public class LiveControlServiceImpl implements LiveControlService{
         return course.getInstructorId().equals(instructor.getId());
     }
 
-    public void verifyPrivilege(Long lectureId, String email, String userEmail, String msg) {
-        if(test) return;
-        if(userEmail.equals(adminKey)) return; // admin 권한으로 강제 퇴장.
-        Lecture lecture = lectureQueryService.queryLectureById(lectureId);
-        Course course = courseQueryService.queryCourseById(lecture.getCourseId());
-        Instructor instructor = instructorQueryService.queryInstructorByEmail(userEmail);
-
-        if(email.equals(userEmail)) throw new IllegalStateException("자기자신은 제한할 수 없습니다.");
-        if(!course.getInstructorId().equals(instructor.getId())) throw new IllegalStateException(msg);
-    }
+//    public void verifyPrivilege(Long lectureId, String email, String userEmail, String msg) {
+//        log.debug("권한을 확인합니다.");
+//        if(test) return;
+//        if(userEmail.equals(adminKey)) return; // admin 권한으로 강제 퇴장.
+//        Lecture lecture = lectureQueryService.queryLectureById(lectureId);
+//        Course course = courseQueryService.queryCourseById(lecture.getCourseId());
+//        Instructor instructor = instructorQueryService.queryInstructorByEmail(userEmail);
+//
+//        if(email.equals(userEmail)) throw new IllegalStateException("자기자신은 제한할 수 없습니다.");
+//        if(!course.getInstructorId().equals(instructor.getId())) throw new IllegalStateException(msg);
+//    }
 }
