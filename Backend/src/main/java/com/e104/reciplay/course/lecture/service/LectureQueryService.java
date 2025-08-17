@@ -13,4 +13,5 @@ public interface LectureQueryService {
     List<Lecture> queryLecturesByCourseId(Long courseId);
     Lecture queryLectureById(Long id);
     Long queryCountByCourseId(Long courseId);
+    Long getComingLecture(Long courseId, String email);
 }
