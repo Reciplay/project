@@ -56,6 +56,15 @@ export type SendIssueArgs = {
   todoSequence?: number;
 };
 
+export type HelpRequestInfo = {
+  type: string;
+  issuer: string;
+  receiver: string | null;
+  nickname: string;
+  lectureId: number;
+  roomId: string;
+};
+
 export default function useLiveSocket(
   courseId: string,
   lectureId: string,
@@ -72,6 +81,7 @@ export default function useLiveSocket(
   const [participantMuteStatus, setParticipantMuteStatus] = useState<
     Map<string, { audio: boolean; video: boolean }>
   >(new Map()); // Added
+  const [helpRequestInfo, setHelpRequestInfo] = useState<HelpRequestInfo | null>(null);
   // const [instructorEmail, setInstructorEmail] = useState<string>(
   //   "InstructorEmail Initial Value",
   // );
@@ -306,6 +316,9 @@ export default function useLiveSocket(
                 );
                 return newStatus;
               });
+            } else if (data.type === "help") {
+              console.log(`📩 메시지 수신 [${source}]`, data);
+              setHelpRequestInfo(data as HelpRequestInfo);
             } else {
               console.log(`📩 메시지 수신 [${source}]`, data);
             }
@@ -398,6 +411,10 @@ export default function useLiveSocket(
     console.log("➡️ Sent /ws/v1//app/todo-check", payload);
   }, []);
 
+  const clearHelpRequest = useCallback(() => {
+    setHelpRequestInfo(null);
+  }, []);
+
   /** 4. cleanup */
   const cleanupConnection = useCallback(() => {
     console.log("🧹 useLiveSocket cleanup 실행");
@@ -449,5 +466,7 @@ export default function useLiveSocket(
     instructorEmail,
     sendTodoCheck,
     participantMuteStatus, // Added
+    helpRequestInfo, // Added
+    clearHelpRequest, // Added
   };
 }
