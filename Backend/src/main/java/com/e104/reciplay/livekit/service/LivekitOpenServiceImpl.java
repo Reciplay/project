@@ -202,7 +202,7 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
             // 참여중으로 등록해야 한다.
             LiveRoom liveRoom = liveRoomQueryService.queryLiveRoomByLectureId(lectureId);
             log.debug("조회된 라이브룸 : {}", liveRoom);
-            liveParticipationManagementService.participateIn(liveRoom, email);
+            if(!liveParticipationQueryService.isInAnyLiveRoom(email)) liveParticipationManagementService.participateIn(liveRoom, email);
         }
         User user = userQueryService.queryUserByEmail(AuthenticationUtil.getSessionUsername());
         log.debug("라이브룸 참여가 완료되었습니다.");
