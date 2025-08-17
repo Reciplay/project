@@ -152,7 +152,7 @@ public class CourseManagementServiceImpl implements CourseManagementService{
         course.setCourseEndDate(term.getEndDate());
         log.debug("강좌 등록 종료 시간 설정");
         course.setEnrollmentEndDate(LocalDateTime.of(term.getStartDate().minusDays(1), LocalTime.MAX));
-        course.setEnrollmentEndDate(LocalDateTime.of(term.getStartDate().minusDays(1).minusWeeks(1), LocalTime.MAX));
+        course.setEnrollmentStartDate(LocalDateTime.of(term.getStartDate().minusDays(1).minusWeeks(1), LocalTime.MAX));
     }
 
     @Override

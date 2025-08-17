@@ -57,7 +57,7 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
         String email = AuthenticationUtil.getSessionUsername();
         Instructor instructor = instructorQueryService.queryInstructorByEmail(email);
         Course course = courseQueryService.queryCourseById(courseId);
-        
+
         log.debug("이미 끝난 강의인지를 검사합니다.");
         if(lecture.getIsCompleted()) {
             throw new CanNotOpenLiveRoomException("이미 지난 강의입니다.");
@@ -112,7 +112,10 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
         if(!isTest) {
             log.debug("디버그 환경이 아닙니다. 강의를 라이브중으로 변경하고 참여이력을 등록합니다.");
             Lecture lecture = lectureQueryService.queryLectureById(lectureId);
-            LiveRoom liveRoom = liveRoomManagementService.openLiveRoom(lecture, roomName);
+            LiveRoom liveRoom = null;
+
+            if (!liveRoomQueryService.isLiveLecture(lectureId)) {
+                liveRoom = liveRoomManagementService.openLiveRoom(lecture, roomName);
             log.debug("조회된 강의 {}", lecture);
             log.debug("조회된 라이브룸 {}", liveRoom);
             // 해당 강좌를 라이브 중으로 변경한다.
@@ -121,6 +124,9 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
             // 라이브에 참여한다.
             liveParticipationManagementService.participateIn(liveRoom, AuthenticationUtil.getSessionUsername());
             log.debug("라이브룸에 참여를 성공했습니다.");
+            } else {
+                log.debug("이미 라이브룸이 존재합니다.");
+            }
         }
         User user = userQueryService.queryUserByEmail(AuthenticationUtil.getSessionUsername());
 
