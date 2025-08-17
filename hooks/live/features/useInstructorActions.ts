@@ -36,6 +36,7 @@ export const useInstructorActions = ({
   useEffect(() => {
     if (recognizedPose === "Clap" && stompClient && roomInfo?.email && roomId) {
       console.log("박수 제스처: 다음 챕터로");
+      setTodoSequence(1);
       sendChapterIssue(stompClient, {
         type: "chapter-issue",
         issuer: roomInfo.email,
@@ -46,32 +47,13 @@ export const useInstructorActions = ({
     }
   }, [
     recognizedPose,
-    stompClient,
-    roomInfo,
-    roomId,
-    lectureId,
-    sendChapterIssue,
-    chapter?.chapterSequence,
+    // stompClient,
+    // roomInfo,
+    // roomId,
+    // lectureId,
+    // sendChapterIssue,
+    // chapter?.chapterSequence,
   ]);
-
-  // // 'Closed_Fist' 제스처 처리 -> 도움 요청
-  // useEffect(() => {
-  //   if (
-  //     handGesture === "Closed_Fist" &&
-  //     stompClient &&
-  //     roomInfo?.email &&
-  //     roomId
-  //   ) {
-  //     console.log("주먹 제스처: 도움 요청");
-  //     sendHelp(stompClient, {
-  //       type: "help",
-  //       nickname: roomInfo.nickname,
-  //       issuer: roomInfo.email,
-  //       lectureId: lectureId,
-  //       roomId: roomId,
-  //     });
-  //   }
-  // }, [handGesture, stompClient, roomInfo, roomId, lectureId, sendHelp]);
 
   // 'ThumbsUp' 제스처 처리 -> 할 일 체크 / 타이머 시작
   useEffect(() => {
@@ -118,16 +100,17 @@ export const useInstructorActions = ({
     }
   }, [
     handGesture,
-    stompClient,
-    roomInfo,
-    roomId,
-    lectureId,
-    chapter,
-    todoSequence,
-    sendTodoCheck,
-    setIsTimerRunning,
-    setTodoSequence,
-    isTimerRunning, // isTimerRunning을 다시 의존성에 추가하여 정확한 상태를 참조하도록 합니다.
+    // stompClient,
+    // roomInfo,
+    // roomId,
+    // lectureId,
+    // chapter,
+    // todoSequence,
+    // sendTodoCheck,
+    // setIsTimerRunning,
+    // setTodoSequence,
+    // isTimerRunning,
+    // isTimerRunning을 다시 의존성에 추가하여 정확한 상태를 참조하도록 합니다.
   ]);
 
   // 타이머 종료 시 호출될 함수

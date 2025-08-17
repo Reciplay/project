@@ -15,6 +15,12 @@ export const useParticipantActions = ({
   email,
   lectureId,
 }: ParticipantActionsProps) => {
+  //live/remove
+  // 강퇴 ( 강사 )
+
+  // livekit/lecture - delete
+  // 방송 종료 ( 강사 )
+
   const muteAudio = useCallback(async () => {
     if (!roomId || !email || !lectureId) return;
     try {

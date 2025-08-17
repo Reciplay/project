@@ -56,10 +56,29 @@ export type SendIssueArgs = {
   todoSequence?: number;
 };
 
+export type TodoCheckEvent = {
+  type: "todo-check";
+  issuer: string;
+  chapter: number;
+  todoSequence: number;
+  lectureId: number;
+  roomId: string;
+};
+
+export type HelpRequestInfo = {
+  type: string;
+  issuer: string;
+  receiver: string | null;
+  nickname: string;
+  lectureId: number;
+  roomId: string;
+};
+
 export default function useLiveSocket(
   courseId: string,
   lectureId: string,
   role: "instructor" | "student",
+  onTodoCheck?: (event: TodoCheckEvent) => void, // 콜백 추가
 ) {
   const [roomId, setRoomId] = useState<string | null>(null);
   const [socket, setSocket] = useState<InstanceType<typeof SockJS> | null>(
@@ -72,9 +91,9 @@ export default function useLiveSocket(
   const [participantMuteStatus, setParticipantMuteStatus] = useState<
     Map<string, { audio: boolean; video: boolean }>
   >(new Map()); // Added
-  // const [instructorEmail, setInstructorEmail] = useState<string>(
-  //   "InstructorEmail Initial Value",
-  // );
+  const [helpRequestInfo, setHelpRequestInfo] =
+    useState<HelpRequestInfo | null>(null);
+
   const [instructorEmail, setInstructorEmail] = useState<string>(""); // Keep initial state as empty for students
 
   // Set instructorEmail based on role if it's an instructor
@@ -105,6 +124,7 @@ export default function useLiveSocket(
       setRoomId(info.roomId);
     } catch (e) {
       console.error("roomId 요청 실패:", e);
+      alert(e);
     }
   }, [courseId, lectureId, role]);
 
@@ -275,6 +295,8 @@ export default function useLiveSocket(
               );
               setChapter(data);
               console.log("📝 ChapterTodoResponse 저장:", data);
+            } else if (data.type === "todo-check" && onTodoCheck) {
+              onTodoCheck(data as TodoCheckEvent);
             } else if (
               data.type === "mute-audio" ||
               data.type === "unmute-audio" ||
@@ -306,6 +328,10 @@ export default function useLiveSocket(
                 );
                 return newStatus;
               });
+            } else if (data.type === "help") {
+              console.log(`📩 메시지 수신 [${source}]`, data);
+              console.log("DEBUG: handleMessage received help data", data); // Add this line
+              setHelpRequestInfo(data as HelpRequestInfo);
             } else {
               console.log(`📩 메시지 수신 [${source}]`, data);
             }
@@ -341,7 +367,7 @@ export default function useLiveSocket(
 
       client.activate();
     },
-    [sendJoin, sendRejoin],
+    [sendJoin, sendRejoin, onTodoCheck],
   );
 
   const sendChapterIssue = useCallback(
@@ -380,6 +406,7 @@ export default function useLiveSocket(
       body: JSON.stringify(payload),
     });
     console.log("➡️ Sent /ws/v1/app/help:", payload);
+    console.log("DEBUG: sendHelp payload", payload);
   }, []);
 
   const sendTodoCheck = useCallback((client: Client, args: SendIssueArgs) => {
@@ -389,13 +416,17 @@ export default function useLiveSocket(
       chapter: args.chapter,
       todoSequence: args.todoSequence,
       lectureId: lectureId,
-      roomId: roomId,
+      roomId: args.roomId,
     };
     client.publish({
       destination: "/ws/v1/app/todo-check",
       body: JSON.stringify(payload),
     });
     console.log("➡️ Sent /ws/v1//app/todo-check", payload);
+  }, []);
+
+  const clearHelpRequest = useCallback(() => {
+    setHelpRequestInfo(null);
   }, []);
 
   /** 4. cleanup */
@@ -449,5 +480,7 @@ export default function useLiveSocket(
     instructorEmail,
     sendTodoCheck,
     participantMuteStatus, // Added
+    helpRequestInfo, // Added
+    clearHelpRequest, // Added
   };
 }

@@ -49,12 +49,20 @@ export const useStudentActions = ({
         roomId: roomId,
       });
     }
-  }, [handGesture, stompClient, roomInfo, roomId, lectureId, sendHelp]);
+  }, [
+    handGesture,
+    //  stompClient,
+    //   roomInfo,
+    //   roomId,
+    //   lectureId,
+    //    sendHelp
+  ]);
 
   // 'ThumbsUp' 제스처 처리 -> 할 일 체크
   useEffect(() => {
+    console.log(`!@!@!@!@!@!@!@todoSequence : ${todoSequence}`);
     if (
-      handGesture === "ThumsUp" &&
+      handGesture === "Thumb_Up" &&
       stompClient &&
       roomInfo?.email &&
       roomId &&
@@ -62,6 +70,7 @@ export const useStudentActions = ({
       todoSequence !== null
     ) {
       console.log("엄지척 제스처: 할 일 체크");
+
       const currentTodo = chapter.todos[todoSequence];
       if (!currentTodo) return;
 
@@ -71,6 +80,7 @@ export const useStudentActions = ({
         todoSequence: todoSequence,
         lectureId: lectureId,
         roomId: roomId,
+        // roomId: "fb26f3c1-d0cf-420a-9e3f-76912c69d2ce",
       };
 
       if (currentTodo.type === "NORMAL") {
@@ -84,14 +94,14 @@ export const useStudentActions = ({
     }
   }, [
     handGesture,
-    stompClient,
-    roomInfo,
-    roomId,
-    lectureId,
-    chapter,
-    todoSequence,
-    isTimerRunning,
-    sendTodoCheck,
-    setTodoSequence,
+    // stompClient,
+    // roomInfo,
+    // roomId,
+    // lectureId,
+    // chapter,
+    // todoSequence,
+    // isTimerRunning,
+    // sendTodoCheck,
+    // setTodoSequence,
   ]);
 };
