@@ -221,7 +221,7 @@ public class LiveController {
         String userEmail = user.getUsername();
 
         liveControlService.muteAudio(request, userEmail);
-        Map<String, String> result = getControlReturnMessage("mute-video", request.getTargetEmail(),
+        Map<String, String> result = getControlReturnMessage("mute-audio", request.getTargetEmail(),
                 request.getTargetEmail()+"님께서 오디오를 차단하셨습니다.");
         log.debug("음소거 STOMP 메세지. {}", result);
 

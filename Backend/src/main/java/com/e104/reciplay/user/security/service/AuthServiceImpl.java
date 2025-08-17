@@ -1,7 +1,6 @@
 package com.e104.reciplay.user.security.service;
 
 import com.e104.reciplay.user.auth.dto.request.PasswordChangeRequest;
-import com.e104.reciplay.user.auth.dto.request.SignupRequest;
 import com.e104.reciplay.user.auth.exception.EmailAuthFailureException;
 import com.e104.reciplay.user.auth.exception.InvalidOtpHashException;
 import com.e104.reciplay.user.auth.mail.service.MailService;
@@ -10,15 +9,12 @@ import com.e104.reciplay.user.security.domain.Token;
 import com.e104.reciplay.user.security.exception.JWTTokenExpiredException;
 import com.e104.reciplay.user.security.jwt.JWTUtil;
 import com.e104.reciplay.user.security.repository.TokenRepository;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 

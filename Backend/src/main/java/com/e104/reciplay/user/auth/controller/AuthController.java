@@ -3,11 +3,9 @@ package com.e104.reciplay.user.auth.controller;
 import com.e104.reciplay.common.response.dto.ResponseRoot;
 import com.e104.reciplay.common.response.util.CommonResponseBuilder;
 import com.e104.reciplay.user.auth.dto.request.PasswordChangeRequest;
-import com.e104.reciplay.user.auth.dto.response.EmailHash;
 import com.e104.reciplay.user.auth.dto.request.SignupRequest;
+import com.e104.reciplay.user.auth.dto.response.EmailHash;
 import com.e104.reciplay.user.auth.exception.IllegalEmailFormatException;
-import com.e104.reciplay.user.auth.mail.service.MailService;
-import com.e104.reciplay.user.auth.redis.AuthRedisService;
 import com.e104.reciplay.user.security.exception.DuplicateUserEmailException;
 import com.e104.reciplay.user.security.exception.JWTTokenExpiredException;
 import com.e104.reciplay.user.security.service.AuthService;
@@ -20,14 +18,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Tag(name = "회원가입 컨트롤러", description = "회원가입 API 엔드포인트")
 @RestController
