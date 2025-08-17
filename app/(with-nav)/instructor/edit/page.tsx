@@ -72,7 +72,7 @@ export default function EditInstructorPage() {
         },
       );
       const { name, job, birthDate, gender, email } = data.data;
-      const genderText = gender === 0 ? "여" : "남";
+      const genderText = gender === 1 ? "여" : "남";
       const age = calculateAge(birthDate);
       setBasicProfile({
         name,

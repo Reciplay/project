@@ -123,3 +123,11 @@
     max-width: 100%; // ✅ 모바일 대응
   }
 }
+.level {
+  color: #aaaaaa;
+  display: flex;
+  font-size: 2rem;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}

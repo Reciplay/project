@@ -51,7 +51,7 @@ export default function Page() {
         <div className={styles.category}>{courseDetail.category}</div>
         <Summary courseDetail={courseDetail} />
         <Review onClickReviewButton={() => handleScrollTo(4)} />
-        <Status level={level} />
+        <Status level={level * 100} />
 
         <div className={styles.tab}>
           <ScrollTabs

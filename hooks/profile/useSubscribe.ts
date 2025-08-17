@@ -21,7 +21,7 @@ export function useSubscribe() {
         { params: { instructorId }, requireAuth: true },
       );
 
-      if (res.status === 201) {
+      if (res.status === 200) {
         message.success(res.data?.message || "강사 구독에 성공했습니다.");
         return true;
       } else {
