@@ -30,7 +30,7 @@ export default function Page() {
     tabTitles.length,
     { scrollContainerRef: mainRef },
   );
-  const { handleEnroll, handleZzim, courseDetail, message, loading } =
+  const { handleEnroll, courseDetail, message, loading } =
     useCourseInfo(courseId);
 
   const { data: level } = useGetLevel(Number(courseId));
