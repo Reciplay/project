@@ -57,17 +57,21 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
         String email = AuthenticationUtil.getSessionUsername();
         Instructor instructor = instructorQueryService.queryInstructorByEmail(email);
         Course course = courseQueryService.queryCourseById(courseId);
-
+        
+        log.debug("이미 끝난 강의인지를 검사합니다.");
         if(lecture.getIsCompleted()) {
             throw new CanNotOpenLiveRoomException("이미 지난 강의입니다.");
         }
 
+        log.debug("강의 시작 3시간 이내인지 검사합니다..");
         // 강좌 예정 개설 시간이 지났거나, 강좌 예정 개설 시간 1시간 이내에만 개설이 가능하다.
         if(lecture.getStartedAt().isBefore(LocalDateTime.now())
-                || lecture.getStartedAt().minusHours(1).isAfter(LocalDateTime.now())) {
+                || lecture.getStartedAt().minusHours(3).isAfter(LocalDateTime.now())) {
             throw new CanNotOpenLiveRoomException("개설 가능 시간이 아닙니다!");
         }
 
+
+        log.debug("강좌의 강사인지 검사합니다.");
         if(!course.getInstructorId().equals(instructor.getId())) {
             throw new CanNotOpenLiveRoomException("오직 해당 강좌의 강사만 라이브룸을 개설 가능합니다.");
         }
@@ -106,12 +110,17 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
         token.setMetadata("{\"role\": \"instructor\"}");
 
         if(!isTest) {
+            log.debug("디버그 환경이 아닙니다. 강의를 라이브중으로 변경하고 참여이력을 등록합니다.");
             Lecture lecture = lectureQueryService.queryLectureById(lectureId);
             LiveRoom liveRoom = liveRoomManagementService.openLiveRoom(lecture, roomName);
+            log.debug("조회된 강의 {}", lecture);
+            log.debug("조회된 라이브룸 {}", liveRoom);
             // 해당 강좌를 라이브 중으로 변경한다.
             courseManagementService.activateLiveState(courseId);
+            log.debug("라이브룸으로 전환에 성공했습니다.");
             // 라이브에 참여한다.
             liveParticipationManagementService.participateIn(liveRoom, AuthenticationUtil.getSessionUsername());
+            log.debug("라이브룸에 참여를 성공했습니다.");
         }
         User user = userQueryService.queryUserByEmail(AuthenticationUtil.getSessionUsername());
 
@@ -128,22 +137,27 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
     public void isParticipatable(Long lectureId, Long courseId) {
         // 학생은 이미 어떤 라이브에 참여중이거나, 해당 강좌를 수강신청하지 않았거나, 블랙리스트에 등록되었거나, 라이브중이 아니라면 참여할 수 없다.
         String email = AuthenticationUtil.getSessionUsername();
+        log.debug("참여중인 라이브가 있는지 검사함");
         if(liveParticipationQueryService.isInAnyLiveRoom(email)) {
             throw new CanNotParticipateInLiveRoomException("이미 참여중인 라이브 방송이 존재합니다.");
         }
 
         User user = userQueryService.queryUserByEmail(email);
+        log.debug("수강신청한 강좌인지 검사함");
         if(!courseHistoryQueryService.enrolled(user.getId(), courseId)) {
             throw new CanNotParticipateInLiveRoomException("수강신청 하지 않은 강좌의 라이브에 참여할 수 없습니다.");
         }
 
+        log.debug("블랙리스트에 등록되었는지 검사함");
         if(blacklistQueryService.isInBlacklistOf(user.getId(), courseId)) {
             throw new CanNotParticipateInLiveRoomException("블랙리스트로 처리된 강좌의 라이브에 참여할 수 없습니다.");
         }
 
+        log.debug("강의가 라이브 중인지 검사함");
         if(!liveRoomQueryService.isLiveLecture(lectureId)) {
             throw new CanNotParticipateInLiveRoomException("해당 강의는 현재 라이브 중이 아닙니다.");
         }
+        log.debug("검사 완료함.");
     }
 
     @Override
@@ -177,11 +191,14 @@ public class LivekitOpenServiceImpl implements LivekitOpenService{
         token.setMetadata("{\"role\": \"student\"}");
 
         if(!isTest) {
+            log.debug("테스트 환경이 아닙니다. 라이브룸 등록을 시작합니다.");
             // 참여중으로 등록해야 한다.
             LiveRoom liveRoom = liveRoomQueryService.queryLiveRoomByLectureId(lectureId);
+            log.debug("조회된 라이브룸 : {}", liveRoom);
             liveParticipationManagementService.participateIn(liveRoom, email);
         }
         User user = userQueryService.queryUserByEmail(AuthenticationUtil.getSessionUsername());
+        log.debug("라이브룸 참여가 완료되었습니다.");
         return new LivekitTokenResponse(token.toJwt(), roomName, user.getNickname(), user.getEmail(), user.getRole(), lectureId);
     }
 
