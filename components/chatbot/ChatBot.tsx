@@ -8,11 +8,12 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./chatBot.module.scss";
 
 export default function ChatBot() {
-  const { messages, addMessage } = useChatbotStore();
   const [input, setInput] = useState("");
   const socketRef = useRef<WebSocket | null>(null);
   const [email, setEmail] = useState<string | undefined>(undefined);
   const [isSttActive, setIsSttActive] = useState(false);
+
+  const { messages, addMessage, clearMessages } = useChatbotStore();
 
   const { isRecording, startRecording } = useWhisperStt({
     onFinished: (transcript) => {
@@ -114,6 +115,12 @@ export default function ChatBot() {
     };
     controlListening();
   }, [isLoaded, isListening, start, stop, isKeywordListening]);
+
+  useEffect(() => {
+    return () => {
+      clearMessages();
+    };
+  }, []);
 
   useEffect(() => {
     if (isSttActive) {
