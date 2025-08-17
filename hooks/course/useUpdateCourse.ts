@@ -1,8 +1,8 @@
 import { getErrorMessage } from "@/lib/axios/error";
 import restClient from "@/lib/axios/restClient";
 import { ApiResponse } from "@/types/apiResponse";
-import { useState } from "react";
 import dayjs from "dayjs";
+import { useState } from "react";
 
 type FileOrUrl = File | string;
 
@@ -38,7 +38,10 @@ function guessFilenameFromUrl(url: string, fallback: string): string {
   }
 }
 
-async function urlToFile(url: string, fallbackName: string): Promise<File | null> {
+async function urlToFile(
+  url: string,
+  fallbackName: string,
+): Promise<File | null> {
   try {
     const res = await fetch(url);
     if (!res.ok) {
