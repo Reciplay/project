@@ -17,11 +17,11 @@ export default function Page() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const initialQuery = searchParams.get("query") ?? "";
-
+g
   const [searchInput, setSearchInput] = useState(initialQuery);
   const debouncedSearchInput = useDebounce(searchInput, 500);
 
-  const [isEnrolledFilter, setIsEnrolledFilter] = useState(
+  const [isEnrolledFilter] = useState(
     searchParams.get("isEnrolled") === "true",
   );
 

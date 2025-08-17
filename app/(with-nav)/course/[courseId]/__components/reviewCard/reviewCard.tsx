@@ -16,7 +16,6 @@ export default function ReviewCard({
   createdAt,
   rating,
   content,
-  likeCount,
 }: ReviewCardProps) {
   return (
     <div key={id} className={styles.card}>
