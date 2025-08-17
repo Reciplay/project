@@ -159,7 +159,7 @@ public class CourseQueryServiceImpl implements CourseQueryService{
         }
         log.debug("강좌 커버 조회");
         try{
-            subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER");
+            courseCover = subFileMetadataQueryService.queryMetadataByCondition(courseId, "COURSE_COVER");
             courseCoverFileInfo = s3Service.getResponseFileInfo(courseCover);
         }catch(RuntimeException e){
             log.debug("강좌 커버이미지가 null이기 떄문에 조회할 수 없음. : {}", e.getMessage());
