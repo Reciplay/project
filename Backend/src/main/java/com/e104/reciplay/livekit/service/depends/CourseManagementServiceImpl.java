@@ -122,7 +122,7 @@ public class CourseManagementServiceImpl implements CourseManagementService{
     // 여기도 트랜잭셔널 붙여야 하는가?
     @Transactional
     void uploadImagesWithCourseId(Long courseId, MultipartFile courseCoverImage,List<MultipartFile> thumbnailImages) {
-        int thumbnailSequence = 1;
+        int thumbnailSequence =     1;
         if(courseCoverImage != null){
             log.debug("강좌 커버 이미지 업로드");
             try {

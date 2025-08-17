@@ -99,13 +99,9 @@ public class CourseApiController {
             @RequestParam Long courseId,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ){
-        boolean isOwner = false;
-        if(userDetails != null && userDetails.getUser() != null) {
-            User user = userQueryService.queryUserByEmail(userDetails.getUsername());
-            isOwner = courseQueryService.isInstructorOf(user.getId(), courseId);
-        }
 
-        if (!isOwner && Boolean.FALSE.equals(courseQueryService.queryCourseById(courseId).getIsApproved())) {
+
+        if (Boolean.FALSE.equals(courseQueryService.queryCourseById(courseId).getIsApproved())) {
             throw new RuntimeException("승인되지 않은 강좌입니다.");
         }
 
