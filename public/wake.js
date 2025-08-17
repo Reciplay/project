@@ -39,4 +39,4 @@ class WakeWordProcessor extends AudioWorkletProcessor {
   }
 }
 
-registerProcessor('wake-capture', WakeWordProcessor);
+registerProcessor("wake-capture", WakeWordProcessor);

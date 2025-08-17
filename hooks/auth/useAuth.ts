@@ -83,8 +83,8 @@ export default function useAuth() {
     try {
       const res = await restClient.post("/user/profile", data, {
         requireAuth: true,
-        useCors: true
-      })
+        useCors: true,
+      });
 
       console.log("추가 정보 제출:", data);
       if (res.status === 200) {

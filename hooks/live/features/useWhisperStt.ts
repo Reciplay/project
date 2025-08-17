@@ -66,16 +66,13 @@ export const useWhisperStt = ({ onFinished }: UseWhisperSttOptions) => {
     formData.append("model", "whisper-1");
 
     try {
-      const response = await fetch(
-        "/chatbot/whisper",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer S13P12E104-9fba4818-53ba-4f8b-92ce-fcc15166bb33`,
-          },
-          body: formData,
+      const response = await fetch("/chatbot/whisper", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer S13P12E104-9fba4818-53ba-4f8b-92ce-fcc15166bb33`,
         },
-      );
+        body: formData,
+      });
 
       if (!response.ok) {
         throw new Error(`API request failed with status ${response.status}`);

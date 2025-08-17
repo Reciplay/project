@@ -51,8 +51,7 @@ export default function VideoSection({
 
   useEffect(() => {
     if (keywordDetection !== null && isKeywordListening) {
-      const detectedLabel =
-        (keywordDetection as any)?.label ?? String(keywordDetection);
+      const detectedLabel = keywordDetection?.label ?? String(keywordDetection);
       console.log(
         `Wake word "${detectedLabel}" detected! Starting chatbot STT...`,
       );

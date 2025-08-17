@@ -30,7 +30,8 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/chatbot/whisper",
-        destination: "https://gms.ssafy.io/gmsapi/api.openai.com/v1/audio/transcriptions"
+        destination:
+          "https://gms.ssafy.io/gmsapi/api.openai.com/v1/audio/transcriptions",
       },
     ];
   },
