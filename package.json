@@ -27,6 +27,7 @@
     "@mui/icons-material": "^7.2.0",
     "@mui/material": "^7.2.0",
     "@mui/x-date-pickers": "^8.9.0",
+    "@picovoice/porcupine-react": "^3.0.3",
     "@picovoice/porcupine-web": "^3.0.3",
     "@stomp/stompjs": "^7.1.1",
     "@tabler/icons-react": "^3.34.1",

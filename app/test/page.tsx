@@ -2,12 +2,15 @@
 
 import restClient from "@/lib/axios/restClient";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function TestPage() {
   const { data: session, status, update } = useSession();
   const [apiResponse, setApiResponse] = useState("");
 
+  // Porcupine states
+  const [isListening, setIsListening] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const handleRefreshToken = async () => {
     if (!session?.refreshToken || !session?.accessToken) {
       setApiResponse("Refresh token or Access token is missing.");

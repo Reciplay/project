@@ -1,6 +1,6 @@
 "use client";
 
-import ChatBot from "@/components/chatbot/chatBot";
+import ChatBot from "@/components/chatbot/ChatBot";
 import TablerIcon from "@/components/icon/tablerIcon"; // Added TablerIcon import
 import VideoSection from "@/components/live/videoSection";
 import { useGestureRecognition } from "@/hooks/live/features/useGestureRecognition";

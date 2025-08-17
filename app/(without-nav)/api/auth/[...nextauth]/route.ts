@@ -4,7 +4,7 @@ import FormData from "form-data";
 import NextAuth, { Session, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-const BACKEND = process.env.NEXT_PUBLIC_API_BASE;
+const BACKEND = 'https://i13e104.p.ssafy.io/api/v1';
 
 // 쿠키에서 refresh-token 추출
 function pickRefreshToken(setCookie?: string[] | string) {
@@ -131,7 +131,7 @@ const handler = NextAuth({
       return session;
     },
   },
-  pages: { signIn: "/auth/login/" },
+  pages: { signIn: "api/login/" },
   secret: process.env.NEXTAUTH_SECRET,
 });
 
