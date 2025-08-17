@@ -161,9 +161,8 @@ public class LiveController {
         try {
             response = todoQueryService.queryTodoOfChapter(lectureId, sequence);
         } catch(Exception e) {
-            response = new ChapterTodoResponse("chapter-issue", 1L, "챕터 이름", 1, 2,
-                    List.of(new TodoSummary("투두 1", "TIMER", 100, 1),
-                            new TodoSummary("투두 2", "NORMAL", 0, 2)));
+            log.debug("더 이상 발행할 챕터가 없습니다.");
+            response = new ChapterTodoResponse("chapter-issue", -1L, "없는 챕터", -1, -1, List.of());
         }
         log.debug("chapter-issue 메세지 응답 {}", response);
         messagingTemplate.convertAndSend(URL_PREFIX+"/topic/room/"+message.getRoomId(), response);
