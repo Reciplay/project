@@ -6,10 +6,10 @@ import { useState } from "react";
 export default function WhisperTestPage() {
   const [isSttActive, setIsSttActive] = useState(false);
 
-  const handleSttFinished = () => {
-    setIsSttActive(false);
-    console.log("STT finished");
-  };
+  // const handleSttFinished = () => {
+  //   setIsSttActive(false);
+  //   console.log("STT finished");
+  // };
 
   const handleStartStt = () => {
     setIsSttActive(true);
@@ -21,7 +21,7 @@ export default function WhisperTestPage() {
       <button onClick={handleStartStt} disabled={isSttActive}>
         음성으로 질문하기
       </button>
-      <ChatBot isSttActive={isSttActive} onSttFinished={handleSttFinished} />
+      <ChatBot />
     </div>
   );
 }

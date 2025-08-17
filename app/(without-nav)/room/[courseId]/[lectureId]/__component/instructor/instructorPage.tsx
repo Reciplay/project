@@ -328,7 +328,7 @@ export default function InstructorPage() {
             </div>
 
             <div className={styles.chatBot}>
-              <ChatBot isSttActive={false} onSttFinished={() => {}} />
+              <ChatBot />
             </div>
           </div>
         </div>
