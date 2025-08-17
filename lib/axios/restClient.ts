@@ -202,7 +202,7 @@ restClient.interceptors.request.use(
         config.headers.set("Authorization", accessToken);
       }
     }
-    if (config.useCors === false) {
+    if (config.useCors === false || config.useCors === undefined) {
       // CORS 직접 호출
       config.baseURL = "https://i13e104.p.ssafy.io/api/v1";
     } else {
