@@ -175,7 +175,11 @@ export function extractAxiosErrorMessage(
  * Axios 인스턴스
  * ────────────────────────────── */
 const restClient = axios.create({
+<<<<<<< Updated upstream
   baseURL: "https://i13e104.p.ssafy.io/api/v1", // 배포 서버
+=======
+  baseURL: "http://localhost:8080/api/v1",
+>>>>>>> Stashed changes
   timeout: 10000,
 });
 
@@ -203,11 +207,17 @@ restClient.interceptors.request.use(
       }
     }
     if (config.useCors === false) {
+<<<<<<< Updated upstream
       // CORS 직접 호출
       config.baseURL = "https://i13e104.p.ssafy.io/api/v1";
     } else {
       // 프록시 경유 (Next.js API Route)
       config.baseURL = "/api/rest";
+=======
+      config.baseURL = "http://localhost:8080/api/v1";
+    } else {
+      config.baseURL = "http://localhost:8080/api/v1";
+>>>>>>> Stashed changes
     }
 
     logRequest(config);

@@ -28,13 +28,12 @@ export default function LectureEditForm({
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     onSave(formData);
   };
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <div className={styles.form}>
       <TextForm
         label="강의 제목"
         value={formData.title}
@@ -80,7 +79,13 @@ export default function LectureEditForm({
       </div>
 
       <div className={styles.actions}>
-        <CustomButton type="submit" title="저장" size="md" variant="primary" />
+        <CustomButton
+          type="button"
+          title="저장"
+          size="md"
+          variant="primary"
+          onClick={handleSubmit}
+        />
         <CustomButton
           type="button"
           title="취소"
@@ -89,6 +94,6 @@ export default function LectureEditForm({
           onClick={onCancel}
         />
       </div>
-    </form>
+    </div>
   );
 }
