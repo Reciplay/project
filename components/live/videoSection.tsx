@@ -10,13 +10,8 @@ import StreamVideo from "./streamVideo";
 import StreamAudio from "./streamAudio";
 import styles from "./videoSection.module.scss";
 
-import useWakeUpWordProcessor from "@/hooks/live/features/useWakeUpWordProcessor";
-import {
-  Porcupine,
-  PorcupineKeyword,
-  PorcupineModel,
-} from "@picovoice/porcupine-web";
-import { useCallback, useEffect, useState } from "react";
+import { usePorcupine } from "@picovoice/porcupine-react";
+import { useEffect, useState } from "react";
 
 interface VideoSectionProps {
   videoTrack: LocalVideoTrack | RemoteVideoTrack;
@@ -28,6 +23,7 @@ interface VideoSectionProps {
   todo?: string;
   isAudioMuted?: boolean;
   isVideoMuted?: boolean;
+  isChatbotOpen?: boolean;
 }
 
 export default function VideoSection({
@@ -39,70 +35,91 @@ export default function VideoSection({
   onWakeWordDetected,
   isAudioMuted,
   isVideoMuted,
+  isChatbotOpen,
 }: VideoSectionProps) {
-  const [porcupineHandle, setPorcupineHandle] = useState<Porcupine | null>(
-    null,
-  );
+  const [isKeywordListening, setIsKeywordListening] = useState(true);
+  const {
+    keywordDetection,
+    isLoaded,
+    isListening,
+    error,
+    init,
+    start,
+    stop,
+    release,
+  } = usePorcupine();
 
-  // porcupine이 단어를 감지하면 실행되는 콜백
-  const handleWakeWordDetected = useCallback(
-    (detection: { label: string }) => {
+  useEffect(() => {
+    if (keywordDetection !== null && isKeywordListening) {
+      const detectedLabel = keywordDetection?.label ?? String(keywordDetection);
       console.log(
-        `Wake word "${detection.label}" detected! Starting chatbot STT...`,
+        `Wake word "${detectedLabel}" detected! Starting chatbot STT...`,
       );
       onWakeWordDetected?.();
-    },
-    [onWakeWordDetected],
-  );
+      setIsKeywordListening(false);
+    }
+  }, [keywordDetection, onWakeWordDetected, isKeywordListening]);
 
-  // porcupine 초기화 로직
   useEffect(() => {
     const initPorcupine = async () => {
-      const accessKey = process.env.PICOVOICE_SECRET!;
-      const keyword: PorcupineKeyword = {
-        publicPath: "../",
-        label: "하이 레시플레이",
+      const accessKey =
+        "I3NOG+N7ncUe6ibfyJZTWLyoHb/2oKwqGpy642LiMW4qyEjsY97bXw==";
+      const keyword = {
+        publicPath: "/porcupine/model.ppn",
+        label: "하이 레시",
       };
-      const model: PorcupineModel = {
-        publicPath: "/models/porcupine_params_ko.pv",
+      const model = {
+        publicPath: "/porcupine/porcupine_params_ko.pv",
       };
 
       try {
-        const handle = await Porcupine.create(
-          accessKey,
-          keyword,
-          handleWakeWordDetected,
-          model,
-        );
-        setPorcupineHandle(handle);
-      } catch (error) {
-        // console.error("Failed to initialize Porcupine:", error);
+        await init(accessKey, keyword, model);
+        console.log("porcupine initiated...");
+      } catch (err) {
+        console.error("Failed to initialize Porcupine:", err);
       }
     };
 
     initPorcupine();
 
     return () => {
-      porcupineHandle?.release();
+      release();
     };
-  }, []);
+  }, [init, release]);
 
-  // Porcupine이 처리할 수 있는 형태로 오디오 트랙을 가공하는(리샘플링/다운사이징 등) 로직
-  const porcupineProcess = useCallback(
-    async (pcm: Int16Array) => {
-      if (!porcupineHandle) return;
-      try {
-        await porcupineHandle.process(pcm);
-      } catch (error) {
-        console.error("Error processing audio with Porcupine:", error);
+  useEffect(() => {
+    if (error) {
+      console.error("Porcupine error:", error);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (isChatbotOpen === false && !isKeywordListening) {
+      console.log("Re-enabling keyword detection as chatbot is closed.");
+      setIsKeywordListening(true);
+    }
+  }, [isChatbotOpen, isKeywordListening]);
+
+  useEffect(() => {
+    const controlListening = async () => {
+      if (isLoaded) {
+        if (isKeywordListening && !isListening) {
+          try {
+            await start();
+          } catch (err) {
+            console.error("Failed to start Porcupine:", err);
+          }
+        } else if (!isKeywordListening && isListening) {
+          try {
+            await stop();
+          } catch (err) {
+            console.error("Failed to stop Porcupine:", err);
+          }
+        }
       }
-    },
-    [porcupineHandle],
-  );
-
-  // Call useWakeUpWordProcessor unconditionally at the top level
-  // It will only start processing if audioTrack and porcupineProcess are valid
-  useWakeUpWordProcessor(audioTrack, porcupineProcess);
+    };
+    controlListening();
+  }, [isLoaded, isListening, start, stop, isKeywordListening]);
 
   return (
     <div className={`${styles.video} ${styles.localVideo}`}>
@@ -111,11 +128,11 @@ export default function VideoSection({
         participantIdentity={participantIdentity}
         onNodesDetected={onNodesDetected}
         setGesture={setGesture}
-        isMuted={isVideoMuted} // Pass isVideoMuted to StreamVideo
+        isMuted={isVideoMuted}
       />
 
       {audioTrack instanceof RemoteAudioTrack && (
-        <StreamAudio track={audioTrack} isMuted={isAudioMuted} /> // Pass isAudioMuted to StreamAudio
+        <StreamAudio track={audioTrack} isMuted={isAudioMuted} />
       )}
     </div>
   );

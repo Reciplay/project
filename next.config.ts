@@ -28,6 +28,11 @@ const nextConfig: NextConfig = {
         source: "/test/local/:path*",
         destination: "http://127.0.0.1:6080/:path*",
       },
+      {
+        source: "/chatbot/whisper",
+        destination:
+          "https://gms.ssafy.io/gmsapi/api.openai.com/v1/audio/transcriptions",
+      },
     ];
   },
 };
