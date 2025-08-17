@@ -36,13 +36,14 @@ export default function ChatBot({ isSttActive, onSttFinished }: ChatBotProps) {
 
   const session = useSession();
   useEffect(() => {
-    if (session.status) {
-      const sessionMail = session.data?.user.email!;
-      setEmail(sessionMail);
+    if (session.data?.user?.email) {
+      setEmail(session.data.user.email);
     }
   }, [session]);
 
   useEffect(() => {
+    if (!email) return;
+
     const host = "wss://i13e104.p.ssafy.io";
     const url = `${host}/chat/${encodeURIComponent(email!)}`;
 
@@ -58,7 +59,7 @@ export default function ChatBot({ isSttActive, onSttFinished }: ChatBotProps) {
     });
     socketRef.current = ws;
     return () => ws.close();
-  }, [addMessage]);
+  }, [addMessage, email]);
 
   const sendMessage = (messageToSend?: string) => {
     const message = messageToSend ?? input;

@@ -1,6 +1,6 @@
 "use client";
 
-import ChatBot from "@/components/chatbot/chatBot";
+import ChatBot from "@/components/chatbot/ChatBot";
 import { useState } from "react";
 
 export default function WhisperTestPage() {

@@ -8,6 +8,7 @@ import { useChatbotStore } from "@/stores/chatBotStore";
 export default function TestPage() {
   const { data: session, status, update } = useSession();
   const [apiResponse, setApiResponse] = useState("");
+  const store = useChatbotStore();
 
   const handleRefreshToken = async () => {
     if (!session?.refreshToken || !session?.accessToken) {
@@ -46,7 +47,6 @@ export default function TestPage() {
     return <div>Loading...</div>;
   }
 
-  const store = useChatbotStore();
   return (
     <div>
       <h1>Test Page</h1>

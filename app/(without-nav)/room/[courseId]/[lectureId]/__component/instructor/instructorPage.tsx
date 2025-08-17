@@ -1,4 +1,4 @@
-import ChatBot from "@/components/chatbot/chatBot";
+import ChatBot from "@/components/chatbot/ChatBot";
 import TablerIcon from "@/components/icon/tablerIcon";
 import VideoSection from "@/components/live/videoSection";
 import SetTimer from "@/components/timer/setTimer";
