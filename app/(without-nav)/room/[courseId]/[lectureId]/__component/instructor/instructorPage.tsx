@@ -3,7 +3,6 @@
 import ChatBot from "@/components/chatbot/chatBot";
 import TablerIcon from "@/components/icon/tablerIcon"; // Added TablerIcon import
 import VideoSection from "@/components/live/videoSection";
-import CustomModal from "@/components/modal/customModal";
 import { useGestureRecognition } from "@/hooks/live/features/useGestureRecognition";
 import { useInstructorActions } from "@/hooks/live/features/useInstructorActions";
 import { useParticipantActions } from "@/hooks/live/features/useParticipantActions";
@@ -50,7 +49,6 @@ export default function InstructorPage() {
   const [todoSequence, setTodoSequence] = useState<number | null>(null);
   const [isMicMuted, setIsMicMuted] = useState<boolean>(false);
   const [isCameraOff, setIsCameraOff] = useState<boolean>(false);
-  const [isHelpModalOpen, setIsHelpModalOpen] = useState<boolean>(false);
 
   // 3. Custom Hooks for Live Logic
   const liveSocketData = useLiveSocket(courseId, lectureId, "instructor");
@@ -144,36 +142,23 @@ export default function InstructorPage() {
   }, [parsedChapterCard, todoSequence]);
 
   const helpRequesterTrack = useMemo(() => {
-    console.log("DEBUG: helpRequesterTrack useMemo triggered.");
-    console.log("DEBUG: helpRequestInfo in useMemo:", helpRequestInfo);
-    console.log("DEBUG: remoteTracks in useMemo:", remoteTracks);
-    console.log("DEBUG: remoteTracks length in useMemo:", remoteTracks.length); // Added this log
-
     if (!helpRequestInfo) return null;
     const foundTrack = remoteTracks.find(
       (track) =>
         track.participantIdentity === helpRequestInfo.issuer &&
         track.trackPublication.videoTrack, // Ensure videoTrack exists
     );
-    console.log("DEBUG: foundTrack in useMemo:", foundTrack);
     return foundTrack;
   }, [helpRequestInfo, remoteTracks]);
   //!태욱 챕터만 의존성 가지기 위해 수정
   // }, [liveSocketData.chapter]);
 
-  // 5. Effects
   useEffect(() => {
     if (session) {
       setRole(session.role ?? null);
       setUserId(session.user?.id ?? "");
     }
   }, [session]);
-
-  useEffect(() => {
-    if (helpRequestInfo) {
-      setIsHelpModalOpen(true);
-    }
-  }, [helpRequestInfo]);
 
   useEffect(() => {
     if (role) {
@@ -200,11 +185,11 @@ export default function InstructorPage() {
   }, [chapter, todoSequence]);
 
   useEffect(() => {
-    if (recognizedPose === "Crossed Arm" && isHelpModalOpen) {
-      console.log("Crossed Arms gesture detected. Closing help modal.");
-      setIsHelpModalOpen(false);
+    if (recognizedPose === "Crossed Arm") {
+      console.log("DEBUG: Crossed Arm detected. Clearing help request.");
+      clearHelpRequest();
     }
-  }, [recognizedPose, isHelpModalOpen]);
+  }, [recognizedPose, clearHelpRequest]);
 
   // 6. Render
   console.log("[InstructorPage DEBUG]", {
@@ -216,60 +201,6 @@ export default function InstructorPage() {
 
   return (
     <>
-      {helpRequestInfo && helpRequesterTrack && (
-        <CustomModal
-          isOpen={isHelpModalOpen}
-          onClose={() => setIsHelpModalOpen(false)}
-          // title={`${helpRequestInfo.nickname}님의 도움 요청`}
-        >
-          {/* Render the specific help requester's video */}
-          {(() => {
-            const video = helpRequesterTrack.trackPublication.videoTrack;
-            const audio = helpRequesterTrack.trackPublication.audioTrack;
-            console.log("DEBUG: Video track in modal:", video); // Add this
-            console.log("DEBUG: Audio track in modal:", audio); // Add this
-            const participantEmail = helpRequesterTrack.participantIdentity;
-
-            const status = participantMuteStatus.get(participantEmail);
-            const isAudioMuted =
-              status?.audio !== undefined
-                ? !status.audio
-                : (audio?.isMuted ?? false);
-            const isVideoMuted =
-              status?.video !== undefined
-                ? !status.video
-                : (video?.isMuted ?? false);
-
-            if (!video) return null;
-
-            return (
-              <div
-                key={helpRequesterTrack.trackPublication.trackSid}
-                className={styles.videoTile} // You might want a different style for the modal video
-              >
-                <VideoSection
-                  videoTrack={video}
-                  audioTrack={audio}
-                  participantIdentity={helpRequesterTrack.participantIdentity}
-                  isAudioMuted={isAudioMuted}
-                  isVideoMuted={isVideoMuted}
-                />
-                <div className={styles.identityOverlay}>
-                  <p>{helpRequesterTrack.participantIdentity}</p>
-                </div>
-                <div className={styles.muteIndicators}>
-                  {isAudioMuted && (
-                    <TablerIcon name="MicrophoneOff" size={24} color="white" />
-                  )}
-                  {isVideoMuted && (
-                    <TablerIcon name="VideoOff" size={24} color="white" />
-                  )}
-                </div>
-              </div>
-            );
-          })()}
-        </CustomModal>
-      )}
       <div className={styles.container}>
         <div className={styles.main}>
           <div className={styles.videoGrid}>
@@ -278,6 +209,10 @@ export default function InstructorPage() {
                 "DEBUG: Rendering remoteTrack for participant:",
                 remoteTrack.participantIdentity,
               );
+              const isQuestioner =
+                helpRequestInfo &&
+                remoteTrack.participantIdentity === helpRequestInfo.issuer;
+
               const video = remoteTrack.trackPublication.videoTrack;
               const audio = remoteTrack.trackPublication.audioTrack;
               const participantEmail = remoteTrack.participantIdentity; // Assuming participantIdentity is the email
@@ -299,10 +234,12 @@ export default function InstructorPage() {
 
               if (!video) return null;
 
+              console.log(isQuestioner);
+
               return (
                 <div
                   key={remoteTrack.trackPublication.trackSid}
-                  className={styles.videoTile}
+                  className={`${styles.videoTile} ${isQuestioner ? styles.questionerBorder : ""}`}
                 >
                   <VideoSection
                     videoTrack={video}

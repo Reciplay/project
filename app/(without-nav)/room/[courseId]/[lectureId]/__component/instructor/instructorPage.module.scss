@@ -50,7 +50,7 @@
 
 .videoTile {
   background-color: #353535;
-  border-radius: 8px;
+  border-radius: 12px; /* Changed from 8px to 12px */
   overflow: hidden;
   position: relative;
   width: 100%;
@@ -61,7 +61,7 @@
   position: relative;
 
   // aspect-ratio: 16 / 9; /* ✅ 비율 유지 */
-  border-radius: 8px;
+  border-radius: 12px; /* Changed from 8px to 12px */
   overflow: hidden;
 }
 
@@ -119,34 +119,9 @@
   border-radius: 12px;
   padding: 20px;
   background: #393939; /* 다크 배경 */
-  border: 3px solid transparent;
+  border: 2px solid white;
   z-index: 0;
   color: white;
-
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 12px;
-    padding: 3px; /* border 두께 */
-    background: linear-gradient(
-      90deg,
-      #ff4dff,
-      #8b5cf6,
-      #22d3ee,
-      #34d399,
-      #fde047,
-      #ff4dff
-    );
-    background-size: 300% 100%;
-    -webkit-mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    animation: rainbowFlow 6s linear infinite;
-    z-index: -1;
-  }
 
   h2 {
     font-size: 18px;
@@ -169,22 +144,35 @@
   }
 }
 
-@keyframes rainbowFlow {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 100% 50%;
+.questionerBorder {
+  padding: 10px;
+  border-radius: 12px;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    padding: 10px; /* border 두께 */
+    background: linear-gradient(
+      90deg,
+      #ff4dff,
+      #8b5cf6,
+      #22d3ee,
+      #34d399,
+      #fde047,
+      #ff4dff
+    );
+    background-size: 300% 100%;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: rainbowFlow 6s linear infinite;
+    /* z-index: -1; Removed */
   }
 }
-@keyframes rainbowFlow {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 100% 50%;
-  }
-}
+
 @keyframes rainbowFlow {
   0% {
     background-position: 0% 50%;
