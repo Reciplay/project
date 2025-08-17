@@ -1,24 +1,23 @@
 "use client";
 
 import ChatBot from "@/components/chatbot/ChatBot";
+import TablerIcon from "@/components/icon/tablerIcon"; // Added TablerIcon import
 import VideoSection from "@/components/live/videoSection";
-import SetTimer from "@/components/timer/setTimer";
 import { useGestureRecognition } from "@/hooks/live/features/useGestureRecognition";
+import { useInstructorActions } from "@/hooks/live/features/useInstructorActions";
 import { useParticipantActions } from "@/hooks/live/features/useParticipantActions";
-import { useStudentActions } from "@/hooks/live/features/useStudentActions";
+
+import SetTimer from "@/components/timer/setTimer";
 import useLivekitConnection from "@/hooks/live/useLivekitConnection";
-import useLiveSocket, { SendIssueArgs } from "@/hooks/live/useLiveSocket";
-import { Track } from "livekit-client";
+import useLiveSocket from "@/hooks/live/useLiveSocket";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Header from "../common/header/header";
 import type { ChapterCard } from "../common/todoList/todoListCard";
 import TodoListCard from "../common/todoList/todoListCard";
-import { TodosResponse } from "../instructor/instructorPage";
-import styles from "./studentPage.module.scss";
-
-// Type Definitions
+import styles from "./instructorPage.module.scss";
+// Type Definitions (Assuming these are shared or defined elsewhere)
 export type ChapterTodoResponse = {
   type?: "chapter-issue";
   chapterId: number;
@@ -28,11 +27,17 @@ export type ChapterTodoResponse = {
   todos: TodosResponse[];
 };
 
+export type TodosResponse = {
+  title: string;
+  type: "NORMAL" | "TIMER";
+  seconds: number | null;
+  sequence: number;
+};
+
 // Component
-export default function StudentPage() {
+export default function InstructorPage() {
   // 1. Library Hooks
   const { data: session } = useSession();
-  console.log("Session user name:", session?.user?.name);
   const params = useParams();
   const courseId = params.courseId as string;
   const lectureId = params.lectureId as string;
@@ -40,23 +45,18 @@ export default function StudentPage() {
   // 2. State and Refs
   const [role, setRole] = useState<string | null>(null);
   const [userId, setUserId] = useState("");
-
-  const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false); // Modified
+  const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
   const [todoSequence, setTodoSequence] = useState<number | null>(null);
-
   const [isMicMuted, setIsMicMuted] = useState<boolean>(false);
   const [isCameraOff, setIsCameraOff] = useState<boolean>(false);
 
-  const [isSttActive, setIsSttActive] = useState(false); // STT 활성화 상태 추가
-
   // 3. Custom Hooks for Live Logic
-  const liveSocketData = useLiveSocket(courseId, lectureId, "student");
+  const liveSocketData = useLiveSocket(courseId, lectureId, "instructor");
 
   //!태욱 챕터만 의존성 가지기 위해 수정
-  const { chapter, stompClient, roomInfo, roomId, sendTodoCheck } =
-    liveSocketData; // Destructure stompClient, roomInfo, roomId, sendTodoCheck
+  const { chapter, participantMuteStatus } = liveSocketData; // Added participantMuteStatus
 
-  const { joinRoom, leaveRoom, localTrack, localAudioTrack, remoteTracks } =
+  const { joinRoom, leaveRoom, localTrack, remoteTracks } =
     useLivekitConnection();
   const {
     handGesture,
@@ -65,18 +65,17 @@ export default function StudentPage() {
     handleNodesDetected,
   } = useGestureRecognition();
 
-  useStudentActions({
+  const { handleTimerCompletion } = useInstructorActions({
     recognizedPose,
     handGesture,
     isTimerRunning,
+    setIsTimerRunning,
     todoSequence,
     setTodoSequence,
     liveSocketData,
     lectureId,
-    sessionUserName: session?.user?.name || undefined, // Pass session.user.name
   });
 
-  // New: Call useParticipantActions hook
   const { muteAudio, unMuteAudio, muteVideo, unMuteVideo } =
     useParticipantActions({
       roomId: liveSocketData.roomId,
@@ -101,47 +100,6 @@ export default function StudentPage() {
     }
     setIsCameraOff(!isCameraOff);
   }, [isCameraOff, muteVideo, unMuteVideo]);
-  const handleTimerCompletion = useCallback(() => {
-    // Added handleTimerCompletion
-    if (
-      stompClient &&
-      roomInfo?.email &&
-      roomId &&
-      chapter?.todos &&
-      todoSequence !== null
-    ) {
-      const sendData: SendIssueArgs = {
-        issuer: roomInfo.email,
-        chapter: chapter.chapterSequence,
-        todoSequence: todoSequence,
-        lectureId: lectureId,
-        roomId: roomId,
-      };
-      sendTodoCheck(stompClient, sendData);
-
-      const currentTodoIndex = chapter.todos.findIndex(
-        (todo) => todo.sequence === todoSequence,
-      );
-      if (
-        currentTodoIndex > -1 &&
-        currentTodoIndex < chapter.todos.length - 1
-      ) {
-        const nextTodoSequence = chapter.todos[currentTodoIndex + 1]!.sequence;
-        setTodoSequence(nextTodoSequence);
-      } else {
-        console.log("All todos for this chapter are complete.");
-      }
-    }
-  }, [
-    stompClient,
-    roomInfo,
-    roomId,
-    chapter,
-    todoSequence,
-    lectureId,
-    sendTodoCheck,
-    setTodoSequence,
-  ]);
 
   // 4. Memoized Values
   const parsedChapterCard = useMemo<ChapterCard | undefined>(() => {
@@ -149,7 +107,6 @@ export default function StudentPage() {
     if (!chapter || typeof chapter !== "object" || !("chapterId" in chapter)) {
       return undefined;
     }
-    setTodoSequence(1);
     const data = chapter as ChapterTodoResponse;
     return {
       chapterId: data.chapterId,
@@ -164,27 +121,8 @@ export default function StudentPage() {
       })),
     };
   }, [chapter]);
-  //!태욱 챕터만 의존성 가지기 위해 수정
-  // }, [liveSocketData.chapter]);
-
-  const instructorTrack = useMemo(() => {
-    console.log("Debugging instructorTrack:");
-    console.log(
-      "liveSocketData.instructorEmail:",
-      liveSocketData.instructorEmail,
-    );
-    console.log("remoteTracks:", remoteTracks);
-    const foundTrack = remoteTracks.find(
-      (track) =>
-        track.participantIdentity === liveSocketData.instructorEmail &&
-        track.trackPublication.source === Track.Source.Camera,
-    );
-    console.log("foundTrack:", foundTrack);
-    return foundTrack;
-  }, [remoteTracks, liveSocketData.instructorEmail]);
 
   const timerTodo = useMemo(() => {
-    // Added timerTodo
     if (parsedChapterCard && todoSequence !== null) {
       return parsedChapterCard.todos.find(
         (todo) => todo.sequence === todoSequence && todo.type === "TIMER",
@@ -194,7 +132,6 @@ export default function StudentPage() {
   }, [parsedChapterCard, todoSequence]);
 
   const currentTodo = useMemo(() => {
-    // Added currentTodo
     if (parsedChapterCard && todoSequence !== null) {
       return parsedChapterCard.todos.find(
         (todo) => todo.sequence === todoSequence,
@@ -202,6 +139,8 @@ export default function StudentPage() {
     }
     return undefined;
   }, [parsedChapterCard, todoSequence]);
+  //!태욱 챕터만 의존성 가지기 위해 수정
+  // }, [liveSocketData.chapter]);
 
   // 5. Effects
   useEffect(() => {
@@ -220,35 +159,86 @@ export default function StudentPage() {
     };
   }, [courseId, lectureId, role, joinRoom, leaveRoom]);
 
+  useEffect(() => {
+    // 챕터 데이터가 로드되고, 시퀀스가 아직 설정되지 않았을 때
+    // 첫 번째 투두의 시퀀스로 초기화합니다.
+    if (
+      chapter &&
+      chapter.todos &&
+      chapter.todos.length > 0 &&
+      todoSequence === null
+    ) {
+      setTodoSequence(chapter.todos[0]!.sequence);
+    }
+  }, [chapter, todoSequence]);
+
   // 6. Render
+  console.log("[InstructorPage DEBUG]", {
+    todoSequence,
+    isTimerRunning,
+    timerTodo,
+    chapterTodos: parsedChapterCard?.todos,
+  });
+
   return (
     <div className={styles.container}>
       <div className={styles.main}>
         <div className={styles.videoGrid}>
-          <div className={styles.videoTile}>
-            {instructorTrack?.trackPublication?.videoTrack != null ? (
-              <VideoSection
-                videoTrack={instructorTrack.trackPublication.videoTrack}
-                audioTrack={instructorTrack.trackPublication.audioTrack}
-                participantIdentity={instructorTrack.participantIdentity}
-              />
-            ) : (
-              <div className={styles.placeholder}>
-                <p>강사 화면을 기다리고 있습니다...</p>
+          {remoteTracks.map((remoteTrack) => {
+            const video = remoteTrack.trackPublication.videoTrack;
+            const audio = remoteTrack.trackPublication.audioTrack;
+            const participantEmail = remoteTrack.participantIdentity; // Assuming participantIdentity is the email
+
+            const status = participantMuteStatus.get(participantEmail);
+            const isAudioMuted =
+              status?.audio !== undefined
+                ? !status.audio
+                : (audio?.isMuted ?? false);
+
+            console.log(status?.video);
+            // console.log(!status.video);
+            const isVideoMuted =
+              status?.video !== undefined
+                ? !status.video
+                : (video?.isMuted ?? false);
+
+            if (!video) return null;
+
+            return (
+              <div
+                key={remoteTrack.trackPublication.trackSid}
+                className={styles.videoTile}
+              >
+                <VideoSection
+                  videoTrack={video}
+                  audioTrack={audio}
+                  participantIdentity={remoteTrack.participantIdentity}
+                  isAudioMuted={isAudioMuted}
+                  isVideoMuted={isVideoMuted}
+                />
+                <div className={styles.identityOverlay}>
+                  <p>{remoteTrack.participantIdentity}</p>
+                </div>
+                <div className={styles.muteIndicators}>
+                  {isAudioMuted && (
+                    <TablerIcon name="MicrophoneOff" size={24} color="white" />
+                  )}
+                  {isVideoMuted && (
+                    <TablerIcon name="VideoOff" size={24} color="white" />
+                  )}
+                </div>
               </div>
-            )}
-          </div>
+            );
+          })}
         </div>
         <div className={styles.localVideoOverlay}>
           {localTrack ? (
             <VideoSection
               videoTrack={localTrack}
-              audioTrack={localAudioTrack}
               participantIdentity={userId}
               onNodesDetected={handleNodesDetected}
               setGesture={handleHandGesture}
-              onWakeWordDetected={() => setIsSttActive(true)}
-              isChatbotOpen={isSttActive}
+              isVideoMuted={isCameraOff} // Pass isCameraOff for local video
             />
           ) : (
             <div className={styles.placeholder}>
@@ -261,26 +251,26 @@ export default function StudentPage() {
           <div className={styles.currentTodoSection}>
             <div className={styles.headerRow}>
               <h2>지금 해야 할 일</h2>
-              {currentTodo ? ( // Modified conditional rendering
-                <p>{currentTodo.title}</p>
-              ) : (
-                <p>강사님을 기다려 주세요</p>
+              {currentTodo?.type === "TIMER" && timerTodo && (
+                <div className={styles.timer}>
+                  <SetTimer
+                    minutes={Math.floor((timerTodo.seconds ?? 0) / 60)}
+                    seconds={(timerTodo.seconds ?? 0) % 60}
+                    isRunning={isTimerRunning}
+                    onFinish={() => {
+                      setIsTimerRunning(false);
+                      handleTimerCompletion();
+                    }}
+                  />
+                </div>
               )}
-              {currentTodo?.type === "TIMER" &&
-                timerTodo && ( // Modified conditional rendering
-                  <div className={styles.timer}>
-                    <SetTimer
-                      minutes={Math.floor((timerTodo.seconds ?? 0) / 60)}
-                      seconds={(timerTodo.seconds ?? 0) % 60}
-                      isRunning={isTimerRunning}
-                      onFinish={() => {
-                        setIsTimerRunning(false);
-                        handleTimerCompletion();
-                      }}
-                    />
-                  </div>
-                )}
             </div>
+
+            {currentTodo ? (
+              <p>{currentTodo.title}</p>
+            ) : (
+              <p>강사님을 기다려 주세요</p>
+            )}
           </div>
 
           <div className={styles.checklistSection}>
@@ -291,10 +281,7 @@ export default function StudentPage() {
           </div>
 
           <div className={styles.chatBot}>
-            <ChatBot
-              isSttActive={isSttActive}
-              onSttFinished={() => setIsSttActive(false)}
-            />
+            <ChatBot isSttActive={false} onSttFinished={() => {}} />
           </div>
         </div>
       </div>

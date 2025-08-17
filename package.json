@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "format": "prettier --write src/"
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
@@ -27,6 +28,7 @@
     "@mui/icons-material": "^7.2.0",
     "@mui/material": "^7.2.0",
     "@mui/x-date-pickers": "^8.9.0",
+    "@picovoice/porcupine-react": "^3.0.3",
     "@picovoice/porcupine-web": "^3.0.3",
     "@stomp/stompjs": "^7.1.1",
     "@tabler/icons-react": "^3.34.1",
@@ -68,6 +70,9 @@
     "victory": "^37.3.6",
     "zod": "^4.0.17",
     "zustand": "^5.0.6"
+  },
+  "prettier": {
+    "endOfLine": "lf"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

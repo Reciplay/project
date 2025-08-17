@@ -8,6 +8,20 @@ export const useWhisperStt = ({ onFinished }: UseWhisperSttOptions) => {
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const stopTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const stopRecording = () => {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state === "recording"
+    ) {
+      mediaRecorderRef.current.stop();
+    }
+    if (stopTimeoutRef.current) {
+      clearTimeout(stopTimeoutRef.current);
+      stopTimeoutRef.current = null;
+    }
+  };
 
   const startRecording = async () => {
     if (isRecording) return;
@@ -38,39 +52,27 @@ export const useWhisperStt = ({ onFinished }: UseWhisperSttOptions) => {
       mediaRecorder.start();
       setIsRecording(true);
 
-      // 5초 후 자동으로 녹음 중지 (필요에 따라 조절 가능)
-      setTimeout(stopRecording, 5000);
+      // 3초 후 자동으로 녹음 중지
+      stopTimeoutRef.current = setTimeout(stopRecording, 3000);
     } catch (error) {
       console.error("Error accessing microphone:", error);
       setIsRecording(false);
     }
   };
 
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-    }
-  };
-
   const sendToWhisper = async (audioBlob: Blob) => {
     const formData = new FormData();
-    // API 명세에 따라 'file'이라는 키로 오디오 파일 추가
     formData.append("file", audioBlob, "recording.webm");
-    // 'model' 필드 추가
     formData.append("model", "whisper-1");
 
     try {
-      const response = await fetch(
-        "https://gms.ssafy.io/gmsapi/api.openai.com/v1/audio/transcriptions",
-        {
-          method: "POST",
-          headers: {
-            // GMS_KEY는 환경 변수 등으로 안전하게 관리해야 합니다.
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_GMS_KEY}`,
-          },
-          body: formData,
+      const response = await fetch("/chatbot/whisper", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer S13P12E104-9fba4818-53ba-4f8b-92ce-fcc15166bb33`,
         },
-      );
+        body: formData,
+      });
 
       if (!response.ok) {
         throw new Error(`API request failed with status ${response.status}`);
@@ -85,5 +87,5 @@ export const useWhisperStt = ({ onFinished }: UseWhisperSttOptions) => {
     }
   };
 
-  return { isRecording, startRecording, stopRecording };
+  return { isRecording, startRecording };
 };
