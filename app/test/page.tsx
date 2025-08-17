@@ -3,6 +3,7 @@
 import restClient from "@/lib/axios/restClient";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
+import { useChatbotStore } from "@/stores/chatBotStore";
 
 export default function TestPage() {
   const { data: session, status, update } = useSession();
@@ -45,12 +46,10 @@ export default function TestPage() {
     return <div>Loading...</div>;
   }
 
+  const store = useChatbotStore();
   return (
     <div>
       <h1>Test Page</h1>
-
-      {/* <ChatBot /> */}
-
       <hr />
 
       <p>Current Session:</p>
@@ -62,6 +61,8 @@ export default function TestPage() {
           <pre>{apiResponse}</pre>
         </div>
       )}
+      <hr />
+      <button onClick={store.clearMessages}>챗봇 대화 내역 삭제</button>
     </div>
   );
 }

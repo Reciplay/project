@@ -4,6 +4,7 @@ import { useWhisperStt } from "@/hooks/live/features/useWhisperStt";
 import { useChatbotStore } from "@/stores/chatBotStore";
 import { useEffect, useRef, useState } from "react";
 import styles from "./chatBot.module.scss";
+import { useSession } from "next-auth/react";
 
 interface ChatBotProps {
   isSttActive: boolean;
@@ -14,6 +15,7 @@ export default function ChatBot({ isSttActive, onSttFinished }: ChatBotProps) {
   const { messages, addMessage } = useChatbotStore();
   const [input, setInput] = useState("");
   const socketRef = useRef<WebSocket | null>(null);
+  const [email, setEmail] = useState<string | undefined>(undefined);
 
   const { isRecording, startRecording } = useWhisperStt({
     onFinished: (transcript) => {
@@ -32,10 +34,17 @@ export default function ChatBot({ isSttActive, onSttFinished }: ChatBotProps) {
     }
   }, [isSttActive, startRecording]);
 
+  const session = useSession();
+  useEffect(() => {
+    if (session.status) {
+      const sessionMail = session.data?.user.email!;
+      setEmail(sessionMail);
+    }
+  }, [session]);
+
   useEffect(() => {
     const host = "wss://i13e104.p.ssafy.io";
-    const email = "test@mail.com";
-    const url = `${host}/chat/${encodeURIComponent(email)}`;
+    const url = `${host}/chat/${encodeURIComponent(email!)}`;
 
     const ws = new WebSocket(url);
 
