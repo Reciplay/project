@@ -47,7 +47,7 @@ export default function StudentPage() {
   const [isMicMuted, setIsMicMuted] = useState<boolean>(false);
   const [isCameraOff, setIsCameraOff] = useState<boolean>(false);
 
-  const [isSttActive, setIsSttActive] = useState(false); // STT 활성화 상태 추가
+  // const [isSttActive, setIsSttActive] = useState(false); // STT 활성화 상태 추가
 
   // 3. Custom Hooks for Live Logic
   const liveSocketData = useLiveSocket(courseId, lectureId, "student");
@@ -248,8 +248,8 @@ export default function StudentPage() {
               participantIdentity={userId}
               onNodesDetected={handleNodesDetected}
               setGesture={handleHandGesture}
-              onWakeWordDetected={() => setIsSttActive(true)}
-              isChatbotOpen={isSttActive}
+              // onWakeWordDetected={() => setIsSttActive(true)}
+              // isChatbotOpen={isSttActive}
             />
           ) : (
             <div className={styles.placeholder}>
@@ -292,10 +292,10 @@ export default function StudentPage() {
           </div>
 
           <div className={styles.chatBot}>
-            <ChatBot
-              isSttActive={isSttActive}
+            <ChatBot />
+            {/* isSttActive={isSttActive}
               onSttFinished={() => setIsSttActive(false)}
-            />
+            /> */}
           </div>
         </div>
       </div>

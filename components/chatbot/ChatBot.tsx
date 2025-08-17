@@ -2,24 +2,21 @@
 
 import { useWhisperStt } from "@/hooks/live/features/useWhisperStt";
 import { useChatbotStore } from "@/stores/chatBotStore";
+import { usePorcupine } from "@picovoice/porcupine-react";
+import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import styles from "./chatBot.module.scss";
-import { useSession } from "next-auth/react";
 
-interface ChatBotProps {
-  isSttActive: boolean;
-  onSttFinished: () => void;
-}
-
-export default function ChatBot({ isSttActive, onSttFinished }: ChatBotProps) {
+export default function ChatBot() {
   const { messages, addMessage } = useChatbotStore();
   const [input, setInput] = useState("");
   const socketRef = useRef<WebSocket | null>(null);
   const [email, setEmail] = useState<string | undefined>(undefined);
+  const [isSttActive, setIsSttActive] = useState(false);
 
   const { isRecording, startRecording } = useWhisperStt({
     onFinished: (transcript) => {
-      onSttFinished(); // STT 프로세스 종료 알림
+      setIsSttActive(false); // STT 프로세스 종료 알림
       if (transcript) {
         setInput(transcript); // 인식된 텍스트를 입력창에 표시
         sendMessage(transcript); // 메시지 즉시 전송
@@ -27,12 +24,103 @@ export default function ChatBot({ isSttActive, onSttFinished }: ChatBotProps) {
     },
   });
 
+  const [isKeywordListening, setIsKeywordListening] = useState(true);
+  const {
+    keywordDetection,
+    isLoaded,
+    isListening,
+    error,
+    init,
+    start,
+    stop,
+    release,
+  } = usePorcupine();
+
+  const processedKeywordDetectionRef = useRef(keywordDetection);
+
+  useEffect(() => {
+    if (
+      keywordDetection !== null &&
+      keywordDetection !== processedKeywordDetectionRef.current &&
+      isKeywordListening
+    ) {
+      processedKeywordDetectionRef.current = keywordDetection;
+      const detectedLabel = keywordDetection?.label ?? String(keywordDetection);
+      console.log(
+        `Wake word "${detectedLabel}" detected! Starting chatbot STT...`,
+      );
+      setIsSttActive(true);
+      setIsKeywordListening(false);
+    }
+  }, [keywordDetection, isKeywordListening]);
+
+  useEffect(() => {
+    const initPorcupine = async () => {
+      const accessKey =
+        "I3NOG+N7ncUe6ibfyJZTWLyoHb/2oKwqGpy642LiMW4qyEjsY97bXw==";
+      const keyword = {
+        publicPath: "/porcupine/model.ppn",
+        label: "하이 레시",
+      };
+      const model = {
+        publicPath: "/porcupine/porcupine_params_ko.pv",
+      };
+
+      try {
+        await init(accessKey, keyword, model);
+        console.log("porcupine initiated...");
+      } catch (err) {
+        console.error("Failed to initialize Porcupine:", err);
+      }
+    };
+
+    initPorcupine();
+
+    return () => {
+      release();
+    };
+  }, [init, release]);
+
+  useEffect(() => {
+    if (error) {
+      console.error("Porcupine error:", error);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (isSttActive === false && !isKeywordListening) {
+      console.log("Re-enabling keyword detection as chatbot is closed.");
+      setIsKeywordListening(true);
+    }
+  }, [isSttActive, isKeywordListening]);
+
+  useEffect(() => {
+    const controlListening = async () => {
+      if (isLoaded) {
+        if (isKeywordListening && !isListening) {
+          try {
+            await start();
+          } catch (err) {
+            console.error("Failed to start Porcupine:", err);
+          }
+        } else if (!isKeywordListening && isListening) {
+          try {
+            await stop();
+          } catch (err) {
+            console.error("Failed to stop Porcupine:", err);
+          }
+        }
+      }
+    };
+    controlListening();
+  }, [isLoaded, isListening, start, stop, isKeywordListening]);
+
   useEffect(() => {
     if (isSttActive) {
       setInput("");
       startRecording();
     }
-  }, [isSttActive, startRecording]);
+  }, [isSttActive]);
 
   const session = useSession();
   useEffect(() => {
@@ -70,6 +158,10 @@ export default function ChatBot({ isSttActive, onSttFinished }: ChatBotProps) {
       setInput("");
     }
   };
+
+  useEffect(() => {
+    console.log(isSttActive);
+  }, [isSttActive]);
 
   return (
     <div className={styles.chatbot}>
