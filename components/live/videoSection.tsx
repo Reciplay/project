@@ -11,7 +11,7 @@ import StreamAudio from "./streamAudio";
 import styles from "./videoSection.module.scss";
 
 import { usePorcupine } from "@picovoice/porcupine-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface VideoSectionProps {
   videoTrack: LocalVideoTrack | RemoteVideoTrack;
@@ -23,6 +23,7 @@ interface VideoSectionProps {
   todo?: string;
   isAudioMuted?: boolean;
   isVideoMuted?: boolean;
+  isChatbotOpen?: boolean;
 }
 
 export default function VideoSection({
@@ -34,7 +35,9 @@ export default function VideoSection({
   onWakeWordDetected,
   isAudioMuted,
   isVideoMuted,
+  isChatbotOpen,
 }: VideoSectionProps) {
+  const [isKeywordListening, setIsKeywordListening] = useState(true);
   const {
     keywordDetection,
     isLoaded,
@@ -42,19 +45,21 @@ export default function VideoSection({
     error,
     init,
     start,
+    stop,
     release,
   } = usePorcupine();
 
   useEffect(() => {
-    if (keywordDetection !== null) {
+    if (keywordDetection !== null && isKeywordListening) {
       const detectedLabel =
         (keywordDetection as any)?.label ?? String(keywordDetection);
       console.log(
         `Wake word "${detectedLabel}" detected! Starting chatbot STT...`,
       );
       onWakeWordDetected?.();
+      setIsKeywordListening(false);
     }
-  }, [keywordDetection, onWakeWordDetected]);
+  }, [keywordDetection, onWakeWordDetected, isKeywordListening]);
 
   useEffect(() => {
     const initPorcupine = async () => {
@@ -90,17 +95,32 @@ export default function VideoSection({
   }, [error]);
 
   useEffect(() => {
-    const startListening = async () => {
-      if (isLoaded && !isListening) {
-        try {
-          await start();
-        } catch (err) {
-          console.error("Failed to start Porcupine:", err);
+    if (isChatbotOpen === false && !isKeywordListening) {
+      console.log("Re-enabling keyword detection as chatbot is closed.");
+      setIsKeywordListening(true);
+    }
+  }, [isChatbotOpen, isKeywordListening]);
+
+  useEffect(() => {
+    const controlListening = async () => {
+      if (isLoaded) {
+        if (isKeywordListening && !isListening) {
+          try {
+            await start();
+          } catch (err) {
+            console.error("Failed to start Porcupine:", err);
+          }
+        } else if (!isKeywordListening && isListening) {
+          try {
+            await stop();
+          } catch (err) {
+            console.error("Failed to stop Porcupine:", err);
+          }
         }
       }
     };
-    startListening();
-  }, [isLoaded, isListening, start]);
+    controlListening();
+  }, [isLoaded, isListening, start, stop, isKeywordListening]);
 
   return (
     <div className={`${styles.video} ${styles.localVideo}`}>

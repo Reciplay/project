@@ -247,6 +247,7 @@ export default function StudentPage() {
               onNodesDetected={handleNodesDetected}
               setGesture={handleHandGesture}
               onWakeWordDetected={() => setIsSttActive(true)}
+              isChatbotOpen={isSttActive}
             />
           ) : (
             <div className={styles.placeholder}>
