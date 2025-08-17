@@ -47,7 +47,8 @@ public class CustomCourseRepositoryImpl implements CustomCourseRepository{
                         course.instructorId.eq(instructorId),
                         // QueryDSL between은 양끝 포함(inclusive)입니다.
                         course.enrollmentStartDate.loe(now),
-                        course.enrollmentEndDate.goe(now)
+                        course.enrollmentEndDate.goe(now),
+                        course.isApproved.eq(true)
                 )
                 .fetch();
     }
@@ -62,7 +63,8 @@ public class CustomCourseRepositoryImpl implements CustomCourseRepository{
                 .where(
                         course.instructorId.eq(instructorId),
                         course.courseStartDate.loe(today),
-                        course.courseEndDate.goe(today)
+                        course.courseEndDate.goe(today),
+                        course.isApproved.eq(true)
                 )
                 .fetch();
     }
@@ -76,7 +78,8 @@ public class CustomCourseRepositoryImpl implements CustomCourseRepository{
                 .selectFrom(course)
                 .where(
                         course.instructorId.eq(instructorId),
-                        course.courseEndDate.lt(today)
+                        course.courseEndDate.lt(today),
+                        course.isApproved.eq(true)
                 )
                 .fetch();
     }
