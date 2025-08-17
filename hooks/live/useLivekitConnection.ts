@@ -78,10 +78,10 @@ export default function useLivekitConnection() {
           );
 
           // 오디오 트랙이면 곧바로 attach
-          if (track.kind === 'audio') {
-            const el = track.attach();       // <audio> 생성/반환
+          if (track.kind === "audio") {
+            const el = track.attach() as HTMLAudioElement; // <audio> 생성/반환
             el.autoplay = true;
-            el.playsInline = true;
+            // el.playsInline = true;
             el.muted = false;
             document.body.appendChild(el);
           }
@@ -100,7 +100,7 @@ export default function useLivekitConnection() {
         RoomEvent.TrackUnsubscribed,
         (track: RemoteTrack, publication: RemoteTrackPublication) => {
           // detach 시에는 엘리먼트도 제거
-          track.detach().forEach(el => el.remove());
+          track.detach().forEach((el) => el.remove());
           setRemoteTracks((prev) =>
             prev.filter(
               (t) => t.trackPublication.trackSid !== publication.trackSid,
@@ -120,8 +120,10 @@ export default function useLivekitConnection() {
         // 사용자 제스처 안의 흐름에서 실행되도록 보장
         try {
           await newRoom.startAudio();
-        } catch (e) {
-          console.warn('Autoplay blocked, show " 오디오 시작" 버튼을 눌러주세요');
+        } catch {
+          console.warn(
+            'Autoplay blocked, show " 오디오 시작" 버튼을 눌러주세요',
+          );
         }
 
         setNickname(nickname); // Set the nickname state
