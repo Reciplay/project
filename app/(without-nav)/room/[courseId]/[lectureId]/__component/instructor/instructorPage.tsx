@@ -1,15 +1,12 @@
-"use client";
-
 import ChatBot from "@/components/chatbot/chatBot";
-import TablerIcon from "@/components/icon/tablerIcon"; // Added TablerIcon import
+import TablerIcon from "@/components/icon/tablerIcon";
 import VideoSection from "@/components/live/videoSection";
+import SetTimer from "@/components/timer/setTimer";
 import { useGestureRecognition } from "@/hooks/live/features/useGestureRecognition";
 import { useInstructorActions } from "@/hooks/live/features/useInstructorActions";
 import { useParticipantActions } from "@/hooks/live/features/useParticipantActions";
-
-import SetTimer from "@/components/timer/setTimer";
 import useLivekitConnection from "@/hooks/live/useLivekitConnection";
-import useLiveSocket from "@/hooks/live/useLiveSocket";
+import useLiveSocket, { TodoCheckEvent } from "@/hooks/live/useLiveSocket";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -17,6 +14,10 @@ import Header from "../common/header/header";
 import type { ChapterCard } from "../common/todoList/todoListCard";
 import TodoListCard from "../common/todoList/todoListCard";
 import styles from "./instructorPage.module.scss";
+
+// Type Definitions
+type TodoCheckEvents = Record<string, Omit<TodoCheckEvent, "issuer" | "type">>;
+
 // Type Definitions (Assuming these are shared or defined elsewhere)
 export type ChapterTodoResponse = {
   type?: "chapter-issue";
@@ -49,9 +50,27 @@ export default function InstructorPage() {
   const [todoSequence, setTodoSequence] = useState<number | null>(null);
   const [isMicMuted, setIsMicMuted] = useState<boolean>(false);
   const [isCameraOff, setIsCameraOff] = useState<boolean>(false);
+  const [todoCheckEvents, setTodoCheckEvents] = useState<TodoCheckEvents>({});
+
+  const handleTodoCheck = useCallback((event: TodoCheckEvent) => {
+    setTodoCheckEvents((prev) => ({
+      ...prev,
+      [event.issuer]: {
+        chapter: event.chapter,
+        todoSequence: event.todoSequence,
+        lectureId: event.lectureId,
+        roomId: event.roomId,
+      },
+    }));
+  }, []);
 
   // 3. Custom Hooks for Live Logic
-  const liveSocketData = useLiveSocket(courseId, lectureId, "instructor");
+  const liveSocketData = useLiveSocket(
+    courseId,
+    lectureId,
+    "instructor",
+    handleTodoCheck,
+  );
 
   //!태욱 챕터만 의존성 가지기 위해 수정
   const { chapter, participantMuteStatus, helpRequestInfo, clearHelpRequest } =
@@ -141,15 +160,15 @@ export default function InstructorPage() {
     return undefined;
   }, [parsedChapterCard, todoSequence]);
 
-  const helpRequesterTrack = useMemo(() => {
-    if (!helpRequestInfo) return null;
-    const foundTrack = remoteTracks.find(
-      (track) =>
-        track.participantIdentity === helpRequestInfo.issuer &&
-        track.trackPublication.videoTrack, // Ensure videoTrack exists
-    );
-    return foundTrack;
-  }, [helpRequestInfo, remoteTracks]);
+  // const helpRequesterTrack = useMemo(() => {
+  //   if (!helpRequestInfo) return null;
+  //   const foundTrack = remoteTracks.find(
+  //     (track) =>
+  //       track.participantIdentity === helpRequestInfo.issuer &&
+  //       track.trackPublication.videoTrack, // Ensure videoTrack exists
+  //   );
+  //   return foundTrack;
+  // }, [helpRequestInfo, remoteTracks]);
   //!태욱 챕터만 의존성 가지기 위해 수정
   // }, [liveSocketData.chapter]);
 
@@ -230,6 +249,8 @@ export default function InstructorPage() {
                   ? !status.video
                   : (video?.isMuted ?? false);
 
+              const todoCheckEvent = todoCheckEvents[participantEmail];
+
               // console.log(`12312312312313131 - ${JSON.stringify(video)}`);
 
               if (!video) return null;
@@ -248,6 +269,14 @@ export default function InstructorPage() {
                     isAudioMuted={isAudioMuted}
                     isVideoMuted={isVideoMuted}
                   />
+                  {todoCheckEvent && (
+                    <div className={styles.todoOverlay}>
+                      <p>
+                        Chapter {todoCheckEvent.chapter} - Todo{" "}
+                        {todoCheckEvent.todoSequence}
+                      </p>
+                    </div>
+                  )}
                   <div className={styles.identityOverlay}>
                     <p>{remoteTrack.participantIdentity}</p>
                   </div>

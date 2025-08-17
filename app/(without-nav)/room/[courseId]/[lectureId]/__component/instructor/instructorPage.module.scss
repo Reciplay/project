@@ -82,6 +82,26 @@
   }
 }
 
+.todoOverlay {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 2rem;
+  font-weight: bold;
+  z-index: 20; /* 다른 오버레이와 겹치지 않도록 z-index 설정 */
+  text-align: center;
+  white-space: nowrap; /* 텍스트가 한 줄에 표시되도록 설정 */
+
+  p {
+    margin: 0;
+  }
+}
+
 .muteIndicators {
   position: absolute;
   bottom: 8px;

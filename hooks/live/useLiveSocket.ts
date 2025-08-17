@@ -56,6 +56,15 @@ export type SendIssueArgs = {
   todoSequence?: number;
 };
 
+export type TodoCheckEvent = {
+  type: "todo-check";
+  issuer: string;
+  chapter: number;
+  todoSequence: number;
+  lectureId: number;
+  roomId: string;
+};
+
 export type HelpRequestInfo = {
   type: string;
   issuer: string;
@@ -69,6 +78,7 @@ export default function useLiveSocket(
   courseId: string,
   lectureId: string,
   role: "instructor" | "student",
+  onTodoCheck?: (event: TodoCheckEvent) => void, // 콜백 추가
 ) {
   const [roomId, setRoomId] = useState<string | null>(null);
   const [socket, setSocket] = useState<InstanceType<typeof SockJS> | null>(
@@ -114,6 +124,7 @@ export default function useLiveSocket(
       setRoomId(info.roomId);
     } catch (e) {
       console.error("roomId 요청 실패:", e);
+      alert(e);
     }
   }, [courseId, lectureId, role]);
 
@@ -284,6 +295,8 @@ export default function useLiveSocket(
               );
               setChapter(data);
               console.log("📝 ChapterTodoResponse 저장:", data);
+            } else if (data.type === "todo-check" && onTodoCheck) {
+              onTodoCheck(data as TodoCheckEvent);
             } else if (
               data.type === "mute-audio" ||
               data.type === "unmute-audio" ||
@@ -354,7 +367,7 @@ export default function useLiveSocket(
 
       client.activate();
     },
-    [sendJoin, sendRejoin],
+    [sendJoin, sendRejoin, onTodoCheck],
   );
 
   const sendChapterIssue = useCallback(
@@ -403,7 +416,7 @@ export default function useLiveSocket(
       chapter: args.chapter,
       todoSequence: args.todoSequence,
       lectureId: lectureId,
-      roomId: roomId,
+      roomId: args.roomId,
     };
     client.publish({
       destination: "/ws/v1/app/todo-check",
