@@ -36,8 +36,10 @@ export default function Page() {
   const { data: level } = useGetLevel(Number(courseId));
   const { data: lectures } = useGetLectures(Number(courseId));
 
-  const { data: liveLink } = useGetLive(Number(courseId));
+  const { data: liveLecture } = useGetLive(Number(courseId));
   const router = useRouter();
+
+  console.log(liveLecture);
 
   if (loading) return <div>로딩중…</div>;
   if (!courseDetail)
@@ -84,42 +86,24 @@ export default function Page() {
 
       <div className={styles.interaction}>
         <div className={styles.box}>
-          {courseDetail.isEnrolled ? (
-            liveLink === null ? (
-              <CustomButton
-                title="신청 완료"
-                onClick={handleEnroll}
-                size="md"
-                variant="custom"
-                color="green"
-                disabled
-              />
-            ) : (
-              <CustomButton
-                title="라이브 참여"
-                onClick={() => router.push(liveLink)}
-                size="md"
-                variant="custom"
-                color="green"
-              />
-            )
-          ) : (
-            <CustomButton
-              title="수강 신청"
-              onClick={handleEnroll}
-              size="md"
-              variant="custom"
-              color="green"
-            />
-          )}
-
           <CustomButton
-            title="찜하기"
-            onClick={handleZzim}
+            title="수강 신청"
+            onClick={handleEnroll}
             size="md"
             variant="custom"
             color="green"
           />
+          {liveLecture !== null ? (
+            <CustomButton
+              title="라이브 참여"
+              onClick={() => router.push(`room/${courseId}/${liveLecture}`)}
+              size="md"
+              variant="custom"
+              color="blue"
+            />
+          ) : (
+            <></>
+          )}
         </div>
       </div>
     </div>

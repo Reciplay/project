@@ -17,7 +17,7 @@ export const useGetLive = (courseId: number) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await restClient.get(`/course/lecture/comming`, {
+      const response = await restClient.get(`/course/lecture/coming`, {
         params: { courseId },
         requireAuth: true,
       });

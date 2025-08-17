@@ -17,7 +17,7 @@ export default function Page() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const initialQuery = searchParams.get("query") ?? "";
-g
+
   const [searchInput, setSearchInput] = useState(initialQuery);
   const debouncedSearchInput = useDebounce(searchInput, 500);
 
@@ -126,14 +126,6 @@ g
           onChange={(e) => setSearchInput(e.target.value)}
           className={styles.searchInput}
         />
-        {/* <label className={styles.filterLabel}>
-          <input
-            type="checkbox"
-            checked={isEnrolledFilter}
-            onChange={(e) => setIsEnrolledFilter(e.target.checked)}
-          />
-          수강 중인 강좌만 보기
-        </label> */}
       </div>
       {loading && <p className={styles.loadingText}>검색 중...</p>}
       {!loading && data.length === 0 && debouncedSearchInput.trim() && (
