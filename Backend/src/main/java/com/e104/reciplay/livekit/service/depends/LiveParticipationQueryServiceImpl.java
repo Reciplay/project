@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class LiveParticipationQueryServiceImpl implements LiveParticipationQueryService{
-    LiveParticipationRepository liveParticipationRepository;
+    private final LiveParticipationRepository liveParticipationRepository;
 
     @Override
     public Boolean isInAnyLiveRoom(String email) {
