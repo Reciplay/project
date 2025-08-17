@@ -92,7 +92,7 @@ public class CourseManagementServiceImpl implements CourseManagementService{
 
         log.debug("해당 강좌의 메타데이터들과 s3파일들 모두 삭제");
         try{
-        List<FileMetadata> oldThumbnailImages = subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAILS");
+        List<FileMetadata> oldThumbnailImages = subFileMetadataQueryService.queryMetadataListByCondition(courseId, "THUMBNAIL");
         for(FileMetadata data : oldThumbnailImages){
             s3Service.deleteFile(data);
             subFileMetadataManagementService.deleteMetadataByEntitiy(data);
