@@ -13,7 +13,7 @@ interface CoursesProps {
 }
 
 export default function Courses({
-  initialPage = 1,
+  initialPage = 0,
   pageSize = 12,
 }: CoursesProps) {
   const { instructorId } = useParams<{ instructorId: string }>();
