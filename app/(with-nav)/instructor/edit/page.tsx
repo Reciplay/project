@@ -72,7 +72,7 @@ export default function EditInstructorPage() {
         },
       );
       const { name, job, birthDate, gender, email } = data.data;
-      const genderText = gender === 0 ? "여" : "남";
+      const genderText = gender === 1 ? "여" : "남";
       const age = calculateAge(birthDate);
       setBasicProfile({
         name,
@@ -154,19 +154,9 @@ export default function EditInstructorPage() {
   );
 
   useEffect(() => {
-    // 필수 파라미터 체크
-    if (!instructorId) return;
-
-    // 1) 상단 카드용 기본 유저정보 (email/job/genderBirth 계산)
     fetchUserBasic();
     // 2) 강사 프로필 조회 → 스토어 선채움
-    fetchInstructorProfile(instructorId);
-  }, [instructorId, fetchUserBasic, fetchInstructorProfile]);
-
-  useEffect(() => {
-    if (!instructorId) return;
-    fetchUserBasic();
-    fetchInstructorProfile(instructorId);
+    // fetchInstructorProfile(instructorId);
   }, [instructorId, fetchUserBasic, fetchInstructorProfile]);
 
   const calculateAge = (birthDateStr: string): number => {

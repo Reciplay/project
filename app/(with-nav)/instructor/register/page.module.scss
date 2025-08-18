@@ -4,6 +4,8 @@
   width: 100%;
   justify-content: space-between; // 좌우 끝으로 분배
   justify-self: center;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .textContainer {
@@ -13,7 +15,7 @@
   padding-right: 3rem;
   display: flex;
   height: 25rem;
-  width: 70%;
+  width: 100%;
   justify-content: space-between; // 좌우 끝으로 분배
   justify-self: center;
 }
@@ -25,9 +27,12 @@
 }
 
 .innerText {
+  // display: flex;
+  // justify-content: space-between;
+  gap: 1.6rem;
+
   display: flex;
-  justify-content: space-between;
-  gap: 30px;
+  flex-direction: column;
 }
 
 .text {
@@ -44,6 +49,12 @@
   position: relative;
   height: 200px;
   width: 174px;
+}
+.title {
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 36px;
+  margin-bottom: 1rem;
 }
 
 .name {
@@ -119,4 +130,8 @@
   flex-direction: column;
   gap: 40px;
   margin-top: 10px;
+}
+
+.upload {
+  cursor: pointer;
 }

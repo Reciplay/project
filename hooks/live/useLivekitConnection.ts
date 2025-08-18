@@ -67,7 +67,7 @@ export default function useLivekitConnection() {
       newRoom.on(
         RoomEvent.TrackSubscribed,
         (
-          _track: RemoteTrack,
+          track: RemoteTrack,
           publication: RemoteTrackPublication,
           participant: RemoteParticipant,
         ) => {
@@ -76,6 +76,15 @@ export default function useLivekitConnection() {
             publication.trackName,
             publication.trackSid,
           );
+
+          // 오디오 트랙이면 곧바로 attach
+          if (track.kind === "audio") {
+            const el = track.attach() as HTMLAudioElement; // <audio> 생성/반환
+            el.autoplay = true;
+            // el.playsInline = true;
+            el.muted = false;
+            document.body.appendChild(el);
+          }
 
           setRemoteTracks((prev) => [
             ...prev,
@@ -89,11 +98,12 @@ export default function useLivekitConnection() {
 
       newRoom.on(
         RoomEvent.TrackUnsubscribed,
-        (_track: RemoteTrack, publication: RemoteTrackPublication) => {
+        (track: RemoteTrack, publication: RemoteTrackPublication) => {
+          // detach 시에는 엘리먼트도 제거
+          track.detach().forEach((el) => el.remove());
           setRemoteTracks((prev) =>
             prev.filter(
-              (track) =>
-                track.trackPublication.trackSid !== publication.trackSid,
+              (t) => t.trackPublication.trackSid !== publication.trackSid,
             ),
           );
         },
@@ -106,6 +116,16 @@ export default function useLivekitConnection() {
         const { token, nickname } = await getToken(courseId, lectureId, role);
 
         await newRoom.connect(LIVEKIT_URL, token);
+
+        // 사용자 제스처 안의 흐름에서 실행되도록 보장
+        try {
+          await newRoom.startAudio();
+        } catch {
+          console.warn(
+            'Autoplay blocked, show " 오디오 시작" 버튼을 눌러주세요',
+          );
+        }
+
         setNickname(nickname); // Set the nickname state
         await newRoom.localParticipant.enableCameraAndMicrophone();
         setLocalTrack(

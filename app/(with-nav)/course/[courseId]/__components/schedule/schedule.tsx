@@ -1,16 +1,16 @@
 import Calendar from "@/components/calendar/calendar";
-import { CourseDetail } from "@/types/course";
+import { LectureSummary } from "@/types/lecture";
 import styles from "./schedule.module.scss";
 
 interface ScheduleProps {
-  courseDetail: CourseDetail;
+  lectures: LectureSummary[];
 }
 
-export default function Schedule({ courseDetail }: ScheduleProps) {
+export default function Schedule({ lectures }: ScheduleProps) {
   return (
     <div className={styles.section}>
       <h2>강의 시간표</h2>
-      <Calendar lectures={courseDetail.lectureSummaryList} />
+      <Calendar lectures={lectures} />
     </div>
   );
 }

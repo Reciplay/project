@@ -96,7 +96,7 @@ export default function Page() {
       );
 
       const { name, job, birthDate, gender, email } = data.data;
-      const genderText = gender === 0 ? "여" : "남";
+      const genderText = gender === 1 ? "여" : "남";
       const age = calculateAge(birthDate);
 
       setProfile({
@@ -146,8 +146,6 @@ export default function Page() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.coverImage}></div>
-
       <div className={styles.infoContainer}>
         <ProfileForm value={basicProfile} />
 

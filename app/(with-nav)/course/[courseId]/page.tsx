@@ -4,6 +4,8 @@ import CustomButton from "@/components/button/customButton";
 import ScrollTabs from "@/components/tab/scrollTabs";
 import { ScrollContainerContext } from "@/contexts/ScrollContainerContext";
 import { useCourseInfo } from "@/hooks/course/useCourseInfo";
+import { useGetLectures } from "@/hooks/course/useGetLectures";
+import { useGetLevel } from "@/hooks/course/useGetLevel";
 import { useGetLive } from "@/hooks/course/useGetLive";
 import { useScrollTabs } from "@/hooks/useScrollTabs";
 import { useParams, useRouter } from "next/navigation";
@@ -28,25 +30,28 @@ export default function Page() {
     tabTitles.length,
     { scrollContainerRef: mainRef },
   );
-  const { handleEnroll, handleZzim, courseDetail, message, loading } =
+  const { handleEnroll, courseDetail, message, loading } =
     useCourseInfo(courseId);
 
-  const { data: liveLink } = useGetLive(Number(courseId));
+  const { data: level } = useGetLevel(Number(courseId));
+  const { data: lectures } = useGetLectures(Number(courseId));
+
+  const { data: liveLecture } = useGetLive(Number(courseId));
   const router = useRouter();
+
+  console.log(liveLecture);
 
   if (loading) return <div>로딩중…</div>;
   if (!courseDetail)
     return <div>{message ?? "강좌 정보를 불러오지 못했습니다."}</div>;
-
-  console.log(courseDetail.isEnrolled);
 
   return (
     <div className={styles.container}>
       <div className={styles.content}>
         <div className={styles.category}>{courseDetail.category}</div>
         <Summary courseDetail={courseDetail} />
-        <Review />
-        <Status />
+        <Review onClickReviewButton={() => handleScrollTo(4)} />
+        <Status level={level * 100} />
 
         <div className={styles.tab}>
           <ScrollTabs
@@ -62,7 +67,7 @@ export default function Page() {
           </section>
 
           <section ref={sectionRefs[1]} className={styles.section}>
-            <Schedule courseDetail={courseDetail} />
+            <Schedule lectures={lectures} />
           </section>
 
           <section ref={sectionRefs[2]} className={styles.section}>
@@ -81,42 +86,26 @@ export default function Page() {
 
       <div className={styles.interaction}>
         <div className={styles.box}>
-          {courseDetail.isEnrolled ? (
-            liveLink === null ? (
-              <CustomButton
-                title="신청 완료"
-                onClick={handleEnroll}
-                size="md"
-                variant="custom"
-                color="green"
-                disabled
-              />
-            ) : (
-              <CustomButton
-                title="라이브 참여"
-                onClick={() => router.push(liveLink)}
-                size="md"
-                variant="custom"
-                color="green"
-              />
-            )
-          ) : (
-            <CustomButton
-              title="수강 신청"
-              onClick={handleEnroll}
-              size="md"
-              variant="custom"
-              color="green"
-            />
-          )}
-
           <CustomButton
-            title="찜하기"
-            onClick={handleZzim}
+            title="수강 신청"
+            onClick={handleEnroll}
             size="md"
             variant="custom"
             color="green"
           />
+          {liveLecture !== null ? (
+            <CustomButton
+              title="라이브 참여"
+              onClick={() =>
+                router.push(`/room/${courseId}/${String(liveLecture)}`)
+              }
+              size="md"
+              variant="custom"
+              color="blue"
+            />
+          ) : (
+            <></>
+          )}
         </div>
       </div>
     </div>

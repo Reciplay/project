@@ -440,7 +440,7 @@ export const sampleCourseDetail: CourseDetail = {
   summary:
     "한국에서 쉽게 구할 수 있는 재료로 완성하는 양식 코스요리. 김밀란 셰프와 함께 파스타, 뇨끼, 리조또를 마스터하세요.",
   maxEnrollments: 500,
-  isEnrollment: true,
+  isEnrolled: true,
   description: `안녕하세요, 유튜브 채널을 운영하며 김밀란 파스타, 리조또 2권의 책을 낸
           요리사 김밀란입니다. 이번 클래스에서는 한국에서 쉽게 구할 수 있는
           재료를 이용해 하나의 양식 코스요리를 완성해 볼 예정입니다.`,

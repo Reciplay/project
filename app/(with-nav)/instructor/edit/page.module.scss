@@ -4,6 +4,8 @@
   width: 100%;
   justify-content: space-between; // 좌우 끝으로 분배
   justify-self: center;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .textContainer {
@@ -11,11 +13,26 @@
   flex-direction: column;
   gap: 10px;
   padding-right: 3rem;
+  display: flex;
+  height: 25rem;
+  width: 100%;
+  justify-content: space-between; // 좌우 끝으로 분배
+  justify-self: center;
+}
+
+.imageWrapper {
+  width: 25.8125rem;
+  height: 33.1875rem;
+  box-shadow: 0px 4px 11.7px rgba(0, 0, 0, 0.178);
 }
 
 .innerText {
+  // display: flex;
+  // justify-content: space-between;
+  gap: 1.6rem;
+
   display: flex;
-  gap: 30px;
+  flex-direction: column;
 }
 
 .text {
@@ -32,6 +49,12 @@
   position: relative;
   height: 200px;
   width: 174px;
+}
+.title {
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 36px;
+  margin-bottom: 1rem;
 }
 
 .name {
@@ -100,4 +123,15 @@
   gap: 10px;
   margin-top: 16px;
   position: static !important;
+}
+
+.infoContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin-top: 10px;
+}
+
+.upload {
+  cursor: pointer;
 }

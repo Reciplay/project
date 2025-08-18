@@ -110,11 +110,8 @@ function CoursePanelDetail({ courseId }: { courseId: number }) {
           announcement: formData.announcement,
           canLearns: formData.canLearns,
         },
-        thumbnailImages: thumbnailImages.filter(
-          (img) => typeof img === "string",
-        ) as string[],
-        courseCoverImage:
-          typeof courseCoverImage === "string" ? courseCoverImage : "",
+        thumbnailImages: thumbnailImages,
+        courseCoverImage: courseCoverImage,
       };
 
       await updateCourse(requestBody);

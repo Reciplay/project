@@ -239,3 +239,34 @@
     margin-top: 0.5rem;
   }
 }
+// .modalHeader {
+//   display: flex;
+//   flex-direction: column;
+//   gap: 0.8rem;
+// }
+
+.answeredTag {
+  // border: #aaaaaa 1px solid;
+  // padding: 1rem;
+  // margin-bottom: 1rem;
+  font-size: 1.6rem;
+  color: #065f46;
+  font-weight: 600;
+}
+.pendingTag {
+  // border: #aaaaaa 1px solid;
+  // padding: 1rem;
+  // margin-bottom: 1rem;
+  font-size: 1.6rem;
+  color: #1100ff;
+  font-weight: 600;
+}
+.modalTitle {
+  font-size: 2.4rem;
+  color: #000000;
+  font-weight: 700;
+}
+.questionSection {
+  font-size: 1.6rem;
+  color: #000000;
+}

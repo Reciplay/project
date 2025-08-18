@@ -5,7 +5,6 @@ import { useInstructorStore } from "@/stores/instructorStore";
 import type { GetProp, UploadFile, UploadProps } from "antd";
 import { Upload } from "antd";
 import ImgCrop from "antd-img-crop";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import AddressPicker from "../../register/__components/address/addressPicker";
 import styles from "../page.module.scss";
@@ -64,51 +63,18 @@ export default function ProfileForm({
 
   return (
     <form className={styles.frame} onSubmit={(e) => e.preventDefault()}>
-      <div className={styles.textContainer}>
-        <div className={styles.nameWrapper}>
-          <span className={styles.name}>{value.name}</span>
-        </div>
-
-        <span className={styles.text}>{value.genderBirth}</span>
-
-        <div className={styles.innerText}>
-          <IconWithText iconName="email" title={value.email} />
-          <IconWithText iconName="user2" title={value.job} />
-
-          <IconWithText
-            iconName="phoneNumber"
-            title={profile.phoneNumber}
-            editable={true}
-            value={profile.phoneNumber}
-            onChange={(v: string) => {
-              if (!/^[\d-]*$/.test(v)) return; // 숫자/하이픈만
-              setProfile({ ...profile, phoneNumber: v });
-              setPhoneError(
-                v === "" || phoneRegex.test(v) ? "" : "형식: 010-1234-5678",
-              );
-            }}
-          />
-        </div>
-
-        <IconWithText
-          iconName="address"
-          title={profile.address}
-          editable={true}
-          value={profile.address}
-          onClick={() => setAddrOpen(true)}
-        />
-
-        <AddressPicker
-          open={addrOpen}
-          onClose={() => setAddrOpen(false)}
-          onSelect={(addr) => setProfile({ ...profile, address: addr })}
-        />
-
-        <ImgCrop rotationSlider>
+      <div>
+        <div className={styles.title}>커버 이미지 등록</div>
+        <ImgCrop rotationSlider aspect={16 / 9}>
           <Upload
+            className={styles.upload}
+            // listType="picture-card": 업로드 UI를 썸네일 카드형으로 만듦
             listType="picture-card"
+            // maxCount={1}: 최대 1개의 파일만 업로드 가능 (중복 업로드 방지)
             maxCount={1}
+            // 현재 선택된 파일 리스트 (useState로 관리됨)
             fileList={fileList}
+            // 파일이 업로드될 때마다 실행되는 콜백 함수
             beforeUpload={(file) => {
               setCoverImageFile(file);
               setFileList([
@@ -120,7 +86,7 @@ export default function ProfileForm({
                   originFileObj: file,
                 },
               ]);
-              return false; // 수동 업로드
+              return false;
             }}
             onRemove={() => {
               setCoverImageFile(null);
@@ -133,13 +99,48 @@ export default function ProfileForm({
         </ImgCrop>
       </div>
 
-      <div className={styles.imageWrapper}>
-        <Image
-          src="/images/profile2.png"
-          fill
-          alt="profile"
-          style={{ objectFit: "cover" }}
-        />
+      <div className={styles.textContainer}>
+        <div className={styles.nameWrapper}>
+          <span className={styles.name}>{value.name}</span>
+        </div>
+
+        <span className={styles.text}>{value.genderBirth}</span>
+
+        <div className={styles.innerText}>
+          <IconWithText iconName="email" title={value.email} />
+          <IconWithText iconName="user2" title={value.job} />
+
+          <IconWithText
+            iconName="phonenumber"
+            title={profile.phoneNumber}
+            editable={true}
+            value={profile.phoneNumber}
+            placeholder="xxx-xxxx-xxxx"
+            onChange={(v: string) => {
+              if (!/^[\d-]*$/.test(v)) return; // 숫자/하이픈만
+              setProfile({ ...profile, phoneNumber: v });
+              setPhoneError(
+                v === "" || phoneRegex.test(v) ? "" : "형식: 010-1234-5678",
+              );
+            }}
+          />
+        </div>
+        <>
+          <IconWithText
+            iconName="address"
+            title={profile.address}
+            editable={true}
+            value={profile.address}
+            onClick={() => setAddrOpen(true)}
+            placeholder="주소를 입력해 주세요."
+          />
+
+          <AddressPicker
+            open={addrOpen}
+            onClose={() => setAddrOpen(false)}
+            onSelect={(addr) => setProfile({ ...profile, address: addr })}
+          />
+        </>
       </div>
     </form>
   );

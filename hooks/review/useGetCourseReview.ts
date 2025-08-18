@@ -65,6 +65,7 @@ export function useGetCourseReview(
               //   sort: JSON.parse(stringifiedSort),
             },
             requireAuth: true,
+            // useCors: true,
             // signal: ac.signal, // 원하면 AbortController 적용 가능
           },
         );
