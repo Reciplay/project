@@ -24,6 +24,10 @@ public class SignupServiceImpl implements SignupService{
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     @Override
     public void signup(SignupRequest request) {
+        if(!(validatePassword(request.getPassword()) && validateNickkname(request.getNickname()))) {
+            throw new IllegalArgumentException("유효하지 않은 비밀번호 또는 닉네임 구조입니다.");
+        }
+
         User user = User.builder().email(request.getEmail())
                 .password(bCryptPasswordEncoder.encode(request.getPassword()))
                 .nickname(request.getNickname())
@@ -43,5 +47,18 @@ public class SignupServiceImpl implements SignupService{
     public void changePassword(String email, String newPassword) {
         User user = userRepository.findByEmail(email).orElseThrow(()->new EmailNotFoundException("존재하지 않는 이메일 입니다."));
         user.setPassword(bCryptPasswordEncoder.encode(newPassword));
+    }
+
+    public boolean validatePassword(String password) {
+        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\\\d).{8,}$";
+        return password.matches(regex);
+    }
+
+    public boolean validateJob(String job) {
+        return job.length() > 1 && job.length() < 20;
+    }
+
+    public boolean validateNickkname(String nickname) {
+        return nickname.length() > 1 && nickname.length() < 20;
     }
 }

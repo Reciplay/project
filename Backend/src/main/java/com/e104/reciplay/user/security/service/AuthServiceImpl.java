@@ -147,6 +147,7 @@ public class AuthServiceImpl implements AuthService {
         return token;
     }
 
+
     @Override
     public String issuePasswordToken(String email) {
         // Signup 용 토큰을 발급합니다.
