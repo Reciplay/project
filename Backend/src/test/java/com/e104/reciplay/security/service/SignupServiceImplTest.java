@@ -24,7 +24,7 @@ class SignupServiceImplTest {
     private SignupServiceImpl signupService;
 
     private static final String TEST_USER_MAIL = "example@mail.com";
-    private static final String TEST_USER_PASSWORD = "123axcaeWcaf";
+    private static final String TEST_USER_PASSWORD = "123axca!eWcaf";
 
     @Test
     public void 중복_없는_아이디로_회원가입에_성공한다() {

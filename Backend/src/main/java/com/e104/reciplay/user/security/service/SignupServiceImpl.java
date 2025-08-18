@@ -52,7 +52,7 @@ public class SignupServiceImpl implements SignupService{
 
     public boolean validatePassword(String password) {
         if(password == null) return false;
-        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,20}$";
+        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[!?#@.])(?=.*\\d)[a-zA-Z\\d!?#@.]{8,20}$";
         return password.matches(regex);
     }
 
