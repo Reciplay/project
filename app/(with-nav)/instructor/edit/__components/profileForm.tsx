@@ -111,7 +111,7 @@ export default function ProfileForm({
           <IconWithText iconName="user2" title={value.job} />
 
           <IconWithText
-            iconName="phoneNumber"
+            iconName="phonenumber"
             title={profile.phoneNumber}
             editable={true}
             value={profile.phoneNumber}

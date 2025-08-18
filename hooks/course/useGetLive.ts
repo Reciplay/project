@@ -21,7 +21,8 @@ export const useGetLive = (courseId: number) => {
         params: { courseId },
         requireAuth: true,
       });
-      setData(response.data?.data);
+
+      setData(response.data?.data.lectureId);
     } catch (e) {
       setError(getErrorMessage(e, "라이브가 없습니다."));
     } finally {

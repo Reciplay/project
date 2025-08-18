@@ -19,7 +19,10 @@ export default function SubscribeGrid({
       <div className={styles.title}>{type}</div>
       <div className={styles.items}>
         {instructors.map((ins) => (
-          <Link href={ROUTES.INSTRUCTOR.PROFILE(String(1))} key={1}>
+          <Link
+            href={ROUTES.INSTRUCTOR.PROFILE(String(ins.instructorId))}
+            key={ins.instructorId}
+          >
             <div className={styles.item}>
               <CircleAvatar
                 alt={ins.instructorProfileFileInfo?.name ?? ""}

@@ -96,7 +96,9 @@ export default function Page() {
           {liveLecture !== null ? (
             <CustomButton
               title="라이브 참여"
-              onClick={() => router.push(`room/${courseId}/${liveLecture}`)}
+              onClick={() =>
+                router.push(`/room/${courseId}/${String(liveLecture)}`)
+              }
               size="md"
               variant="custom"
               color="blue"

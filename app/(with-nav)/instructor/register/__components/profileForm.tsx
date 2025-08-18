@@ -98,7 +98,7 @@ export default function ProfileForm({ value }: ProfileFormProps) {
           <IconWithText iconName="user2" title={value.job} />
 
           <IconWithText
-            iconName="phoneNumber"
+            iconName="phonenumber"
             title={profile.phoneNumber}
             editable={true}
             value={profile.phoneNumber}
