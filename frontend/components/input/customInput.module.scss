@@ -1,0 +1,100 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+// 공통 input 스타일
+.input {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+
+  &::-webkit-input-placeholder {
+    color: #aaaaaa;
+  }
+  &:-ms-input-placeholder {
+    color: #aaaaaa;
+  }
+  &::placeholder {
+    color: #aaaaaa;
+  }
+}
+
+// 커스텀 타입일 경우의 wrapper에 따라 테두리 색 변경
+.hasError .input {
+  border-color: #f44336; // 빨간 테두리
+}
+
+.hasSuccess .input {
+  border-color: #2db400; // 초록 테두리
+}
+
+// inputContainer: custom type에서 사용
+.inputContainer {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 13px;
+  width: 100%;
+  height: 52px;
+  background: #ffffff;
+  border: 1px solid #6c738c;
+  border-radius: 5px;
+  gap: 8px;
+
+  &:focus-within {
+    border-color: #007aff;
+  }
+}
+
+.inputContainer .input {
+  margin-bottom: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  color: #333;
+
+  &::placeholder {
+    color: #6c738c;
+  }
+}
+
+// 메시지 스타일 (에러/성공)
+.message {
+  font-size: 13px;
+  margin-top: 6px;
+  padding-left: 4px;
+}
+
+.error {
+  color: #f44336;
+}
+
+.success {
+  color: #2db400;
+}
+
+// 선택: 검색 input 예시
+.search {
+  height: 36px;
+  width: 400px;
+  border-radius: 50px;
+  margin-bottom: 0;
+}
+
+// 선택: 타입별 예시
+.text {
+  color: #333;
+}
+
+.password {
+  letter-spacing: 2px;
+}

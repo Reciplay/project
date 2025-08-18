@@ -1,0 +1,40 @@
+/* 루트 엘리먼트 오버라이드 */
+:global(.ant-picker).customDatePicker {
+  height: 48px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 1.6rem;
+  width: 100%;
+}
+
+/* 내부 input 높이 */
+:global(.ant-picker).customDatePicker :global(.ant-picker-input > input) {
+  height: 100%;
+}
+
+/* placeholder 색상 (모듈 + 전역 조합) */
+:global(.ant-picker).customDatePicker
+  :global(.ant-picker-input > input::placeholder) {
+  color: #aaaaaa;
+  opacity: 1;
+}
+/* 벤더 프리픽스도 함께 (브라우저별 안전) */
+:global(.ant-picker).customDatePicker
+  :global(.ant-picker-input > input::-webkit-input-placeholder) {
+  color: #aaaaaa;
+}
+:global(.ant-picker).customDatePicker
+  :global(.ant-picker-input > input::-moz-placeholder) {
+  color: #aaaaaa;
+}
+:global(.ant-picker).customDatePicker
+  :global(.ant-picker-input > input:-ms-input-placeholder) {
+  color: #aaaaaa;
+}
+
+/* hover / focus */
+:global(.ant-picker).customDatePicker:hover,
+:global(.ant-picker).customDatePicker.ant-picker-focused {
+  border-color: #1e6fba;
+  box-shadow: 0 0 0 2px rgba(30, 111, 186, 0.2);
+}

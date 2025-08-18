@@ -1,0 +1,25 @@
+.review {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; // 버튼과 텍스트 세로 중앙 정렬
+  margin: 40px 0;
+  background-color: #fff0a7;
+  padding: 16px;
+  border-radius: 16px;
+}
+.reviewBox {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.reviewTitle {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-md);
+  letter-spacing: var(--letter-spacing-normal);
+}
+.reviewDesc {
+  font-weight: var(--font-weight-regular);
+  letter-spacing: var(--letter-spacing-normal);
+  line-height: var(--line-height-tight);
+  font-size: var(--font-size-sm);
+}

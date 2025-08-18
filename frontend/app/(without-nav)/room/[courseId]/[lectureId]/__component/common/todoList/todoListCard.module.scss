@@ -1,0 +1,119 @@
+.timeline {
+  // background: #fff;
+  background: #393939; /* 다크 배경 */
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  border: white 2px solid;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+  color: white;
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  span {
+    font-size: 16px;
+    color: white;
+  }
+}
+
+.item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px 10px 32px;
+  border-radius: 8px;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #fafafa;
+  }
+
+  .dot {
+    position: absolute;
+    left: 10px;
+    width: 10px;
+    height: 10px;
+    background: #bbb;
+    border-radius: 50%;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+
+    .title {
+      font-size: 14px;
+      font-weight: 500;
+      color: red;
+    }
+
+    .time {
+      font-size: 12px;
+      color: #888;
+    }
+  }
+
+  /* 상태별 */
+  &.past {
+    .title {
+      color: #aaa;
+      text-decoration: line-through;
+    }
+    .dot {
+      background: #aaa;
+    }
+  }
+
+  &.active {
+    border: 1px solid #ff4d4f;
+    background: #fff4f4;
+
+    .title {
+      color: #ff4d4f;
+      font-weight: 600;
+    }
+  }
+
+  /* 타입별 */
+  &.normal {
+    .dot {
+      background: #4caf50; /* 초록 dot */
+    }
+  }
+
+  &.timer {
+    padding-left: 32px;
+
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    svg {
+      flex-shrink: 0;
+    }
+
+    &.active {
+      background: #fff0f0;
+      .title {
+        color: #ff4d4f;
+      }
+    }
+  }
+}

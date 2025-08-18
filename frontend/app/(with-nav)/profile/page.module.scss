@@ -1,0 +1,133 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto; // ✅ 가운데 정렬
+  padding: 2rem 1rem;
+
+  // 기존: width: calc(100vw - 260px); 제거
+}
+
+.title {
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+}
+
+.top {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap; // ✅ 작은 화면 대응
+}
+
+.profileWrapper {
+  position: relative;
+  width: 250px;
+  height: 300px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.profile,
+.svg {
+  object-fit: cover;
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.subtitle {
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.svgWrapper {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.desc {
+  font-size: 16px;
+  color: #666666;
+}
+
+.bio {
+  font-size: 16px;
+  color: #666666;
+}
+
+.box {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 40px;
+  margin-top: 24px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr; // ✅ 모바일 대응
+  }
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.type {
+  font-size: 12px;
+  color: #666666;
+}
+
+.value {
+  font-size: 16px;
+}
+
+.subContent {
+  display: flex;
+  gap: 2.4rem;
+  flex-wrap: wrap; // ✅ 작은 화면 대응
+}
+
+.child {
+  flex: 1;
+  min-width: 300px;
+  max-width: 50%;
+
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 24px;
+  background-color: #ffffff;
+
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.05),
+    0 8px 24px rgba(0, 0, 0, 0.08);
+
+  @media (max-width: 768px) {
+    max-width: 100%; // ✅ 모바일 대응
+  }
+}
+.level {
+  color: #aaaaaa;
+  display: flex;
+  font-size: 2rem;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}

@@ -1,0 +1,329 @@
+/* 카드 고정 크기: 251.34 × 334.8
+   간격: --lane-gap (기본 1.25rem)
+   스크롤바 숨김 + 그림자 여유 포함  */
+
+.wrap {
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--color-text, #111);
+  letter-spacing: -0.01em;
+}
+.seeAll {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-primary, #3f51b5);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0.25rem 0;
+  border-radius: 8px;
+
+  &:hover {
+    background: var(--color-bg-hover, #f1f3f5);
+  }
+}
+
+.stage {
+  position: relative;
+  /* 바깥쪽 살짝 여유 (페이드와 충돌 방지) */
+  padding: 0;
+}
+
+.scroller {
+  display: flex;
+  gap: var(--lane-gap, 1.25rem);
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  /* 카드 그림자 여유 */
+  padding: 1rem 1rem 2rem 1rem;
+
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 1rem;
+  -webkit-overflow-scrolling: touch;
+
+  /* 스크롤바 숨김 */
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome/Safari/Edge */
+  }
+}
+
+.item {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+
+  /* 고정 크기 (필요 시 인라인으로 override 가능) */
+  width: var(--card-w-px, 251.34px);
+  height: var(--card-h-px, 334.8px);
+}
+
+/* 페이드(좌/우) — 기본은 숨김, .show가 붙으면 노출 */
+.fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.leftFade {
+  left: 0;
+  background: linear-gradient(90deg, var(--color-bg, #fff) 20%, transparent);
+}
+.rightFade {
+  right: 0;
+  background: linear-gradient(270deg, var(--color-bg, #fff) 20%, transparent);
+}
+.show {
+  opacity: 1;
+}
+
+/* 네비 버튼 */
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 64px;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #111;
+  font-size: 28px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition:
+    opacity 0.25s ease,
+    visibility 0.25s ease;
+  z-index: 2;
+
+  &.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  &:hover {
+    background: #fff;
+  }
+}
+
+.prev {
+  left: 0.25rem; /* stage padding과 동일하게 */
+}
+.next {
+  right: 0.25rem;
+}
+.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+/* ========== Empty State (SCSS 변수만 사용) ========== */
+$ng-bg: #ffffff !default;
+$ng-text: #0f172a !default; // slate-900
+$ng-text-sub: #64748b !default; // slate-500
+$ng-border: #e2e8f0 !default; // slate-200
+$ng-primary: #111827 !default; // gray-900
+$ng-ring: #60a5fa !default; // sky-400
+$ng-accent: #a78bfa !default; // violet-400
+$ng-accent-2: #22d3ee !default; // cyan-400
+
+$ng-radius-xl: 16px !default;
+$ng-radius-lg: 12px !default;
+$ng-gap-sm: 0.5rem !default;
+$ng-gap-md: 0.75rem !default;
+$ng-gap-lg: 1rem !default;
+$ng-shadow: 0 6px 24px rgba(15, 23, 42, 0.08) !default;
+
+@keyframes ngFloat {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(0.8deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes ngPulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.5;
+  }
+  70% {
+    transform: scale(1.05);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.05);
+    opacity: 0;
+  }
+}
+
+.emptyWrap {
+  height: 30rem;
+  position: relative;
+  display: flex;
+  place-items: center;
+  text-align: center;
+  gap: $ng-gap-md;
+  justify-content: center;
+
+  padding: clamp(1.25rem, 2vw + 1rem, 2rem);
+  border: 1px solid $ng-border;
+  border-radius: $ng-radius-xl;
+  background:
+    radial-gradient(
+      120% 120% at 8% 8%,
+      rgba(167, 139, 250, 0.12) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      120% 120% at 92% -10%,
+      rgba(34, 211, 238, 0.12) 0%,
+      transparent 60%
+    ),
+    $ng-bg;
+  box-shadow: $ng-shadow;
+  backdrop-filter: saturate(1.05) blur(2.5px);
+  overflow: hidden;
+}
+
+.emptyArt {
+  width: 96px;
+  height: 96px;
+  border-radius: 9999px;
+  background: radial-gradient(
+    120% 120% at 30% 30%,
+    rgba(167, 139, 250, 0.24) 0%,
+    #fff 55%
+  );
+  border: 1px solid $ng-border;
+  position: relative;
+  isolation: isolate;
+  animation: ngFloat 4.8s ease-in-out infinite;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: -1;
+  }
+  &::before {
+    box-shadow: 0 0 0 6px rgba(96, 165, 250, 0.16);
+    opacity: 0.5;
+  }
+  &::after {
+    box-shadow: 0 0 0 0 rgba(96, 165, 250, 0.24);
+    animation: ngPulse 2.8s ease-out infinite;
+  }
+}
+
+.emptyTexts {
+  display: grid;
+  gap: 2rem;
+}
+
+.emptyTitle {
+  font-size: clamp(2.4rem, 0.8rem + 0.6vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: $ng-text;
+}
+
+.emptyDesc {
+  font-size: clamp(1.6rem, 0.85rem + 0.2vw, 2rem);
+  color: $ng-text-sub;
+  line-height: 1.6;
+}
+
+.emptyActions {
+  display: flex;
+  gap: $ng-gap-sm;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.25rem;
+}
+
+/* 버튼 베이스 (placeholder) */
+%ngBtnBase {
+  appearance: none;
+  border-radius: $ng-radius-lg;
+  padding: 0.625rem 0.9rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    transform 120ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
+  will-change: transform;
+
+  &:active {
+    transform: translateY(1px);
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.3);
+  }
+}
+
+.primaryBtn {
+  @extend %ngBtnBase;
+  background: $ng-primary;
+  color: #fff;
+  border-color: $ng-primary;
+
+  // &:hover {
+  //   background: darken($ng-primary, 8%);
+  //   border-color: darken($ng-primary, 8%);
+  // }
+}
+
+.secondaryBtn {
+  @extend %ngBtnBase;
+  background: #fff;
+  color: $ng-text;
+  border-color: $ng-border;
+
+  &:hover {
+    border-color: rgba(15, 23, 42, 0.28);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .emptyArt {
+    animation: none;
+  }
+  .emptyArt::after {
+    display: none;
+  }
+  .primaryBtn,
+  .secondaryBtn {
+    transition: none;
+  }
+}

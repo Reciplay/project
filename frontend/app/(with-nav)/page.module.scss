@@ -1,0 +1,34 @@
+.learntitle {
+  padding: 20 20px;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 24px;
+  display: flex;
+  align-items: flex-end;
+  letter-spacing: -0.04em;
+}
+
+.soontitle {
+  padding: 20 20px;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 24px;
+  display: flex;
+  align-items: flex-end;
+  letter-spacing: -0.04em;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem; /* 기존 20px에서 간격을 늘리고 rem 단위 사용 */
+  padding: 0 2rem; /* 데스크톱 화면에서의 좌우 여백 추가 */
+}
+
+/* 768px 이하 화면(모바일/태블릿)을 위한 미디어 쿼리 */
+@media (max-width: 768px) {
+  .container {
+    gap: 1.5rem; /* 모바일에서 간격 줄임 */
+    padding: 0 1rem; /* 모바일에서 좌우 여백 줄임 */
+  }
+}

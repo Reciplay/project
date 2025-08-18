@@ -1,0 +1,64 @@
+/* customModal.module.scss */
+
+/* 전체 오버레이 */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px; /* 작은 화면에서 모달이 붙지 않게 여백 */
+  z-index: 1000;
+}
+
+/* 모달 박스 */
+.modal {
+  background: #fff;
+  border-radius: 12px;
+  width: min(90vw, 700px); /* 최대 700px, 화면 90% 이하 */
+  max-height: 90vh; /* 화면 90% 높이 제한 */
+  padding: 24px 20px 20px;
+  position: relative;
+  overflow-y: auto; /* 내용이 넘칠 경우 내부 스크롤 */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+
+  /* 스크롤바 스타일 */
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+}
+.modal::-webkit-scrollbar {
+  width: 8px;
+}
+.modal::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+
+/* 닫기 버튼 */
+.closeButton {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 1.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: #555;
+  transition: color 0.2s ease;
+}
+.closeButton:hover {
+  color: #000;
+}
+
+/* 작은 화면 대응 */
+@media (max-width: 480px) {
+  .modal {
+    width: 100%;
+    height: auto;
+    max-height: 95vh;
+    padding: 20px 16px 16px;
+    border-radius: 10px;
+  }
+}

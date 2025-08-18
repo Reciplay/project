@@ -1,0 +1,75 @@
+:root {
+  --bg: #fff;
+  --line: #e5e7eb;
+  --primary: #2a73ff;
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.06), 0 6px 12px rgba(0, 0, 0, 0.08);
+  --radius: 16px;
+}
+
+/* ★ 모든 오버라이드는 래퍼(.fcSkin) 안에서만 적용 */
+.fcSkin {
+  /* CSS 변수는 래퍼에 직접 (로딩 순서 영향 안 받음) */
+  --fc-border-color: transparent;
+  --fc-today-bg-color: rgba(42, 115, 255, 0.07);
+}
+
+/* CSS Modules + :global 결합 */
+.fcSkin :global(.fc-daygrid-day) {
+  padding: 4px;
+}
+
+.fcSkin :global(.fc-daygrid-day-frame) {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 6px;
+  height: 100%;
+  transition: all 0.15s ease-in-out;
+}
+
+.fcSkin :global(.fc-daygrid-day-frame:hover) {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+  background: #fdfdfd;
+}
+
+.fcSkin :global(.fc-day-today .fc-daygrid-day-frame) {
+  background: rgba(42, 115, 255, 0.05) !important;
+}
+
+/* 숫자/주말 */
+.fcSkin :global(.fc-daygrid-day-number) {
+  font-weight: 500;
+  color: #111;
+}
+.fcSkin :global(.fc-day-sat .fc-daygrid-day-number) {
+  color: #2563eb;
+}
+.fcSkin :global(.fc-day-sun .fc-daygrid-day-number) {
+  color: #dc2626;
+}
+
+/* 선택된 날짜 — dayCellClassNames 로 추가된 .selectedCell 과 결합 */
+.selectedCell :global(.fc-daygrid-day-frame) {
+  background: rgba(255, 215, 0, 0.15) !important;
+  border-radius: 12px;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4) !important;
+  transition: all 0.15s ease-in-out;
+}
+
+/* 이벤트 점 */
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  display: inline-block;
+  margin-top: 4px;
+  margin-right: 2px;
+  background: var(--primary);
+}
+.dotSkipped {
+  background: #cbd5e1;
+}

@@ -1,0 +1,82 @@
+.card {
+  background: #fff;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d1d5db, #9ca3af);
+}
+
+.nickname {
+  font-weight: var(--font-weight-bold);
+  font-size: 1rem;
+}
+
+.date {
+  font-size: 0.875rem;
+  color: var(--color-subtext, #6b7280);
+}
+
+.stars {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 1rem;
+
+  span {
+    margin-left: 0.25rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary, #3b82f6);
+  }
+}
+
+.content {
+  font-size: 0.95rem;
+  color: var(--color-text, #111);
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.upButton {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.nickname {
+  font-size: 1.8rem;
+}
+.date {
+  font-size: 1.2rem;
+}
+.content {
+  font-size: 1.6rem;
+}
