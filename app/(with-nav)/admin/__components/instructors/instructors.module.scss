@@ -1,0 +1,287 @@
+/* 리스트 컨테이너 */
+.sectionBox {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  // background-color: #d7d7d7;
+}
+
+/* 리스트 아이템 스타일 (개별 div 대신 테이블을 사용할 경우 비활성화) */
+.input {
+  background-color: #ffffff;
+  padding: 12px 16px;
+  border-radius: 6px;
+  color: #333333;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.input:hover {
+  background-color: #f5f5f5;
+}
+
+/* 테이블 래퍼: 뒤에 배경, 패딩, 둥근 모서리 */
+.tableWrapper {
+  background-color: #e1e1e1; // 원하는 배경색
+  padding: 16px; // 테이블과 래퍼 사이 여백
+  border-radius: 8px; // 외곽 둥글게
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 12px; // 제목과 테이블 사이 간격
+}
+
+/* 기존 .table 수정 */
+.table {
+  font-size: 1.6rem;
+  width: 100%;
+  border-collapse: separate; // collapse 대신 separate
+  border-spacing: 0; // 셀 간격 제거
+  border-radius: 6px; // 테이블 내부 모서리 둥글게
+  overflow: hidden; // 모서리 밖 내용 숨김
+}
+
+.table th,
+.table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+.table thead th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+/* hover 효과, 클릭 가능한 행 */
+.table tbody tr:hover {
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+/* 로딩 / 에러 메시지 스타일 */
+.input.loading,
+.input.error {
+  background-color: #fffbeb;
+  color: #bb1d1d;
+}
+
+/* 모달 관련 스타일 */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 24px;
+  width: 700px; /* 여기를 늘려서 가로 공간 확보 */
+  max-width: 95vw; /* 화면이 좁을 땐 화면 너비의 95%까지 */
+  position: relative;
+}
+.closeBtn {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.modalContent {
+  max-height: 80vh;
+  overflow-y: auto;
+  overflow-x: hidden; /* 가로 스크롤 제거 */
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+.modalContent::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+/* 프로필 프레임 */
+.frame {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.textContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.name {
+  font-weight: 700;
+  font-size: 24px;
+  color: #222;
+}
+
+.innerText {
+  display: flex;
+  gap: 12px;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 160px; /* 이전 120 → 160 */
+  height: 160px; /* 이전 120 → 160 */
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* 상세 정보 섹션 */
+.infoContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+/* 등록, 닫기, 반려 버튼 */
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  justify-content: center;
+}
+.btnRegister {
+  background-color: #2ecc71;
+  color: #fff;
+}
+.btnClose {
+  background-color: #95a5a6;
+  color: #fff;
+}
+.btnReject {
+  background-color: #e74c3c;
+  color: #fff;
+}
+/* 모달 본문에 쓰이는 스타일들 */
+
+/* 로딩 텍스트 */
+.loadingText {
+  text-align: center;
+  padding: 24px 8px;
+  color: #4b5563;
+  font-size: 1.6rem;
+}
+
+/* 헤더 row (아바타/기본 정보) */
+.headerRow {
+  margin-bottom: 8px;
+}
+
+/* 좌 텍스트 / 우 이미지 */
+.frame {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: start;
+}
+
+.textContainer {
+  display: grid;
+  gap: 8px;
+}
+
+.name {
+  font-weight: 700;
+  font-size: 1.8rem;
+  color: #111827;
+}
+
+.subMeta {
+  color: #4b5563;
+  font-size: 1.4rem;
+}
+
+.innerText {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.imageWrapper {
+  position: relative;
+  width: clamp(96px, 22vw, 160px);
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f3f4f6;
+}
+
+/* 공통 섹션 블록 */
+.section {
+  margin-top: 12px;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.sectionBody {
+  background: #fff;
+  border: 1px solid #eef0f3;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.paragraph {
+  font-size: 1.5rem;
+  line-height: 1.6;
+  color: #1f2937;
+  white-space: pre-line;
+}
+
+.muted {
+  font-size: 1.4rem;
+  color: #6b7280;
+}
+
+/* 액션 버튼 영역: 모달 하단에 고정되도록 */
+.actions {
+  position: sticky;
+  bottom: 0;
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  background: #fff;
+  padding-top: 12px;
+  border-top: 1px solid #eef0f3;
+}
+
+/* 버튼 스타일 (BaseButton에 클래스 추가 적용) */
+.btnRegister {
+  background-color: #22c55e; /* green-500 */
+  color: #fff;
+}
+.btnReject {
+  background-color: #ef4444; /* red-500 */
+  color: #fff;
+}
+
+/* 반응형 */
+@media (max-width: 640px) {
+  .frame {
+    grid-template-columns: 1fr; /* 세로 스택 */
+  }
+  .imageWrapper {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    margin-top: 8px;
+  }
+}

@@ -1,0 +1,103 @@
+// sampleQna.ts
+import { QnA } from "@/types/qna";
+
+export const sampleQna: QnA[] = [
+  {
+    qnaId: 1,
+    title: "강의 영상 재생이 안 됩니다.",
+    questionerNickname: "cookMaster",
+    questionAt: "2025-08-01T10:15:00Z",
+    isAnswered: true,
+  },
+  {
+    qnaId: 2,
+    title: "레시피 자료 PDF는 어디서 받을 수 있나요?",
+    questionerNickname: "foodie123",
+    questionAt: "2025-08-02T09:40:00Z",
+    isAnswered: false,
+  },
+  {
+    qnaId: 3,
+    title: "수강 기한이 언제까지인가요?",
+    questionerNickname: "kimchef",
+    questionAt: "2025-08-03T13:20:00Z",
+    isAnswered: true,
+  },
+  {
+    qnaId: 4,
+    title: "강의 중 사용하는 재료 대체 가능 여부 문의",
+    questionerNickname: "yummyGirl",
+    questionAt: "2025-08-04T08:05:00Z",
+    isAnswered: false,
+  },
+  {
+    qnaId: 5,
+    title: "다음 강의 업로드 일정이 궁금합니다.",
+    questionerNickname: "spicyKing",
+    questionAt: "2025-08-05T11:45:00Z",
+    isAnswered: true,
+  },
+  {
+    qnaId: 6,
+    title: "강의 노트는 어디에서 다운로드할 수 있나요?",
+    questionerNickname: "studyLover",
+    questionAt: "2025-08-06T14:10:00Z",
+    isAnswered: true,
+  },
+  {
+    qnaId: 7,
+    title: "채소 손질 방법이 조금 더 자세히 설명되었으면 좋겠습니다.",
+    questionerNickname: "veggieFan",
+    questionAt: "2025-08-07T09:25:00Z",
+    isAnswered: false,
+  },
+  {
+    qnaId: 8,
+    title: "밀가루 알레르기가 있는데 대체 재료 추천 부탁드립니다.",
+    questionerNickname: "allergyCare",
+    questionAt: "2025-08-08T16:35:00Z",
+    isAnswered: true,
+  },
+  {
+    qnaId: 9,
+    title: "강사님께 질문을 개인적으로 드릴 수 있나요?",
+    questionerNickname: "privateAsk",
+    questionAt: "2025-08-09T12:50:00Z",
+    isAnswered: false,
+  },
+  {
+    qnaId: 10,
+    title: "실습 영상 배속 조절 기능이 있나요?",
+    questionerNickname: "fastCooker",
+    questionAt: "2025-08-10T18:15:00Z",
+    isAnswered: true,
+  },
+  {
+    qnaId: 11,
+    title: "다른 수강생과 채팅할 수 있는 방법이 있나요?",
+    questionerNickname: "socialChef",
+    questionAt: "2025-08-11T08:45:00Z",
+    isAnswered: false,
+  },
+  {
+    qnaId: 12,
+    title: "재료 준비 시간이 얼마나 걸리나요?",
+    questionerNickname: "timePlanner",
+    questionAt: "2025-08-12T15:30:00Z",
+    isAnswered: true,
+  },
+  {
+    qnaId: 13,
+    title: "다음 시즌 강좌도 할인 받을 수 있나요?",
+    questionerNickname: "discountHunter",
+    questionAt: "2025-08-13T10:05:00Z",
+    isAnswered: false,
+  },
+  {
+    qnaId: 14,
+    title: "비건 요리를 위한 별도 강의가 있나요?",
+    questionerNickname: "veganLife",
+    questionAt: "2025-08-14T09:20:00Z",
+    isAnswered: true,
+  },
+];

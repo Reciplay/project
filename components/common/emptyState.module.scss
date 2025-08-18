@@ -1,0 +1,220 @@
+/* emptyState.module.scss */
+
+$es-bg: #ffffff !default;
+$es-text: #111827 !default; // gray-900
+$es-text-sub: #6b7280 !default; // gray-500
+$es-border: #e5e7eb !default; // gray-200
+
+$es-primary: #111827 !default; // 버튼 기본색
+$es-ring: #60a5fa !default; // 포커스 링
+$es-accent: #a78bfa !default; // 보조 포인트 1 (violet)
+$es-accent-2: #22d3ee !default; // 보조 포인트 2 (cyan)
+
+$es-radius-xl: 16px !default;
+$es-radius-lg: 12px !default;
+
+$es-gap-sm: 0.5rem !default;
+$es-gap-md: 0.75rem !default;
+$es-shadow: 0 6px 24px rgba(17, 24, 39, 0.08) !default;
+
+/* ===== Animations ===== */
+@keyframes esFloat {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(1deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes esPulseRing {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.5;
+  }
+  70% {
+    transform: scale(1.05);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.05);
+    opacity: 0;
+  }
+}
+
+/* ===== Wrapper ===== */
+.wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  gap: $es-gap-md;
+  padding: clamp(2rem, 2vw + 1rem, 3rem);
+
+  /* 은은한 그라디언트 포인트 */
+  background:
+    radial-gradient(
+      120% 120% at 10% 10%,
+      rgba(167, 139, 250, 0.12) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      120% 120% at 90% 0%,
+      rgba(34, 211, 238, 0.12) 0%,
+      transparent 60%
+    ),
+    $es-bg;
+
+  border: 1px solid $es-border;
+  border-radius: $es-radius-xl;
+  box-shadow: $es-shadow;
+
+  /* 살짝 선명한 느낌 */
+  backdrop-filter: saturate(1.05) blur(3px);
+}
+
+/* ===== Illustration (circle + ring) ===== */
+.illustration {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  border-radius: 9999px;
+  overflow: hidden;
+  isolation: isolate;
+
+  animation: esFloat 4.8s ease-in-out infinite;
+  will-change: transform, filter;
+
+  /* 이미지 없어도 예쁜 기본 배경 */
+  background: radial-gradient(
+    120% 120% at 30% 30%,
+    rgba(167, 139, 250, 0.24) 0%,
+    #ffffff 55%
+  );
+  border: 1px solid $es-border;
+
+  /* 고정 링 */
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: -1;
+  }
+  &::before {
+    /* 옅은 링 */
+    box-shadow: 0 0 0 6px rgba(96, 165, 250, 0.16);
+    opacity: 0.5;
+  }
+  &::after {
+    /* 맥동 링 */
+    box-shadow: 0 0 0 0 rgba(96, 165, 250, 0.24);
+    animation: esPulseRing 2.8s ease-out infinite;
+  }
+
+  img {
+    object-fit: cover;
+  }
+}
+
+/* ===== Text ===== */
+.title {
+  margin-top: $es-gap-sm;
+  font-size: clamp(2rem, 0.8rem + 0.6vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: $es-text;
+}
+
+.desc {
+  //   max-width: 42rem;
+  margin-inline: auto;
+  line-height: 1.6;
+  font-size: clamp(1.6rem, 0.85rem + 0.2vw, 2rem);
+  color: $es-text-sub;
+}
+
+/* ===== Actions ===== */
+.actions {
+  margin-top: $es-gap-sm;
+  display: flex;
+  gap: $es-gap-sm;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* 공용 버튼 베이스 (placeholder 선택자) */
+%buttonBase {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: $es-radius-lg;
+  padding: 0.625rem 0.9rem;
+  cursor: pointer;
+
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1;
+  transition:
+    transform 120ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
+  will-change: transform;
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.3);
+  }
+}
+
+/* Primary */
+.primary {
+  @extend %buttonBase;
+  background: $es-primary;
+  color: #fff;
+  border-color: $es-primary;
+  font-size: 1.6rem;
+
+  // &:hover {
+  //   background: darken($es-primary, 8%);
+  //   border-color: darken($es-primary, 8%);
+  // }
+}
+
+/* Secondary */
+.secondary {
+  @extend %buttonBase;
+  background: #fff;
+  color: $es-text;
+  border-color: $es-border;
+
+  &:hover {
+    border-color: rgba(17, 24, 39, 0.28);
+    box-shadow: 0 4px 16px rgba(17, 24, 39, 0.06);
+  }
+}
+
+/* ===== 접근성: 모션 최소화 ===== */
+@media (prefers-reduced-motion: reduce) {
+  .illustration {
+    animation: none;
+  }
+  .illustration::after {
+    display: none;
+  }
+  .primary,
+  .secondary {
+    transition: none;
+  }
+}

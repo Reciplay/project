@@ -1,0 +1,125 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  font-size: var(--font-size-base);
+  gap: 2rem;
+}
+
+.content {
+  width: 100%;
+  // padding: 20px;
+}
+// .tab {
+//   margin-top: 2rem;
+// }
+.sections {
+  display: flex;
+  flex-direction: column;
+  // gap: 2rem;
+  margin: 2rem 0;
+
+  > *:not(:last-child)::after {
+    content: "";
+    display: block;
+    margin: 2rem 0;
+    border-bottom: 1px solid #e5e5e5;
+  }
+}
+
+.section {
+  scroll-margin-top: var(--sticky-offset, 88px);
+}
+
+.tab {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fff;
+}
+/* glassy interaction card */
+.interaction {
+  position: sticky;
+  top: 88px;
+  margin-top: 3rem;
+  align-self: flex-start;
+  z-index: 100;
+}
+
+/* 메인 카드 */
+.box {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+
+  /* 크기/여백 */
+  width: 100%;
+  min-width: 260px;
+  padding: 1.25rem;
+
+  /* 글래스모피즘 핵심 */
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  /* 깊이감 */
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.08),
+    0 12px 24px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+
+  /* 그라디언트 보더(1px) */
+  position: relative;
+  isolation: isolate;
+}
+
+.box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.55),
+    rgba(255, 255, 255, 0.15)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* 호버 시 살짝 부상 */
+.box:hover {
+  transform: translateY(-1px);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.1),
+    0 18px 36px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* 버튼 두 개 꽉 차게 */
+.box :global(button),
+.box :global(.button),
+.box :global(.customButton) {
+  width: 100%;
+}
+
+/* 투명 효과 미지원 브라우저 폴백 */
+@supports not (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  .box {
+    background: rgba(255, 255, 255, 0.9);
+  }
+}

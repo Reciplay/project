@@ -1,0 +1,113 @@
+.card {
+  display: flex;
+  gap: 20px;
+  width: 100%; /* 사용 가능한 너비를 모두 사용 */
+  max-width: 880px; /* 단, 최대 너비는 880px로 제한 */
+  padding: 20px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 2px 11px 16.3px rgba(0, 0, 0, 0.14);
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.imageWrapper {
+  position: relative;
+  width: 30%; /* 고정 너비 대신 비율로 설정 */
+  min-width: 200px; /* 너무 작아지는 것을 방지 */
+  aspect-ratio: 16 / 10; /* 이미지 비율 유지 */
+  overflow: hidden;
+  border-radius: 8px;
+
+  &:hover .overlay {
+    opacity: 1; // ⬅️ 호버 시 보이게
+  }
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); // 반투명 검정
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.overlayText {
+  color: white;
+  font-size: 14px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.baseWrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.textWrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.title {
+  font-size: 16px; // 기본 폰트 크기
+  font-weight: 500;
+  line-height: 1.5;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  display: flex;
+  justify-content: space-between;
+}
+
+.highlight {
+  font-size: 2rem; // 🔺 크기 키움
+  font-weight: var(--font-weight-semibold); // 🔺 볼드 처리
+}
+
+.meta {
+  font-size: 1.6rem; // 🔺 크기 키움
+  font-weight: var(--font-weight-regular); // 🔺 볼드 처리
+  margin-bottom: 10px;
+}
+.announcement,
+.rating {
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+}
+
+.live {
+  color: red;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+  height: 100%;
+  flex: 1;
+}

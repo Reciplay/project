@@ -1,0 +1,103 @@
+.frame {
+  display: flex;
+  height: auto;
+  width: 100%;
+  justify-content: space-between; // 좌우 끝으로 분배
+  justify-self: center;
+}
+
+.textContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 3rem;
+}
+
+.innerText {
+  display: flex;
+  gap: 30px;
+}
+
+.text {
+  font-size: var(--font-size-md);
+
+  &.input {
+    font-size: 14px !important; // 🔽 성별/나이도 입력 중이면 더 작게
+    font-weight: 400;
+    line-height: 20px;
+  }
+}
+
+.imageWrapper {
+  position: relative;
+  height: 200px;
+  width: 174px;
+}
+
+.name {
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 36px;
+
+  &.input {
+    font-weight: 500;
+    font-size: 16px !important;
+    line-height: 24px;
+    padding: 6px 10px;
+    border: 1px solid #d1d1d1;
+    border-radius: 6px;
+    outline: none;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+
+    &:focus {
+      border-color: #3182f6;
+      box-shadow: 0 0 0 2px rgba(49, 130, 246, 0.2);
+    }
+  }
+}
+
+.infoContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin-top: 10px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 5rem; // ← 여백 추가
+}
+
+.input {
+  font-size: 16px;
+  padding: 8px 12px;
+  border: 1px solid #d1d1d1;
+  border-radius: 6px;
+  outline: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+  width: 100%;
+
+  &:focus {
+    border-color: #3182f6;
+    box-shadow: 0 0 0 2px rgba(49, 130, 246, 0.2);
+  }
+}
+
+.nameWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.buttonWrapper {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+  position: static !important;
+}

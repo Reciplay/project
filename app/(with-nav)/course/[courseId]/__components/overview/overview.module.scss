@@ -1,0 +1,17 @@
+.section {
+  padding: 1rem 0;
+}
+
+.imageWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background: #ddd;
+}
+
+.image {
+  max-width: 100%; // 화면보다 클 경우 줄어듦
+  height: auto; // 비율 유지
+  display: block;
+}
