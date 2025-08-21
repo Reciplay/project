@@ -121,14 +121,6 @@ public class SecurityConfig {
                         URL_PREFIX + "/livekit/**",
                         URL_PREFIX + "/course/courses/**",
                         "/api/test/course/courses/lectures").permitAll()
-                .requestMatchers(HttpMethod.GET,
-                        URL_PREFIX + "/user/auth/email",
-                        URL_PREFIX + "/user/auth/mail-otp",
-                        URL_PREFIX + "/user/auth/mail-verification/**",
-                        URL_PREFIX + "/user/auth/dup-email",
-                        URL_PREFIX + "/user/auth/dup-nickname").permitAll()
-                .requestMatchers(HttpMethod.PUT,
-                        URL_PREFIX + "/user/auth/password").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers(URL_PREFIX+"/livekit/instructor/token", URL_PREFIX+"/course/qna/answer/**").hasRole("INSTRUCTOR")
                 .requestMatchers(URL_PREFIX + "/admin").hasRole("ADMIN")

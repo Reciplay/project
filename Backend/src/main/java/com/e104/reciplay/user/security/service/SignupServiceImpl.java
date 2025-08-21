@@ -46,6 +46,8 @@ public class SignupServiceImpl implements SignupService{
     @Override
     @Transactional
     public void changePassword(String email, String newPassword) {
+        if(!validatePassword(newPassword)) throw new IllegalArgumentException("잘못된 형식의 비밀번호 입니다.");
+        log.debug("비밀번호 변경 {}", email);
         User user = userRepository.findByEmail(email).orElseThrow(()->new EmailNotFoundException("존재하지 않는 이메일 입니다."));
         user.setPassword(bCryptPasswordEncoder.encode(newPassword));
     }
