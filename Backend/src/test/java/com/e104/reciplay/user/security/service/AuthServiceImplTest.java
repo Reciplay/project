@@ -245,7 +245,7 @@ class AuthServiceImplTest {
     void issuePasswordToken_and_changePassword_success() {
         // given
         String email = testUser.getEmail();
-        String newPassword = "newPassw13214sa23";
+        String newPassword = "newPasw!13214sa23";
 
         // when
         String passwordToken = authService.issuePasswordToken(email);
