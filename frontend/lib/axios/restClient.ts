@@ -175,7 +175,7 @@ export function extractAxiosErrorMessage(
  * ────────────────────────────── */
 const restClient = axios.create({
   baseURL: "https://i13e104.p.ssafy.io/api/v1", // 배포 서버
-  timeout: 10000,
+  timeout: 50000,
 });
 
 /* ──────────────────────────────

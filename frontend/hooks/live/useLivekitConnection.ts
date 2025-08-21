@@ -11,7 +11,7 @@ import {
 import { useCallback, useRef, useState } from "react";
 import useLocalMedia from "./useLocalMedia";
 
-const LIVEKIT_URL: string = "wss://i13e104.p.ssafy.io/live";
+const LIVEKIT_URL: string = "";
 
 export type TrackInfo = {
   trackPublication: RemoteTrackPublication;

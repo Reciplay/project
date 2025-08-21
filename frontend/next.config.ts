@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "reciplay-media.s3.ap-northeast-2.amazonaws.com",
+        hostname: "",
         pathname: "/**",
       },
     ],
@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/api/rest/:path*",
-        destination: "https://i13e104.p.ssafy.io/api/v1/:path*",
+        destination: "",
       },
       {
         source: "/test/local/:path*",
@@ -31,7 +31,7 @@ const nextConfig: NextConfig = {
       {
         source: "/chatbot/whisper",
         destination:
-          "https://gms.ssafy.io/gmsapi/api.openai.com/v1/audio/transcriptions",
+          "",
       },
     ];
   },

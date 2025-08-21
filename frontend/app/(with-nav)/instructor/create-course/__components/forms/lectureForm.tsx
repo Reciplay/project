@@ -2,7 +2,9 @@
 
 import BaseButton from "@/components/button/baseButton";
 import LectureRegisterDatePicker from "@/components/calendar/customLectureDatePicker";
-import type { LectureDTO } from "@/types/lecture";
+import restClient from "@/lib/axios/restClient";
+import { ApiResponse } from "@/types/apiResponse";
+import type { LectureChapter, LectureDTO, LectureTodo } from "@/types/lecture";
 import { Flex, Input, Upload, message } from "antd";
 import type { RcFile } from "antd/es/upload";
 import type {
@@ -11,6 +13,7 @@ import type {
   UploadProps,
 } from "antd/es/upload/interface";
 import { useCallback, useMemo, useState } from "react";
+import ChapterForm from "./chapterForm";
 import styles from "./lectureForm.module.scss";
 
 const { TextArea } = Input;
@@ -20,7 +23,7 @@ type Props = {
   onAdd: (lecture: LectureDTO) => void;
 
   /** sequence를 부모에서 줄 값 (없으면 0 → 부모가 add 후 재시퀀싱) */
-  nextSequence?: number;
+  nextSequence: number;
 
   /** UI 옵션 */
   maxSummaryLen?: number; // 기본 1000
@@ -36,6 +39,7 @@ export default function LectureForm({
   /** ---- Draft 상태 ---- */
   const [title, setTitle] = useState<string>("");
   const [summary, setSummary] = useState<string>("");
+  const [materials, setMaterials] = useState<string>("");
   const [startedAt, setStartedAt] = useState<string>("");
   const [endedAt, setEndedAt] = useState<string>("");
   const [todoText, setTodoText] = useState<string>(""); // 줄바꿈 기준
@@ -95,12 +99,12 @@ export default function LectureForm({
 
   /** draft → LectureDTO (폼 내부 변환) */
   const toLecture = useCallback((): LectureDTO => {
-    const materialsName = localFile ? localFile.name : "";
+    // const materials = localFile ? localFile.name : "";
     return {
       title: title.trim(),
       summary: summary.trim().slice(0, maxSummaryLen),
       sequence: nextSequence,
-      materials: materialsName,
+      materials: materials,
       startedAt,
       endedAt,
       chapterList: [
@@ -146,6 +150,49 @@ export default function LectureForm({
     reset();
   };
 
+  const handleCreateTODO = async (): Promise<void> => {
+    try {
+      // ✅ FormData 객체 생성
+      const formData = new FormData();
+      formData.append("title", todoText);
+
+      const lectureData = {
+        sequence: nextSequence,
+        title: title || "소갈비찜만들기",
+        materials: materials || "소갈비 1kg, 무 한 토막, ...",
+        summary: summary || "이원준의 소갈비찜 레시피 실시간 강의",
+        chapters: ["재료 준비하기", "재료 손질하기", "조리하기", "플레이팅"],
+        chapterList: [],
+      };
+
+      formData.append("lecture", JSON.stringify(lectureData));
+
+      if (localFile) {
+        formData.append(`material/${nextSequence}`, localFile);
+      }
+
+      formData.append("lecture", JSON.stringify(lectureData));
+
+      const res = await restClient.post<ApiResponse<LectureChapter>>(
+        "/course/lecture/todos",
+        formData,
+        {
+          requireAuth: true,
+        },
+      );
+
+      console.log("TODO created:", res.data);
+
+      const combinedText = res.data.data.todoList
+        .map((e: LectureTodo, idx: number) => `${idx + 1}. ${e.title}`)
+        .join("\n");
+
+      setTodoText(combinedText);
+    } catch (err) {
+      console.error("Error creating TODO:", err);
+    }
+  };
+
   return (
     <div className={styles.container}>
       <Flex vertical gap={12}>
@@ -168,23 +215,34 @@ export default function LectureForm({
 
       <TextArea
         rows={4}
-        placeholder="강의를 소개해 주세요 (예: 강의별 내용, 커리큘럼, 준비물)"
+        placeholder="강의를 소개해 주세요 (예: 강의별 내용, 커리큘럼)"
         maxLength={maxSummaryLen}
         value={summary}
         onChange={(e) => setSummary(e.target.value)}
         showCount
       />
 
-      {/* 자료 파일 (단일) */}
-      <Upload<RcFile>
-        beforeUpload={beforeUpload}
-        fileList={fileList}
-        onChange={onChangeUpload}
-        maxCount={1}
-        showUploadList
-      >
-        <BaseButton title="강의 자료 선택" variant="custom" type="button" />
-      </Upload>
+      <TextArea
+        rows={4}
+        placeholder="준비물을 입력해주세요"
+        // maxLength={maxSummaryLen}
+        value={materials}
+        onChange={(e) => setMaterials(e.target.value)}
+        showCount
+      />
+
+      <ChapterForm
+        title={title}
+        summary={summary}
+        materials={materials}
+        localFile={localFile}
+        nextSequence={nextSequence}
+        onTodosGenerated={(text /* grouped */, raw) => {
+          // 수정된 부분
+          setTodoText(text); // TextArea에 챕터별로 표시됨
+          console.log("RAW:", raw);
+        }}
+      />
 
       <TextArea
         rows={4}
@@ -195,7 +253,7 @@ export default function LectureForm({
       />
 
       <BaseButton
-        title="생성하기"
+        title="강의 생성"
         variant="custom"
         type="button"
         onClick={handleCreate}

@@ -216,7 +216,7 @@ export default function useLiveSocket(
         return;
       }
 
-      const sock = new SockJS("https://i13e104.p.ssafy.io/ws/v1/sub");
+      const sock = new SockJS("");
       setSocket(sock); // cleanup에서 close 가능
 
       const client = new Client({

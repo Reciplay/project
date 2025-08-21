@@ -69,7 +69,7 @@ export const useWhisperStt = ({ onFinished }: UseWhisperSttOptions) => {
       const response = await fetch("/chatbot/whisper", {
         method: "POST",
         headers: {
-          Authorization: `Bearer S13P12E104-9fba4818-53ba-4f8b-92ce-fcc15166bb33`,
+          Authorization: `Bearer`,
         },
         body: formData,
       });

@@ -8,7 +8,7 @@ interface ParticipantActionsProps {
   lectureId: string;
 }
 
-const ENDPOINT = "https://i13e104.p.ssafy.io/ws/v1/live";
+const ENDPOINT = "";
 
 export const useParticipantActions = ({
   roomId,

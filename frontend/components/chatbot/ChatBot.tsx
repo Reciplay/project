@@ -57,8 +57,7 @@ export default function ChatBot() {
 
   useEffect(() => {
     const initPorcupine = async () => {
-      const accessKey =
-        "I3NOG+N7ncUe6ibfyJZTWLyoHb/2oKwqGpy642LiMW4qyEjsY97bXw==";
+      const accessKey = "";
       const keyword = {
         publicPath: "/porcupine/model.ppn",
         label: "하이 레시",
@@ -139,7 +138,7 @@ export default function ChatBot() {
   useEffect(() => {
     if (!email) return;
 
-    const host = "wss://i13e104.p.ssafy.io";
+    const host = "";
     const url = `${host}/chat/${encodeURIComponent(email!)}`;
 
     const ws = new WebSocket(url);
