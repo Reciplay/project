@@ -142,7 +142,9 @@ public class AuthController {
     public ResponseEntity<ResponseRoot<Object>> updatePassword(
             @RequestBody PasswordChangeRequest request
             ) {
+        log.debug("비밀번호 변경 요청 도착. data = {}", request);
         authService.checkPasswordHash(request);
+        log.debug("비밀번호 토큰 검증 성공");
         signupService.changePassword(request.getEmail(), request.getNewPassword());
         return CommonResponseBuilder.success("비밀번호 변경에 성공 했습니다.", null);
     }
