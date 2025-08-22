@@ -1,5 +1,6 @@
 package com.e104.reciplay.user.instructor.dto.response.item;
 
+import com.e104.reciplay.entity.InstructorLicense;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,8 +13,16 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class LicenseItem {
+    private Long licenseId;
     private String licenseName;
     private String institution;
     private LocalDate acquisitionDate;
-    private Integer grade;
+    private String grade;
+
+    public LicenseItem(InstructorLicense license){
+        this.licenseId = license.getLicenseId();
+        this.institution = license.getInstitution();
+        this.acquisitionDate = license.getAcquisitionDate();
+        this.grade = license.getGrade();
+    }
 }

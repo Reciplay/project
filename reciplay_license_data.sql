@@ -1,0 +1,28 @@
+use reciplay_db;
+
+insert into licenses(id, name) values(1, '한식조리기능사');
+insert into licenses(id, name) values(2, '양식조리기능사');
+insert into licenses(id, name) values(3, '중식조리기능사');
+insert into licenses(id, name) values(4, '일식조리기능사');
+insert into licenses(id, name) values(5, '복어조리기능사');
+insert into licenses(id, name) values(6, '조리산업기사');
+insert into licenses(id, name) values(7, '조리기능장');
+insert into licenses(id, name) values(8, '제과기능사');
+insert into licenses(id, name) values(9, '제빵기능사');
+insert into licenses(id, name) values(10, '떡제조기능사');
+insert into licenses(id, name) values(11, '식품가공기능사');
+insert into licenses(id, name) values(12, '식품산업기사');
+insert into licenses(id, name) values(13, '식품기술사');
+insert into licenses(id, name) values(14, '단체급식관리사');
+insert into licenses(id, name) values(15, '식품위생관리사');
+insert into licenses(id, name) values(16, '영양사');
+insert into licenses(id, name) values(17, '관리영양사');
+insert into licenses(id, name) values(18, '식품분석기사');
+insert into licenses(id, name) values(19, '식품품질관리사');
+insert into licenses(id, name) values(20, '식음료관리사');
+insert into licenses(id, name) values(21, '음료서비스관리사');
+insert into licenses(id, name) values(22, '식품향료조향사');
+insert into licenses(id, name) values(23, '위생점검평가사');
+insert into licenses(id, name) values(24, '음식점 위생등급제 평가사');
+insert into licenses(id, name) values(25, '식품생산관리사');
+insert into licenses(id, name) values(26, '식품안전관리자');

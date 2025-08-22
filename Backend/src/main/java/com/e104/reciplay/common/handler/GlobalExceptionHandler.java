@@ -1,0 +1,133 @@
+package com.e104.reciplay.common.handler;
+
+import com.e104.reciplay.common.exception.CourseNotFoundException;
+import com.e104.reciplay.common.exception.InvalidUserRoleException;
+import com.e104.reciplay.common.exception.LectureNotFoundException;
+import com.e104.reciplay.common.exception.NotInstructorException;
+import com.e104.reciplay.common.response.util.CommonResponseBuilder;
+import com.e104.reciplay.course.courses.exception.CourseClosedException;
+import com.e104.reciplay.course.enrollment.exception.AlreadyEnrolledException;
+import com.e104.reciplay.course.qna.exception.AnswerAlreadyRegisteredException;
+import com.e104.reciplay.course.qna.exception.CanNotAnswerException;
+import com.e104.reciplay.course.qna.exception.EnrollmentHistoryNotFoundException;
+import com.e104.reciplay.livekit.exception.CanNotOpenLiveRoomException;
+import com.e104.reciplay.livekit.exception.CanNotParticipateInLiveRoomException;
+import com.e104.reciplay.livekit.exception.RoomIdExpiredException;
+import com.e104.reciplay.s3.exception.FileUploadFailureException;
+import com.e104.reciplay.s3.exception.IllegalFileTypeException;
+import com.e104.reciplay.s3.exception.TooBigFileSizeException;
+import com.e104.reciplay.user.auth.exception.EmailAuthFailureException;
+import com.e104.reciplay.user.auth.exception.IllegalEmailFormatException;
+import com.e104.reciplay.user.security.exception.EmailNotFoundException;
+import io.swagger.v3.oas.annotations.Hidden;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.io.IOException;
+
+@Hidden
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(CanNotOpenLiveRoomException.class)
+    public ResponseEntity<?> canNotOpenLiveRoomExceptionHandler(CanNotOpenLiveRoomException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> illegalArtumentExceptionHandler(IllegalArgumentException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidUserRoleException.class)
+    public ResponseEntity<?> invalidUserRoleExceptionHandler(InvalidUserRoleException e) {
+        return CommonResponseBuilder.forbidden(e.getMessage());
+    }
+
+    @ExceptionHandler(CanNotParticipateInLiveRoomException.class)
+    public ResponseEntity<?> canNotPariticipateIntLiveRoomExceptionHandler(CanNotParticipateInLiveRoomException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(CourseNotFoundException.class)
+    public ResponseEntity<?> courseNotFoundExceptionHandler(CourseNotFoundException e) {
+        return CommonResponseBuilder.notFound(e.getMessage());
+    }
+    @ExceptionHandler(LectureNotFoundException.class)
+    public ResponseEntity<?> lectureNotFoundExceptionHandler(LectureNotFoundException e) {
+        return CommonResponseBuilder.notFound(e.getMessage());
+    }
+
+
+    @ExceptionHandler(RoomIdExpiredException.class)
+    public ResponseEntity<?> roomIdExpiredExceptionHandler(RoomIdExpiredException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(IllegalEmailFormatException.class)
+    public ResponseEntity<?> illegalEmailFormatException(IllegalEmailFormatException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(EmailAuthFailureException.class)
+    public ResponseEntity<?> emailAuthFailureExceptionHandler(EmailAuthFailureException e) {
+        return CommonResponseBuilder.unauthorized(e.getMessage());
+    }
+    @ExceptionHandler(EmailNotFoundException.class)
+    public ResponseEntity<?> emailNotFoundException(EmailNotFoundException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(IllegalFileTypeException.class)
+    public ResponseEntity<?> illeagalFileTypeExceptionHandler(IllegalFileTypeException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(TooBigFileSizeException.class)
+    public ResponseEntity<?> tooBigFileSizeExceptionExceptionHandler(TooBigFileSizeException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(FileUploadFailureException.class)
+    public ResponseEntity<?> fileUploadFailureExceptionHandler(FileUploadFailureException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(EnrollmentHistoryNotFoundException.class)
+    public ResponseEntity<?> enrollmentHistoryNotFoundExceptionHandler(EnrollmentHistoryNotFoundException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(CourseClosedException.class)
+    public ResponseEntity<?> courseClosedExceptionHandler(CourseClosedException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+
+    @ExceptionHandler(CanNotAnswerException.class)
+    public ResponseEntity<?> canNotAnswerExceptionHandler(CanNotAnswerException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+
+    @ExceptionHandler(AnswerAlreadyRegisteredException.class)
+    public ResponseEntity<?> answerAlreadyRegisteredExceptionHandler(AnswerAlreadyRegisteredException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(AlreadyEnrolledException.class)
+    public ResponseEntity<?> alreadyEnrolledExceptionHandler(AlreadyEnrolledException e) {
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<?> iOExceptionHandler(IOException e) {
+        return CommonResponseBuilder.serverError(e.getMessage());
+    }
+
+    @ExceptionHandler(NotInstructorException.class)
+    public ResponseEntity<?> notInstructorExceptionHandler(NotInstructorException e){
+        return CommonResponseBuilder.badRequest(e.getMessage());
+    }
+}

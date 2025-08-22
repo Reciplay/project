@@ -1,0 +1,99 @@
+package com.e104.reciplay.entity;
+
+import com.e104.reciplay.course.courses.dto.request.RequestCourseInfo;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Entity(name = "courses")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+public class Course {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "instructor_id")
+    private Long instructorId;
+
+    @Column(name = "category_id")
+    private Long categoryId;
+
+    private String title;
+
+    @Column(name = "course_start_date")
+    private LocalDate courseStartDate;
+
+    @Column(name = "course_end_date")
+    private LocalDate courseEndDate;
+
+    private String description;
+
+    private String summary;
+
+    private Integer level;
+
+
+    @Column(name = "max_enrollments")
+    private Integer maxEnrollments;
+
+    @Column(name = "is_approved")
+    private Boolean isApproved;
+
+    @Column(name = "current_enrollments")
+    private Integer currentEnrollments;
+
+    @Column(name = "enrollment_start_date")
+    private LocalDateTime enrollmentStartDate;
+
+    @Column(name = "enrollment_end_date")
+    private LocalDateTime enrollmentEndDate;
+
+    @Column(name = "is_live")
+    private Boolean isLive;
+
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
+
+    @Column(name = "registered_at")
+    private LocalDateTime registeredAt;
+
+    private String announcement;
+
+    public Course(RequestCourseInfo info) {
+        this.title = info.getTitle();
+        this.enrollmentStartDate = info.getEnrollmentStartDate();
+        this.enrollmentEndDate = info.getEnrollmentEndDate();
+        this.categoryId = info.getCategoryId();
+        this.maxEnrollments = info.getMaxEnrollments();
+        this.description = info.getDescription();
+        this.level = info.getLevel();
+        this.announcement = info.getAnnouncement();
+        this.summary = info.getSummary();
+
+        this.isLive = false;
+        this.isApproved = false;
+        this.isDeleted = false;
+        this.currentEnrollments = 0;
+        this.registeredAt = LocalDateTime.now();
+    }
+
+    public void updateCourse(RequestCourseInfo info){
+        this.title = info.getTitle();
+        this.enrollmentStartDate = info.getEnrollmentStartDate();
+        this.enrollmentEndDate = info.getEnrollmentEndDate();
+        this.categoryId = info.getCategoryId();
+        this.maxEnrollments = info.getMaxEnrollments();
+        this.description = info.getDescription();
+        this.level = info.getLevel();
+        this.announcement = info.getAnnouncement();
+        this.summary = info.getSummary();
+    }
+}

@@ -29,7 +29,6 @@ public class LivekitDockerRunner {
 
                 // Dynamically get the absolute path of livekit.yaml
                 String yamlPath = new File("livekit.yaml").getAbsolutePath();
-
                 // Replace the placeholder with the actual path
                 String finalCommand = dockerRunCommand.replace("{livekit.yaml.path}", yamlPath);
 

@@ -1,7 +1,10 @@
 package com.e104.reciplay.user.security.filter;
 
+import com.e104.reciplay.user.security.domain.User;
 import com.e104.reciplay.user.security.jwt.JWTUtil;
 import com.e104.reciplay.user.security.service.AuthService;
+import com.e104.reciplay.user.security.service.UserQueryService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -14,10 +17,14 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    private final ObjectMapper objectMapper;
+    private final UserQueryService userQueryService;
+
 
     private final long ACCESS_TOKEN_EXPIRATION;
     private final long REFRESH_TOKEN_EXPIRATION;
@@ -28,12 +35,16 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
                              JWTUtil jwtUtil,
                              long access_token_expiration,
                              long refresh_token_expiration,
-                             AuthService authService) {
+                             AuthService authService,
+                             ObjectMapper objectMapper,
+                             UserQueryService userQueryService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.ACCESS_TOKEN_EXPIRATION = access_token_expiration;
         this.REFRESH_TOKEN_EXPIRATION = refresh_token_expiration;
         this.authService = authService;
+        this.objectMapper = objectMapper;
+        this.userQueryService = userQueryService;
     }
 
     @Override
@@ -66,12 +77,26 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         authService.issueNewToken(refreshToken, username, "REFRESH");
 
         response.addHeader("Authorization", "Bearer " + accessToken);
-        response.addCookie(new Cookie("refresh-token", refreshToken));
+        Cookie cookie = new Cookie("refresh-token", refreshToken);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge((int)(REFRESH_TOKEN_EXPIRATION / 1000));
+        response.addCookie(cookie); // refresh-token 프리픽스를 붙여서 검증.
+
+        // 태욱님 요구사항 : 로그인 시 유저의 롤도 함께 전달할 것.
+        Map<String, String> userInfo = Map.of("email", username,
+                "role", role,
+                "required", isFulfullAdditionalInfos(username).toString());
+        response.getWriter().write(objectMapper.writeValueAsString(userInfo));
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         // status 401
         response.setStatus(401);
+    }
+
+    private Boolean isFulfullAdditionalInfos(String email) {
+        return this.userQueryService.queryUserByEmail(email).getBirthDate() == null;
     }
 }

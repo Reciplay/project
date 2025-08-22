@@ -24,14 +24,14 @@ class SignupServiceImplTest {
     private SignupServiceImpl signupService;
 
     private static final String TEST_USER_MAIL = "example@mail.com";
-    private static final String TEST_USER_PASSWORD = "123";
+    private static final String TEST_USER_PASSWORD = "123axca!eWcaf";
 
     @Test
     public void 중복_없는_아이디로_회원가입에_성공한다() {
         Mockito.when(userRepository.existsByEmail(TEST_USER_MAIL)).thenReturn(false);
         Mockito.when(bCryptPasswordEncoder.encode(TEST_USER_PASSWORD)).thenReturn(TEST_USER_PASSWORD);
 
-        SignupRequest request = new SignupRequest(TEST_USER_MAIL, TEST_USER_PASSWORD, "");
+        SignupRequest request = new SignupRequest(TEST_USER_MAIL, TEST_USER_PASSWORD, "asc", "");
 
         assertDoesNotThrow(()->signupService.signup(request));
         Mockito.verify(bCryptPasswordEncoder, Mockito.times(1)).encode(TEST_USER_PASSWORD);
@@ -41,8 +41,39 @@ class SignupServiceImplTest {
     public void 아이디_중복으로_회원가입에_실패한다() {
         Mockito.when(userRepository.existsByEmail(TEST_USER_MAIL)).thenReturn(true);
 
-        SignupRequest request = new SignupRequest(TEST_USER_MAIL, TEST_USER_PASSWORD, "");
+        SignupRequest request = new SignupRequest(TEST_USER_MAIL, TEST_USER_PASSWORD, "asc", "");
 
         assertThrows(DuplicateUserEmailException.class, () -> signupService.signup(request));
     }
+
+    @Test
+    public void 비밀번호_형식_오류로_실패한다() {
+        String password = "@!.as";
+        SignupRequest request = new SignupRequest(TEST_USER_MAIL, password, "nickname", "da");
+
+        assertThrows(IllegalArgumentException.class,() -> signupService.signup(request));
+    }
+
+    @Test
+    public void 비밀번호_널로_실패한다() {
+        SignupRequest request = new SignupRequest(TEST_USER_MAIL, null, "nickname", "da");
+
+        assertThrows(IllegalArgumentException.class,() -> signupService.signup(request));
+    }
+
+    @Test
+    public void 닉네임_형식_오류로_실패한다() {
+        String nickname = "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz";
+        SignupRequest request = new SignupRequest(TEST_USER_MAIL, TEST_USER_PASSWORD, nickname, "da");
+
+        assertThrows(IllegalArgumentException.class,() -> signupService.signup(request));
+    }
+
+    @Test
+    public void 닉네임_널로_실패한다() {
+        SignupRequest request = new SignupRequest(TEST_USER_MAIL, TEST_USER_PASSWORD, null, "da");
+
+        assertThrows(IllegalArgumentException.class,() -> signupService.signup(request));
+    }
 }
+

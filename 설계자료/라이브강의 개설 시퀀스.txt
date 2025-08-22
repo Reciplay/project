@@ -1,0 +1,46 @@
+title 강의방 생성
+actor 강사
+boundary LivekitController
+control LivekitOpenService
+control InstructorQueryService
+control LectureQueryService
+control CourseQueryService
+control CourseManagementService
+control LiveroomService
+control LiveParticipationManagementService
+
+
+강사->LivekitController : POST : /api/v0/livekit/token with courseId, lectureId
+activate LivekitController
+
+LivekitController->LivekitOpenService :createToken(lectureName, lectureId)
+group 개설가능여부 검사 
+LivekitOpenService->LivekitOpenService : isOpenable(lectureId, courseId)
+
+activate LivekitOpenService
+
+LivekitOpenService->LectureQueryService : 강의 ID로 조회
+LectureQueryService-->>LivekitOpenService : :Lecture
+LivekitOpenService->InstructorQueryService : 강사 ID 조회 with email
+InstructorQueryService-->>LivekitOpenService:강사 ID
+
+LivekitOpenService->LivekitOpenService : 개설 가능 시간 체크 + 이미 끝난 강의 체크
+LivekitOpenService->CourseQueryService : 강좌 ID로 강좌 조회
+CourseQueryService-->>LivekitOpenService : :Course, 강사 ID 일치하는지 검사.
+deactivate LivekitOpenService
+end
+
+
+
+
+LivekitOpenService->LiveroomService : openLiveroom(Lecture, roomname) : 라이브 룸 엔티티 생성, DB 추가
+LiveroomService-->>LivekitOpenService : 라이브룸 ID
+LivekitOpenService->CourseQueryService : queryCourseByLectureId()
+CourseQueryService-->>LivekitOpenService : :Course
+LivekitOpenService->CourseManagementService : activateLiveState(courseId)
+
+LivekitOpenService->LiveParticipationManagementService:participateIn(LiveroomID, email)
+
+LivekitOpenService-->>LivekitController : Livekit token
+
+LivekitController->강사 : 201 Create and jwt in body

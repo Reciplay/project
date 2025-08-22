@@ -1,0 +1,315 @@
+package com.e104_2.reciplaywebsocket.room.controller;
+
+import com.e104_2.reciplaywebsocket.common.response.dto.ResponseRoot;
+import com.e104_2.reciplaywebsocket.common.response.util.CommonResponseBuilder;
+import com.e104_2.reciplaywebsocket.entity.Todo;
+import com.e104_2.reciplaywebsocket.room.dto.request.ChapterIssueRequest;
+import com.e104_2.reciplaywebsocket.room.dto.request.EventMessage;
+import com.e104_2.reciplaywebsocket.room.dto.request.TodoMessage;
+import com.e104_2.reciplaywebsocket.room.dto.request.LiveControlRequest;
+import com.e104_2.reciplaywebsocket.room.dto.response.ChapterTodoResponse;
+import com.e104_2.reciplaywebsocket.room.dto.response.item.TodoSummary;
+import com.e104_2.reciplaywebsocket.room.service.LiveControlService;
+import com.e104_2.reciplaywebsocket.room.service.TodoQueryService;
+import com.e104_2.reciplaywebsocket.security.dto.CustomUserDetails;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ReactiveAdapterRegistry;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.security.Principal;
+import java.util.List;
+import java.util.Map;
+
+/*
+    룸 참여 토큰 밠행시 룸 아이디도 함께 제공함.
+    강의 구독 채널 : /ws/v1/topic/room/룸 아이디
+    개인 구독 채널 : /ws/v1/queue/룸 아이디
+*/
+
+@Tag(name = "라이브 관리 API", description = "웹소켓 처리와 병행합니다. 강제퇴장, 음소거, 화면 송출 관련은 REST API로 처리합니다.")
+@RestController
+@Slf4j
+@RequiredArgsConstructor
+@RequestMapping("/ws/v1/live")
+public class LiveController {
+    private final SimpMessagingTemplate messagingTemplate;
+
+    @Value("${application.url-prefix}")
+    private String URL_PREFIX;
+
+    private final LiveControlService liveControlService;
+    private final TodoQueryService todoQueryService;
+
+    /*
+            private String type;
+            private String issuer;
+            private String receiver;
+            private String nickname;
+            private Long lectureId;
+            private String roomId;
+            private List<String> state;
+     */
+    @MessageMapping("/help")
+    public void helpMeEvent(@Payload EventMessage message) {
+        log.debug("Help message 도착함 데이터 : {}", message);
+        if(!message.getType().equals("help")) return;
+        log.debug("보낸 사람 : {}", message.getIssuer());
+        String instructorIdentity = liveControlService.getLiveInstructorIdentity(message.getLectureId());
+        log.debug("받는 사람 : {}", instructorIdentity);
+        messagingTemplate.convertAndSendToUser(instructorIdentity,
+                "/queue/"+message.getRoomId(),
+                message);
+    }
+
+    @MessageMapping("/join") // 참여자가 만약, 강제퇴장 리스트에 있다면, 다시 퇴장 시켜야 함.
+    public void joinEvent(@Payload EventMessage message) {
+        // 어떤 사용자가 이미 존재함 -> 참가용 토큰 발급을 한 뒤에 수행되기 때문이다.
+        log.debug("join message 도착함 데이터 : {}", message);
+        if(!message.getType().equals("join")) return;
+
+        LiveControlRequest controlRequest = new LiveControlRequest(message.getRoomId(), message.getIssuer(), message.getLectureId());
+        log.debug("join 메세지 제어 데이터 : {}", controlRequest);
+        // 강제 퇴장이나 블랙리스트, 강의 참여 여부 검사하여 쫓아내기.
+        if(!liveControlService.checkParticipationPrivilege(message.getIssuer(), controlRequest)) {
+            return;
+        }
+        // 아니라면, 참여 메시지 브로드캐스팅.
+        messagingTemplate.convertAndSend(URL_PREFIX + "/topic/room/" + message.getRoomId(), message);
+    }
+
+    @MessageMapping("/re-join")
+    public void joinEventAnswer(@Payload EventMessage message) {
+        log.debug("re-join message 도착함 데이터 : {}", message);
+
+        if(!message.getType().equals("re-join")) return;
+        messagingTemplate.convertAndSendToUser(message.getReceiver(),
+                "/queue/" + message.getRoomId(),
+                message);
+    }
+
+    @MessageMapping("/quit")
+    public void quitEvent(@Payload EventMessage message) {
+        log.debug("quit message 도착함 데이터 : {}", message);
+
+        if(!message.getType().equals("quit")) return;
+        LiveControlRequest controlRequest = new LiveControlRequest(message.getRoomId(), message.getIssuer(), message.getLectureId());
+        log.debug("제어 요청 데이터 : {}", controlRequest);
+        // 강제 퇴장이나 블랙리스트, 강의 참여 여부 검사하여 쫓아내기.
+        if(!liveControlService.checkParticipationPrivilege(message.getIssuer(), controlRequest)) {
+            return;
+        } else {
+            // 존재하는 라이브 참여 이력에서 제거한다.
+            liveControlService.quitFromLiveRoom(message.getIssuer(), message.getLectureId());
+        }
+        System.out.println(message);
+        messagingTemplate.convertAndSend(URL_PREFIX + "/topic/room/" + message.getRoomId(), message);
+    }
+
+    /*
+        registry.enableSimpleBroker("/topic", "/queue");
+        ///queue는 반드시 INSTRUCTOR ROLE만 허용할 것.
+        registry.setApplicationDestinationPrefixes("/app");
+        registry.setUserDestinationPrefix("/instructor");
+     */
+
+    @MessageMapping("/todo-check")
+    public void finishTodo(@Payload TodoMessage message) { // 특정 사용자아 어느 챕터 어느 todo를 체크했는지 넘긴다.
+        log.debug("todo-check 메세지 수신함 {}", message);
+        if(!message.getType().equals("todo-check")) return;
+                // 클라이언트측(강사)는 subscribe("/user/queue/룸 ID") 로 구독한다.
+        // 회원은 send("/app/todo-check")로 전송한다.
+        // 핸들러가 convertAndSendToUser(강사이메일, "/queue/룸 ID")로 전송한다.
+        String instructorIdentity = liveControlService.getLiveInstructorIdentity(message.getLectureId());
+
+        messagingTemplate.convertAndSendToUser(instructorIdentity,
+                "/queue/"+message.getRoomId(),
+                message);
+    }
+
+    @MessageMapping("/chapter-issue")
+    public void issueNextChapter(@Payload ChapterIssueRequest message,
+                                 Principal principal,
+                                 @AuthenticationPrincipal CustomUserDetails userDetail
+    ) {
+        log.debug("chapter-issue 메세지 수신함 {}", message);
+
+        if(!message.getType().equals("chapter-issue")) return;
+        Integer sequence = message.getChapterSequence();
+        Long lectureId = message.getLectureId();
+
+        UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken)principal;
+        CustomUserDetails userDetails = (CustomUserDetails)token.getPrincipal();
+        log.debug("Principal {}", principal);
+        log.debug("userDetails {}", userDetail);
+
+        if(!principal.getName().equals(message.getIssuer()) || !userDetails.getAuthorities().iterator().next().getAuthority().equals("ROLE_INSTRUCTOR")) {
+            messagingTemplate.convertAndSendToUser(message.getIssuer(), "/queue/"+message.getRoomId(), Map.of("status", "refused", "message", "라이브룸 강사 권한이 없습니다."));
+            return;
+        }
+        ChapterTodoResponse response = null;
+        try {
+            response = todoQueryService.queryTodoOfChapter(lectureId, sequence);
+        } catch(Exception e) {
+            log.debug("더 이상 발행할 챕터가 없습니다.");
+            response = new ChapterTodoResponse("chapter-issue", -1L, "없는 챕터", -1, -1, List.of());
+        }
+        log.debug("chapter-issue 메세지 응답 {}", response);
+        messagingTemplate.convertAndSend(URL_PREFIX+"/topic/room/"+message.getRoomId(), response);
+    }
+
+
+    /////////////////////////////////////
+    //   라이브 제어용 API
+    /////////////////////////////////////
+
+    // email, type
+    // 강사만 접근 가능.
+    @GetMapping("/remove")
+    public ResponseEntity<ResponseRoot<Object>> removeParticipant(
+            @ModelAttribute LiveControlRequest request,
+            @AuthenticationPrincipal CustomUserDetails user
+    ) throws IOException
+    {
+        log.debug("강제퇴장 요청 데이터. {}", request);
+        log.debug("강제퇴장 요청 사용자. {}", user);
+        if(!user.getAuthorities().iterator().next().getAuthority().equals("ROLE_INSTRUCTOR")) {
+            return CommonResponseBuilder.forbidden("강사가 아니라면 강퇴할 수 없습니다.");
+        }
+
+        String userEmail = user.getUsername();
+        if(!liveControlService.isInstructorOfLecture(userEmail, request.getLectureId())) {
+            return CommonResponseBuilder.forbidden("현재 강의의 강사가 아니므로 강퇴 권한이 없습니다.");
+        }
+
+        liveControlService.removeParticipant(request, userEmail);
+        Map<String, String> result = getControlReturnMessage("remove", request.getTargetEmail(),
+                request.getTargetEmail()+"님께서 강퇴 되셨습니다.");
+
+        log.debug("강제퇴장 STOMP 메세지. {}", result);
+
+        messagingTemplate.convertAndSend(URL_PREFIX+"/topic/room/"+request.getRoomId(), result);
+        log.debug("강제퇴장 STOMP 메세지 전송 성공함 ");
+
+        return CommonResponseBuilder.success("퇴장 처리에 성공했습니다.", null);
+    }
+
+    // 강제 음소거
+    @GetMapping("/mute-audio")
+    public ResponseEntity<ResponseRoot<Object>> muteAudio(
+            @ModelAttribute LiveControlRequest request,
+            @AuthenticationPrincipal CustomUserDetails user
+    ) throws IOException {
+
+        log.debug("음소거 요청 데이터. {}", request);
+        log.debug("음소거 요청 사용자. {}", user);
+        if(!request.getTargetEmail().equals(user.getUsername())) {
+            return CommonResponseBuilder.forbidden("타인을 음소거할 수 없습니다.");
+        }
+
+        String userEmail = user.getUsername();
+
+        liveControlService.muteAudio(request, userEmail);
+        Map<String, String> result = getControlReturnMessage("mute-audio", request.getTargetEmail(),
+                request.getTargetEmail()+"님께서 오디오를 차단하셨습니다.");
+        log.debug("음소거 STOMP 메세지. {}", result);
+
+
+        messagingTemplate.convertAndSend(URL_PREFIX+"/topic/room/"+request.getRoomId(), result);
+        log.debug("음소거 STOMP 메세지 전송 성공함 ");
+
+        return CommonResponseBuilder.success("음소거에 성공했습니다.", null);
+    }
+
+    @GetMapping("/unmute-audio")
+    public ResponseEntity<ResponseRoot<Object>> unmuteAudio(
+            @ModelAttribute LiveControlRequest request,
+            @AuthenticationPrincipal CustomUserDetails user
+    ) throws IOException {
+        log.debug("음소거 해제 요청 데이터. {}", request);
+        log.debug("음소거 해제 요청 사용자. {}", user);
+        if(!request.getTargetEmail().equals(user.getUsername())) {
+            return CommonResponseBuilder.forbidden("타인을 음소거 해제할 수 없습니다.");
+        }
+        String userEmail = user.getUsername();
+
+        liveControlService.unmuteAudio(request, userEmail);
+        Map<String, String> result = getControlReturnMessage("unmute-audio", request.getTargetEmail(),
+                request.getTargetEmail()+"님께서 오디오 차단을 해제하셨습니다.");
+
+        log.debug("음소거 해제 STOMP 메세지. {}", result);
+
+        messagingTemplate.convertAndSend(URL_PREFIX+"/topic/room/"+request.getRoomId(), result);
+        log.debug("음소거 해제 STOMP 메세지 전송 성공함 ");
+        return CommonResponseBuilder.success("음소거에 성공했습니다.", null);
+    }
+
+
+    @GetMapping("/mute-video")
+    public ResponseEntity<ResponseRoot<Object>> muteVideo(
+            @ModelAttribute LiveControlRequest request,
+            @AuthenticationPrincipal CustomUserDetails user
+    ) throws IOException {
+        log.debug("비디오 차단 요청 데이터. {}", request);
+        log.debug("비디오 차단 요청 사용자. {}", user);
+        if(!request.getTargetEmail().equals(user.getUsername())) {
+            return CommonResponseBuilder.forbidden("타인의 영상을 차단할 수 없습니다.");
+        }
+        
+        String userEmail = user.getUsername();
+
+        liveControlService.muteVideo(request, userEmail);
+        Map<String, String> result = getControlReturnMessage("mute-video", request.getTargetEmail(),
+                request.getTargetEmail()+"님께서 영상을 차단하셨습니다.");
+
+        log.debug("비디오 차단 STOMP 메세지. {}", result);
+
+
+        messagingTemplate.convertAndSend(URL_PREFIX+"/topic/room/"+request.getRoomId(), result);
+
+        log.debug("비디오 차단 메세지. 전송 완료");
+
+        return CommonResponseBuilder.success("비디오 차단에 성공했습니다.", null);
+    }
+
+    @GetMapping("/unmute-video")
+    public ResponseEntity<ResponseRoot<Object>> unmuteVideo(
+            @ModelAttribute LiveControlRequest request,
+            @AuthenticationPrincipal CustomUserDetails user
+    ) throws IOException {
+        log.debug("비디오 차단 해제 요청 데이터. {}", request);
+        log.debug("비디오 차단 해제 요청 사용자. {}", user);
+        if(!request.getTargetEmail().equals(user.getUsername())) {
+            return CommonResponseBuilder.forbidden("타인 영상을 차단해제할 수 없습니다.");
+        }
+        
+        String userEmail = user.getUsername();
+
+        liveControlService.unmuteVideo(request, userEmail);
+        Map<String, String> result = getControlReturnMessage("unmute-video", request.getTargetEmail(),
+                request.getTargetEmail()+"님께서 영상 차단을 해제하셨습니다.");
+
+        log.debug("비디오 차단 해제 STOMP 메세지. {}", result);
+
+        messagingTemplate.convertAndSend(URL_PREFIX+"/topic/room/"+request.getRoomId(), result);
+
+
+        log.debug("비디오 차단 메세지. 전송 완료");
+
+        return CommonResponseBuilder.success("비디오 송출에 성공했습니다.", null);
+    }
+
+    private Map<String, String> getControlReturnMessage(String type, String target, String message) {
+        return Map.of("type", type, "target", target, "message", message);
+    }
+}
