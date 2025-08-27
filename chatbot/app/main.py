@@ -30,11 +30,13 @@ async def exception_handler(request, exc: Exception):
 
 
 # CORS configuration to allow frontend connections
+#주소 넣으면 됨
+BASE_URL = "주소"
 origins = [
     "http://localhost:3000",
-    "https://i13e104.p.ssafy.io:8080",
-    "http://i13e104.p.ssafy.io:8080",
-    "http://i13e104.p.ssafy.io:8081",
+    f"{BASE_URL}:8080",
+    f"http://{BASE_URL.split('//')[1]}:8080",
+    f"http://{BASE_URL.split('//')[1]}:8081",
 ]
 
 app.add_middleware(

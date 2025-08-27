@@ -173,8 +173,10 @@ export function extractAxiosErrorMessage(
 /* ──────────────────────────────
  * Axios 인스턴스
  * ────────────────────────────── */
+const API_BASE_URL = "주소/api/v1"; // 주소 넣으면 됨
+
 const restClient = axios.create({
-  baseURL: "https://i13e104.p.ssafy.io/api/v1", // 배포 서버
+  baseURL: API_BASE_URL, // 배포 서버
   timeout: 50000,
 });
 
@@ -185,10 +187,7 @@ restClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     config._meta = { startTime: performance.now(), requestId: newRequestId() };
 
-    config.baseURL =
-      config.useCors === false
-        ? "https://i13e104.p.ssafy.io/api/v1"
-        : "/api/rest";
+    config.baseURL = config.useCors === false ? API_BASE_URL : "/api/rest";
 
     if (config.requireAuth) {
       const session = await getSession();
@@ -203,7 +202,7 @@ restClient.interceptors.request.use(
     }
     if (config.useCors === false || config.useCors === undefined) {
       // CORS 직접 호출
-      config.baseURL = "https://i13e104.p.ssafy.io/api/v1";
+      config.baseURL = API_BASE_URL;
     } else {
       // 프록시 경유 (Next.js API Route)
       config.baseURL = "/api/rest";

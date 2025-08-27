@@ -52,7 +52,7 @@ public class SecurityConfig {
     private final com.e104.reciplay.user.security.service.SocialOAuth2UserService socialOAuth2UserService;
     private final com.e104.reciplay.user.security.config.OAuth2SuccessHandler oAuth2SuccessHandler;
 
-    @Value("${app.oauth2.front-callback-url:https://i13e104.p.ssafy.io/auth/social/callback}")
+    @Value("${app.oauth2.front-callback-url}")
     private String frontCallbackUrl;
     private String[] permittedUrls = {
             URL_PREFIX + "/user/auth/login", URL_PREFIX + "/user/auth/refresh-token",
