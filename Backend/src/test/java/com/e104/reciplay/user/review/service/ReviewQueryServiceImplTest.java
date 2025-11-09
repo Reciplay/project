@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.junit.jupiter.api.Disabled;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;

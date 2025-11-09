@@ -12,16 +12,21 @@ import com.e104.reciplay.entity.Lecture;
 import com.e104.reciplay.repository.CourseRepository;
 import com.e104.reciplay.repository.InstructorRepository;
 import com.e104.reciplay.repository.LectureRepository;
+import com.e104.reciplay.s3.service.S3Service;
 import com.e104.reciplay.user.security.domain.User;
 import com.e104.reciplay.user.security.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockMultipartHttpServletRequest;
 import org.springframework.test.context.ActiveProfiles;
+import org.junit.jupiter.api.Disabled;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
@@ -53,6 +58,9 @@ class LectureManagementServiceImplTest {
 
     @Autowired
     private CourseRepository courseRepository;
+
+    @MockitoBean
+    private S3Service s3Service;
 
     private User instructorUser;
     private User otherUser;
@@ -136,8 +144,11 @@ class LectureManagementServiceImplTest {
 
     @Test
     @DisplayName("강의 등록 성공 테스트")
-    void registerLectures_성공() {
+    void registerLectures_성공() throws IOException {
         // given
+        Mockito.doNothing().when(s3Service).deleteFile(Mockito.any());
+        Mockito.doNothing().when(s3Service).uploadFile(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+
         List<LectureRequest> requests = new ArrayList<>();
         List<ChapterItem> chapters = Collections.emptyList(); // Create empty list for chapters
         LectureRegisterRequest request1 = new LectureRegisterRequest("새 강의 1", "요약1", 1, "준비물1", LocalDateTime.now(), LocalDateTime.now().plusHours(1), chapters);

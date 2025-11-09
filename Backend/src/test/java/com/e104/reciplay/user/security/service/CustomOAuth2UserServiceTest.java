@@ -17,6 +17,7 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.junit.jupiter.api.Disabled;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.time.Instant;

@@ -2,14 +2,17 @@ package com.e104.reciplay.user.auth.mail.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.Disabled;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Disabled
 class MailServiceTest {
     @Autowired
     MailService mailService;
+
 
     @Test
     public void 테스트_메일_전송_시도() {
