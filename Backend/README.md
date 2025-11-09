@@ -1,93 +1,57 @@
-# Reciplay_backend
+# JaCoCo Coverage Summary (Filtered)
 
+## Overall Coverage (Excluding DTO, Util, Config, Exception, Constant, Repository Packages)
+| Metric           | Coverage |
+|------------------|----------|
+| Instructions     | 52.14% |
+| Branches         | 53.91% |
+| Lines            | 59.65% |
+| Methods          | 56.12% |
+| Classes          | 80.62% |
 
-
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://lab.ssafy.com/evenil0206/reciplay_backend.git
-git branch -M master
-git push -uf origin master
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://lab.ssafy.com/evenil0206/reciplay_backend/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+## Detailed Coverage by Package (Filtered)
+| Package Name | Instructions | Branches | Lines | Methods | Classes |
+|--------------|--------------|----------|-------|---------|---------|
+| com.e104.reciplay.entity | 32.00% (1065/3315) | 15.00% (4/26) | 231/419 | 43/115 | 24/35 |
+| com.e104.reciplay.livekit.service | 4.00% (0/604) | 0.00% (0/38) | 7/116 | 2/9 | 1/1 |
+| com.e104.reciplay.course.lecture.service | 63.00% (759/1190) | 55.00% (50/90) | 148/234 | 28/32 | 6/6 |
+| com.e104.reciplay.user.security.service | 60.00% (564/936) | 52.00% (40/76) | 116/181 | 27/42 | 5/6 |
+| com.e104.reciplay.user.security.filter | 13.00% (40/304) | 0.00% (0/14) | 15/72 | 3/8 | 2/2 |
+| com.e104.reciplay.livekit.service.depends | 84.00% (1388/1650) | 78.00% (41/52) | 308/368 | 44/62 | 8/9 |
+| com.e104.reciplay.s3.service | 8.00% (0/253) | 0.00% (0/0) | 4/64 | 4/19 | 3/3 |
+| com.e104.reciplay.user.security.domain | 22.00% (71/321) | 0.00% (0/0) | 14/31 | 2/8 | 1/2 |
+| com.e104.reciplay.user.profile.service | 40.00% (109/272) | 50.00% (1/2) | 27/63 | 6/17 | 3/5 |
+| com.e104.reciplay.livekit.runner | 4.00% (0/150) | 25.00% (1/4) | 3/34 | 2/5 | 1/1 |
+| com.e104.reciplay.user.subscription.service | 5.00% (0/148) | 0.00% (0/14) | 2/29 | 2/9 | 2/3 |
+| com.e104.reciplay.course.lecture.controller | 40.00% (89/222) | 0.00% (0/2) | 19/48 | 6/10 | 1/1 |
+| com.e104.reciplay.bot.service | 3.00% (0/122) | 0.00% (0/2) | 1/32 | 1/6 | 1/2 |
+| com.e104.reciplay.course.qna.controller | 3.00% (0/117) | 0.00% (0/0) | 1/27 | 1/8 | 1/1 |
+| com.e104.reciplay.livekit.redis | 3.00% (0/114) | 0.00% (0/4) | 1/21 | 1/6 | 1/1 |
+| com.e104.reciplay.user.review.controller | 4.00% (0/82) | 0.00% (0/0) | 1/19 | 1/6 | 1/1 |
+| com.e104.reciplay.common.handler | 8.00% (0/76) | 0.00% (0/0) | 2/21 | 2/21 | 1/1 |
+| com.e104.reciplay.course.courses.service | 81.00% (219/269) | 100.00% (14/14) | 42/55 | 5/11 | 4/6 |
+| com.e104.reciplay.user.instructor.service | 80.00% (211/261) | 81.00% (13/16) | 48/60 | 9/17 | 3/7 |
+| com.e104.reciplay.user.profile.controller | 44.00% (36/81) | 0.00% (0/0) | 9/19 | 3/6 | 1/1 |
+| com.e104.reciplay.common.types | 27.00% (0/39) | 0.00% (0/0) | 2/4 | 1/2 | 1/2 |
+| com.e104.reciplay.user.auth.mail.service | 9.00% (0/39) | 0.00% (0/0) | 1/13 | 1/3 | 1/1 |
+| com.e104.reciplay.course.enrollment.controller | 10.00% (0/36) | 0.00% (0/0) | 1/9 | 1/3 | 1/1 |
+| com.e104.reciplay.user.zzim.controller | 10.00% (0/36) | 0.00% (0/0) | 1/9 | 1/3 | 1/1 |
+| com.e104.reciplay.course.courses.controller | 83.00% (181/216) | 50.00% (2/4) | 44/54 | 7/8 | 2/2 |
+| com.e104.reciplay.user.auth.controller | 83.00% (173/208) | 58.00% (7/12) | 36/44 | 10/10 | 1/1 |
+| com.e104.reciplay.livekit.controller | 61.00% (44/72) | 50.00% (4/8) | 11/17 | 3/4 | 1/1 |
+| com.e104.reciplay.course.qna.service | 91.00% (263/263) | 79.00% (19/24) | 54/59 | 15/16 | 2/2 |
+| com.e104.reciplay.user.lecture_history.controller | 18.00% (0/0) | 0.00% (0/0) | 1/5 | 1/2 | 1/1 |
+| com.e104.reciplay.course.enrollment.service | 84.00% (83/83) | 70.00% (7/10) | 15/18 | 3/3 | 1/1 |
+| com.e104.reciplay.user.security.jwt | 84.00% (76/76) | 100.00% (2/2) | 12/13 | 4/5 | 1/1 |
+| com.e104.reciplay.admin.service | 98.00% (533/533) | 95.00% (23/24) | 120/123 | 21/21 | 7/7 |
+| com.e104.reciplay.user.review.service | 96.00% (252/252) | 92.00% (13/14) | 45/48 | 12/12 | 2/2 |
+| com.e104.reciplay.user.lecture_history.service | 86.00% (37/37) | 100.00% (2/2) | 6/8 | 2/2 | 1/1 |
+| com.e104.reciplay.user.instructor.controller | 96.00% (152/152) | 50.00% (1/2) | 37/38 | 7/7 | 2/2 |
+| com.e104.reciplay.user.zzim.service | 93.00% (67/67) | 100.00% (4/4) | 12/12 | 3/4 | 1/1 |
+| com.e104.reciplay | 37.00% (0/0) | 0.00% (0/0) | 1/3 | 1/2 | 1/1 |
+| com.e104.reciplay.common.controller | 60.00% (0/0) | 0.00% (0/0) | 1/2 | 1/2 | 1/1 |
+| com.e104.reciplay.admin.controller | 100.00% (126/126) | 0.00% (0/0) | 32/32 | 10/10 | 1/1 |
+| com.e104.reciplay.s3.enums | 100.00% (66/66) | 0.00% (0/0) | 10/10 | 2/2 | 2/2 |
+| com.e104.reciplay.user.subscription.controller | 100.00% (65/65) | 0.00% (0/0) | 15/15 | 4/4 | 1/1 |
+| com.e104.reciplay.s3.controller | 100.00% (36/36) | 0.00% (0/0) | 6/6 | 3/3 | 1/1 |
+| com.e104.reciplay.user.auth.redis | 100.00% (33/33) | 0.00% (0/0) | 6/6 | 2/2 | 1/1 |
